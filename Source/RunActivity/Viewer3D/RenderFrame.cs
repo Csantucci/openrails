@@ -700,7 +700,6 @@ namespace Orts.Viewer3D
             if (logging) Console.WriteLine("    {0} {{", shadowMapIndex);
 
             // Prepare renderer for drawing the shadow map.
-            var prevVp = Game.GraphicsDevice.Viewport;
             graphicsDevice.SetRenderTarget(ShadowMapRenderTarget[shadowMapIndex]);
             graphicsDevice.Clear(ClearOptions.DepthBuffer | ClearOptions.Target, Color.White, 1, 0);
 
@@ -745,7 +744,6 @@ namespace Orts.Viewer3D
             else
                 ShadowMap[shadowMapIndex] = ShadowMapRenderTarget[shadowMapIndex];
 
-            Game.GraphicsDevice.Viewport = prevVp;
             if (logging) Console.WriteLine("    }");
         }
 

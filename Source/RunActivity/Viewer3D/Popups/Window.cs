@@ -45,9 +45,6 @@ namespace Orts.Viewer3D.Popups
         VertexBuffer WindowVertexBuffer;
         IndexBuffer WindowIndexBuffer;
 
-        Texture2D textureSolid;
-        Texture2D textureGlass;
-
         public Window(WindowManager owner, int width, int height, string caption)
         {
             Owner = owner;
@@ -67,14 +64,6 @@ namespace Orts.Viewer3D.Popups
 
             Caption = caption;
             Owner.Add(this);
-
-            // TODO: This should happen on the loader thread.
-            Func<string, Texture2D> loadTexture = (string f) =>
-            {
-                return SharedTextureManager.Get(Owner.Viewer.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, f));
-            };
-            textureSolid = loadTexture("WindowSolid.png");
-            textureGlass = loadTexture("WindowGlass.png");
         }
 
         protected internal virtual void Initialize()
@@ -292,27 +281,6 @@ namespace Orts.Viewer3D.Popups
         [CallOnThread("Render")]
         public virtual void Draw(SpriteBatch spriteBatch)
         {
-            if (Interactive && location.Width >= 12 + 12 && location.Height >= 23 + 12)
-            {
-                Texture2D bgTexture = Owner.Viewer.Settings.WindowGlass ? textureGlass : textureSolid;
-                Action<Rectangle, Rectangle> draw = (Rectangle dst, Rectangle src) =>
-                {
-                    spriteBatch.Draw(bgTexture, dst, src, Color.White);
-                };
-                Func<int, int, int, int, Rectangle> rect = (int x, int y, int w, int h) => { return new Rectangle(x, y, w, h); };
-                // corners
-                draw(rect(location.X, location.Y, 12, 23), rect(0, 0, 12, 23));
-                draw(rect(location.X, location.Y + location.Height - 12, 12, 12), rect(0, 128 - 12, 12, 12));
-                draw(rect(location.X + location.Width - 12, location.Y, 12, 23), rect(128 - 12, 0, 12, 23));
-                draw(rect(location.X + location.Width - 12, location.Y + location.Height - 12, 12, 12), rect(128 - 12, 128 - 12, 12, 12));
-                // edges
-                draw(rect(location.X + 12, location.Y, location.Width - 12 - 12, 23), rect(12, 0, 128 - 12 - 12, 23));
-                draw(rect(location.X + location.Width - 12, location.Y + 23, 12, location.Height - 23 - 12), rect(128 - 12, 23, 12, 128 - 12 - 23));
-                draw(rect(location.X + 12, location.Y + location.Height - 12, location.Width - 12 - 12, 12), rect(12, 128 - 12, 128 - 12 - 12, 12));
-                draw(rect(location.X, location.Y + 23, 12, location.Height - 23 - 12), rect(0, 23, 12, 128 - 12 - 23));
-                // center
-                draw(rect(location.X + 12, location.Y + 23, location.Width - 12 - 12, location.Height - 23 - 12), rect(12, 23, 128 - 12 - 12, 128 - 23 - 12));
-            }
             WindowLayout.Draw(spriteBatch, Location.Location);
         }
 
@@ -350,11 +318,9 @@ namespace Orts.Viewer3D.Popups
 
         public WindowMouseEvent(WindowManager windowManager, Window window)
         {
-            int mouseX = UserInput.MouseX - Viewer.DefaultViewport.X;
-            int mouseY = UserInput.MouseY - Viewer.DefaultViewport.Y;
-            MousePosition = new Point(mouseX - window.Location.X, mouseY - window.Location.Y);
+            MousePosition = new Point(UserInput.MouseX - window.Location.X, UserInput.MouseY - window.Location.Y);
             MouseDownPosition = new Point(windowManager.MouseDownPosition.X - window.Location.X, windowManager.MouseDownPosition.Y - window.Location.Y);
-            MouseScreenPosition = new Point(mouseX, mouseY);
+            MouseScreenPosition = new Point(UserInput.MouseX, UserInput.MouseY);
             MouseDownScreenPosition = windowManager.MouseDownPosition;
         }
     }

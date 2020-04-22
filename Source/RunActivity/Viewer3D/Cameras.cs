@@ -2198,8 +2198,6 @@ namespace Orts.Viewer3D
                 ScrollRight(true, speed);
             if (UserInput.IsDown(UserCommand.CameraScrollLeft))
                 ScrollRight(false, speed);
-            if (UserInput.IsPressed(UserCommand.CameraLetterboxCab))
-                Viewer.Settings.Letterbox2DCab = !Viewer.Settings.Letterbox2DCab;
         }
     }
 

@@ -398,7 +398,7 @@ namespace Orts.Viewer3D
 
             TextureManager = new SharedTextureManager(this, GraphicsDevice);
 
-            AdjustCabHeight(); // needs TextureManager
+            AdjustCabHeight(DisplaySize.X, DisplaySize.Y);
 
             MaterialManager = new SharedMaterialManager(this);
             ShapeManager = new SharedShapeManager(this);
@@ -604,10 +604,8 @@ namespace Orts.Viewer3D
             SelectedTrain = selectedTrain;
         }
 
-        public void AdjustCabHeight()
+        public void AdjustCabHeight(int windowWidth, int windowHeight)
         {
-            int windowWidth = DisplaySize.X;
-            int windowHeight = DisplaySize.Y;
             CabTextureInverseRatio = 0.75f; // start setting it to default
             // MSTS cab views are designed for 4:3 aspect ratio. This is the default. However a check is done with the actual
             // cabview texture. If this has a different aspect ratio, that one is considered
@@ -626,24 +624,23 @@ namespace Orts.Viewer3D
             }
             int unstretchedCabHeightPixels = (int)(CabTextureInverseRatio * windowWidth);
             int unstretchedCabWidthPixels = (int)(windowHeight / CabTextureInverseRatio);
-            float screenInverseRatio = (float)windowHeight / windowWidth;
-            if (screenInverseRatio == CabTextureInverseRatio || Settings.Letterbox2DCab)
-            {
-                // nice, window aspect ratio and cabview aspect ratio are identical
-                CabExceedsDisplay = 0;
-                CabExceedsDisplayHorizontally = 0;
-            }
-            else if (screenInverseRatio < CabTextureInverseRatio)
+            if (((float)windowHeight / windowWidth) < CabTextureInverseRatio)
             {
                 // screen is wide-screen, so can choose between vertical scroll or horizontal stretch
                 CabExceedsDisplay = (int)((unstretchedCabHeightPixels - windowHeight) * ((100 - Settings.Cab2DStretch) / 100f));
                 CabExceedsDisplayHorizontally = 0;
             }
-            else
+            else if (((float)windowHeight / windowWidth) > CabTextureInverseRatio)
             {
                 // must scroll horizontally
                 CabExceedsDisplay = 0;
                 CabExceedsDisplayHorizontally = unstretchedCabWidthPixels - windowWidth;
+            }
+            else
+            {
+                // nice, window aspect ratio and cabview aspect ratio are identical
+                CabExceedsDisplay = 0;
+                CabExceedsDisplayHorizontally = 0;
             }
             CabHeightPixels = windowHeight + CabExceedsDisplay;
             CabYOffsetPixels = -CabExceedsDisplay / 2; // Initial value is halfway. User can adjust with arrow keys.
@@ -855,10 +852,8 @@ namespace Orts.Viewer3D
 
             if (UserInput.IsMouseLeftButtonDown || (Camera is ThreeDimCabCamera && RenderProcess.IsMouseVisible))
             {
-                float inputX = UserInput.MouseX - DefaultViewport.X;
-                float inputY = UserInput.MouseY - DefaultViewport.Y;
-                Vector3 nearsource = new Vector3(inputX, inputY, 0f);
-                Vector3 farsource = new Vector3(inputX, inputY, 1f);
+                Vector3 nearsource = new Vector3((float)UserInput.MouseX, (float)UserInput.MouseY, 0f);
+                Vector3 farsource = new Vector3((float)UserInput.MouseX, (float)UserInput.MouseY, 1f);
                 Matrix world = Matrix.CreateTranslation(0, 0, 0);
                 NearPoint = DefaultViewport.Unproject(nearsource, Camera.XnaProjection, Camera.XnaView, world);
                 FarPoint = DefaultViewport.Unproject(farsource, Camera.XnaProjection, Camera.XnaView, world);
@@ -1321,7 +1316,7 @@ namespace Orts.Viewer3D
                     foreach (var controlRenderer in (PlayerLocomotiveViewer as MSTSLocomotiveViewer)._CabRenderer.ControlMap.Values)
                     {
                         CabViewDiscreteRenderer discreteRenderer = controlRenderer as CabViewDiscreteRenderer;
-                        if (discreteRenderer != null && discreteRenderer.IsMouseWithin(DefaultViewport))
+                        if (discreteRenderer != null && discreteRenderer.IsMouseWithin())
                         {
                             MouseChangingControl = discreteRenderer;
                             break;
@@ -1349,7 +1344,7 @@ namespace Orts.Viewer3D
                     foreach (var controlRenderer in (PlayerLocomotiveViewer as MSTSLocomotiveViewer)._CabRenderer.ControlMap.Values)
                     {
                         CabViewDiscreteRenderer discreteRenderer = controlRenderer as CabViewDiscreteRenderer;
-                        if (discreteRenderer != null && discreteRenderer.IsMouseWithin(DefaultViewport))
+                        if (discreteRenderer != null && discreteRenderer.IsMouseWithin())
                         {
                             MousePickedControl = discreteRenderer;
                             break;
@@ -1551,7 +1546,7 @@ namespace Orts.Viewer3D
             Simulator.PlayerLocomotive = Simulator.PlayerLocomotive.Train.GetNextCab();
             PlayerLocomotiveViewer = World.Trains.GetViewer(Simulator.PlayerLocomotive);
             if (PlayerLocomotiveViewer is MSTSLocomotiveViewer && (PlayerLocomotiveViewer as MSTSLocomotiveViewer)._hasCabRenderer)
-                AdjustCabHeight();
+                AdjustCabHeight(DisplaySize.X, DisplaySize.Y);
             Camera.Activate(); // If you need anything else here the cameras should check for it.        
             SetCommandReceivers();
             ThreeDimCabCamera.ChangeCab(Simulator.PlayerLocomotive);
@@ -1763,16 +1758,7 @@ namespace Orts.Viewer3D
             if (frame.IsScreenChanged)
             {
                 WindowManager.ScreenChanged();
-                AdjustCabHeight();
-            }
-
-            if (Camera == CabCamera && Settings.Letterbox2DCab)
-            {
-                RenderProcess.SetScaledViewport(1f / CabTextureInverseRatio);
-            }
-            else
-            {
-                RenderProcess.SetDefaultViewport();
+                AdjustCabHeight(RenderProcess.GraphicsDeviceManager.PreferredBackBufferWidth, RenderProcess.GraphicsDeviceManager.PreferredBackBufferHeight);
             }
 
             MaterialManager.UpdateShaders();

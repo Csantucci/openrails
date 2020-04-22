@@ -284,43 +284,6 @@ namespace Orts.Viewer3D.Processes
                 GraphicsDeviceManager.ToggleFullScreen();
             }
         }
-         
-        public void SetScaledViewport(float ratio)
-        {
-            if (GraphicsDevice == null)
-                return;
-
-            SetDefaultViewport();
-            GraphicsDevice.Clear(Color.Black);
-
-            int maxW = GraphicsDeviceManager.PreferredBackBufferWidth;
-            int maxH = GraphicsDeviceManager.PreferredBackBufferHeight;
-            int scaledW = Math.Min((int)Math.Round(maxH * ratio), maxW);
-            int scaledH = Math.Min((int)Math.Round(maxW / ratio), maxH);
-            var vp = new Viewport()
-            {
-                Width = scaledW,
-                Height = scaledH,
-                X = (maxW - scaledW) / 2,
-                Y = (maxH - scaledH) / 2,
-                MaxDepth = 1
-            };
-            GraphicsDevice.Viewport = Viewer.DefaultViewport = vp;
-        }
-
-        public void SetDefaultViewport()
-        {
-            if (GraphicsDevice == null)
-                return;
-
-            var vp = new Viewport()
-            {
-                Width = GraphicsDeviceManager.PreferredBackBufferWidth,
-                Height = GraphicsDeviceManager.PreferredBackBufferHeight,
-                MaxDepth = 1
-            };
-            GraphicsDevice.Viewport = Viewer.DefaultViewport = vp;
-        }
 
         internal void BeginDraw()
         {

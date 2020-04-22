@@ -63,16 +63,21 @@ namespace Orts.Viewer3D.Popups
         public Label3DMaterial Label3DMaterial { get; private set; }
 
         readonly Material WindowManagerMaterial;
+        readonly PopupWindowMaterial PopupWindowMaterial;
         readonly List<Window> Windows = new List<Window>();
         Window[] WindowsZOrder = new Window[0];
         SpriteBatch SpriteBatch;
         Matrix Identity = Matrix.Identity;
+        Matrix XNAView = Matrix.Identity;
+		Matrix XNAProjection = Matrix.Identity;
         internal Point ScreenSize = new Point(10000, 10000); // Arbitrary but necessary.
+        RenderTarget2D Screen;
 
         public WindowManager(Viewer viewer)
         {
             Viewer = viewer;
             WindowManagerMaterial = new BasicBlendedMaterial(viewer, "WindowManager");
+            PopupWindowMaterial = (PopupWindowMaterial)Viewer.MaterialManager.Load("PopupWindow");
             TextManager = new WindowTextManager();
             TextFontDefault = TextManager.GetScaled("Arial", 10, System.Drawing.FontStyle.Regular);
             TextFontDefaultBold = TextManager.GetScaled("Arial", 10, System.Drawing.FontStyle.Bold);
@@ -180,6 +185,14 @@ namespace Orts.Viewer3D.Popups
 			var oldScreenSize = ScreenSize;
 			ScreenSize = Viewer.DisplaySize;
 
+			// Buffer for screen texture, also same size as viewport and using the backbuffer format.
+			if (Viewer.Settings.WindowGlass)
+			{
+				if (Screen != null)
+					Screen.Dispose();
+                Screen = new RenderTarget2D(Viewer.GraphicsDevice, ScreenSize.X, ScreenSize.Y, false, Viewer.GraphicsDevice.PresentationParameters.BackBufferFormat, DepthFormat.Depth24Stencil8);
+			}
+
 			// Reposition all the windows.
             foreach (var window in Windows)
             {
@@ -213,8 +226,24 @@ namespace Orts.Viewer3D.Popups
 			if (!VisibleWindows.Any())
 				return;
 
+			// Construct a view where (0, 0) is the top-left and (width, height) is
+			// bottom-right, so that popups can act more like normal window things.
+			XNAView = Matrix.CreateTranslation(-ScreenSize.X / 2, -ScreenSize.Y / 2, 0) *
+				Matrix.CreateTranslation(-0.5f, -0.5f, 0) *
+				Matrix.CreateScale(1, -1, 1);
+			// Project into a flat view of the same size as the viewport.
+			XNAProjection = Matrix.CreateOrthographic(ScreenSize.X, ScreenSize.Y, 0, 100);
+
 			foreach (var window in VisibleWindows)
 			{
+				var xnaWorld = window.XNAWorld;
+
+                // FIXME: MonoGame cannot read backbuffer
+                //if (Screen != null)
+                //    graphicsDevice.ResolveBackBuffer(Screen);
+                PopupWindowMaterial.SetState(graphicsDevice, Screen);
+                PopupWindowMaterial.Render(graphicsDevice, window, ref xnaWorld, ref XNAView, ref XNAProjection);
+                PopupWindowMaterial.ResetState(graphicsDevice);
                 SpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, null, null, null, null);
                 window.Draw(SpriteBatch);
                 SpriteBatch.End();
@@ -258,7 +287,7 @@ namespace Orts.Viewer3D.Popups
         {
 			if (UserInput.IsMouseLeftButtonPressed)
 			{
-				mouseDownPosition = new Point(UserInput.MouseX - Viewer.DefaultViewport.X, UserInput.MouseY - Viewer.DefaultViewport.Y);
+				mouseDownPosition = new Point(UserInput.MouseX, UserInput.MouseY);
                 mouseActiveWindow = VisibleWindows.LastOrDefault(w => w.Interactive && w.Location.Contains(mouseDownPosition));
                 if ((mouseActiveWindow != null) && (mouseActiveWindow != WindowsZOrder.Last()))
                     BringWindowToTop(mouseActiveWindow);
@@ -321,6 +350,7 @@ namespace Orts.Viewer3D.Popups
         public void Mark()
         {
             WindowManagerMaterial.Mark();
+            PopupWindowMaterial.Mark();
             Label3DMaterial.Mark();
 			foreach (var window in Windows)
                 window.Mark();
