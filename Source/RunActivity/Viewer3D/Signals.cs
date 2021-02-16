@@ -466,9 +466,11 @@ namespace Orts.Viewer3D
 
                         if (mstsSignalType.Semaphore)
                             glowDay = 0.0f;
+                        /* Jindrich
+                         * Why is this here? I want all my lights glowing, when I have glowing on
                         if (mstsSignalType.FnType == MstsSignalFunction.INFO || mstsSignalType.FnType == MstsSignalFunction.SHUNTING) // These are good at identifying theatre boxes.
                             glowDay = glowNight = 0.0f;
-
+                        */
                         // use values from signal if defined
                         if (mstsSignalType.DayGlow.HasValue)
                         {

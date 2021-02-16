@@ -1403,7 +1403,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             return data;
         }
 
-        public enum AvvSignal {
+      public enum AvvSignal {
             Stop,
             Restricted,
             Restricting40,
