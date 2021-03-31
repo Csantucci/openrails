@@ -1969,19 +1969,50 @@ namespace Orts.Viewer3D.RollingStock
                         index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
                     break;
                 case CABViewControlTypes.CP_HANDLE:
+                    bool intermediateValue = false;
                     if (Locomotive.CruiseControl != null)
                     {
-                        if (Locomotive.CruiseControl.SpeedRegMode == Simulation.RollingStocks.SubSystems.CruiseControl.SpeedRegulatorMode.Auto)
+                        if (Locomotive.CruiseControl.SpeedRegMode == Simulation.RollingStocks.SubSystems.CruiseControl.SpeedRegulatorMode.Auto && Locomotive.CruiseControl.UseThrottleAsSpeedSelector)
                         {
-                            index = PercentToIndex(50);
-                            break;
+                            intermediateValue = true;
+                            if (Locomotive.CruiseControl.SelectedSpeedMpS > 0)
+                            {
+                                // i.e. 0-120 = 0,4-0 
+                                // change to 120-0 = 0,4-0
+                                // TODO: can be simplified, not in my brain cells anymore right now :)
+                                float speed = Locomotive.MaxSpeedMpS - Locomotive.CruiseControl.SelectedSpeedMpS;
+                                float ix = Locomotive.CombinedControlSplitPosition / Locomotive.MaxSpeedMpS;
+                                speed = Locomotive.CombinedControlSplitPosition - (Locomotive.CruiseControl.SelectedSpeedMpS * ix);
+                                speed = speed * 100;
+                                int percent = (int)speed;
+                                index = PercentToIndex(percent);
+                                break;
+                            }
                         }
                     }
-                    if (Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleDynamic && Locomotive.DynamicBrakePercent >= 0
-                        || Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleAir && Locomotive.TrainBrakeController.CurrentValue > 0)
-                        index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
+                    if (Locomotive.CruiseControl != null)
+                    {
+                        if (!Locomotive.CruiseControl.SkipThrottleDisplay)
+                        {
+                            if (Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleDynamic && Locomotive.DynamicBrakePercent >= 0
+                                || Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleAir && Locomotive.TrainBrakeController.CurrentValue > 0)
+                                index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
+                            else
+                                index = PercentToIndex(Locomotive.GetCombinedHandleValue(intermediateValue));
+                        }
+                        else
+                        {
+                            index = PercentToIndex((Locomotive.CombinedControlSplitPosition * 100));
+                        }
+                    }
                     else
-                        index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
+                    {
+                        if (Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleDynamic && Locomotive.DynamicBrakePercent >= 0
+                            || Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleAir && Locomotive.TrainBrakeController.CurrentValue > 0)
+                            index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
+                        else
+                            index = PercentToIndex(Locomotive.GetCombinedHandleValue(intermediateValue));
+                    }
                     break;
                 case CABViewControlTypes.ORTS_SELECTED_SPEED_DISPLAY:
                     if (Locomotive.CruiseControl == null)
@@ -2243,7 +2274,27 @@ namespace Orts.Viewer3D.RollingStock
                 case CABViewControlTypes.ORTS_QUICKRELEASE: new QuickReleaseCommand(Viewer.Log, ChangedValue(Locomotive.TrainBrakeController.QuickReleaseButtonPressed ? 1 : 0) > 0); break;
                 case CABViewControlTypes.ORTS_OVERCHARGE: new BrakeOverchargeCommand(Viewer.Log, ChangedValue(Locomotive.TrainBrakeController.OverchargeButtonPressed ? 1 : 0) > 0); break;
                 case CABViewControlTypes.RESET: new AlerterCommand(Viewer.Log, ChangedValue(Locomotive.TrainControlSystem.AlerterButtonPressed ? 1 : 0) > 0); break;
-                case CABViewControlTypes.CP_HANDLE: Locomotive.SetCombinedHandleValue(ChangedValue(Locomotive.GetCombinedHandleValue(true))); break;
+                case CABViewControlTypes.CP_HANDLE:
+                    if (Locomotive.CruiseControl == null)
+                    {
+                        Locomotive.SetCombinedHandleValue(ChangedValue(Locomotive.GetCombinedHandleValue(true))); break;
+                    }
+                    else
+                    {
+                        if (Locomotive.CruiseControl.SpeedRegMode == Simulation.RollingStocks.SubSystems.CruiseControl.SpeedRegulatorMode.Manual)
+                        {
+                            Locomotive.SetCombinedHandleValue(ChangedValue(Locomotive.GetCombinedHandleValue(true))); break;
+                        }
+                        else
+                        {
+                            float speed = (1 - MathHelper.Clamp(ChangedValue(Locomotive.GetCombinedHandleValue(true)), 0, Locomotive.CombinedControlSplitPosition) / Locomotive.CombinedControlSplitPosition) * Locomotive.MaxSpeedMpS;
+                            speed = (float)Math.Round(MpS.ToKpH(speed));
+                            if (speed < 5)
+                                speed = 5;
+                            Locomotive.CruiseControl.SetSpeed(speed);
+                            break;
+                        }
+                    }
 
                 // Steam locomotives only:
                 case CABViewControlTypes.CUTOFF: (Locomotive as MSTSSteamLocomotive).SetCutoffValue(ChangedValue((Locomotive as MSTSSteamLocomotive).CutoffController.IntermediateValue)); break;
@@ -2488,7 +2539,7 @@ namespace Orts.Viewer3D.RollingStock
         {
             var index = 0;
 
-            if (percent > 1)
+            if (percent >= 1)
                 percent /= 100f;
 
             if (ControlDiscrete.MinValue != ControlDiscrete.MaxValue && !(ControlDiscrete.MinValue == 0 && ControlDiscrete.MaxValue == 0))

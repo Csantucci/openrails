@@ -177,8 +177,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Controllers
             {
                 emergencyBrake = false;
             }
-            if (Locomotive.TrainBrakeController.TCSEmergencyBraking)
-                Locomotive.TrainBrakeController.TCSEmergencyBraking = false;
+/*            if (Locomotive.TrainBrakeController.TCSEmergencyBraking)
+                Locomotive.TrainBrakeController.TCSEmergencyBraking = false; */
             elapsedSecondsFromLastChange += elapsedClockSeconds;
             // Simulator.Confirmer.MSG(currentPosition.ToString());
             if (checkNeutral)
