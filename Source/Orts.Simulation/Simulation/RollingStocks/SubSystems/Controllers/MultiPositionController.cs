@@ -41,7 +41,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Controllers
         public bool StateChanged = false;
 
         public ControllerPosition controllerPosition = new ControllerPosition();
-        public ControllerCruiseControlLogic cruiseControlLogic = new ControllerCruiseControlLogic();
         public ControllerBinding controllerBinding = new ControllerBinding();
         protected float elapsedSecondsFromLastChange = 0;
         protected bool checkNeutral = false;
@@ -123,24 +122,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Controllers
                     break;
                 case "engine(ortsmultipositioncontroller(controllerid": ControllerId = stf.ReadIntBlock(0); break;
                 case "engine(ortsmultipositioncontrollercancontroltrainbrake": CanControlTrainBrake = stf.ReadBoolBlock(false); break;
-                case "engine(ortscruisecontrol(controllercruisecontrollogic":
-                    {
-                        String speedControlLogic = stf.ReadStringBlock("none").ToLower();
-                        switch (speedControlLogic)
-                        {
-                            case "full":
-                                {
-                                    cruiseControlLogic = ControllerCruiseControlLogic.Full;
-                                    break;
-                                }
-                            case "speedonly":
-                                {
-                                    cruiseControlLogic = ControllerCruiseControlLogic.SpeedOnly;
-                                    break;
-                                }
-                        }
-                        break;
-                    }
             }
         }
         public void Update(float elapsedClockSeconds)
@@ -177,8 +158,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Controllers
             {
                 emergencyBrake = false;
             }
-            if (Locomotive.TrainBrakeController.TCSEmergencyBraking)
-                Locomotive.TrainBrakeController.TCSEmergencyBraking = false;
+/*            if (Locomotive.TrainBrakeController.TCSEmergencyBraking)
+                Locomotive.TrainBrakeController.TCSEmergencyBraking = false; */
             elapsedSecondsFromLastChange += elapsedClockSeconds;
             // Simulator.Confirmer.MSG(currentPosition.ToString());
             if (checkNeutral)
@@ -450,20 +431,34 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Controllers
             }
             else if (haveCruiseControl && ccAutoMode)
             {
-                if (cruiseControlLogic == ControllerCruiseControlLogic.SpeedOnly)
+                if (Locomotive.CruiseControl.CruiseControlLogic == CruiseControl.ControllerCruiseControlLogic.SpeedOnly)
                 {
-                    if (controllerPosition == ControllerPosition.ThrottleIncrease || controllerPosition == ControllerPosition.ThrottleIncreaseFast)
+                    if (controllerPosition == ControllerPosition.ThrottleIncrease)
                     {
                         if (!Locomotive.CruiseControl.ContinuousSpeedIncreasing && movedForward) return;
                         movedForward = true;
                         Locomotive.CruiseControl.SelectedSpeedMpS = Locomotive.CruiseControl.SelectedSpeedMpS + Locomotive.CruiseControl.SpeedRegulatorNominalSpeedStepMpS;
                         if (Locomotive.CruiseControl.SelectedSpeedMpS > Locomotive.MaxSpeedMpS) Locomotive.CruiseControl.SelectedSpeedMpS = Locomotive.MaxSpeedMpS;
                     }
-                    if (controllerPosition == ControllerPosition.ThrottleDecrease || controllerPosition == ControllerPosition.ThrottleDecreaseFast)
+                    if (controllerPosition == ControllerPosition.ThrottleIncreaseFast)
+                    {
+                        if (!Locomotive.CruiseControl.ContinuousSpeedIncreasing && movedForward) return;
+                        movedForward = true;
+                        Locomotive.CruiseControl.SelectedSpeedMpS = Locomotive.CruiseControl.SelectedSpeedMpS + Locomotive.CruiseControl.SpeedRegulatorNominalSpeedStepMpS * 2;
+                        if (Locomotive.CruiseControl.SelectedSpeedMpS > Locomotive.MaxSpeedMpS) Locomotive.CruiseControl.SelectedSpeedMpS = Locomotive.MaxSpeedMpS;
+                    }
+                    if (controllerPosition == ControllerPosition.ThrottleDecrease)
                     {
                         if (!Locomotive.CruiseControl.ContinuousSpeedDecreasing && movedAft) return;
                         movedAft = true;
                         Locomotive.CruiseControl.SelectedSpeedMpS = Locomotive.CruiseControl.SelectedSpeedMpS - Locomotive.CruiseControl.SpeedRegulatorNominalSpeedStepMpS;
+                        if (Locomotive.CruiseControl.SelectedSpeedMpS < 0) Locomotive.CruiseControl.SelectedSpeedMpS = 0;
+                    }
+                    if (controllerPosition == ControllerPosition.ThrottleDecreaseFast)
+                    {
+                        if (!Locomotive.CruiseControl.ContinuousSpeedDecreasing && movedAft) return;
+                        movedAft = true;
+                        Locomotive.CruiseControl.SelectedSpeedMpS = Locomotive.CruiseControl.SelectedSpeedMpS - Locomotive.CruiseControl.SpeedRegulatorNominalSpeedStepMpS * 2;
                         if (Locomotive.CruiseControl.SelectedSpeedMpS < 0) Locomotive.CruiseControl.SelectedSpeedMpS = 0;
                     }
                     return;
@@ -886,12 +881,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Controllers
             SelectedSpeedDecrease,
             SelectSpeedZero
         };
-        public enum ControllerCruiseControlLogic
-        {
-            None,
-            Full,
-            SpeedOnly
-        }
 
         public enum ControllerBinding
         {

@@ -1970,18 +1970,16 @@ namespace Orts.Viewer3D.RollingStock
                     break;
                 case CABViewControlTypes.CP_HANDLE:
                     if (Locomotive.CruiseControl != null)
-                    {
                         if (Locomotive.CruiseControl.SpeedRegMode == Simulation.RollingStocks.SubSystems.CruiseControl.SpeedRegulatorMode.Auto)
                         {
-                            index = PercentToIndex(50);
+                            index = PercentToIndex(Locomotive.CombinedControlSplitPosition * 100);
                             break;
                         }
-                    }
                     if (Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleDynamic && Locomotive.DynamicBrakePercent >= 0
-                        || Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleAir && Locomotive.TrainBrakeController.CurrentValue > 0)
-                        index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
-                    else
-                        index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
+                            || Locomotive.CombinedControlType == MSTSLocomotive.CombinedControl.ThrottleAir && Locomotive.TrainBrakeController.CurrentValue > 0)
+                            index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
+                        else
+                            index = PercentToIndex(Locomotive.GetCombinedHandleValue(false));
                     break;
                 case CABViewControlTypes.ORTS_SELECTED_SPEED_DISPLAY:
                     if (Locomotive.CruiseControl == null)
@@ -2123,6 +2121,27 @@ namespace Orts.Viewer3D.RollingStock
                 case CABViewControlTypes.ORTS_CC_SELECT_SPEED:
                 case CABViewControlTypes.ORTS_MULTI_POSITION_CONTROLLER:
                 case CABViewControlTypes.ORTS_ACCELERATION_IN_TIME:
+                case CABViewControlTypes.ORTS_CC_SPEED_0:
+                case CABViewControlTypes.ORTS_CC_SPEED_10:
+                case CABViewControlTypes.ORTS_CC_SPEED_20:
+                case CABViewControlTypes.ORTS_CC_SPEED_30:
+                case CABViewControlTypes.ORTS_CC_SPEED_40:
+                case CABViewControlTypes.ORTS_CC_SPEED_50:
+                case CABViewControlTypes.ORTS_CC_SPEED_60:
+                case CABViewControlTypes.ORTS_CC_SPEED_70:
+                case CABViewControlTypes.ORTS_CC_SPEED_80:
+                case CABViewControlTypes.ORTS_CC_SPEED_90:
+                case CABViewControlTypes.ORTS_CC_SPEED_100:
+                case CABViewControlTypes.ORTS_CC_SPEED_110:
+                case CABViewControlTypes.ORTS_CC_SPEED_120:
+                case CABViewControlTypes.ORTS_CC_SPEED_130:
+                case CABViewControlTypes.ORTS_CC_SPEED_140:
+                case CABViewControlTypes.ORTS_CC_SPEED_150:
+                case CABViewControlTypes.ORTS_CC_SPEED_160:
+                case CABViewControlTypes.ORTS_CC_SPEED_170:
+                case CABViewControlTypes.ORTS_CC_SPEED_180:
+                case CABViewControlTypes.ORTS_CC_SPEED_190:
+                case CABViewControlTypes.ORTS_CC_SPEED_200:
                     index = (int)data;
                     break;
             }
@@ -2475,6 +2494,238 @@ namespace Orts.Viewer3D.RollingStock
                         }
                         break;
                     }
+                case CABViewControlTypes.ORTS_CC_SPEED_0:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(0);
+                            Locomotive.Speed0Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed0Pressed = false;
+
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_10:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(10);
+                            Locomotive.Speed10Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed10Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_20:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(20);
+                            Locomotive.Speed20Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed20Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_30:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(30);
+                            Locomotive.Speed30Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed30Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_40:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(40);
+                            Locomotive.Speed40Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed40Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_50:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(50);
+                            Locomotive.Speed50Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed50Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_60:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(60);
+                            Locomotive.Speed60Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed60Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_70:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(70);
+                            Locomotive.Speed70Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed70Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_80:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(80);
+                            Locomotive.Speed80Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed80Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_90:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(90);
+                            Locomotive.Speed90Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed90Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_100:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(100);
+                            Locomotive.Speed100Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed100Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_110:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(110);
+                            Locomotive.Speed110Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed110Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_120:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(120);
+                            Locomotive.Speed120Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed120Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_130:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(130);
+                            Locomotive.Speed130Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed130Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_140:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(140);
+                            Locomotive.Speed140Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed140Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_150:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(150);
+                            Locomotive.Speed150Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed150Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_160:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(160);
+                            Locomotive.Speed160Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed160Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_170:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(170);
+                            Locomotive.Speed170Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed170Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_180:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(180);
+                            Locomotive.Speed180Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed180Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_190:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(190);
+                            Locomotive.Speed190Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed190Pressed = false;
+                        break;
+                    }
+                case CABViewControlTypes.ORTS_CC_SPEED_200:
+                    {
+                        p = ChangedValue(0);
+                        if (p == 1)
+                        {
+                            Locomotive.CruiseControl.SetSpeed(200);
+                            Locomotive.Speed200Pressed = true;
+                        }
+                        else if (p == 0) Locomotive.Speed200Pressed = false;
+                        break;
+                    }
             }
 
         }
@@ -2488,7 +2739,7 @@ namespace Orts.Viewer3D.RollingStock
         {
             var index = 0;
 
-            if (percent > 1)
+            if (percent >= 1)
                 percent /= 100f;
 
             if (ControlDiscrete.MinValue != ControlDiscrete.MaxValue && !(ControlDiscrete.MinValue == 0 && ControlDiscrete.MaxValue == 0))
