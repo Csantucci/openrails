@@ -1399,6 +1399,12 @@ namespace Orts.Simulation.RollingStocks
                     }
                     else stf.SkipRestOfBlock();
                     break;
+                case "wagon(ortsfrontbrakemanviewpoints": 
+                    ParseBrakemanViewPoints(stf, rear : false);
+                    break;
+                case "wagon(ortsrearbrakemanviewpoints": 
+                    ParseBrakemanViewPoints(stf, rear : true);
+                    break;
                 default:
                     if (MSTSBrakeSystem != null)
                         MSTSBrakeSystem.Parse(lowercasetoken, stf);
@@ -1559,6 +1565,18 @@ namespace Orts.Simulation.RollingStocks
                 foreach (PassengerViewPoint cabViewPoint in copy.CabViewpoints)
                     CabViewpoints.Add(cabViewPoint);
             }
+            if (copy.FrontBrakemanViewpoints != null)
+            {
+                FrontBrakemanViewpoints = new List<PassengerViewPoint>();
+                foreach (PassengerViewPoint brakemanViewPoint in copy.FrontBrakemanViewpoints)
+                    FrontBrakemanViewpoints.Add(brakemanViewPoint);
+            }
+            if (copy.RearBrakemanViewpoints != null)
+            {
+                RearBrakemanViewpoints = new List<PassengerViewPoint>();
+                foreach (PassengerViewPoint brakemanViewPoint in copy.RearBrakemanViewpoints)
+                    RearBrakemanViewpoints.Add(brakemanViewPoint);
+            }
             IsAdvancedCoupler = copy.IsAdvancedCoupler;
             foreach (MSTSCoupling coupler in copy.Couplers)
                 Couplers.Add(coupler);
@@ -1651,6 +1669,40 @@ namespace Orts.Simulation.RollingStocks
                 new STFReader.TokenProcessor("ortsalternatepassengerviewpoint", ()=>{ ParseWagonInside(stf); }),
             });
         }
+
+        protected void ParseBrakemanViewPoint(STFReader stf, bool rear)
+        {
+            PassengerViewPoint brakemanViewPoint = new PassengerViewPoint();
+            stf.MustMatch("(");
+            stf.ParseBlock(new STFReader.TokenProcessor[] {
+                new STFReader.TokenProcessor("brakemanheadpos", ()=>{ brakemanViewPoint.Location = stf.ReadVector3Block(STFReader.UNITS.Distance, new Vector3()); }),
+                new STFReader.TokenProcessor("startdirection", ()=>{ brakemanViewPoint.StartDirection = stf.ReadVector3Block(STFReader.UNITS.None, new Vector3()); }),
+            });
+            // Set initial direction
+            brakemanViewPoint.RotationXRadians = MathHelper.ToRadians(brakemanViewPoint.StartDirection.X);
+            brakemanViewPoint.RotationYRadians = MathHelper.ToRadians(brakemanViewPoint.StartDirection.Y);
+            if (rear)
+            {
+                if (RearBrakemanViewpoints == null) RearBrakemanViewpoints = new List<PassengerViewPoint>();
+                RearBrakemanViewpoints.Add(brakemanViewPoint);
+            }
+            else
+            {
+                if (FrontBrakemanViewpoints == null) FrontBrakemanViewpoints = new List<PassengerViewPoint>();
+                FrontBrakemanViewpoints.Add(brakemanViewPoint);
+            }
+        }
+
+
+        // parses brakeman viewpoints, if any
+        protected void ParseBrakemanViewPoints(STFReader stf, bool rear)
+        {
+            stf.MustMatch("(");
+            stf.ParseBlock(new[] {
+                new STFReader.TokenProcessor("ortsbrakemanviewpoint", ()=>{ ParseBrakemanViewPoint(stf, rear); }),
+            });
+        }
+
 
         public static float ParseFloat(string token)
         {   // is there a better way to ignore any suffix?

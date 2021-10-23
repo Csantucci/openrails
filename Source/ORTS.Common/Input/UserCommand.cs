@@ -91,6 +91,7 @@
         [GetString("Camera SpecialTracksidePoint")] CameraSpecialTracksidePoint,
         [GetString("Camera Passenger")] CameraPassenger,
         [GetString("Camera Brakeman")] CameraBrakeman,
+        [GetString("Camera Change Brakeman Viewpoint")] CameraChangeBrakemanViewPoint,
         [GetString("Camera Free")] CameraFree,
         [GetString("Camera Previous Free")] CameraPreviousFree,
         [GetString("Camera Reset")] CameraReset,

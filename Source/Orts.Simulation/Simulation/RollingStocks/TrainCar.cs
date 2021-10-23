@@ -626,6 +626,8 @@ namespace Orts.Simulation.RollingStocks
         public List<PassengerViewPoint> PassengerViewpoints = new List<PassengerViewPoint>();
         public List<PassengerViewPoint> CabViewpoints; //three dimensional cab view point
         public List<ViewPoint> HeadOutViewpoints = new List<ViewPoint>();
+        public List<PassengerViewPoint> FrontBrakemanViewpoints;
+        public List<PassengerViewPoint> RearBrakemanViewpoints;
 
         // Used by Curve Speed Method
         protected float TrackGaugeM = 1.435f;  // Track gauge - read in MSTSWagon

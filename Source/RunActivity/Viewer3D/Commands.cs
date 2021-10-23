@@ -925,6 +925,21 @@ namespace Orts.Viewer3D
     }
 
     [Serializable()]
+    public sealed class CameraChangeBrakemanViewPointCommand : UseCameraCommand
+    {
+
+        public CameraChangeBrakemanViewPointCommand(CommandLog log)
+            : base(log)
+        {
+            Redo();
+        }
+
+        public override void Redo()
+        {
+            Receiver.BrakemanCamera.ChangeBrakemanViewPoint(Receiver.Camera.AttachedCar);
+        }
+    }
+    [Serializable()]
     public sealed class ToggleBrowseBackwardsCommand : UseCameraCommand
     {
 

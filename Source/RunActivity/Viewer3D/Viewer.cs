@@ -127,6 +127,8 @@ namespace Orts.Viewer3D
         public SpecialTracksideCamera SpecialTracksideCamera { get; private set; } // Camera 4 for special points (platforms and level crossings)
         public PassengerCamera PassengerCamera { get; private set; } // Camera 5
         public BrakemanCamera BrakemanCamera { get; private set; } // Camera 6
+        public BrakemanCamera FrontBrakemanCamera { get; private set; } // Camera 6
+        public BrakemanCamera RearBrakemanCamera { get; private set; } // Camera 6
         public List<FreeRoamCamera> FreeRoamCameraList = new List<FreeRoamCamera>();
         public FreeRoamCamera FreeRoamCamera { get { return FreeRoamCameraList[0]; } } // Camera 8
 

@@ -1514,8 +1514,21 @@ namespace Orts.Viewer3D
     public class BrakemanCamera : NonTrackingCamera
     {
         protected bool attachedToRear;
+        protected Vector3 viewPointLocation;
+        protected float viewPointRotationXRadians = 0;
+        protected float viewPointRotationYRadians = 0;
+        protected Vector3 StartViewPointLocation;
+        protected float StartViewPointRotationXRadians = 0;
+        protected float StartViewPointRotationYRadians = 0;
+        protected int ActFrontViewPoint = 0;
+        protected int prevFrontViewPoint = -1;
+        protected int ActRearViewPoint = 0;
+        protected int prevRearViewPoint = -1;
+        protected string prevcar = "";
+        protected bool UsingRearCustomizedViewPoint;
+        public enum HeadDirection { Forward, Backward }
 
-        public override float NearPlane { get { return 0.25f; } }
+        public override float NearPlane { get { return 0.1f; } }
         public override string Name { get { return Viewer.Catalog.GetString("Brakeman"); } }
 
         public BrakemanCamera(Viewer viewer)
@@ -1532,13 +1545,117 @@ namespace Orts.Viewer3D
         protected override void SetCameraCar(TrainCar car)
         {
             base.SetCameraCar(car);
-            attachedLocation = new Vector3(1.8f, 2.0f, attachedCar.CarLengthM / 2 - 0.3f);
             attachedToRear = car.Train.Cars[0] != car;
+            if (TakeRearCustomizedViewPoint() && car.RearBrakemanViewpoints != null && car.RearBrakemanViewpoints.Count > 0)
+            {
+                UsingRearCustomizedViewPoint = true;
+                if (car.CarID != prevcar)
+                {
+                    ActRearViewPoint = 0;
+                    ResetRearViewPoint(car);
+                }
+                else if (ActRearViewPoint != prevRearViewPoint)
+                {
+                    ResetRearViewPoint(car);
+                }
+            }
+            else if (!TakeRearCustomizedViewPoint() && car.FrontBrakemanViewpoints != null && car.FrontBrakemanViewpoints.Count > 0)
+            {
+                UsingRearCustomizedViewPoint = false;
+                if (car.CarID != prevcar)
+                {
+                    ActFrontViewPoint = 0;
+                    ResetFrontViewPoint(car);
+                }
+                else if (ActFrontViewPoint != prevFrontViewPoint)
+                {
+                    ResetFrontViewPoint(car);
+                }
+            }
+            else
+            {
+                UsingRearCustomizedViewPoint = false;
+                attachedLocation = new Vector3(1.8f, 2.0f, attachedCar.CarLengthM / 2 - 0.3f);
+            }
         }
 
         protected override bool IsCameraFlipped()
         {
+            return (attachedToRear ^ attachedCar.Flipped) && !UsingRearCustomizedViewPoint;
+        }
+
+        protected bool TakeRearCustomizedViewPoint()
+        {
             return attachedToRear ^ attachedCar.Flipped;
+        }
+
+        protected internal override void Save(BinaryWriter outf)
+        {
+            base.Save(outf);
+            outf.Write(ActRearViewPoint);
+            outf.Write(prevRearViewPoint);
+            outf.Write(prevcar);
+            outf.Write(StartViewPointLocation.X);
+            outf.Write(StartViewPointLocation.Y);
+            outf.Write(StartViewPointLocation.Z);
+            outf.Write(StartViewPointRotationXRadians);
+            outf.Write(StartViewPointRotationYRadians);
+            outf.Write(ActFrontViewPoint);
+            outf.Write(prevFrontViewPoint);
+            outf.Write(UsingRearCustomizedViewPoint);
+            outf.Write(attachedToRear);
+            outf.Write(viewPointRotationXRadians);
+            outf.Write(viewPointRotationYRadians);
+        }
+
+        protected internal override void Restore(BinaryReader inf)
+        {
+            base.Restore(inf);
+            ActRearViewPoint = inf.ReadInt32();
+            prevRearViewPoint = inf.ReadInt32();
+            prevcar = inf.ReadString();
+            StartViewPointLocation.X = inf.ReadSingle();
+            StartViewPointLocation.Y = inf.ReadSingle();
+            StartViewPointLocation.Z = inf.ReadSingle();
+            StartViewPointRotationXRadians = inf.ReadSingle();
+            StartViewPointRotationYRadians = inf.ReadSingle();
+            ActFrontViewPoint = inf.ReadInt32();
+            prevFrontViewPoint = inf.ReadInt32();
+            UsingRearCustomizedViewPoint = inf.ReadBoolean();
+            attachedToRear = inf.ReadBoolean();
+            viewPointRotationXRadians = inf.ReadSingle();
+            viewPointRotationYRadians = inf.ReadSingle();
+        }
+
+
+        protected void ResetRearViewPoint(TrainCar car)
+        {
+            prevcar = car.CarID;
+            prevRearViewPoint = ActRearViewPoint;
+            viewPointLocation = attachedCar.RearBrakemanViewpoints[ActRearViewPoint].Location;
+            viewPointRotationXRadians = attachedCar.RearBrakemanViewpoints[ActRearViewPoint].RotationXRadians;
+            viewPointRotationYRadians = attachedCar.RearBrakemanViewpoints[ActRearViewPoint].RotationYRadians;
+            RotationXRadians = viewPointRotationXRadians;
+            RotationYRadians = viewPointRotationYRadians;
+            attachedLocation = viewPointLocation;
+            StartViewPointLocation = viewPointLocation;
+            StartViewPointRotationXRadians = viewPointRotationXRadians;
+            StartViewPointRotationYRadians = viewPointRotationYRadians;
+        }
+
+        protected void ResetFrontViewPoint(TrainCar car)
+        {
+            prevcar = car.CarID;
+            prevFrontViewPoint = ActFrontViewPoint;
+            viewPointLocation = attachedCar.FrontBrakemanViewpoints[ActFrontViewPoint].Location;
+            viewPointRotationXRadians = attachedCar.FrontBrakemanViewpoints[ActFrontViewPoint].RotationXRadians;
+            viewPointRotationYRadians = attachedCar.FrontBrakemanViewpoints[ActFrontViewPoint].RotationYRadians;
+            RotationXRadians = viewPointRotationXRadians;
+            RotationYRadians = viewPointRotationYRadians;
+            attachedLocation = viewPointLocation;
+            StartViewPointLocation = viewPointLocation;
+            StartViewPointRotationXRadians = viewPointRotationXRadians;
+            StartViewPointRotationYRadians = viewPointRotationYRadians;
         }
 
         // attached car may be no more part of the list, therefore base methods would return errors
@@ -1556,6 +1673,31 @@ namespace Orts.Viewer3D
         {
             base.LastCar();
             attachedToRear = true;
+        }
+
+        public override void HandleUserInput(ElapsedTime elapsedTime)
+        {
+            base.HandleUserInput(elapsedTime);
+            if (UserInput.IsPressed(UserCommand.CameraChangeBrakemanViewPoint))
+                new CameraChangeBrakemanViewPointCommand(Viewer.Log);
+        }
+
+
+        public void ChangeBrakemanViewPoint(TrainCar car)
+        {
+            attachedToRear = car.Train.Cars[0] != car;
+            if (TakeRearCustomizedViewPoint() && car.RearBrakemanViewpoints != null && car.RearBrakemanViewpoints.Count > 0)
+            {
+                ActRearViewPoint++;
+                if (ActRearViewPoint >= car.RearBrakemanViewpoints.Count) ActRearViewPoint = 0;
+                SetCameraCar(car);
+            }
+            else if (!TakeRearCustomizedViewPoint() && car.FrontBrakemanViewpoints != null && car.FrontBrakemanViewpoints.Count > 0)
+            {
+                ActFrontViewPoint++;
+                if (ActFrontViewPoint >= car.FrontBrakemanViewpoints.Count) ActFrontViewPoint = 0;
+                SetCameraCar(car);
+            }
         }
 
     }
