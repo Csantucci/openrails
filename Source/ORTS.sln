@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31729.503
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RunActivity", "RunActivity\RunActivity.csproj", "{9BE44F64-417D-4AA6-AF4D-2A6A0CBC814D}"
 EndProject
@@ -56,6 +56,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orts.ExternalDevices", "Orts.ExternalDevices\Orts.ExternalDevices.csproj", "{0DA86C52-FFB5-4CD6-A2C0-08F1610E6399}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Launcher64", "Launcher64\Launcher64.csproj", "{B558F620-3BF7-4371-B7A1-9EE8D828DE21}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Discord", "Discord\Discord.csproj", "{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -281,6 +283,14 @@ Global
 		{B558F620-3BF7-4371-B7A1-9EE8D828DE21}.Release|Any CPU.Build.0 = Release|x64
 		{B558F620-3BF7-4371-B7A1-9EE8D828DE21}.Release|x64.ActiveCfg = Release|x64
 		{B558F620-3BF7-4371-B7A1-9EE8D828DE21}.Release|x64.Build.0 = Release|x64
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Debug|x64.Build.0 = Debug|Any CPU
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Release|x64.ActiveCfg = Release|Any CPU
+		{1BEF94C6-3E4A-4E00-A148-216CDF6C464F}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

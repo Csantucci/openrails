@@ -177,6 +177,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Discord\Discord.csproj">
+      <Project>{1bef94c6-3e4a-4e00-a148-216cdf6c464f}</Project>
+      <Name>Discord</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Orts.ExternalDevices\Orts.ExternalDevices.csproj">
       <Project>{0da86c52-ffb5-4cd6-a2c0-08f1610e6399}</Project>
       <Name>Orts.ExternalDevices</Name>

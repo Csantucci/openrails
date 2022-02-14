@@ -34,6 +34,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 using Path = ORTS.Menu.Path;
+using Discord;
 
 namespace ORTS
 {
@@ -112,6 +113,8 @@ namespace ORTS
         public UserAction SelectedAction { get; set; }
 
         GettextResourceManager catalog = new GettextResourceManager("Menu");
+
+        OrDiscord orDiscord = new OrDiscord();
 
         #region Main Form
         public MainForm()
@@ -260,6 +263,7 @@ namespace ORTS
                 LoadFolderList();
                 Initialized = true;
             }
+            orDiscord.UpdateStatus(false);
         }
 
         private void LoadDocuments(List<ToolStripItem> docs, string folderPath, string code = null)
@@ -603,6 +607,7 @@ namespace ORTS
                 if (SelectedTimetableTrain != null)
                     DialogResult = DialogResult.OK;
             }
+            orDiscord.UpdateStatus(true, comboBoxStartAt.Text, comboBoxHeadTo.Text);
         }
 
         void buttonResume_Click(object sender, EventArgs e)
