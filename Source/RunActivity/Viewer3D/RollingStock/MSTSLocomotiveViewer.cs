@@ -29,6 +29,7 @@ using Orts.Formats.Msts;
 using Orts.Simulation;
 using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
+using Orts.Simulation.RollingStocks.SubSystems;
 using Orts.Simulation.RollingStocks.SubSystems.Controllers;
 using Orts.Viewer3D.Common;
 using Orts.Viewer3D.Popups;
@@ -181,6 +182,7 @@ namespace Orts.Viewer3D.RollingStock
             UserInputCommands.Add(UserCommand.ControlHeadlightDecrease, new Action[] { Noop, () => new HeadlightCommand(Viewer.Log, false) });
             UserInputCommands.Add(UserCommand.ControlLight, new Action[] { Noop, () => new ToggleCabLightCommand(Viewer.Log) });
             UserInputCommands.Add(UserCommand.ControlRefill, new Action[] { () => StopRefillingOrUnloading(Viewer.Log), () => AttemptToRefillOrUnload() });
+            UserInputCommands.Add(UserCommand.ControlDiscreteUnload, new Action[] { () => StopRefillingOrUnloading(Viewer.Log, true), () => AttemptToRefillOrUnload(true) });
             UserInputCommands.Add(UserCommand.ControlImmediateRefill, new Action[] { () => StopImmediateRefilling(Viewer.Log), () => ImmediateRefill() });
             UserInputCommands.Add(UserCommand.ControlWaterScoop, new Action[] { Noop, () => new ToggleWaterScoopCommand(Viewer.Log) });
             UserInputCommands.Add(UserCommand.ControlOdoMeterShowHide, new Action[] { Noop, () => new ToggleOdometerCommand(Viewer.Log) });
@@ -423,7 +425,8 @@ namespace Orts.Viewer3D.RollingStock
             {(uint)MSTSWagon.PickupType.FreightLivestock, Viewer.Catalog.GetString("freight-livestock")},
             {(uint)MSTSWagon.PickupType.FreightFuel, Viewer.Catalog.GetString("freight-fuel")},
             {(uint)MSTSWagon.PickupType.FreightMilk, Viewer.Catalog.GetString("freight-milk")},
-            {(uint)MSTSWagon.PickupType.SpecialMail, Viewer.Catalog.GetString("mail")}
+            {(uint)MSTSWagon.PickupType.SpecialMail, Viewer.Catalog.GetString("mail")},
+            {(uint)MSTSWagon.PickupType.Container, Viewer.Catalog.GetString("container")}
         };
 
         /// <summary>
@@ -562,7 +565,7 @@ namespace Orts.Viewer3D.RollingStock
         /// Prompts if cannot refill yet, else starts continuous refilling.
         /// Tries to find the nearest supply (pickup point) which can refill the locos and tenders in the train.  
         /// </summary>
-        public void AttemptToRefillOrUnload()
+        public void AttemptToRefillOrUnload(bool onlyUnload = false)
         {
             MatchedWagonAndPickup = null;   // Ensures that releasing the T key doesn't do anything unless there is something to do.
 
@@ -634,28 +637,55 @@ namespace Orts.Viewer3D.RollingStock
                     MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
                 }
             }
-            else if (match.Wagon.FreightAnimations != null)
+            else if (match.Wagon.FreightAnimations?.Animations != null)
             {
-                // freight wagon animation
-                var fraction = match.Wagon.GetFilledFraction(match.Pickup.PickupType);
-                if (fraction > 0.99 && match.Pickup.PickupCapacity.FeedRateKGpS >= 0)
+                if (match.Wagon.FreightAnimations?.Animations[0] is FreightAnimationContinuous)
                 {
-                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: {0} supply now replenished.",
-                        PickupTypeDictionary[match.Pickup.PickupType]));
-                    return;
+                    // freight wagon animation
+                    var fraction = match.Wagon.GetFilledFraction(match.Pickup.PickupType);
+                    if (fraction > 0.99 && match.Pickup.PickupCapacity.FeedRateKGpS >= 0)
+                    {
+                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: {0} supply now replenished.",
+                            PickupTypeDictionary[match.Pickup.PickupType]));
+                        return;
+                    }
+                    else if (fraction < 0.01 && match.Pickup.PickupCapacity.FeedRateKGpS < 0)
+                    {
+                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Unload: {0} fuel or freight now unloaded.",
+                            PickupTypeDictionary[match.Pickup.PickupType]));
+                        return;
+                    }
+                    else
+                    {
+                        MSTSWagon.RefillProcess.OkToRefill = true;
+                        MSTSWagon.RefillProcess.Unload = match.Pickup.PickupCapacity.FeedRateKGpS < 0;
+                        match.Wagon.StartRefillingOrUnloading(match.Pickup, match.IntakePoint, fraction, MSTSWagon.RefillProcess.Unload);
+                        MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
+                    }
                 }
-                else if (fraction < 0.01 && match.Pickup.PickupCapacity.FeedRateKGpS < 0)
+                else if (match.Wagon.FreightAnimations?.Animations[0] is FreightAnimationDiscrete)
                 {
-                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Unload: {0} fuel or freight now unloaded.",
-                        PickupTypeDictionary[match.Pickup.PickupType]));
-                    return;
-                }
-                else
-                {
-                    MSTSWagon.RefillProcess.OkToRefill = true;
-                    MSTSWagon.RefillProcess.Unload = match.Pickup.PickupCapacity.FeedRateKGpS < 0;
-                    match.Wagon.StartRefillingOrUnloading(match.Pickup, match.IntakePoint, fraction, MSTSWagon.RefillProcess.Unload);
-                    MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
+                    var load = match.Wagon.FreightAnimations?.Animations[0] as FreightAnimationDiscrete;
+                    // discrete freight wagon animation
+                    if (load != null && load.Loaded && !onlyUnload)
+                    {
+                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now loaded.",
+                            PickupTypeDictionary[match.Pickup.PickupType]));
+                        return;
+                    }
+                    else if ((load == null || !load.Loaded) && onlyUnload)
+                    {
+                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now unloaded.",
+                            PickupTypeDictionary[match.Pickup.PickupType]));
+                        return;
+                    }
+                    else
+                    {
+                        MSTSWagon.RefillProcess.OkToRefill = true;
+                        MSTSWagon.RefillProcess.Unload = onlyUnload;
+                        match.Wagon.StartLoadingOrUnloading(match.Pickup, match.IntakePoint, MSTSWagon.RefillProcess.Unload);
+                        MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
+                    }
                 }
             }
         }
@@ -728,13 +758,20 @@ namespace Orts.Viewer3D.RollingStock
         /// <summary>
         /// Ends a continuous increase in controlled value.
         /// </summary>
-        public void StopRefillingOrUnloading(CommandLog log)
+        public void StopRefillingOrUnloading(CommandLog log, bool onlyUnload = true)
         {
             if (MatchedWagonAndPickup == null)
+                return;
+            if (MatchedWagonAndPickup.Pickup.PickupType == (uint)MSTSWagon.PickupType.Container)
                 return;
             MSTSWagon.RefillProcess.OkToRefill = false;
             MSTSWagon.RefillProcess.ActivePickupObjectUID = 0;
             var match = MatchedWagonAndPickup;
+            if (MatchedWagonAndPickup.Pickup.PickupType == (uint)MSTSWagon.PickupType.Container)
+            {
+                match.Wagon.UnloadingPartsOpen = false;
+                return;
+            }
             var controller = new MSTSNotchController();
             if (match.Wagon is MSTSElectricLocomotive || match.Wagon is MSTSDieselLocomotive || match.Wagon is MSTSSteamLocomotive || (match.Wagon.WagonType == TrainCar.WagonTypes.Tender && match.SteamLocomotiveWithTender != null))
             {

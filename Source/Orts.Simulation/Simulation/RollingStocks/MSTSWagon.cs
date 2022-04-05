@@ -318,7 +318,8 @@ namespace Orts.Simulation.RollingStocks
             FreightLivestock = 11,  // New to OR
             FreightFuel = 12,  // New to OR
             FreightMilk = 13,   // New to OR
-            SpecialMail = 14  // New to OR
+            SpecialMail = 14,  // New to OR
+            Container = 15  // New to OR
         }
 
         public class RefillProcess
@@ -1993,7 +1994,13 @@ namespace Orts.Simulation.RollingStocks
                 {
                     WaitForAnimationReady = false;
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting unload"));
-                    WeightLoadController.StartDecrease(WeightLoadController.MinimumValue);
+                    if (FreightAnimations.LoadedOne is FreightAnimationContinuous)
+                        WeightLoadController.StartDecrease(WeightLoadController.MinimumValue);
+//                    else if (FreightAnimations.DiscreteLoadedOne is FreightAnimationDiscrete)
+//                    {
+//                       FreightAnimations.DiscreteLoadedOne.Loaded = false;
+//                        FreightAnimations.DiscreteLoadedOne = null;
+//                    }
                 }
             }
         }
@@ -4058,7 +4065,10 @@ namespace Orts.Simulation.RollingStocks
             if (FreightAnimations.LoadedOne == null)
             {
                 FreightAnimations.FreightType = (MSTSWagon.PickupType)type;
-                FreightAnimations.LoadedOne = intakePoint.LinkedFreightAnim;
+                if (intakePoint.LinkedFreightAnim is FreightAnimationContinuous)
+                    FreightAnimations.LoadedOne = (FreightAnimationContinuous)intakePoint.LinkedFreightAnim;
+                else
+                    FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
             }
             if (!unload)
             {
@@ -4077,6 +4087,67 @@ namespace Orts.Simulation.RollingStocks
 
         }
 
+
+        /// <summary>
+        /// Starts loading or unloading of a discrete load.
+        /// </summary>
+        /// <param name="type">Pickup point</param>
+        public void StartLoadingOrUnloading(PickupObj matchPickup, IntakePoint intakePoint, bool unload)
+        {
+            var type = matchPickup.PickupType;
+            var controller = WeightLoadController;
+            if (controller == null)
+            {
+                Simulator.Confirmer.Message(ConfirmLevel.Error, Simulator.Catalog.GetString("Incompatible data"));
+                return;
+            }
+            controller.CommandStartTime = Simulator.ClockTime;  // for Replay to use 
+
+            if (FreightAnimations.DiscreteLoadedOne == null)
+            {
+                FreightAnimations.FreightType = (MSTSWagon.PickupType)type;
+                FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
+            }
+            if (!unload)
+            {
+                var containerStation = Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == matchPickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
+                if (containerStation.Containers.Count == 0)
+                {
+                    Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("No containers to load"));
+                    return;
+                }  
+                if (containerStation.Status != ContainerHandlingItem.ContainerStationStatus.Idle)
+                {
+                    Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Container station busy with preceding mission"));
+                    return;
+                }
+                var container = containerStation.Containers.Last();
+                Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting load"));
+                // immediate load at the moment
+                FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
+                FreightAnimations.DiscreteLoadedOne.ShapeFileName = container.ShapeFileName;
+                containerStation.PrepareForLoad(FreightAnimations.DiscreteLoadedOne);
+ //               FreightAnimations.DiscreteLoadedOne.Loaded = true;
+            }
+            else
+            {
+                var containerStation = Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == matchPickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
+                if (containerStation.Containers.Count >= containerStation.MaxStackedContainers * containerStation.StackXNALocationsCount)
+                {
+                    Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Container station full, can't unload"));
+                    return;
+                }
+                WaitForAnimationReady = true;
+                UnloadingPartsOpen = true;
+                if (FreightAnimations.UnloadingStartDelay > 0)
+                    Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Preparing for unload"));
+                // immediate unload at the moment
+                // switch from freightanimation to container
+                containerStation.PrepareForUnload(FreightAnimations.DiscreteLoadedOne);
+            }
+
+        }
+
     }
 
 
@@ -4090,9 +4161,9 @@ namespace Orts.Simulation.RollingStocks
     {
         public float OffsetM = 0f;   // distance forward? from the centre of the vehicle as defined by LengthM/2.
         public float WidthM = 10f;   // of the filling point. Is the maximum positioning error allowed equal to this or half this value? 
-        public MSTSWagon.PickupType Type;          // 'freightgrain', 'freightcoal', 'freightgravel', 'freightsand', 'fuelcoal', 'fuelwater', 'fueldiesel', 'fuelwood', freightgeneral, freightlivestock, specialmail
+        public MSTSWagon.PickupType Type;          // 'freightgrain', 'freightcoal', 'freightgravel', 'freightsand', 'fuelcoal', 'fuelwater', 'fueldiesel', 'fuelwood', freightgeneral, freightlivestock, specialmail, container
         public float? DistanceFromFrontOfTrainM;
-        public FreightAnimationContinuous LinkedFreightAnim = null;
+        public FreightAnimation LinkedFreightAnim = null;
 
         public IntakePoint()
         {

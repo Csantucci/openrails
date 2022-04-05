@@ -138,6 +138,7 @@ namespace Orts.Simulation
         public float InitialTileZ;
         public HazzardManager HazzardManager;
         public FuelManager FuelManager;
+        public ContainerManager ContainerManager;
         public bool InControl = true;//For multiplayer, a player may not control his/her own train (as helper)
         public TurntableFile TurntableFile;
         public List<MovingTable> MovingTables = new List<MovingTable>();
@@ -370,6 +371,7 @@ namespace Orts.Simulation
             Confirmer = new Confirmer(this, 1.5);
             HazzardManager = new HazzardManager(this);
             FuelManager = new FuelManager(this);
+            ContainerManager = new ContainerManager(this);
             ScriptManager = new ScriptManager();
             Log = new CommandLog(this);
         }
@@ -440,6 +442,7 @@ namespace Orts.Simulation
 
         public void Start(CancellationToken cancellation)
         {
+            ContainerManager = new ContainerManager(this);
             Signals = new Signals(this, SIGCFG, cancellation);
             TurntableFile = new TurntableFile(RoutePath + @"\openrails\turntables.dat", RoutePath + @"\shapes\", MovingTables, this);
             LevelCrossings = new LevelCrossings(this);
@@ -481,6 +484,7 @@ namespace Orts.Simulation
             TurntableFile = new TurntableFile(RoutePath + @"\openrails\turntables.dat", RoutePath + @"\shapes\", MovingTables, this);
             LevelCrossings = new LevelCrossings(this);
             FuelManager = new FuelManager(this);
+            ContainerManager = new ContainerManager(this);
             Trains = new TrainList(this);
             PoolHolder = new Poolholder(this, arguments, cancellation);
             PathName = String.Copy(arguments[1]);
@@ -773,6 +777,8 @@ namespace Orts.Simulation
             }
 
             if (HazzardManager != null) HazzardManager.Update(elapsedClockSeconds);
+
+            if (ContainerManager != null) ContainerManager.Update();
         }
 
         internal void SetWeather(WeatherType weather, SeasonType season)

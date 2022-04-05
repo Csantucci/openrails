@@ -62,13 +62,13 @@ namespace Orts.Formats.Msts
             }
         }
 
-        public void InsertORSpecificData (string filename)
+        public void InsertORSpecificData (string filename, List<TokenID> allowedTokens)
         {
             using (var sbr = SBR.Open(filename))
             {
                 using (var block = sbr.ReadSubBlock())
                 {
-                    Tr_Worldfile.InsertORSpecificData(block, filename);
+                    Tr_Worldfile.InsertORSpecificData(block, filename, allowedTokens);
                 }
                 // some w files have additional comments at the end 
                 //       eg _Skip ( "TS DB-Utility - Version: 3.4.05(13.10.2009), Filetype='World', Copyright (C) 2003-2009 by ...CarlosHR..." )
@@ -178,7 +178,7 @@ namespace Orts.Formats.Msts
             }
         }
 
-        public void InsertORSpecificData (SBR block, string filename)
+        public void InsertORSpecificData (SBR block, string filename, List<TokenID> allowedTokens)
         {
             block.VerifyID(TokenID.Tr_Worldfile);
             while (!block.EndOfBlock())
@@ -187,11 +187,13 @@ namespace Orts.Formats.Msts
                 {
                     try
                     {
-                        WorldObject origObject;
-                        bool wrongBlock = false;
-                        if (!subBlock.EndOfBlock())
+                        if (allowedTokens == null || allowedTokens.Contains(subBlock.ID))
                         {
-                            var subSubBlockUID = subBlock.ReadSubBlock();
+                            WorldObject origObject;
+                            bool wrongBlock = false;
+                            if (!subBlock.EndOfBlock())
+                            {
+                                var subSubBlockUID = subBlock.ReadSubBlock();
                                 // check if a block with this UiD already present
                                 if (subSubBlockUID.ID == TokenID.UiD)
                                 {
@@ -228,8 +230,11 @@ namespace Orts.Formats.Msts
                                     }
                                 }
  
+                            }
+                            subBlock.EndOfBlock();
                         }
-                        subBlock.EndOfBlock();
+                        else
+                            subBlock.Skip();
                     }
 
                     catch (Exception error)
@@ -309,6 +314,10 @@ namespace Orts.Formats.Msts
         public PickupCapacityItem PickupCapacity;
         public List<TrItemId> TrItemIDList = new List<TrItemId>();
         public uint CollideFlags;
+        public int MaxStackedContainers;
+        public StackXNALocationItems StackXNALocations;
+        public float PickingSurfaceYOffset;
+        public Vector3 PickingSurfaceRelativeTopStartPosition;
 
         public WorldLocation Location;
 
@@ -332,6 +341,10 @@ namespace Orts.Formats.Msts
                 case TokenID.PickupType: PickupType = subBlock.ReadUInt();
                     subBlock.Skip(); // Discard the 2nd value (0 or 1 but significance is not known)
                     break;
+                case TokenID.ORTSMaxStackedContainers: MaxStackedContainers = subBlock.ReadInt(); break;
+                case TokenID.ORTSStackXNALocations: StackXNALocations = new StackXNALocationItems(subBlock); break;
+                case TokenID.ORTSPickingSurfaceYOffset: PickingSurfaceYOffset = subBlock.ReadFloat(); break;
+                case TokenID.ORTSPickingSurfaceRelativeTopStartPosition: PickingSurfaceRelativeTopStartPosition = subBlock.ReadVector3(); break;
                 case TokenID.PickupAnimData: PickupAnimData = new PickupAnimDataItem(subBlock); break;
                 case TokenID.PickupCapacity: PickupCapacity = new PickupCapacityItem(subBlock); break;
                 case TokenID.TrItemId: TrItemIDList.Add(new TrItemId(subBlock)); break;
@@ -398,6 +411,43 @@ namespace Orts.Formats.Msts
                 block.VerifyID(TokenID.PickupCapacity);
                 QuantityAvailableKG = Kg.FromLb(block.ReadFloat());
                 FeedRateKGpS = Kg.FromLb(block.ReadFloat());
+                block.VerifyEndOfBlock();
+            }
+        }
+
+        public class StackXNALocationItems
+        {
+            public readonly StackXNALocation[] Locations;
+
+            public StackXNALocationItems(SBR block)
+            {
+                var locations = new List<StackXNALocation>();
+                block.VerifyID(TokenID.ORTSStackXNALocations);
+                var count = block.ReadUInt();
+                for (var i = 0; i < count; i++)
+                {
+                    using (var subBlock = block.ReadSubBlock())
+                    {
+                       locations.Add(new StackXNALocation(subBlock));
+                    }
+                }
+                block.VerifyEndOfBlock();
+                Locations = locations.ToArray();
+            }
+        }
+
+        public class StackXNALocation
+        {
+            public float X;
+            public float Y;
+            public float Z;
+
+            public StackXNALocation(SBR block)
+            {
+                block.VerifyID(TokenID.StackXNALocation);
+                X = block.ReadFloat();
+                Y = block.ReadFloat();
+                Z = block.ReadFloat();
                 block.VerifyEndOfBlock();
             }
         }
