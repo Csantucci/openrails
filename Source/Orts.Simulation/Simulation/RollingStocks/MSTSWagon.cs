@@ -1840,7 +1840,7 @@ namespace Orts.Simulation.RollingStocks
                 if (TendersSteamLocomotive != null)
                 {
                     if (TendersSteamLocomotive.IsTenderRequired == 1)
-                    {                        
+                    {
                         // Combined total water found by taking the current combined water (which may have extra water added via the auxiliary tender), and subtracting the 
                         // amount of water defined in the ENG file, and adding the water defined in the WAG file.
                         float TempMaxCombinedWater = TendersSteamLocomotive.MaxTotalCombinedWaterVolumeUKG;
@@ -1941,7 +1941,7 @@ namespace Orts.Simulation.RollingStocks
             }
 
             Pantographs.Update(elapsedClockSeconds);
-            
+
             MSTSBrakeSystem.Update(elapsedClockSeconds);
 
             // Updates freight load animations when defined in WAG file - Locomotive and Tender load animation are done independently in UpdateTenderLoad() & UpdateLocomotiveLoadPhysics()
@@ -1957,13 +1957,13 @@ namespace Orts.Simulation.RollingStocks
                         if (WeightLoadController.UpdateValue != 0.0)
                             Simulator.Confirmer.UpdateWithPerCent(CabControl.FreightLoad,
                                 CabSetting.Increase, WeightLoadController.CurrentValue * 100);
-                    // Update wagon parameters sensitive to wagon mass change
-                    // Calculate the difference ratio, ie how full the wagon is. This value allows the relevant value to be scaled from the empty mass to the full mass of the wagon
+                        // Update wagon parameters sensitive to wagon mass change
+                        // Calculate the difference ratio, ie how full the wagon is. This value allows the relevant value to be scaled from the empty mass to the full mass of the wagon
                         TempMassDiffRatio = WeightLoadController.CurrentValue;
-                   // Update brake parameters
+                        // Update brake parameters
                         MaxBrakeForceN = ((LoadFullMaxBrakeForceN - LoadEmptyMaxBrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxBrakeForceN;
                         MaxHandbrakeForceN = ((LoadFullMaxHandbrakeForceN - LoadEmptyMaxHandbrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxHandbrakeForceN;
-                  // Update friction related parameters
+                        // Update friction related parameters
                         DavisAN = ((LoadFullORTSDavis_A - LoadEmptyORTSDavis_A) * TempMassDiffRatio) + LoadEmptyORTSDavis_A;
                         DavisBNSpM = ((LoadFullORTSDavis_B - LoadEmptyORTSDavis_B) * TempMassDiffRatio) + LoadEmptyORTSDavis_B;
                         DavisCNSSpMM = ((LoadFullORTSDavis_C - LoadEmptyORTSDavis_C) * TempMassDiffRatio) + LoadEmptyORTSDavis_C;
@@ -1996,11 +1996,29 @@ namespace Orts.Simulation.RollingStocks
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting unload"));
                     if (FreightAnimations.LoadedOne is FreightAnimationContinuous)
                         WeightLoadController.StartDecrease(WeightLoadController.MinimumValue);
-//                    else if (FreightAnimations.DiscreteLoadedOne is FreightAnimationDiscrete)
-//                    {
-//                       FreightAnimations.DiscreteLoadedOne.Loaded = false;
-//                        FreightAnimations.DiscreteLoadedOne = null;
-//                    }
+                    //                    else if (FreightAnimations.DiscreteLoadedOne is FreightAnimationDiscrete)
+                    //                    {
+                    //                       FreightAnimations.DiscreteLoadedOne.Loaded = false;
+                    //                        FreightAnimations.DiscreteLoadedOne = null;
+                    //                    }
+                }
+            }
+            // update position of container in discrete freight animations
+            if (FreightAnimations?.Animations != null)
+            {
+                foreach (var freightAnim in FreightAnimations.Animations)
+                {
+                    if (freightAnim is FreightAnimationDiscrete)
+                    {
+                        var discreteFreightAnim = freightAnim as FreightAnimationDiscrete;
+                        if (discreteFreightAnim.Loaded && discreteFreightAnim.Container != null)
+                        {
+                            var container = discreteFreightAnim.Container;
+                            container.WorldPosition.XNAMatrix = WorldPosition.XNAMatrix;
+                            container.WorldPosition.TileX = WorldPosition.TileX;
+                            container.WorldPosition.TileZ = WorldPosition.TileZ;
+                        }
+                    }
                 }
             }
         }
@@ -4125,7 +4143,7 @@ namespace Orts.Simulation.RollingStocks
                 Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting load"));
                 // immediate load at the moment
                 FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
-                FreightAnimations.DiscreteLoadedOne.ShapeFileName = container.ShapeFileName;
+                FreightAnimations.DiscreteLoadedOne.Container = container;
                 containerStation.PrepareForLoad(FreightAnimations.DiscreteLoadedOne);
  //               FreightAnimations.DiscreteLoadedOne.Loaded = true;
             }

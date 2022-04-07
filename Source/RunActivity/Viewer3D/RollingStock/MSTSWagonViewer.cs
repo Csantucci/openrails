@@ -908,18 +908,9 @@ namespace Orts.Viewer3D.RollingStock
                                 freightAnim.FreightShape.XNAMatrices[0].M43 = staticFreightAnim.ZOffset;
                             }
 
-                            if (freightAnim.Animation is FreightAnimationDiscrete)
-                            {
-                                var discreteFreightAnim = freightAnim.Animation as FreightAnimationDiscrete;
-                                freightAnim.FreightShape.XNAMatrices[0].M41 = discreteFreightAnim.XOffset;
-                                freightAnim.FreightShape.XNAMatrices[0].M42 = discreteFreightAnim.YOffset;
-                                freightAnim.FreightShape.XNAMatrices[0].M43 = discreteFreightAnim.ZOffset;
-                            }
-
                         }
-                        if (!(freightAnim.Animation is FreightAnimationDiscrete && !((FreightAnimationDiscrete)freightAnim.Animation).Loaded))
-                            // Forcing rotation of freight shape
-                            freightAnim.FreightShape.PrepareFrame(frame, elapsedTime);
+                        // Forcing rotation of freight shape
+                        freightAnim.FreightShape.PrepareFrame(frame, elapsedTime);
                     }
                 }
             }

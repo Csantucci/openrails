@@ -51,10 +51,9 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
         {
             var visibleContainers = new List<Container>();
             var removeDistance = Viewer.Settings.ViewingDistance * 1.5f;
-            foreach (var containerStation in Viewer.Simulator.ContainerManager.ContainerHandlingItems)
-                foreach (var container in containerStation.Value.Containers)
-                    if (WorldLocation.ApproximateDistance(Viewer.Camera.CameraWorldLocation, container.WorldPosition.WorldLocation) < removeDistance)
-                        visibleContainers.Add(container);
+            foreach (var container in Viewer.Simulator.ContainerManager.Containers)
+                if (WorldLocation.ApproximateDistance(Viewer.Camera.CameraWorldLocation, container.WorldPosition.WorldLocation) < removeDistance)
+                    visibleContainers.Add(container);
             VisibleContainers = visibleContainers;
         }
 

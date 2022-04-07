@@ -19,6 +19,7 @@
 
 using Microsoft.Xna.Framework;
 using Orts.Formats.Msts;
+using Orts.Parsers.Msts;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.RollingStocks.SubSystems;
 using ORTS.Common;
@@ -58,19 +59,22 @@ namespace Orts.Simulation
         }
 
         readonly Simulator Simulator;
-        public readonly string ShapeFileName;
+        public string ShapeFileName;
         public readonly string BaseShapeFileFolderSlash;
         public float MassKG = 2000;
         public float WidthM = 2.44f;
         public float LengthM = 12.19f;       
         public float HeightM = 2.59f;
         public ContainerType ContainerType = ContainerType.C40ft;
+        public bool Flipped = false;
+        public float LoadWeightKG = 0;
 
         public WorldPosition WorldPosition = new WorldPosition();  // current position of the container
         public float RealRelativeYOffset = 0;
         public float RealRelativeZOffset = 0;
-        public float IntrinsicShapeYOffset = 0;
-        public float IntrinsicShapeZOffset = 0;
+        public float XOffset = 0;
+        public float YOffset = 0;
+        public float ZOffset = 0;
         public Vector3 IntrinsicShapeOffset;
         public ContainerHandlingItem ContainerStation;
 
@@ -81,7 +85,7 @@ namespace Orts.Simulation
         }
 
         // generates container from FreightAnim
-        public Container(Simulator simulator, string baseShapeFileFolderSlash, FreightAnimationDiscrete freightAnimDiscrete, ContainerHandlingItem containerStation )
+ /*       public Container(Simulator simulator, string baseShapeFileFolderSlash, FreightAnimationDiscrete freightAnimDiscrete, ContainerHandlingItem containerStation )
         {
             Simulator = simulator;
             ShapeFileName = freightAnimDiscrete.ShapeFileName;
@@ -118,9 +122,85 @@ namespace Orts.Simulation
             var translation = Matrix.CreateTranslation(freightAnimDiscrete.XOffset, freightAnimDiscrete.YOffset, freightAnimDiscrete.ZOffset);
             WorldPosition.XNAMatrix = translation * WorldPosition.XNAMatrix;
             IntrinsicShapeOffset = freightAnimDiscrete.IntrinsicShapeOffset;
-            RealRelativeYOffset = IntrinsicShapeYOffset + freightAnimDiscrete.YOffset;
 
             ContainerStation = containerStation;
+        }*/
+
+        public Container(STFReader stf, FreightAnimationDiscrete freightAnimDiscrete)
+        {
+            Simulator = freightAnimDiscrete.Wagon.Simulator;
+            BaseShapeFileFolderSlash = Path.GetDirectoryName(freightAnimDiscrete.Wagon.WagFilePath) + @"\";
+            stf.MustMatch("(");
+            stf.ParseBlock(new STFReader.TokenProcessor[]
+            {
+                new STFReader.TokenProcessor("shape", ()=>{ ShapeFileName = stf.ReadStringBlock(null); }),
+                new STFReader.TokenProcessor("intrinsicshapeoffset", ()=>{ IntrinsicShapeOffset = stf.ReadVector3Block(STFReader.UNITS.Distance,  new Vector3(0, 0, 0)); }),
+                new STFReader.TokenProcessor("containertype", ()=>
+                {
+                    var containerTypeString = stf.ReadStringBlock(null);
+                    Enum.TryParse<ContainerType>(containerTypeString, out var containerType);
+                    ContainerType = containerType;
+                    switch (ContainerType)
+                    {
+                        case ContainerType.C20ft:
+                            LengthM = 6.1f;
+                            break;
+                        case ContainerType.C40ft:
+                            LengthM = 12.19f;
+                            break;
+                        case ContainerType.C40ftHC:
+                            LengthM = 12.19f;
+                            HeightM = 2.9f;
+                            break;
+                        case ContainerType.C45ft:
+                            LengthM = 13.7f;
+                            break;
+                        case ContainerType.C48ft:
+                            LengthM = 14.6f;
+                            break;
+                        case ContainerType.C53ft:
+                            LengthM = 16.15f;
+                            break;
+                        default:
+                            break;
+                    }
+                }),
+                new STFReader.TokenProcessor("offset", ()=>{
+                    stf.MustMatch("(");
+                    XOffset = stf.ReadFloat(STFReader.UNITS.Distance, 0);
+                    YOffset = stf.ReadFloat(STFReader.UNITS.Distance, 0);
+                    ZOffset = stf.ReadFloat(STFReader.UNITS.Distance, 0);
+                    stf.MustMatch(")");
+                }),
+                new STFReader.TokenProcessor("flip", ()=>{ Flipped = stf.ReadBoolBlock(true);}),
+                new STFReader.TokenProcessor("loadweight", ()=>{ LoadWeightKG = stf.ReadFloatBlock(STFReader.UNITS.Mass, 0);
+                }),
+            });
+            WorldPosition.XNAMatrix = freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix;
+            WorldPosition.TileX = freightAnimDiscrete.Wagon.WorldPosition.TileX;
+            WorldPosition.TileZ = freightAnimDiscrete.Wagon.WorldPosition.TileZ;
+            var translation = Matrix.CreateTranslation(XOffset, YOffset, ZOffset);
+            WorldPosition.XNAMatrix = translation * WorldPosition.XNAMatrix;
+        }
+
+        public Container(FreightAnimationDiscrete freightAnimaDiscreteCopy, FreightAnimationDiscrete freightAnimDiscrete)
+        {
+            Simulator = freightAnimDiscrete.Wagon.Simulator;
+            var containerCopy = freightAnimaDiscreteCopy.Container;
+            BaseShapeFileFolderSlash = containerCopy.BaseShapeFileFolderSlash;
+            ShapeFileName = containerCopy.ShapeFileName;
+            IntrinsicShapeOffset = containerCopy.IntrinsicShapeOffset;
+            ContainerType = containerCopy.ContainerType;
+            XOffset = containerCopy.XOffset;
+            YOffset = containerCopy.YOffset;
+            ZOffset = containerCopy.ZOffset;
+            Flipped = containerCopy.Flipped;
+            LoadWeightKG = containerCopy.LoadWeightKG;
+            WorldPosition.XNAMatrix = freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix;
+            WorldPosition.TileX = freightAnimDiscrete.Wagon.WorldPosition.TileX;
+            WorldPosition.TileZ = freightAnimDiscrete.Wagon.WorldPosition.TileZ;
+            var translation = Matrix.CreateTranslation(XOffset, YOffset, ZOffset);
+            WorldPosition.XNAMatrix = translation * WorldPosition.XNAMatrix;
         }
 
         public void Update()
@@ -134,11 +214,13 @@ namespace Orts.Simulation
     {
         readonly Simulator Simulator;
         public Dictionary<int, ContainerHandlingItem> ContainerHandlingItems;
+        public List<Container> Containers;
 
         public ContainerManager(Simulator simulator)
         {
             Simulator = simulator;
             ContainerHandlingItems = new Dictionary<int, ContainerHandlingItem>();
+            Containers = new List<Container>();
         }
 
 /*        static Dictionary<int, FuelPickupItem> GetContainerHandlingItemsFromDB(TrackNode[] trackNodes, TrItem[] trItemTable)
@@ -337,17 +419,18 @@ namespace Orts.Simulation
                         {
                             MoveY = false;
                             // Search first free position
+                            var container = Containers[AttachedContainerIndex];
                             var freePositionHorizontal = AttachedContainerIndex / MaxStackedContainers;
                             freePositionVertical = AttachedContainerIndex - freePositionHorizontal * MaxStackedContainers;
                             TargetX = PickingSurfaceRelativeTopStartPosition.X;
                             WorldPosition animWorldPosition = new WorldPosition(LinkedFreightAnimation.Wagon.WorldPosition);
-                            var translation = Matrix.CreateTranslation(LinkedFreightAnimation.XOffset, LinkedFreightAnimation.YOffset, LinkedFreightAnimation.ZOffset);
+                            var translation = Matrix.CreateTranslation(container.XOffset, container.YOffset, container.ZOffset);
                             animWorldPosition.XNAMatrix = translation * animWorldPosition.XNAMatrix;
                             /*                    IntrinsicShapeYOffset = freightAnimDiscrete.IntrinsicShapeYOffset;
                                                 IntrinsicShapeZOffset = freightAnimDiscrete.IntrinsicShapeZOffset;
                                                 RealRelativeYOffset = IntrinsicShapeYOffset + freightAnimDiscrete.YOffset;*/
                             var relativeAnimationPosition = Matrix.Multiply(animWorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
-                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - relativeAnimationPosition.Translation.Z + LinkedFreightAnimation.IntrinsicShapeOffset.Z;
+                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - relativeAnimationPosition.Translation.Z + container.IntrinsicShapeOffset.Z;
                             if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
                             {
                                 if (!messageWritten)
@@ -382,6 +465,9 @@ namespace Orts.Simulation
                         DelayTimer.Setup(LoadingEndDelayS);
                         DelayTimer.Start();
                         Status = ContainerStationStatus.LoadWaitingForLayingOnWagon;
+                        LinkedFreightAnimation.Container = Containers[AttachedContainerIndex];
+                        Containers.RemoveAt(AttachedContainerIndex);
+                        AttachedContainerIndex = -1;
                         LinkedFreightAnimation.Loaded = true;
                     }
                     break;
@@ -389,12 +475,6 @@ namespace Orts.Simulation
                     if (DelayTimer.Triggered)
                     {
                         DelayTimer.Stop();
-                        LinkedFreightAnimation.ShapeFileName = Containers[AttachedContainerIndex].ShapeFileName;
-                        LinkedFreightAnimation.ContainerType = Containers[AttachedContainerIndex].ContainerType;
-                        LinkedFreightAnimation.LoadWeightKG = Containers[AttachedContainerIndex].MassKG;
-                        LinkedFreightAnimation.IntrinsicShapeOffset = Containers[AttachedContainerIndex].IntrinsicShapeOffset;
-                        Containers.RemoveAt(AttachedContainerIndex);
-                        AttachedContainerIndex = -1;
                         TargetY = PickingSurfaceRelativeTopStartPosition.Y;
                         MoveY = true;
                         Status = ContainerStationStatus.RaiseToIdle;
@@ -408,7 +488,7 @@ namespace Orts.Simulation
                         {
                             MoveY = false;
                             TargetX = PickingSurfaceRelativeTopStartPosition.X;
-                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - RelativeContainerPosition.Translation.Z + LinkedFreightAnimation.IntrinsicShapeOffset.Z;
+                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - RelativeContainerPosition.Translation.Z + LinkedFreightAnimation.Container.IntrinsicShapeOffset.Z;
                             if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
                             {
                                 if (!messageWritten)
@@ -420,13 +500,13 @@ namespace Orts.Simulation
                             }
                             else
                             {
+                                UnloadContainer = LinkedFreightAnimation.Container;
                                 Status = ContainerStationStatus.UnloadHorizontallyMoveToPick;
-                                RelativeContainerPosition.M43 = LinkedFreightAnimation.IntrinsicShapeOffset.Z;
+                                RelativeContainerPosition.M43 = UnloadContainer.IntrinsicShapeOffset.Z;
                                 MoveX = true;
                                 MoveZ = true;
-                                var container = new Container(Simulator, Path.GetDirectoryName(LinkedFreightAnimation.Wagon.WagFilePath) + @"\", LinkedFreightAnimation, this);
-                                UnloadContainer = container;
-                                Containers.Add(container);
+                                UnloadContainer.ContainerStation = this;
+                                Containers.Add(UnloadContainer);
                             }
                         }
                     }
@@ -528,9 +608,9 @@ namespace Orts.Simulation
             GeneralRelativeContainerPosition = Matrix.Multiply(LinkedFreightAnimation.Wagon.WorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
             GeneralRelativeContainerPosition.M42 += PickingSurfaceYOffset;
             RelativeContainerPosition = GeneralRelativeContainerPosition;
-            RelativeContainerPosition.M41 += LinkedFreightAnimation.XOffset;
-            RelativeContainerPosition.M42 += LinkedFreightAnimation.YOffset;
-            RelativeContainerPosition.M43 += LinkedFreightAnimation.ZOffset;
+            RelativeContainerPosition.M41 += LinkedFreightAnimation.Container.XOffset;
+            RelativeContainerPosition.M42 += LinkedFreightAnimation.Container.YOffset;
+            RelativeContainerPosition.M43 += LinkedFreightAnimation.Container.ZOffset;
             Status = ContainerStationStatus.UnloadRaiseToPick;
             TargetY = PickingSurfaceRelativeTopStartPosition.Y;
             MoveY = true;
