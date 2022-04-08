@@ -123,7 +123,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             empty = false;
                             FreightType = wagon.IntakePointList.Last().Type;
                             DiscreteLoadedOne = Animations.Last() as FreightAnimationDiscrete;
-                            FreightWeight += DiscreteLoadedOne.Container.LoadWeightKG;
+                            FreightWeight += DiscreteLoadedOne.Container.MassKG;
                             DiscreteLoadedOne.Loaded = true; ;
                         }
                         else
@@ -203,7 +203,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             empty = false;
                             FreightType = wagon.IntakePointList.Last().Type;
                             DiscreteLoadedOne = Animations.Last() as FreightAnimationDiscrete;
-                            FreightWeight += DiscreteLoadedOne.Container.LoadWeightKG;
+                            FreightWeight += DiscreteLoadedOne.Container.MassKG;
                             DiscreteLoadedOne.Loaded = true; ;
                         }
                         else
@@ -446,6 +446,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public bool Loaded = false;
         public bool LoadedAtStart = false;
         public IntakePoint LinkedIntakePoint = null;
+        public Vector3 LoadingSurfaceOffset;
         public MSTSWagon Wagon;
         public Container Container;
 
@@ -481,6 +482,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 }),
                 new STFReader.TokenProcessor("loadedatstart", ()=>{ LoadedAtStart = stf.ReadBoolBlock(true);}),
             });
+            if (Container != null)
+                LoadingSurfaceOffset = Container.IntrinsicShapeOffset;
         }
 
         // for copy
@@ -496,6 +499,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             SubType = freightAnimDiscrete.SubType;
             LoadedAtStart = freightAnimDiscrete.LoadedAtStart;
             Container = new Container(freightAnimDiscrete, this);
+            LoadingSurfaceOffset = Container.IntrinsicShapeOffset;
             wagon.Simulator.ContainerManager.Containers.Add(Container);
         }
     }

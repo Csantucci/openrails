@@ -203,8 +203,8 @@ namespace Orts.Viewer3D
             Terrain.PrepareFrame(frame, elapsedTime);
             Scenery.PrepareFrame(frame, elapsedTime);
             Trains.PrepareFrame(frame, elapsedTime);
-            RoadCars.PrepareFrame(frame, elapsedTime);
             Containers.PrepareFrame(frame, elapsedTime);
+            RoadCars.PrepareFrame(frame, elapsedTime);
         }
 
         [CallOnThread("Updater")]

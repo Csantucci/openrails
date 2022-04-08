@@ -67,7 +67,6 @@ namespace Orts.Simulation
         public float HeightM = 2.59f;
         public ContainerType ContainerType = ContainerType.C40ft;
         public bool Flipped = false;
-        public float LoadWeightKG = 0;
 
         public WorldPosition WorldPosition = new WorldPosition();  // current position of the container
         public float RealRelativeYOffset = 0;
@@ -77,6 +76,7 @@ namespace Orts.Simulation
         public float ZOffset = 0;
         public Vector3 IntrinsicShapeOffset;
         public ContainerHandlingItem ContainerStation;
+        public Matrix RelativeContainerMatrix = Matrix.Identity;
 
         public Container(Simulator simulator)
         {
@@ -173,7 +173,7 @@ namespace Orts.Simulation
                     stf.MustMatch(")");
                 }),
                 new STFReader.TokenProcessor("flip", ()=>{ Flipped = stf.ReadBoolBlock(true);}),
-                new STFReader.TokenProcessor("loadweight", ()=>{ LoadWeightKG = stf.ReadFloatBlock(STFReader.UNITS.Mass, 0);
+                new STFReader.TokenProcessor("loadweight", ()=>{ MassKG = stf.ReadFloatBlock(STFReader.UNITS.Mass, 0);
                 }),
             });
             WorldPosition.XNAMatrix = freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix;
@@ -195,7 +195,7 @@ namespace Orts.Simulation
             YOffset = containerCopy.YOffset;
             ZOffset = containerCopy.ZOffset;
             Flipped = containerCopy.Flipped;
-            LoadWeightKG = containerCopy.LoadWeightKG;
+            MassKG = containerCopy.MassKG;
             WorldPosition.XNAMatrix = freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix;
             WorldPosition.TileX = freightAnimDiscrete.Wagon.WorldPosition.TileX;
             WorldPosition.TileZ = freightAnimDiscrete.Wagon.WorldPosition.TileZ;
@@ -430,7 +430,7 @@ namespace Orts.Simulation
                                                 IntrinsicShapeZOffset = freightAnimDiscrete.IntrinsicShapeZOffset;
                                                 RealRelativeYOffset = IntrinsicShapeYOffset + freightAnimDiscrete.YOffset;*/
                             var relativeAnimationPosition = Matrix.Multiply(animWorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
-                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - relativeAnimationPosition.Translation.Z + container.IntrinsicShapeOffset.Z;
+                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - relativeAnimationPosition.Translation.Z + LinkedFreightAnimation.LoadingSurfaceOffset.Z;
                             if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
                             {
                                 if (!messageWritten)
@@ -466,6 +466,8 @@ namespace Orts.Simulation
                         DelayTimer.Start();
                         Status = ContainerStationStatus.LoadWaitingForLayingOnWagon;
                         LinkedFreightAnimation.Container = Containers[AttachedContainerIndex];
+                        var invertedWagonMatrix = Matrix.Invert(LinkedFreightAnimation.Wagon.WorldPosition.XNAMatrix);
+                        LinkedFreightAnimation.Container.RelativeContainerMatrix = Matrix.Multiply(LinkedFreightAnimation.Container.WorldPosition.XNAMatrix, invertedWagonMatrix);
                         Containers.RemoveAt(AttachedContainerIndex);
                         AttachedContainerIndex = -1;
                         LinkedFreightAnimation.Loaded = true;

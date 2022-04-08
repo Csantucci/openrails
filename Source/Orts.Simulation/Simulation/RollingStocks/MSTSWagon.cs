@@ -1996,11 +1996,6 @@ namespace Orts.Simulation.RollingStocks
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting unload"));
                     if (FreightAnimations.LoadedOne is FreightAnimationContinuous)
                         WeightLoadController.StartDecrease(WeightLoadController.MinimumValue);
-                    //                    else if (FreightAnimations.DiscreteLoadedOne is FreightAnimationDiscrete)
-                    //                    {
-                    //                       FreightAnimations.DiscreteLoadedOne.Loaded = false;
-                    //                        FreightAnimations.DiscreteLoadedOne = null;
-                    //                    }
                 }
             }
             // update position of container in discrete freight animations
@@ -2014,7 +2009,7 @@ namespace Orts.Simulation.RollingStocks
                         if (discreteFreightAnim.Loaded && discreteFreightAnim.Container != null)
                         {
                             var container = discreteFreightAnim.Container;
-                            container.WorldPosition.XNAMatrix = WorldPosition.XNAMatrix;
+                            container.WorldPosition.XNAMatrix = Matrix.Multiply(container.RelativeContainerMatrix, discreteFreightAnim.Wagon.WorldPosition.XNAMatrix);
                             container.WorldPosition.TileX = WorldPosition.TileX;
                             container.WorldPosition.TileZ = WorldPosition.TileZ;
                         }
