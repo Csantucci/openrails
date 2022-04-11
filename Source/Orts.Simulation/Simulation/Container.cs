@@ -364,7 +364,8 @@ namespace Orts.Simulation
         public void Update()
         {
             var subMissionTerminated = false;
-            if (Math.Abs(ActualX - TargetX) < 0.02f && Math.Abs(ActualY - TargetY) < 0.02f && Math.Abs(ActualZ - TargetZ) < 0.02f)
+            if ((!MoveX || Math.Abs(ActualX - TargetX) < 0.02f) && (!MoveY || Math.Abs(ActualY - TargetY) < 0.02f) && 
+                (!MoveZ || Math.Abs(ActualZ - TargetZ) < 0.02f))
                 subMissionTerminated = true;
             switch (Status)
             {
@@ -440,7 +441,7 @@ namespace Orts.Simulation
                             var relativeAnimationPosition = Matrix.Multiply(animWorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
                             TargetZ = PickingSurfaceRelativeTopStartPosition.Z - relativeAnimationPosition.Translation.Z + LinkedFreightAnimation.LoadingSurfaceOffset.Z * 
                                 (WagonFlipped ? -1 : 1);
-                            if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
+ /*                           if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
                             {
                                 if (!messageWritten)
                                 {
@@ -449,7 +450,7 @@ namespace Orts.Simulation
                                     messageWritten = true;
                                 }
                             }
-                            else
+                            else*/
                             {
                                 MoveX = MoveZ = true;
                                 Status = ContainerStationStatus.LoadHorizontallyMoveToLayOnWagon;
@@ -501,7 +502,7 @@ namespace Orts.Simulation
                             TargetX = PickingSurfaceRelativeTopStartPosition.X;
                             TargetZ = PickingSurfaceRelativeTopStartPosition.Z - RelativeContainerPosition.Translation.Z + LinkedFreightAnimation.Container.IntrinsicShapeOffset.Z * 
                                 (ContainerFlipped ? -1 : 1);                              
-                            if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
+ /*                           if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
                             {
                                 if (!messageWritten)
                                 {
@@ -510,7 +511,7 @@ namespace Orts.Simulation
                                     messageWritten = true;
                                 }
                             }
-                            else
+                            else*/
                             {
                                 UnloadContainer = LinkedFreightAnimation.Container;
                                 Status = ContainerStationStatus.UnloadHorizontallyMoveToPick;
@@ -617,7 +618,7 @@ namespace Orts.Simulation
             LinkedFreightAnimation = linkedFreightAnimation;
             RelativeContainerPosition = new Matrix();
             LinkedFreightAnimation.Wagon.WorldPosition.NormalizeTo(ShapePosition.TileX, ShapePosition.TileZ);
-            GeneralRelativeContainerPosition = Matrix.Multiply(LinkedFreightAnimation.Wagon.WorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
+            GeneralRelativeContainerPosition = Matrix.Multiply(LinkedFreightAnimation.Container.WorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
             GeneralRelativeContainerPosition.M42 += PickingSurfaceYOffset;
             RelativeContainerPosition = GeneralRelativeContainerPosition;
             RelativeContainerPosition.M41 += LinkedFreightAnimation.Container.XOffset;
@@ -641,6 +642,11 @@ namespace Orts.Simulation
             {
                 RelativeContainerPosition.M11 = -1;
                 RelativeContainerPosition.M33 = -1;
+            }
+            else
+            {
+                RelativeContainerPosition.M11 = 1;
+                RelativeContainerPosition.M33 = 1;
             }
             RelativeContainerPosition.M43 = Containers[Containers.Count - 1].IntrinsicShapeOffset.Z * (ContainerFlipped ? -1 : 1);
             Status = ContainerStationStatus.LoadRaiseToPick;
