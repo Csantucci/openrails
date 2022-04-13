@@ -1706,7 +1706,8 @@ namespace Orts.Parsers.Msts
         ORTSSoundFileName, // ORTS specific for individual level crossing sounds
         ORTSPantographToggle3, 
         ORTSPantographToggle4,
-        ORTSMaxStackedContainers, // ORTS Specific for container stations
+        ORTSCraneSound,  // ORTS Specific for container stations
+        ORTSMaxStackedContainers,
         ORTSStackXNALocations,
         ORTSPickingSurfaceYOffset,
         ORTSPickingSurfaceRelativeTopStartPosition,

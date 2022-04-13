@@ -1186,12 +1186,17 @@ namespace Orts.Viewer3D
         protected controller controllerY;
         protected controller controllerZ;
         protected float slowDownThreshold = 0.03f;
+        protected SoundSource Sound;
+        // To detect transitions that trigger sounds
+        protected bool OldMoveX;
+        protected bool OldMoveY;
+        protected bool OldMoveZ;
+            
 
         protected ContainerHandlingItem ContainerHandlingItem;
         public ContainerHandlingItemShape(Viewer viewer, string path, WorldPosition position, ShapeFlags shapeFlags, PickupObj fuelpickupitemObj)
                         : base(viewer, path, position, shapeFlags, fuelpickupitemObj)
         {
-
         }
 
         public override void Initialize()
@@ -1212,26 +1217,39 @@ namespace Orts.Viewer3D
             AnimationKeyX = Math.Abs((0 - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X));
             AnimationKeyY = Math.Abs((0 - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y));
             AnimationKeyZ = Math.Abs((0 - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z));
-            if (Viewer.Simulator.TRK.Tr_RouteFile.DefaultDieselTowerSMS != null && FuelPickupItemObj.PickupType == 7) // Testing for Diesel PickupType
+            if (FuelPickupItemObj.CraneSound != null)
             {
-                var soundPath = Viewer.Simulator.RoutePath + @"\\sound\\" + Viewer.Simulator.TRK.Tr_RouteFile.DefaultDieselTowerSMS;
+                var soundPath = Viewer.Simulator.RoutePath + @"\\sound\\" + FuelPickupItemObj.CraneSound;
                 try
                 {
-                    Sound = new SoundSource(Viewer, Position.WorldLocation, Events.Source.MSTSFuelTower, soundPath);
+                    Sound = new SoundSource(Viewer, Position.WorldLocation, Events.Source.ORTSContainerCrane, soundPath);
                     Viewer.SoundProcess.AddSoundSources(this, new List<SoundSourceBase>() { Sound });
                 }
                 catch
                 {
-                    soundPath = Viewer.Simulator.BasePath + @"\\sound\\" + Viewer.Simulator.TRK.Tr_RouteFile.DefaultDieselTowerSMS;
+                    soundPath = Viewer.Simulator.BasePath + @"\\sound\\ContainerCrane.sms";
                     try
                     {
-                        Sound = new SoundSource(Viewer, Position.WorldLocation, Events.Source.MSTSFuelTower, soundPath);
+                        Sound = new SoundSource(Viewer, Position.WorldLocation, Events.Source.ORTSContainerCrane, soundPath);
                         Viewer.SoundProcess.AddSoundSources(this, new List<SoundSourceBase>() { Sound });
                     }
                     catch (Exception error)
                     {
                         Trace.WriteLine(new FileLoadException(soundPath, error));
                     }
+                }
+            }
+            else
+            {
+                var soundPath = Viewer.Simulator.BasePath + @"\\sound\\ContainerCrane.sms";
+                try
+                {
+                    Sound = new SoundSource(Viewer, Position.WorldLocation, Events.Source.ORTSContainerCrane, soundPath);
+                    Viewer.SoundProcess.AddSoundSources(this, new List<SoundSourceBase>() { Sound });
+                }
+                catch (Exception error)
+                {
+                    Trace.WriteLine(new FileLoadException(soundPath, error));
                 }
             }
             ContainerHandlingItem = Viewer.Simulator.ContainerManager.ContainerHandlingItems[FuelPickupItemObj.TrItemIDList[0].dbID];
@@ -1357,6 +1375,27 @@ namespace Orts.Viewer3D
                 Matrix.Multiply(ref absAnimationMatrix, ref Location.XNAMatrix, out absAnimationMatrix);
                 ContainerHandlingItem.TransferContainer(absAnimationMatrix);
             }
+
+
+            // let's make some noise
+
+            if (!OldMoveX && ContainerHandlingItem.MoveX)
+                Sound?.HandleEvent(Event.CraneXAxisMove);
+            if (OldMoveX && !ContainerHandlingItem.MoveX)
+                Sound?.HandleEvent(Event.CraneXAxisSlowDown);
+            if (!OldMoveY && ContainerHandlingItem.MoveY)
+                Sound?.HandleEvent(Event.CraneYAxisMove);
+            if (OldMoveY && !ContainerHandlingItem.MoveY)
+                Sound?.HandleEvent(Event.CraneYAxisSlowDown);
+            if (!OldMoveZ && ContainerHandlingItem.MoveZ)
+                Sound?.HandleEvent(Event.CraneZAxisMove);
+            if (OldMoveZ && !ContainerHandlingItem.MoveZ)
+                Sound?.HandleEvent(Event.CraneZAxisSlowDown);
+            if (OldMoveY && !ContainerHandlingItem.MoveY && !(ContainerHandlingItem.TargetY == ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition.Y))
+                Sound?.HandleEvent(Event.CraneYAxisDown);
+            OldMoveX = ContainerHandlingItem.MoveX;
+            OldMoveY = ContainerHandlingItem.MoveY;
+            OldMoveZ = ContainerHandlingItem.MoveZ;
         }
 
   }
