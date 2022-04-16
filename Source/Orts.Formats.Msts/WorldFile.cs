@@ -342,7 +342,7 @@ namespace Orts.Formats.Msts
                     subBlock.Skip(); // Discard the 2nd value (0 or 1 but significance is not known)
                     break;
                 case TokenID.ORTSMaxStackedContainers: MaxStackedContainers = subBlock.ReadInt(); break;
-                case TokenID.ORTSStackXNALocations: StackXNALocations = new StackXNALocationItems(subBlock); break;
+                case TokenID.ORTSStackLocations: StackXNALocations = new StackXNALocationItems(subBlock); break;
                 case TokenID.ORTSPickingSurfaceYOffset: PickingSurfaceYOffset = subBlock.ReadFloat(); break;
                 case TokenID.ORTSPickingSurfaceRelativeTopStartPosition: PickingSurfaceRelativeTopStartPosition = subBlock.ReadVector3(); break;
                 case TokenID.ORTSCraneSound: CraneSound = subBlock.ReadString(); break;
@@ -423,7 +423,7 @@ namespace Orts.Formats.Msts
             public StackXNALocationItems(SBR block)
             {
                 var locations = new List<StackXNALocation>();
-                block.VerifyID(TokenID.ORTSStackXNALocations);
+                block.VerifyID(TokenID.ORTSStackLocations);
                 var count = block.ReadUInt();
                 for (var i = 0; i < count; i++)
                 {
@@ -445,7 +445,7 @@ namespace Orts.Formats.Msts
 
             public StackXNALocation(SBR block)
             {
-                block.VerifyID(TokenID.StackXNALocation);
+                block.VerifyID(TokenID.StackLocation);
                 X = block.ReadFloat();
                 Y = block.ReadFloat();
                 Z = block.ReadFloat();

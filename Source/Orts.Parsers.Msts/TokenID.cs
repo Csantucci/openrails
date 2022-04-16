@@ -1708,10 +1708,10 @@ namespace Orts.Parsers.Msts
         ORTSPantographToggle4,
         ORTSCraneSound,  // ORTS Specific for container stations
         ORTSMaxStackedContainers,
-        ORTSStackXNALocations,
+        ORTSStackLocations,
         ORTSPickingSurfaceYOffset,
         ORTSPickingSurfaceRelativeTopStartPosition,
-        StackXNALocation,
+        StackLocation,
 
         // TSRE specific
         Ruler
