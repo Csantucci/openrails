@@ -447,6 +447,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public bool LoadedAtStart = false;
         public IntakePoint LinkedIntakePoint = null;
         public Vector3 LoadingSurfaceOffset;
+        public Vector3 Offset;
         public MSTSWagon Wagon;
         public Container Container;
 
@@ -475,6 +476,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     wagon.IntakePointList.Last().LinkedFreightAnim = this;
                     LinkedIntakePoint = wagon.IntakePointList.Last();
                 }),
+                new STFReader.TokenProcessor("offset", ()=>
+                { 
+                    Offset = stf.ReadVector3Block(STFReader.UNITS.Distance,  new Vector3(0, 0, 0));
+                    Offset.Z *= -1; // MSTS --> XNA
+                }),
                 new STFReader.TokenProcessor("container", ()=>
                 {
                     Container = new Container(stf, this);
@@ -483,7 +489,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 new STFReader.TokenProcessor("loadedatstart", ()=>{ LoadedAtStart = stf.ReadBoolBlock(true);}),
             });
             if (Container != null)
-                LoadingSurfaceOffset = Container.IntrinsicShapeOffset;
+                LoadingSurfaceOffset = Container.IntrinsicShapeOffset - Offset;
         }
 
         // for copy
@@ -498,8 +504,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             }
             SubType = freightAnimDiscrete.SubType;
             LoadedAtStart = freightAnimDiscrete.LoadedAtStart;
+            Offset = freightAnimDiscrete.Offset;
             Container = new Container(freightAnimDiscrete, this);
-            LoadingSurfaceOffset = Container.IntrinsicShapeOffset;
+            LoadingSurfaceOffset = Container.IntrinsicShapeOffset - Offset;
             wagon.Simulator.ContainerManager.Containers.Add(Container);
         }
     }

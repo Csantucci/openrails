@@ -1227,29 +1227,29 @@ namespace Orts.Viewer3D
                 }
                 catch
                 {
-                    soundPath = Viewer.Simulator.BasePath + @"\\sound\\ContainerCrane.sms";
+                    soundPath = Viewer.Simulator.BasePath + @"\\sound\\containercrane.sms";
                     try
                     {
                         Sound = new SoundSource(Viewer, Position.WorldLocation, Events.Source.ORTSContainerCrane, soundPath);
                         Viewer.SoundProcess.AddSoundSources(this, new List<SoundSourceBase>() { Sound });
                     }
-                    catch (Exception error)
+                    catch
                     {
-                        Trace.WriteLine(new FileLoadException(soundPath, error));
+                        Trace.TraceWarning("Cannot find sound file {0}", soundPath);
                     }
                 }
             }
             else
             {
-                var soundPath = Viewer.Simulator.BasePath + @"\\sound\\ContainerCrane.sms";
+                var soundPath = Viewer.Simulator.BasePath + @"\\sound\\containercrane.sms";
                 try
                 {
                     Sound = new SoundSource(Viewer, Position.WorldLocation, Events.Source.ORTSContainerCrane, soundPath);
                     Viewer.SoundProcess.AddSoundSources(this, new List<SoundSourceBase>() { Sound });
                 }
-                catch (Exception error)
+                catch
                 {
-                    Trace.WriteLine(new FileLoadException(soundPath, error));
+                    Trace.TraceWarning("Cannot find sound file {0}", soundPath);
                 }
             }
             ContainerHandlingItem = Viewer.Simulator.ContainerManager.ContainerHandlingItems[FuelPickupItemObj.TrItemIDList[0].dbID];
