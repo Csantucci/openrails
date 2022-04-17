@@ -533,7 +533,7 @@ namespace Orts.Simulation
             PoolHolder = new Poolholder(inf, this);
 
             Signals = new Signals(this, SIGCFG, inf, cancellation);
-
+            ContainerManager = new ContainerManager(this);
             RestoreTrains(inf);
             LevelCrossings = new LevelCrossings(this);
             AI = new AI(this, inf);

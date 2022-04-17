@@ -145,6 +145,17 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             outf.Write(FreightWeight);
             outf.Write((int)FreightType);
             outf.Write(StaticFreightWeight);
+            if (FreightType == MSTSWagon.PickupType.Container)
+            {
+                foreach (var freightAnim in Animations)
+                {
+                    if (freightAnim is FreightAnimationDiscrete)
+                    {
+                        (freightAnim as FreightAnimationDiscrete).Save(outf);
+                        break;
+                    }
+                }
+            }
         }
 
         /// <summary>
@@ -155,6 +166,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         {
             FreightWeight = inf.ReadSingle();
             var fType = inf.ReadInt32();
+            StaticFreightWeight = inf.ReadSingle();
             FreightType = (MSTSWagon.PickupType)fType;
             LoadedOne = null;
             foreach (var freightAnim in Animations)
@@ -174,8 +186,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         }
                     }
                 }
+                else if (freightAnim is FreightAnimationDiscrete)
+                {
+                    (freightAnim as FreightAnimationDiscrete).Restore(inf);
+                }
+
             }
-            StaticFreightWeight = inf.ReadSingle();
         }
 
         public FreightAnimations(FreightAnimations copyFACollection, MSTSWagon wagon)
@@ -509,5 +525,34 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             LoadingSurfaceOffset = Container.IntrinsicShapeOffset - Offset;
             wagon.Simulator.ContainerManager.Containers.Add(Container);
         }
+
+        public void Save(BinaryWriter outf)
+        {
+            outf.Write(Loaded);
+            outf.Write(LoadingSurfaceOffset.X);
+            outf.Write(LoadingSurfaceOffset.Y);
+            outf.Write(LoadingSurfaceOffset.Z);
+            if (Container != null)
+            {
+                outf.Write(true);
+                Container.Save(outf);
+            }
+            else outf.Write(false);
+        }
+
+        public void Restore(BinaryReader inf)
+        {
+            Loaded = inf.ReadBoolean();
+            LoadingSurfaceOffset.X = inf.ReadSingle();
+            LoadingSurfaceOffset.Y = inf.ReadSingle();
+            LoadingSurfaceOffset.Z = inf.ReadSingle();
+            var containerPresent = inf.ReadBoolean();
+            if (containerPresent)
+            {
+                Container = new Container(inf, this);
+                Wagon.Simulator.ContainerManager.Containers.Add(Container);
+            }    
+        }
     }
 }
+

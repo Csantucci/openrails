@@ -58,7 +58,6 @@ namespace Orts.Simulation
             WaitingForUnloading
         }
 
-        readonly Simulator Simulator;
         public string ShapeFileName;
         public readonly string BaseShapeFileFolderSlash;
         public float MassKG = 2000;
@@ -74,12 +73,8 @@ namespace Orts.Simulation
         public Vector3 IntrinsicShapeOffset;
         public ContainerHandlingItem ContainerStation;
         public Matrix RelativeContainerMatrix = Matrix.Identity;
+        public MSTSWagon Wagon;
 
-        public Container(Simulator simulator)
-        {
-            Simulator = simulator;
- 
-        }
 
         // generates container from FreightAnim
  /*       public Container(Simulator simulator, string baseShapeFileFolderSlash, FreightAnimationDiscrete freightAnimDiscrete, ContainerHandlingItem containerStation )
@@ -125,7 +120,7 @@ namespace Orts.Simulation
 
         public Container(STFReader stf, FreightAnimationDiscrete freightAnimDiscrete)
         {
-            Simulator = freightAnimDiscrete.Wagon.Simulator;
+            Wagon = freightAnimDiscrete.Wagon;
             BaseShapeFileFolderSlash = Path.GetDirectoryName(freightAnimDiscrete.Wagon.WagFilePath) + @"\";
             stf.MustMatch("(");
             stf.ParseBlock(new STFReader.TokenProcessor[]
@@ -154,7 +149,7 @@ namespace Orts.Simulation
 
         public Container(FreightAnimationDiscrete freightAnimaDiscreteCopy, FreightAnimationDiscrete freightAnimDiscrete)
         {
-            Simulator = freightAnimDiscrete.Wagon.Simulator;
+            Wagon = freightAnimDiscrete.Wagon;
             var containerCopy = freightAnimaDiscreteCopy.Container;
             BaseShapeFileFolderSlash = containerCopy.BaseShapeFileFolderSlash;
             ShapeFileName = containerCopy.ShapeFileName;
@@ -163,13 +158,31 @@ namespace Orts.Simulation
             ComputeDimensions();
             Flipped = containerCopy.Flipped;
             MassKG = containerCopy.MassKG;
-            WorldPosition.XNAMatrix = freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix;
-            WorldPosition.TileX = freightAnimDiscrete.Wagon.WorldPosition.TileX;
-            WorldPosition.TileZ = freightAnimDiscrete.Wagon.WorldPosition.TileZ;
+            WorldPosition.XNAMatrix = Wagon.WorldPosition.XNAMatrix;
+            WorldPosition.TileX = Wagon.WorldPosition.TileX;
+            WorldPosition.TileZ = Wagon.WorldPosition.TileZ;
             var translation = Matrix.CreateTranslation(freightAnimDiscrete.Offset);
             WorldPosition.XNAMatrix = translation * WorldPosition.XNAMatrix;
             var invWagonMatrix = Matrix.Invert(freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix);
             RelativeContainerMatrix = Matrix.Multiply(WorldPosition.XNAMatrix, invWagonMatrix);
+        }
+
+        public Container(BinaryReader inf, FreightAnimationDiscrete freightAnimDiscrete)
+        {
+            Wagon = freightAnimDiscrete.Wagon;
+            BaseShapeFileFolderSlash = inf.ReadString();
+            ShapeFileName = inf.ReadString();
+            IntrinsicShapeOffset.X = inf.ReadSingle();
+            IntrinsicShapeOffset.Y = inf.ReadSingle();
+            IntrinsicShapeOffset.Z = inf.ReadSingle();
+            ContainerType = (ContainerType)inf.ReadInt32();
+            ComputeDimensions();
+            Flipped = inf.ReadBoolean();
+            MassKG = inf.ReadSingle();
+            RelativeContainerMatrix = RestoreMatrix(inf);
+            WorldPosition.XNAMatrix = Matrix.Multiply(RelativeContainerMatrix, Wagon.WorldPosition.XNAMatrix);
+            WorldPosition.TileX = Wagon.WorldPosition.TileX;
+            WorldPosition.TileZ = Wagon.WorldPosition.TileZ;
         }
 
         private void ComputeDimensions()
@@ -203,6 +216,61 @@ namespace Orts.Simulation
         public void Update()
         {
 
+        }
+
+        public void Save(BinaryWriter outf)
+        {
+            outf.Write(BaseShapeFileFolderSlash);
+            outf.Write(ShapeFileName);
+            outf.Write(IntrinsicShapeOffset.X);
+            outf.Write(IntrinsicShapeOffset.Y);
+            outf.Write(IntrinsicShapeOffset.Z);
+            outf.Write((int)ContainerType);
+            outf.Write(Flipped);
+            outf.Write(MassKG);
+            SaveMatrix(outf, RelativeContainerMatrix);
+        }
+
+        public void SaveMatrix(BinaryWriter outf, Matrix matrix)
+        {
+            outf.Write(matrix.M11);
+            outf.Write(matrix.M12);
+            outf.Write(matrix.M13);
+            outf.Write(matrix.M14);
+            outf.Write(matrix.M21);
+            outf.Write(matrix.M22);
+            outf.Write(matrix.M23);
+            outf.Write(matrix.M24);
+            outf.Write(matrix.M31);
+            outf.Write(matrix.M32);
+            outf.Write(matrix.M33);
+            outf.Write(matrix.M34);
+            outf.Write(matrix.M41);
+            outf.Write(matrix.M42);
+            outf.Write(matrix.M43);
+            outf.Write(matrix.M44);
+        }
+
+        public Matrix RestoreMatrix(BinaryReader inf)
+        {
+            var matrix = Matrix.Identity;
+            matrix.M11 = inf.ReadSingle();
+            matrix.M12 = inf.ReadSingle();
+            matrix.M13 = inf.ReadSingle();
+            matrix.M14 = inf.ReadSingle();
+            matrix.M21 = inf.ReadSingle();
+            matrix.M22 = inf.ReadSingle();
+            matrix.M23 = inf.ReadSingle();
+            matrix.M24 = inf.ReadSingle();
+            matrix.M31 = inf.ReadSingle();
+            matrix.M32 = inf.ReadSingle();
+            matrix.M33 = inf.ReadSingle();
+            matrix.M34 = inf.ReadSingle();
+            matrix.M41 = inf.ReadSingle();
+            matrix.M42 = inf.ReadSingle();
+            matrix.M43 = inf.ReadSingle();
+            matrix.M44 = inf.ReadSingle();
+            return matrix;
         }
 
     }
