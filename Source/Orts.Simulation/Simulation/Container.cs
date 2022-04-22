@@ -22,6 +22,7 @@ using Orts.Formats.Msts;
 using Orts.Parsers.Msts;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.RollingStocks.SubSystems;
+using Orts.Common;
 using ORTS.Common;
 using ORTS.Scripting.Api;
 using System;
@@ -167,9 +168,10 @@ namespace Orts.Simulation
             RelativeContainerMatrix = Matrix.Multiply(WorldPosition.XNAMatrix, invWagonMatrix);
         }
 
-        public Container(BinaryReader inf, FreightAnimationDiscrete freightAnimDiscrete)
+        public Container(BinaryReader inf, FreightAnimationDiscrete freightAnimDiscrete, ContainerHandlingItem containerStation, bool fromContainerStation = false)
         {
-            Wagon = freightAnimDiscrete.Wagon;
+            if (fromContainerStation) ContainerStation = containerStation;
+            else Wagon = freightAnimDiscrete.Wagon;
             BaseShapeFileFolderSlash = inf.ReadString();
             ShapeFileName = inf.ReadString();
             IntrinsicShapeOffset.X = inf.ReadSingle();
@@ -179,10 +181,32 @@ namespace Orts.Simulation
             ComputeDimensions();
             Flipped = inf.ReadBoolean();
             MassKG = inf.ReadSingle();
-            RelativeContainerMatrix = RestoreMatrix(inf);
-            WorldPosition.XNAMatrix = Matrix.Multiply(RelativeContainerMatrix, Wagon.WorldPosition.XNAMatrix);
-            WorldPosition.TileX = Wagon.WorldPosition.TileX;
-            WorldPosition.TileZ = Wagon.WorldPosition.TileZ;
+            if (fromContainerStation)
+            {
+                // compute WorldPosition starting from offsets and position of container station
+                var containersCount = containerStation.Containers.Count;
+                var loadPositionHorizontal = containersCount / containerStation.MaxStackedContainers;
+                var loadPositionVertical = containersCount - loadPositionHorizontal * containerStation.MaxStackedContainers;
+                var totalOffset = containerStation.StackXNALocations[loadPositionHorizontal] - IntrinsicShapeOffset;
+                if (containersCount != 0)
+                for (var iPos = (containersCount - 1); iPos >= containersCount- loadPositionVertical; iPos--)
+                    totalOffset.Y += containerStation.Containers[iPos].HeightM;
+                totalOffset.Z *= -1;
+                Vector3.Transform(ref totalOffset, ref containerStation.ShapePosition.XNAMatrix, out totalOffset);
+                //               WorldPosition = new WorldLocation(car.WorldPosition.TileX, car.WorldPosition.TileZ,
+                //                   totalOffset.X, totalOffset.Y, -totalOffset.Z);
+                WorldPosition.XNAMatrix = containerStation.ShapePosition.XNAMatrix;
+                WorldPosition.XNAMatrix.Translation = totalOffset;
+                WorldPosition.TileX = containerStation.ShapePosition.TileX;
+                WorldPosition.TileZ = containerStation.ShapePosition.TileZ;
+            }
+            else
+            {
+                RelativeContainerMatrix = ORTSMath.RestoreMatrix(inf);
+                WorldPosition.XNAMatrix = Matrix.Multiply(RelativeContainerMatrix, Wagon.WorldPosition.XNAMatrix);
+                WorldPosition.TileX = Wagon.WorldPosition.TileX;
+                WorldPosition.TileZ = Wagon.WorldPosition.TileZ;
+            }
         }
 
         private void ComputeDimensions()
@@ -218,7 +242,7 @@ namespace Orts.Simulation
 
         }
 
-        public void Save(BinaryWriter outf)
+        public void Save(BinaryWriter outf, bool fromContainerStation = false)
         {
             outf.Write(BaseShapeFileFolderSlash);
             outf.Write(ShapeFileName);
@@ -228,51 +252,13 @@ namespace Orts.Simulation
             outf.Write((int)ContainerType);
             outf.Write(Flipped);
             outf.Write(MassKG);
-            SaveMatrix(outf, RelativeContainerMatrix);
-        }
+            if (fromContainerStation)
+            {
 
-        public void SaveMatrix(BinaryWriter outf, Matrix matrix)
-        {
-            outf.Write(matrix.M11);
-            outf.Write(matrix.M12);
-            outf.Write(matrix.M13);
-            outf.Write(matrix.M14);
-            outf.Write(matrix.M21);
-            outf.Write(matrix.M22);
-            outf.Write(matrix.M23);
-            outf.Write(matrix.M24);
-            outf.Write(matrix.M31);
-            outf.Write(matrix.M32);
-            outf.Write(matrix.M33);
-            outf.Write(matrix.M34);
-            outf.Write(matrix.M41);
-            outf.Write(matrix.M42);
-            outf.Write(matrix.M43);
-            outf.Write(matrix.M44);
+            }
+            else
+                ORTSMath.SaveMatrix(outf, RelativeContainerMatrix);
         }
-
-        public Matrix RestoreMatrix(BinaryReader inf)
-        {
-            var matrix = Matrix.Identity;
-            matrix.M11 = inf.ReadSingle();
-            matrix.M12 = inf.ReadSingle();
-            matrix.M13 = inf.ReadSingle();
-            matrix.M14 = inf.ReadSingle();
-            matrix.M21 = inf.ReadSingle();
-            matrix.M22 = inf.ReadSingle();
-            matrix.M23 = inf.ReadSingle();
-            matrix.M24 = inf.ReadSingle();
-            matrix.M31 = inf.ReadSingle();
-            matrix.M32 = inf.ReadSingle();
-            matrix.M33 = inf.ReadSingle();
-            matrix.M34 = inf.ReadSingle();
-            matrix.M41 = inf.ReadSingle();
-            matrix.M42 = inf.ReadSingle();
-            matrix.M43 = inf.ReadSingle();
-            matrix.M44 = inf.ReadSingle();
-            return matrix;
-        }
-
     }
 
     public class ContainerManager
@@ -304,6 +290,18 @@ namespace Orts.Simulation
             return new ContainerHandlingItem(Simulator, shapePosition, trackItem, thisWorldObj);
         }
 
+        public void Save(BinaryWriter outf)
+        {
+            foreach (var containerStation in ContainerHandlingItems.Values)
+                containerStation.Save(outf);
+        }
+
+        public void Restore(BinaryReader inf)
+        {
+            foreach (var containerStation in ContainerHandlingItems.Values)
+                containerStation.Restore(inf);
+        }
+
         public void Update()
         {
             foreach (var containerStation in ContainerHandlingItems.Values)
@@ -323,7 +321,7 @@ namespace Orts.Simulation
         public int MaxStackedContainers;
         public Vector3[] StackXNALocations;
         public int StackXNALocationsCount;
-        public int[] AllocatedContainerIndices;
+ //       public int[] AllocatedContainerIndices;
         public float PickingSurfaceYOffset;
         public Vector3 PickingSurfaceRelativeTopStartPosition;
         public float TargetX;
@@ -338,10 +336,10 @@ namespace Orts.Simulation
         private int freePositionVertical;
         private int loadPositionVertical;
         public Container UnloadContainer;
-        public Matrix GeneralRelativeContainerPosition;
         public Matrix RelativeContainerPosition;
         public Matrix InitialInvAnimationXNAMatrix = Matrix.Identity;
         public Matrix AnimationXNAMatrix = Matrix.Identity;
+        private float GeneralVerticalOffset;
         private FreightAnimationDiscrete LinkedFreightAnimation;
         public float LoadingEndDelayS { get; protected set; } = 2f;
         public float UnloadingStartDelayS { get; protected set; } = 3f;
@@ -392,11 +390,11 @@ namespace Orts.Simulation
             MaxStackedContainers = thisWorldObj.MaxStackedContainers;
             StackXNALocationsCount = thisWorldObj.StackXNALocations.Locations.Length;
             StackXNALocations = new Vector3[StackXNALocationsCount];
-            AllocatedContainerIndices = new int[StackXNALocationsCount * MaxStackedContainers];
-            int i;
-            for (i = 0; i < AllocatedContainerIndices.Length; i++)
-                AllocatedContainerIndices[i] = -1;
-            i = 0;
+//            AllocatedContainerIndices = new int[StackXNALocationsCount * MaxStackedContainers];
+ //           int i;
+//            for (i = 0; i < AllocatedContainerIndices.Length; i++)
+//                AllocatedContainerIndices[i] = -1;
+            int i = 0;
             foreach (var stackLocation in thisWorldObj.StackXNALocations.Locations)
             {
                 StackXNALocations[i].X = stackLocation.X;
@@ -407,6 +405,42 @@ namespace Orts.Simulation
             PickingSurfaceYOffset = thisWorldObj.PickingSurfaceYOffset;
             PickingSurfaceRelativeTopStartPosition = thisWorldObj.PickingSurfaceRelativeTopStartPosition;
             DelayTimer = new Timer(this);
+        }
+
+        public void Save(BinaryWriter outf)
+        {
+            outf.Write((int)Status);
+            outf.Write(GeneralVerticalOffset);
+            ORTSMath.SaveMatrix(outf, RelativeContainerPosition);
+            outf.Write(Containers.Count);
+            foreach (var container in Containers)
+                container.Save(outf, fromContainerStation:true);
+
+        }
+
+        public void Restore(BinaryReader inf)
+        {
+            var status = (ContainerStationStatus)inf.ReadInt32();
+            // in general start with preceding state
+            switch (status)
+            {
+                case ContainerStationStatus.Idle:
+                    Status = status;
+                    break;
+                 default:
+                    Status = ContainerStationStatus.Idle;
+                    break;
+            }
+            GeneralVerticalOffset = inf.ReadSingle();
+            RelativeContainerPosition = ORTSMath.RestoreMatrix(inf);
+            var nContainer = inf.ReadInt32();
+            if (nContainer > 0)
+                for (int i = 0; i < nContainer; i++)
+                {
+                    var container = new Container(inf, null, this, fromContainerStation:true);
+                    Containers.Add(container);
+                    Simulator.ContainerManager.Containers.Add(container);
+                }
         }
 
         public bool Refill()
@@ -521,7 +555,7 @@ namespace Orts.Simulation
                     if (subMissionTerminated)
                     {
                         MoveX = MoveZ = false;
-                        TargetY = Containers[AttachedContainerIndex].HeightM + Containers[AttachedContainerIndex].IntrinsicShapeOffset.Y - PickingSurfaceYOffset + GeneralRelativeContainerPosition.M42 - PickingSurfaceYOffset;
+                        TargetY = Containers[AttachedContainerIndex].HeightM + Containers[AttachedContainerIndex].IntrinsicShapeOffset.Y - PickingSurfaceYOffset + GeneralVerticalOffset - PickingSurfaceYOffset;
                         MoveY = true;
                         Status = ContainerStationStatus.LoadLowerToLayOnWagon;
                     }
@@ -589,7 +623,7 @@ namespace Orts.Simulation
                         MoveX = false;
                         MoveZ = false;
                         Status = ContainerStationStatus.UnloadLowerToPick;
-                        TargetY = - PickingSurfaceYOffset + UnloadContainer.HeightM + UnloadContainer.IntrinsicShapeOffset.Y + GeneralRelativeContainerPosition.M42 - PickingSurfaceYOffset;
+                        TargetY = - PickingSurfaceYOffset + UnloadContainer.HeightM + UnloadContainer.IntrinsicShapeOffset.Y + GeneralVerticalOffset - PickingSurfaceYOffset;
                         RelativeContainerPosition.M42 = PickingSurfaceYOffset - (UnloadContainer.HeightM + UnloadContainer.IntrinsicShapeOffset.Y);
                         MoveY = true;
                     }
@@ -609,6 +643,7 @@ namespace Orts.Simulation
                     if (DelayTimer.Triggered)
                     {
                         LinkedFreightAnimation.Loaded = false;
+                        LinkedFreightAnimation.Container = null;
                         LinkedFreightAnimation = null;
                         DelayTimer.Stop();
                         AttachedContainerIndex = Containers.Count - 1;
@@ -677,9 +712,9 @@ namespace Orts.Simulation
             LinkedFreightAnimation = linkedFreightAnimation;
             RelativeContainerPosition = new Matrix();
             LinkedFreightAnimation.Wagon.WorldPosition.NormalizeTo(ShapePosition.TileX, ShapePosition.TileZ);
-            GeneralRelativeContainerPosition = Matrix.Multiply(LinkedFreightAnimation.Container.WorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
-            GeneralRelativeContainerPosition.M42 += PickingSurfaceYOffset;
-            RelativeContainerPosition = GeneralRelativeContainerPosition;
+            RelativeContainerPosition = Matrix.Multiply(LinkedFreightAnimation.Container.WorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
+            RelativeContainerPosition.M42 += PickingSurfaceYOffset;
+            GeneralVerticalOffset = RelativeContainerPosition.M42;
 //            RelativeContainerPosition.Translation += LinkedFreightAnimation.Offset;
             ContainerFlipped = (Math.Abs(InitialInvAnimationXNAMatrix.M11 - LinkedFreightAnimation.Container.WorldPosition.XNAMatrix.M11) < 0.1f ? false : true);
             Status = ContainerStationStatus.UnloadRaiseToPick;

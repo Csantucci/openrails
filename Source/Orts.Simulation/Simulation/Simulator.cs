@@ -136,6 +136,7 @@ namespace Orts.Simulation
         public string PathName = "<unknown>";
         public float InitialTileX;
         public float InitialTileZ;
+        public bool Initialize = true;
         public HazzardManager HazzardManager;
         public FuelManager FuelManager;
         public ContainerManager ContainerManager;
@@ -522,6 +523,7 @@ namespace Orts.Simulation
 
         public void Restore(BinaryReader inf, string pathName, float initialTileX, float initialTileZ, CancellationToken cancellation)
         {
+            Initialize = false;
             ClockTime = inf.ReadDouble();
             Season = (SeasonType)inf.ReadInt32();
             WeatherType = (WeatherType)inf.ReadInt32();
@@ -531,9 +533,8 @@ namespace Orts.Simulation
             InitialTileX = initialTileX;
             InitialTileZ = initialTileZ;
             PoolHolder = new Poolholder(inf, this);
-
-            Signals = new Signals(this, SIGCFG, inf, cancellation);
             ContainerManager = new ContainerManager(this);
+            Signals = new Signals(this, SIGCFG, inf, cancellation);
             RestoreTrains(inf);
             LevelCrossings = new LevelCrossings(this);
             AI = new AI(this, inf);
@@ -552,6 +553,7 @@ namespace Orts.Simulation
             ActivityRun = Orts.Simulation.Activity.Restore(inf, this, ActivityRun);
             Signals.RestoreTrains(Trains);  // restore links to trains
             Signals.Update(true);           // update all signals once to set proper stat
+            ContainerManager.Restore(inf);
             MPManager.Instance().RememberOriginalSwitchState(); // this prepares a string that must then be passed to clients
         }
 
@@ -574,6 +576,7 @@ namespace Orts.Simulation
                 foreach (var movingtable in MovingTables) movingtable.Save(outf);
 
             Orts.Simulation.Activity.Save(outf, ActivityRun);
+            ContainerManager.Save(outf);
         }
 
         Train InitializeTrains(CancellationToken cancellation)

@@ -116,7 +116,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 {
                     Animations.Add(new FreightAnimationDiscrete(stf, wagon));
                     if (wagon.WeightLoadController == null) wagon.WeightLoadController = new MSTSNotchController(0, 1, 0.01f);
-                    if ((Animations.Last() as FreightAnimationDiscrete).LoadedAtStart)
+                    if ((Animations.Last() as FreightAnimationDiscrete).LoadedAtStart && wagon.Simulator.Initialize)
                     {
                         if (empty)
                         {
@@ -212,7 +212,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 else if (freightAnim is FreightAnimationDiscrete)
                 {
                     Animations.Add(new FreightAnimationDiscrete(freightAnim as FreightAnimationDiscrete, wagon));
-                    if ((Animations.Last() as FreightAnimationDiscrete).LoadedAtStart)
+                    if ((Animations.Last() as FreightAnimationDiscrete).LoadedAtStart && wagon.Simulator.Initialize && (Animations.Last() as FreightAnimationDiscrete).Container != null)
                     {
                         if (empty)
                         {
@@ -499,8 +499,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 }),
                 new STFReader.TokenProcessor("container", ()=>
                 {
-                    Container = new Container(stf, this);
-                    wagon.Simulator.ContainerManager.Containers.Add(Container);
+                    if (wagon.Simulator.Initialize)
+                    {
+                        Container = new Container(stf, this);
+                        wagon.Simulator.ContainerManager.Containers.Add(Container);
+                    }
                 }),
                 new STFReader.TokenProcessor("loadedatstart", ()=>{ LoadedAtStart = stf.ReadBoolBlock(true);}),
             });
@@ -521,9 +524,13 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             SubType = freightAnimDiscrete.SubType;
             LoadedAtStart = freightAnimDiscrete.LoadedAtStart;
             Offset = freightAnimDiscrete.Offset;
-            Container = new Container(freightAnimDiscrete, this);
-            LoadingSurfaceOffset = Container.IntrinsicShapeOffset - Offset;
-            wagon.Simulator.ContainerManager.Containers.Add(Container);
+            LoadingSurfaceOffset = freightAnimDiscrete.LoadingSurfaceOffset;
+            if (wagon.Simulator.Initialize && freightAnimDiscrete.Container != null)
+            {
+                Container = new Container(freightAnimDiscrete, this);
+                LoadingSurfaceOffset = Container.IntrinsicShapeOffset - Offset;
+                wagon.Simulator.ContainerManager.Containers.Add(Container);
+            }
         }
 
         public void Save(BinaryWriter outf)
@@ -549,7 +556,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             var containerPresent = inf.ReadBoolean();
             if (containerPresent)
             {
-                Container = new Container(inf, this);
+                Container = new Container(inf, this, null);
                 Wagon.Simulator.ContainerManager.Containers.Add(Container);
             }    
         }
