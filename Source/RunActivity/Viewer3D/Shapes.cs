@@ -1214,9 +1214,9 @@ namespace Orts.Viewer3D
             controllerX = SharedShape.Animations[0].anim_nodes[IAnimationMatrixX].controllers[0];
             controllerY = SharedShape.Animations[0].anim_nodes[IAnimationMatrixY].controllers[0];
             controllerZ = SharedShape.Animations[0].anim_nodes[IAnimationMatrixZ].controllers[0];
-            AnimationKeyX = Math.Abs((0 - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X));
-            AnimationKeyY = Math.Abs((0 - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y));
-            AnimationKeyZ = Math.Abs((0 - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z));
+            AnimationKeyX = Math.Abs((0 - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X)) * controllerX[1].Frame;
+            AnimationKeyY = Math.Abs((0 - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y)) * controllerY[1].Frame;
+            AnimationKeyZ = Math.Abs((0 - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z)) * controllerZ[1].Frame;
             if (FuelPickupItemObj.CraneSound != null)
             {
                 var soundPath = Viewer.Simulator.RoutePath + @"\\sound\\" + FuelPickupItemObj.CraneSound;
@@ -1321,7 +1321,7 @@ namespace Orts.Viewer3D
                 float tempFrameRate;
                 if (ContainerHandlingItem.MoveX)
                 {
-                    var animationTarget = Math.Abs((ContainerHandlingItem.TargetX - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X));
+                    var animationTarget = Math.Abs((ContainerHandlingItem.TargetX - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X)) * controllerX[1].Frame;
                     //                    if (AnimationKey == 0 && Sound != null) Sound.HandleEvent(Event.FuelTowerDown);
                     tempFrameRate = Math.Abs(AnimationKeyX - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
                     if (AnimationKeyX < animationTarget)
@@ -1334,7 +1334,7 @@ namespace Orts.Viewer3D
 
                 if (ContainerHandlingItem.MoveY)
                 {
-                    var animationTarget = Math.Abs((ContainerHandlingItem.TargetY - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y));
+                    var animationTarget = Math.Abs((ContainerHandlingItem.TargetY - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y)) * controllerY[1].Frame;
                     tempFrameRate = Math.Abs(AnimationKeyY - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
                     if (AnimationKeyY < animationTarget)
                         AnimationKeyY+= elapsedTime.ClockSeconds * tempFrameRate;
@@ -1346,7 +1346,7 @@ namespace Orts.Viewer3D
 
                 if (ContainerHandlingItem.MoveZ)
                 {
-                    var animationTarget = Math.Abs((ContainerHandlingItem.TargetZ - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z));
+                    var animationTarget = Math.Abs((ContainerHandlingItem.TargetZ - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z)) * controllerZ[1].Frame;
                     tempFrameRate = Math.Abs(AnimationKeyZ - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
                     if (AnimationKeyZ< animationTarget)
                         AnimationKeyZ += elapsedTime.ClockSeconds * tempFrameRate;
@@ -1356,9 +1356,9 @@ namespace Orts.Viewer3D
                         AnimationKeyZ = 0;
                 }
             }
-            ContainerHandlingItem.ActualX = (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X) * AnimationKeyX + ((linear_key)controllerX[0]).X;
-            ContainerHandlingItem.ActualY = (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y) * AnimationKeyY + ((linear_key)controllerY[0]).Y;
-            ContainerHandlingItem.ActualZ = (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z) * AnimationKeyZ + ((linear_key)controllerZ[0]).Z;
+            ContainerHandlingItem.ActualX = (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X) * AnimationKeyX / controllerX[1].Frame + ((linear_key)controllerX[0]).X;
+            ContainerHandlingItem.ActualY = (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y) * AnimationKeyY / controllerY[1].Frame + ((linear_key)controllerY[0]).Y;
+            ContainerHandlingItem.ActualZ = (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z) * AnimationKeyZ / controllerZ[1].Frame + ((linear_key)controllerZ[0]).Z;
 
             AnimateOneMatrix(IAnimationMatrixX, AnimationKeyX);
             AnimateOneMatrix(IAnimationMatrixY, AnimationKeyY);
