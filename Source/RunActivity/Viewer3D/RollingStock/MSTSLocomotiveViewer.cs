@@ -449,7 +449,7 @@ namespace Orts.Viewer3D.RollingStock
         /// <param name="train"></param>
         /// <returns>a combination of intake point and pickup that are closest</returns>
         // <CJComment> Might be better in the MSTSLocomotive class, but can't see the World objects from there. </CJComment>
-        WagonAndMatchingPickup GetMatchingPickup(Train train)
+        WagonAndMatchingPickup GetMatchingPickup(Train train, bool onlyUnload = false)
         {
             var worldFiles = Viewer.World.Scenery.WorldFiles;
             var shortestD2 = float.MaxValue;
@@ -476,10 +476,19 @@ namespace Orts.Viewer3D.RollingStock
                                     pickup.Location = new WorldLocation(
                                         worldFile.TileX, worldFile.TileZ,
                                         pickup.Position.X, pickup.Position.Y, pickup.Position.Z);
-                                if ((wagon.FreightAnimations != null && ((uint)wagon.FreightAnimations.FreightType == pickup.PickupType || wagon.FreightAnimations.FreightType == MSTSWagon.PickupType.None) &&
+                                  if ((wagon.FreightAnimations != null && ((uint)wagon.FreightAnimations.FreightType == pickup.PickupType || wagon.FreightAnimations.FreightType == MSTSWagon.PickupType.None) &&
                                     (uint)intake.Type == pickup.PickupType)
                                  || ((uint)intake.Type == pickup.PickupType && (uint)intake.Type > (uint)MSTSWagon.PickupType.FreightSand && (wagon.WagonType == TrainCar.WagonTypes.Tender || wagon is MSTSLocomotive)))
                                 {
+                                    if (intake.Type == MSTSWagon.PickupType.Container)
+                                    {
+                                        var load = wagon.FreightAnimations?.Animations[0] as FreightAnimationDiscrete;
+                                        // discrete freight wagon animation
+                                        if (load != null && load.Loaded && !onlyUnload)
+                                            continue;
+                                        else if ((load == null || !load.Loaded) && onlyUnload)
+                                            continue;
+                                    }
                                     var intakePosition = new Vector3(0, 0, -intake.OffsetM);
                                     Vector3.Transform(ref intakePosition, ref car.WorldPosition.XNAMatrix, out intakePosition);
 
@@ -571,7 +580,7 @@ namespace Orts.Viewer3D.RollingStock
 
             var loco = this.Locomotive;
 
-            var match = GetMatchingPickup(loco.Train);
+            var match = GetMatchingPickup(loco.Train, onlyUnload);
             if (match == null && !(loco is MSTSElectricLocomotive && loco.IsSteamHeatFitted))
                 return;
             if (match == null)
@@ -579,16 +588,32 @@ namespace Orts.Viewer3D.RollingStock
                 Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetString("Refill: Electric loco and no pickup. Command rejected"));
                 return;
             }
-
-            float distanceToPickupM = GetDistanceToM(match) - 2.5f; // Deduct an extra 2.5 so that the tedious placement is less of an issue.
-            if (distanceToPickupM > match.IntakePoint.WidthM / 2)
+            float distanceToPickupM = GetDistanceToM(match);
+            if (match.Wagon.FreightAnimations?.Animations != null && match.Wagon.FreightAnimations.Animations[0] is FreightAnimationDiscrete)
+                // for container cranes andle distance management using Z span of crane
             {
-                Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: Distance to {0} supply is {1}.",
-                    PickupTypeDictionary[(uint)match.Pickup.PickupType], Viewer.Catalog.GetPluralStringFmt("{0} meter", "{0} meters", (long)(distanceToPickupM+1f))));
-                return;
-            }
-            if (distanceToPickupM <= match.IntakePoint.WidthM / 2)
+                var containerStation = Viewer.Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == match.Pickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
+                if (distanceToPickupM > containerStation.MinZSpan)
+                {
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Container crane: Distance to {0} supply is {1}.",
+                        PickupTypeDictionary[(uint)match.Pickup.PickupType], Viewer.Catalog.GetPluralStringFmt("{0} meter", "{0} meters", (long)(distanceToPickupM + 0.5f))));
+                    return;
+                }
                 MSTSWagon.RefillProcess.ActivePickupObjectUID = (int)match.Pickup.UID;
+            }
+            else
+            {
+                distanceToPickupM -= 2.5f; // Deduct an extra 2.5 so that the tedious placement is less of an issue.
+                if (distanceToPickupM > match.IntakePoint.WidthM / 2)
+                {
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: Distance to {0} supply is {1}.",
+                        PickupTypeDictionary[(uint)match.Pickup.PickupType], Viewer.Catalog.GetPluralStringFmt("{0} meter", "{0} meters", (long)(distanceToPickupM + 1f))));
+                    return;
+                }
+                if (distanceToPickupM <= match.IntakePoint.WidthM / 2)
+                    MSTSWagon.RefillProcess.ActivePickupObjectUID = (int)match.Pickup.UID;
+            }
+
             if (loco.SpeedMpS != 0 && match.Pickup.SpeedRange.MaxMpS == 0f)
             {
                 Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: Loco must be stationary to refill {0}.",

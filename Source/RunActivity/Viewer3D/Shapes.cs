@@ -1266,18 +1266,21 @@ namespace Orts.Viewer3D
                     }
             }
             AnimateOneMatrix(IAnimationMatrixX, AnimationKeyX);
-            AnimateOneMatrix(IAnimationMatrixY, AnimationKeyY);
+            AnimateMatrix(IAnimationMatrixY, AnimationKeyY);
             AnimateOneMatrix(IAnimationMatrixZ, AnimationKeyZ);
 
             var absAnimationMatrix = XNAMatrices[IAnimationMatrixY];
             Matrix.Multiply(ref absAnimationMatrix, ref XNAMatrices[IAnimationMatrixX], out absAnimationMatrix);
             Matrix.Multiply(ref absAnimationMatrix, ref XNAMatrices[IAnimationMatrixZ], out absAnimationMatrix);
             Matrix.Multiply(ref absAnimationMatrix, ref Location.XNAMatrix, out absAnimationMatrix);
+            ContainerHandlingItem.PassZSpanParameters(((linear_key)controllerZ[0]).Z, ((linear_key)controllerZ[1]).Z);
             ContainerHandlingItem.ReInitPositionOffset(absAnimationMatrix);
 
-            AnimationKeyX = AnimationKeyY = AnimationKeyZ = 0;
+            AnimationKeyX = Math.Abs((ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition.X - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X)) * controllerX[1].Frame;
+            AnimationKeyY = Math.Abs((ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition.Y - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y)) * controllerY[1].Frame;
+            AnimationKeyZ = Math.Abs((ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition.Z - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z)) * controllerZ[1].Frame;
             AnimateOneMatrix(IAnimationMatrixX, AnimationKeyX);
-            AnimateOneMatrix(IAnimationMatrixY, AnimationKeyY);
+            AnimateMatrix(IAnimationMatrixY, AnimationKeyY);
             AnimateOneMatrix(IAnimationMatrixZ, AnimationKeyZ);
         }
 
@@ -1361,7 +1364,7 @@ namespace Orts.Viewer3D
             ContainerHandlingItem.ActualZ = (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z) * AnimationKeyZ / controllerZ[1].Frame + ((linear_key)controllerZ[0]).Z;
 
             AnimateOneMatrix(IAnimationMatrixX, AnimationKeyX);
-            AnimateOneMatrix(IAnimationMatrixY, AnimationKeyY);
+            AnimateMatrix(IAnimationMatrixY, AnimationKeyY);
             AnimateOneMatrix(IAnimationMatrixZ, AnimationKeyZ);
 
             /*           for (var i = 0; i < SharedShape.Matrices.Length; ++i)

@@ -340,6 +340,7 @@ namespace Orts.Simulation
         public Matrix InitialInvAnimationXNAMatrix = Matrix.Identity;
         public Matrix AnimationXNAMatrix = Matrix.Identity;
         private float GeneralVerticalOffset;
+        public float MinZSpan;
         private FreightAnimationDiscrete LinkedFreightAnimation;
         public float LoadingEndDelayS { get; protected set; } = 2f;
         public float UnloadingStartDelayS { get; protected set; } = 3f;
@@ -714,6 +715,7 @@ namespace Orts.Simulation
             LinkedFreightAnimation.Wagon.WorldPosition.NormalizeTo(ShapePosition.TileX, ShapePosition.TileZ);
             RelativeContainerPosition = Matrix.Multiply(LinkedFreightAnimation.Container.WorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
             RelativeContainerPosition.M42 += PickingSurfaceYOffset;
+            RelativeContainerPosition.M41 -= PickingSurfaceRelativeTopStartPosition.X;
             GeneralVerticalOffset = RelativeContainerPosition.M42;
 //            RelativeContainerPosition.Translation += LinkedFreightAnimation.Offset;
             ContainerFlipped = (Math.Abs(InitialInvAnimationXNAMatrix.M11 - LinkedFreightAnimation.Container.WorldPosition.XNAMatrix.M11) < 0.1f ? false : true);
@@ -771,6 +773,11 @@ namespace Orts.Simulation
         public void ReInitPositionOffset (Matrix animationXNAMatrix)
         {
             InitialInvAnimationXNAMatrix = Matrix.Invert(animationXNAMatrix);
+        }
+
+        public void PassZSpanParameters(float z1Span, float z2Span)
+        {
+            MinZSpan = Math.Min(Math.Abs(z1Span), Math.Abs(z2Span));
         }
 
     } // end Class ContainerHandlingItem
