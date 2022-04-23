@@ -4121,19 +4121,19 @@ namespace Orts.Simulation.RollingStocks
                 FreightAnimations.FreightType = (MSTSWagon.PickupType)type;
                 FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
             }
+            var containerStation = Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == matchPickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
+            if (containerStation.Status != ContainerHandlingItem.ContainerStationStatus.Idle)
+            {
+                Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Container station busy with preceding mission"));
+                return;
+            }
             if (!unload)
             {
-                var containerStation = Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == matchPickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
                 if (containerStation.Containers.Count == 0)
                 {
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("No containers to load"));
                     return;
                 }  
-                if (containerStation.Status != ContainerHandlingItem.ContainerStationStatus.Idle)
-                {
-                    Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Container station busy with preceding mission"));
-                    return;
-                }
                 var container = containerStation.Containers.Last();
                 Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting load"));
                 // immediate load at the moment
@@ -4144,7 +4144,6 @@ namespace Orts.Simulation.RollingStocks
             }
             else
             {
-                var containerStation = Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == matchPickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
                 if (containerStation.Containers.Count >= containerStation.MaxStackedContainers * containerStation.StackXNALocationsCount)
                 {
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Container station full, can't unload"));
