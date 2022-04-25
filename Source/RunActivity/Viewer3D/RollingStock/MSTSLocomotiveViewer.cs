@@ -484,10 +484,20 @@ namespace Orts.Viewer3D.RollingStock
                                     {
                                         var load = wagon.FreightAnimations?.Animations[0] as FreightAnimationDiscrete;
                                         // discrete freight wagon animation
-                                        if (load != null && load.Loaded && !onlyUnload)
+                                        if (load == null)
                                             continue;
-                                        else if ((load == null || !load.Loaded) && onlyUnload)
+                                        else if (!load.DoubleStacker)
+                                        {
+                                            if (load.Loaded && !onlyUnload)
+                                                continue;
+                                            else if (!load.Loaded && onlyUnload)
+                                                continue;
+                                        }
+                                        else if (load.Container2 != null && !onlyUnload)
                                             continue;
+                                        else if (load.Container2 == null && load.Container == null && onlyUnload)
+                                            continue;
+
                                     }
                                     var intakePosition = new Vector3(0, 0, -intake.OffsetM);
                                     Vector3.Transform(ref intakePosition, ref car.WorldPosition.XNAMatrix, out intakePosition);
@@ -692,25 +702,44 @@ namespace Orts.Viewer3D.RollingStock
                 {
                     var load = match.Wagon.FreightAnimations?.Animations[0] as FreightAnimationDiscrete;
                     // discrete freight wagon animation
-                    if (load != null && load.Loaded && !onlyUnload)
+                    if (load == null)
+                    {
+                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("wag file not equipped for containers"));
+                        return;
+                    }
+                    else if (!load.DoubleStacker)
+                    {
+                        if (load.Loaded && !onlyUnload)
+                        {
+                            Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now loaded.",
+                                PickupTypeDictionary[match.Pickup.PickupType]));
+                            return;
+                        }
+                        else if (!load.Loaded && onlyUnload)
+                        {
+                            Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now unloaded.",
+                                PickupTypeDictionary[match.Pickup.PickupType]));
+                            return;
+                        }
+                    }
+                    else if (load.Container2 != null && !onlyUnload)
                     {
                         Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now loaded.",
                             PickupTypeDictionary[match.Pickup.PickupType]));
                         return;
                     }
-                    else if ((load == null || !load.Loaded) && onlyUnload)
+                    else if (load.Container2 == null && load.Container == null && onlyUnload)
                     {
                         Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now unloaded.",
                             PickupTypeDictionary[match.Pickup.PickupType]));
                         return;
                     }
-                    else
-                    {
-                        MSTSWagon.RefillProcess.OkToRefill = true;
-                        MSTSWagon.RefillProcess.Unload = onlyUnload;
-                        match.Wagon.StartLoadingOrUnloading(match.Pickup, match.IntakePoint, MSTSWagon.RefillProcess.Unload);
-                        MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
-                    }
+
+                    MSTSWagon.RefillProcess.OkToRefill = true;
+                    MSTSWagon.RefillProcess.Unload = onlyUnload;
+                    match.Wagon.StartLoadingOrUnloading(match.Pickup, match.IntakePoint, MSTSWagon.RefillProcess.Unload);
+                    MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
+
                 }
             }
         }

@@ -462,10 +462,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public bool Loaded = false;
         public bool LoadedAtStart = false;
         public IntakePoint LinkedIntakePoint = null;
-        public Vector3 LoadingSurfaceOffset;
         public Vector3 Offset;
         public MSTSWagon Wagon;
         public Container Container;
+        public Container Container2;
+        public bool DoubleStacker = false;
 
         public FreightAnimationDiscrete(STFReader stf, MSTSWagon wagon)
         {
@@ -497,6 +498,10 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     Offset = stf.ReadVector3Block(STFReader.UNITS.Distance,  new Vector3(0, 0, 0));
                     Offset.Z *= -1; // MSTS --> XNA
                 }),
+                new STFReader.TokenProcessor("doublestacker", ()=>
+                {
+                    DoubleStacker = stf.ReadBoolBlock(true);
+                }),
                 new STFReader.TokenProcessor("container", ()=>
                 {
                     if (wagon.Simulator.Initialize)
@@ -505,10 +510,16 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         wagon.Simulator.ContainerManager.Containers.Add(Container);
                     }
                 }),
+                new STFReader.TokenProcessor("container2", ()=>
+                {
+                    if (wagon.Simulator.Initialize && DoubleStacker)
+                    {
+                        Container2 = new Container(stf, this);
+                        wagon.Simulator.ContainerManager.Containers.Add(Container2);
+                    }
+                }),
                 new STFReader.TokenProcessor("loadedatstart", ()=>{ LoadedAtStart = stf.ReadBoolBlock(true);}),
             });
-            if (Container != null)
-                LoadingSurfaceOffset = Container.IntrinsicShapeOffset - Offset;
         }
 
         // for copy
@@ -523,26 +534,32 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             }
             SubType = freightAnimDiscrete.SubType;
             LoadedAtStart = freightAnimDiscrete.LoadedAtStart;
+            DoubleStacker = freightAnimDiscrete.DoubleStacker;
             Offset = freightAnimDiscrete.Offset;
-            LoadingSurfaceOffset = freightAnimDiscrete.LoadingSurfaceOffset;
             if (wagon.Simulator.Initialize && freightAnimDiscrete.Container != null)
             {
                 Container = new Container(freightAnimDiscrete, this);
-                LoadingSurfaceOffset = Container.IntrinsicShapeOffset - Offset;
                 wagon.Simulator.ContainerManager.Containers.Add(Container);
+            }
+            if (wagon.Simulator.Initialize && freightAnimDiscrete.Container2 != null)
+            {
+                Container2 = new Container(freightAnimDiscrete, this);
+                wagon.Simulator.ContainerManager.Containers.Add(Container2);
             }
         }
 
         public void Save(BinaryWriter outf)
         {
             outf.Write(Loaded);
-            outf.Write(LoadingSurfaceOffset.X);
-            outf.Write(LoadingSurfaceOffset.Y);
-            outf.Write(LoadingSurfaceOffset.Z);
             if (Container != null)
             {
                 outf.Write(true);
                 Container.Save(outf);
+            }
+            if (Container2 != null)
+            {
+                outf.Write(true);
+                Container2.Save(outf);
             }
             else outf.Write(false);
         }
@@ -550,15 +567,18 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public void Restore(BinaryReader inf)
         {
             Loaded = inf.ReadBoolean();
-            LoadingSurfaceOffset.X = inf.ReadSingle();
-            LoadingSurfaceOffset.Y = inf.ReadSingle();
-            LoadingSurfaceOffset.Z = inf.ReadSingle();
             var containerPresent = inf.ReadBoolean();
             if (containerPresent)
             {
                 Container = new Container(inf, this, null);
                 Wagon.Simulator.ContainerManager.Containers.Add(Container);
-            }    
+            }
+            containerPresent = inf.ReadBoolean();
+            if (containerPresent)
+            {
+                Container2 = new Container(inf, this, null);
+                Wagon.Simulator.ContainerManager.Containers.Add(Container2);
+            }
         }
     }
 }

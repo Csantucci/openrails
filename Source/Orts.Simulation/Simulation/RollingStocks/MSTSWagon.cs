@@ -2013,6 +2013,13 @@ namespace Orts.Simulation.RollingStocks
                             container.WorldPosition.TileX = WorldPosition.TileX;
                             container.WorldPosition.TileZ = WorldPosition.TileZ;
                         }
+                        if (discreteFreightAnim.Container2 != null)
+                        {
+                            var container = discreteFreightAnim.Container2;
+                            container.WorldPosition.XNAMatrix = Matrix.Multiply(container.RelativeContainerMatrix, discreteFreightAnim.Wagon.WorldPosition.XNAMatrix);
+                            container.WorldPosition.TileX = WorldPosition.TileX;
+                            container.WorldPosition.TileZ = WorldPosition.TileZ;
+                        }
                     }
                 }
             }
@@ -4134,11 +4141,11 @@ namespace Orts.Simulation.RollingStocks
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("No containers to load"));
                     return;
                 }  
-                var container = containerStation.Containers.Last();
+ //               var container = containerStation.Containers.Last();
                 Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting load"));
                 // immediate load at the moment
                 FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
-                FreightAnimations.DiscreteLoadedOne.Container = container;
+//                FreightAnimations.DiscreteLoadedOne.Container = container;
                 containerStation.PrepareForLoad(FreightAnimations.DiscreteLoadedOne);
  //               FreightAnimations.DiscreteLoadedOne.Loaded = true;
             }
