@@ -1711,6 +1711,7 @@ namespace Orts.Parsers.Msts
         ORTSStackLocations,
         ORTSPickingSurfaceYOffset,
         ORTSPickingSurfaceRelativeTopStartPosition,
+        ORTSMaxGrabberSpan,
         StackLocation,
 
         // TSRE specific

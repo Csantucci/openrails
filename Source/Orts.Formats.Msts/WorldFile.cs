@@ -317,6 +317,7 @@ namespace Orts.Formats.Msts
         public StackXNALocationItems StackXNALocations;
         public float PickingSurfaceYOffset;
         public Vector3 PickingSurfaceRelativeTopStartPosition;
+        public float MaxGrabberSpan;
         public string CraneSound;
 
         public WorldLocation Location;
@@ -345,6 +346,7 @@ namespace Orts.Formats.Msts
                 case TokenID.ORTSStackLocations: StackXNALocations = new StackXNALocationItems(subBlock); break;
                 case TokenID.ORTSPickingSurfaceYOffset: PickingSurfaceYOffset = subBlock.ReadFloat(); break;
                 case TokenID.ORTSPickingSurfaceRelativeTopStartPosition: PickingSurfaceRelativeTopStartPosition = subBlock.ReadVector3(); break;
+                case TokenID.ORTSMaxGrabberSpan: MaxGrabberSpan = subBlock.ReadFloat(); break;
                 case TokenID.ORTSCraneSound: CraneSound = subBlock.ReadString(); break;
                 case TokenID.PickupAnimData: PickupAnimData = new PickupAnimDataItem(subBlock); break;
                 case TokenID.PickupCapacity: PickupCapacity = new PickupCapacityItem(subBlock); break;

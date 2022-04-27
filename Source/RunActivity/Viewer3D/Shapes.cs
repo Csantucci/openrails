@@ -1179,12 +1179,18 @@ namespace Orts.Viewer3D
         protected float AnimationKeyX;
         protected float AnimationKeyY;
         protected float AnimationKeyZ;
+        protected float AnimationKeyGrabber01;
+        protected float AnimationKeyGrabber02;
         protected int IAnimationMatrixX;
         protected int IAnimationMatrixY;
         protected int IAnimationMatrixZ;
+        protected int IGrabber01;
+        protected int IGrabber02;
         protected controller controllerX;
         protected controller controllerY;
         protected controller controllerZ;
+        protected controller controllerGrabber01;
+        protected controller controllerGrabber02;
         protected float slowDownThreshold = 0.03f;
         protected SoundSource Sound;
         // To detect transitions that trigger sounds
@@ -1209,11 +1215,17 @@ namespace Orts.Viewer3D
                     IAnimationMatrixX = imatrix;
                 else if (SharedShape.MatrixNames[imatrix].ToLower() == "yaxis")
                     IAnimationMatrixY = imatrix;
+                else if (SharedShape.MatrixNames[imatrix].ToLower() == "grabber01")
+                    IGrabber01 = imatrix;
+                else if (SharedShape.MatrixNames[imatrix].ToLower() == "grabber02")
+                    IGrabber02 = imatrix;
             }
             
             controllerX = SharedShape.Animations[0].anim_nodes[IAnimationMatrixX].controllers[0];
             controllerY = SharedShape.Animations[0].anim_nodes[IAnimationMatrixY].controllers[0];
             controllerZ = SharedShape.Animations[0].anim_nodes[IAnimationMatrixZ].controllers[0];
+            controllerGrabber01 = SharedShape.Animations[0].anim_nodes[IGrabber01].controllers[0];
+            controllerGrabber02 = SharedShape.Animations[0].anim_nodes[IGrabber02].controllers[0];
             AnimationKeyX = Math.Abs((0 - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X)) * controllerX[1].Frame;
             AnimationKeyY = Math.Abs((0 - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y)) * controllerY[1].Frame;
             AnimationKeyZ = Math.Abs((0 - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z)) * controllerZ[1].Frame;
@@ -1266,22 +1278,30 @@ namespace Orts.Viewer3D
                     }
             }
             AnimateOneMatrix(IAnimationMatrixX, AnimationKeyX);
-            AnimateMatrix(IAnimationMatrixY, AnimationKeyY);
+            AnimateOneMatrix(IAnimationMatrixY, AnimationKeyY);
             AnimateOneMatrix(IAnimationMatrixZ, AnimationKeyZ);
 
             var absAnimationMatrix = XNAMatrices[IAnimationMatrixY];
             Matrix.Multiply(ref absAnimationMatrix, ref XNAMatrices[IAnimationMatrixX], out absAnimationMatrix);
             Matrix.Multiply(ref absAnimationMatrix, ref XNAMatrices[IAnimationMatrixZ], out absAnimationMatrix);
             Matrix.Multiply(ref absAnimationMatrix, ref Location.XNAMatrix, out absAnimationMatrix);
-            ContainerHandlingItem.PassZSpanParameters(((linear_key)controllerZ[0]).Z, ((linear_key)controllerZ[1]).Z);
+            ContainerHandlingItem.PassSpanParameters(((linear_key)controllerZ[0]).Z, ((linear_key)controllerZ[1]).Z,
+                ((linear_key)controllerGrabber01[0]).Z, ((linear_key)controllerGrabber02[0]).Z);
             ContainerHandlingItem.ReInitPositionOffset(absAnimationMatrix);
 
             AnimationKeyX = Math.Abs((ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition.X - ((linear_key)controllerX[0]).X) / (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X)) * controllerX[1].Frame;
             AnimationKeyY = Math.Abs((ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition.Y - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y)) * controllerY[1].Frame;
             AnimationKeyZ = Math.Abs((ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition.Z - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z)) * controllerZ[1].Frame;
             AnimateOneMatrix(IAnimationMatrixX, AnimationKeyX);
-            AnimateMatrix(IAnimationMatrixY, AnimationKeyY);
+            AnimateOneMatrix(IAnimationMatrixY, AnimationKeyY);
             AnimateOneMatrix(IAnimationMatrixZ, AnimationKeyZ);
+            for (var imatrix = 0; imatrix < SharedShape.Matrices.Length; ++imatrix)
+            {
+                if (SharedShape.MatrixNames[imatrix].ToLower().StartsWith("cable"))
+                    AnimateOneMatrix(imatrix, AnimationKeyY);
+                if (SharedShape.MatrixNames[imatrix].ToLower().StartsWith("grabber"))
+                    AnimateOneMatrix(imatrix, 0);
+            }
         }
 
         public override void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)
@@ -1358,17 +1378,46 @@ namespace Orts.Viewer3D
                     if (AnimationKeyZ < 0)
                         AnimationKeyZ = 0;
                 }
+
+                if (ContainerHandlingItem.MoveGrabber)
+                {
+                    var animationTarget = Math.Abs((ContainerHandlingItem.TargetGrabber01 - ((linear_key)controllerGrabber01[0]).Z) / (((linear_key)controllerGrabber01[1]).Z - ((linear_key)controllerGrabber01[0]).Z)) * controllerGrabber01[1].Frame;
+                    tempFrameRate = Math.Abs(AnimationKeyGrabber01 - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
+                    if (AnimationKeyGrabber01 < animationTarget)
+                        AnimationKeyGrabber01 += elapsedTime.ClockSeconds * tempFrameRate;
+                    else if (AnimationKeyGrabber01 > animationTarget)
+                        AnimationKeyGrabber01 -= elapsedTime.ClockSeconds * tempFrameRate;
+                    if (AnimationKeyGrabber01 < 0)
+                        AnimationKeyGrabber01 = 0;
+                    animationTarget = Math.Abs((ContainerHandlingItem.TargetGrabber02 - ((linear_key)controllerGrabber02[0]).Z) / (((linear_key)controllerGrabber02[1]).Z - ((linear_key)controllerGrabber02[0]).Z)) * controllerGrabber02[1].Frame;
+                    tempFrameRate = Math.Abs(AnimationKeyGrabber01 - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
+                    if (AnimationKeyGrabber02 < animationTarget)
+                        AnimationKeyGrabber02 += elapsedTime.ClockSeconds * tempFrameRate;
+                    else if (AnimationKeyGrabber02 > animationTarget)
+                        AnimationKeyGrabber02 -= elapsedTime.ClockSeconds * tempFrameRate;
+                    if (AnimationKeyGrabber02 < 0)
+                        AnimationKeyGrabber02 = 0;
+                }
             }
             ContainerHandlingItem.ActualX = (((linear_key)controllerX[1]).X - ((linear_key)controllerX[0]).X) * AnimationKeyX / controllerX[1].Frame + ((linear_key)controllerX[0]).X;
             ContainerHandlingItem.ActualY = (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y) * AnimationKeyY / controllerY[1].Frame + ((linear_key)controllerY[0]).Y;
             ContainerHandlingItem.ActualZ = (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z) * AnimationKeyZ / controllerZ[1].Frame + ((linear_key)controllerZ[0]).Z;
+            ContainerHandlingItem.ActualGrabber01 = (((linear_key)controllerGrabber01[1]).Z - ((linear_key)controllerGrabber01[0]).Z) * AnimationKeyGrabber01 / controllerGrabber01[1].Frame + ((linear_key)controllerGrabber01[0]).Z;
+            ContainerHandlingItem.ActualGrabber02 = (((linear_key)controllerGrabber02[1]).Z - ((linear_key)controllerGrabber02[0]).Z) * AnimationKeyGrabber02 / controllerGrabber02[1].Frame + ((linear_key)controllerGrabber02[0]).Z;
 
             AnimateOneMatrix(IAnimationMatrixX, AnimationKeyX);
-            AnimateMatrix(IAnimationMatrixY, AnimationKeyY);
+            AnimateOneMatrix(IAnimationMatrixY, AnimationKeyY);
             AnimateOneMatrix(IAnimationMatrixZ, AnimationKeyZ);
+            for (var imatrix = 0; imatrix < SharedShape.Matrices.Length; ++imatrix)
+            {
+                if (SharedShape.MatrixNames[imatrix].ToLower().StartsWith("cable"))
+                    AnimateOneMatrix(imatrix, AnimationKeyY);
+                else if (SharedShape.MatrixNames[imatrix].ToLower() == "grabber01")
+                    AnimateOneMatrix(imatrix, AnimationKeyGrabber01);
+                else if (SharedShape.MatrixNames[imatrix].ToLower() == "grabber02")
+                    AnimateOneMatrix(imatrix, AnimationKeyGrabber02);
+            }
 
-            /*           for (var i = 0; i < SharedShape.Matrices.Length; ++i)
-                         AnimateMatrix(i, AnimationKey);*/
             SharedShape.PrepareFrame(frame, Location, XNAMatrices, Flags);
             if (ContainerHandlingItem.AttachedContainerIndex != -1)
             {

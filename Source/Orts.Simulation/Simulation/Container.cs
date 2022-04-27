@@ -154,10 +154,10 @@ namespace Orts.Simulation
             RelativeContainerMatrix = Matrix.Multiply(WorldPosition.XNAMatrix, invWagonMatrix);
         }
 
-        public Container(FreightAnimationDiscrete freightAnimaDiscreteCopy, FreightAnimationDiscrete freightAnimDiscrete)
+        public Container(FreightAnimationDiscrete freightAnimDiscreteCopy, FreightAnimationDiscrete freightAnimDiscrete, bool stacked = false)
         {
             Wagon = freightAnimDiscrete.Wagon;
-            var containerCopy = freightAnimaDiscreteCopy.Container;
+            var containerCopy = stacked? freightAnimDiscrete.Container2 : freightAnimDiscreteCopy.Container;
             BaseShapeFileFolderSlash = containerCopy.BaseShapeFileFolderSlash;
             ShapeFileName = containerCopy.ShapeFileName;
             IntrinsicShapeOffset = containerCopy.IntrinsicShapeOffset;
@@ -168,7 +168,10 @@ namespace Orts.Simulation
             WorldPosition.XNAMatrix = Wagon.WorldPosition.XNAMatrix;
             WorldPosition.TileX = Wagon.WorldPosition.TileX;
             WorldPosition.TileZ = Wagon.WorldPosition.TileZ;
-            var translation = Matrix.CreateTranslation(freightAnimDiscrete.Offset - IntrinsicShapeOffset);
+            var totalOffset = freightAnimDiscrete.Offset - IntrinsicShapeOffset;
+            if (stacked)
+                totalOffset.Y += freightAnimDiscreteCopy.Container.HeightM;
+            var translation = Matrix.CreateTranslation(totalOffset);
             WorldPosition.XNAMatrix = translation * WorldPosition.XNAMatrix;
             var invWagonMatrix = Matrix.Invert(freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix);
             RelativeContainerMatrix = Matrix.Multiply(WorldPosition.XNAMatrix, invWagonMatrix);
@@ -193,7 +196,9 @@ namespace Orts.Simulation
                 var containersCount = containerStation.Containers.Count;
                 var loadPositionHorizontal = containersCount / containerStation.MaxStackedContainers;
                 var loadPositionVertical = containersCount - loadPositionHorizontal * containerStation.MaxStackedContainers;
-                var totalOffset = containerStation.StackXNALocations[loadPositionHorizontal] - IntrinsicShapeOffset;
+                var mstsOffset = IntrinsicShapeOffset;
+                mstsOffset.Z *= -1;
+                var totalOffset = containerStation.StackXNALocations[loadPositionHorizontal] - mstsOffset;
                 if (containersCount != 0)
                 for (var iPos = (containersCount - 1); iPos >= containersCount- loadPositionVertical; iPos--)
                     totalOffset.Y += containerStation.Containers[iPos].HeightM;
@@ -333,12 +338,18 @@ namespace Orts.Simulation
         public float TargetX;
         public float TargetY;
         public float TargetZ;
+        public float TargetGrabber01;
+        public float TargetGrabber02;
         public float ActualX;
         public float ActualY;
         public float ActualZ;
+        public float ActualGrabber01;
+        public float ActualGrabber02;
         public bool MoveX;
         public bool MoveY;
         public bool MoveZ;
+        public bool MoveGrabber;
+        public float Grabber01Offset;
         private int freePositionVertical;
         private int loadPositionVertical;
         public Container UnloadContainer;
@@ -347,6 +358,9 @@ namespace Orts.Simulation
         public Matrix AnimationXNAMatrix = Matrix.Identity;
         private float GeneralVerticalOffset;
         public float MinZSpan;
+        public float Grabber01Max;
+        public float Grabber02Max;
+        public float MaxGrabberSpan;
         private FreightAnimationDiscrete LinkedFreightAnimation;
         public float LoadingEndDelayS { get; protected set; } = 2f;
         public float UnloadingStartDelayS { get; protected set; } = 3f;
@@ -411,6 +425,7 @@ namespace Orts.Simulation
             }
             PickingSurfaceYOffset = thisWorldObj.PickingSurfaceYOffset;
             PickingSurfaceRelativeTopStartPosition = thisWorldObj.PickingSurfaceRelativeTopStartPosition;
+            MaxGrabberSpan = thisWorldObj.MaxGrabberSpan;
             DelayTimer = new Timer(this);
         }
 
@@ -491,10 +506,12 @@ namespace Orts.Simulation
                     }
                     break;
                 case ContainerStationStatus.LoadHorizontallyMoveToPick:
-                    if (subMissionTerminated)
+                    if (subMissionTerminated && (!MoveGrabber ||
+                        Math.Abs(ActualGrabber01 - TargetGrabber01) < 0.02f && Math.Abs(ActualGrabber02 - TargetGrabber02) < 0.02))
                     {
                         MoveX = false;
                         MoveZ = false;
+                        MoveGrabber = false;
                         Status = ContainerStationStatus.LoadLowerToPick;
                         //                       TargetY = UnloadContainer.HeightM + UnloadContainer.IntrinsicShapeYOffset - PickingSurfaceYOffset;
                         TargetY = ComputeTargetYBase(loadPositionVertical) - PickingSurfaceYOffset;
@@ -610,8 +627,10 @@ namespace Orts.Simulation
                         if (Math.Abs(LinkedFreightAnimation.Wagon.SpeedMpS) < 0.01f)
                         {
                             MoveY = false;
+                            UnloadContainer = (!LinkedFreightAnimation.DoubleStacker || LinkedFreightAnimation.Container2 == null) ?
+                                LinkedFreightAnimation.Container : LinkedFreightAnimation.Container2;
                             TargetX = PickingSurfaceRelativeTopStartPosition.X;
-                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - RelativeContainerPosition.Translation.Z - LinkedFreightAnimation.Container.IntrinsicShapeOffset.Z * 
+                            TargetZ = PickingSurfaceRelativeTopStartPosition.Z - RelativeContainerPosition.Translation.Z - UnloadContainer.IntrinsicShapeOffset.Z * 
                                 (ContainerFlipped ? -1 : 1);                              
  /*                           if (TargetZ < PickingSurfaceRelativeTopStartPosition.Z)
                             {
@@ -624,8 +643,6 @@ namespace Orts.Simulation
                             }
                             else*/
                             {
-                                UnloadContainer = (!LinkedFreightAnimation.DoubleStacker || LinkedFreightAnimation.Container2 == null) ?
-                                    LinkedFreightAnimation.Container : LinkedFreightAnimation.Container2;
                                 Status = ContainerStationStatus.UnloadHorizontallyMoveToPick;
                                 RelativeContainerPosition.M43 = UnloadContainer.IntrinsicShapeOffset.Z * (ContainerFlipped ? 1 : -1);
                                 MoveX = true;
@@ -637,10 +654,12 @@ namespace Orts.Simulation
                     }
                     break;
                 case ContainerStationStatus.UnloadHorizontallyMoveToPick:
-                    if (subMissionTerminated)
+                    if (subMissionTerminated && (!MoveGrabber ||
+                        Math.Abs(ActualGrabber01 - TargetGrabber01) < 0.02f && Math.Abs(ActualGrabber02 - TargetGrabber02) < 0.02))
                     {
                         MoveX = false;
                         MoveZ = false;
+                        MoveGrabber = false;
                         Status = ContainerStationStatus.UnloadLowerToPick;
                         TargetY = - PickingSurfaceYOffset + UnloadContainer.HeightM + UnloadContainer.IntrinsicShapeOffset.Y + GeneralVerticalOffset - PickingSurfaceYOffset;
                         RelativeContainerPosition.M42 = PickingSurfaceYOffset - (UnloadContainer.HeightM + UnloadContainer.IntrinsicShapeOffset.Y);
@@ -748,6 +767,7 @@ namespace Orts.Simulation
             Status = ContainerStationStatus.UnloadRaiseToPick;
             TargetY = PickingSurfaceRelativeTopStartPosition.Y;
             MoveY = true;
+            SetGrabbers(container);
         }
 
         public void PrepareForLoad(FreightAnimationDiscrete linkedFreightAnimation)
@@ -772,6 +792,7 @@ namespace Orts.Simulation
             Status = ContainerStationStatus.LoadRaiseToPick;
             TargetY = PickingSurfaceRelativeTopStartPosition.Y;
             MoveY = true;
+            SetGrabbers(Containers[Containers.Count - 1]);
         }
 
         public float ComputeTargetYBase(int positionVertical)
@@ -801,9 +822,19 @@ namespace Orts.Simulation
             InitialInvAnimationXNAMatrix = Matrix.Invert(animationXNAMatrix);
         }
 
-        public void PassZSpanParameters(float z1Span, float z2Span)
+        public void PassSpanParameters(float z1Span, float z2Span, float grabber01Max, float grabber02Max)
         {
             MinZSpan = Math.Min(Math.Abs(z1Span), Math.Abs(z2Span));
+            Grabber01Max = grabber01Max;
+            Grabber02Max = grabber02Max;
+
+        }
+
+        private void SetGrabbers(Container container)
+        {
+            TargetGrabber01 = Math.Min(Grabber01Max, (container.LengthM - MaxGrabberSpan) / 2 + Grabber01Max);
+            TargetGrabber02 = Math.Max(Grabber02Max, (-container.LengthM + MaxGrabberSpan) / 2 + Grabber02Max);
+            MoveGrabber = true;
         }
 
     } // end Class ContainerHandlingItem

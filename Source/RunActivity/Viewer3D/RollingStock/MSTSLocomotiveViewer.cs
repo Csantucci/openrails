@@ -482,22 +482,8 @@ namespace Orts.Viewer3D.RollingStock
                                 {
                                     if (intake.Type == MSTSWagon.PickupType.Container)
                                     {
-                                        var load = wagon.FreightAnimations?.Animations[0] as FreightAnimationDiscrete;
-                                        // discrete freight wagon animation
-                                        if (load == null)
+                                        if (!intake.Validity(onlyUnload, pickup, Viewer.Simulator.ContainerManager))
                                             continue;
-                                        else if (!load.DoubleStacker)
-                                        {
-                                            if (load.Loaded && !onlyUnload)
-                                                continue;
-                                            else if (!load.Loaded && onlyUnload)
-                                                continue;
-                                        }
-                                        else if (load.Container2 != null && !onlyUnload)
-                                            continue;
-                                        else if (load.Container2 == null && load.Container == null && onlyUnload)
-                                            continue;
-
                                     }
                                     var intakePosition = new Vector3(0, 0, -intake.OffsetM);
                                     Vector3.Transform(ref intakePosition, ref car.WorldPosition.XNAMatrix, out intakePosition);
@@ -599,7 +585,7 @@ namespace Orts.Viewer3D.RollingStock
                 return;
             }
             float distanceToPickupM = GetDistanceToM(match);
-            if (match.Wagon.FreightAnimations?.Animations != null && match.Wagon.FreightAnimations.Animations[0] is FreightAnimationDiscrete)
+            if (match.IntakePoint.LinkedFreightAnim != null && match.IntakePoint.LinkedFreightAnim is FreightAnimationDiscrete)
                 // for container cranes andle distance management using Z span of crane
             {
                 var containerStation = Viewer.Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == match.Pickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
@@ -698,9 +684,9 @@ namespace Orts.Viewer3D.RollingStock
                         MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
                     }
                 }
-                else if (match.Wagon.FreightAnimations?.Animations[0] is FreightAnimationDiscrete)
+                else if (match.IntakePoint.LinkedFreightAnim is FreightAnimationDiscrete)
                 {
-                    var load = match.Wagon.FreightAnimations?.Animations[0] as FreightAnimationDiscrete;
+                    var load = match.IntakePoint.LinkedFreightAnim as FreightAnimationDiscrete;
                     // discrete freight wagon animation
                     if (load == null)
                     {
