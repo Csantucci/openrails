@@ -4230,7 +4230,7 @@ namespace Orts.Simulation.RollingStocks
                     return validity;
                 else
                 {
-                    if (load.LoadingAreaLength < containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM)
+                    if (!onlyUnload && load.LoadingAreaLength < containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM)
                         // there must be enough space for the container
                         return validity;
                 }
