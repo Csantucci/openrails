@@ -4222,15 +4222,13 @@ namespace Orts.Simulation.RollingStocks
             }
             if (!load.DoubleStacker)
             {
-                if (load.Loaded && !onlyUnload)
+                if (load.Container != null && !onlyUnload)
                     return validity;
-                else if (!load.Loaded && onlyUnload)
+                else if (load.Container == null && onlyUnload)
                     return validity;
-                else if (!load.Loaded)
-                    return validity;
-                else
+                else if (load.Container == null)
                 {
-                    if (!onlyUnload && load.LoadingAreaLength < containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM)
+                    if (load.LoadingAreaLength < containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM)
                         // there must be enough space for the container
                         return validity;
                 }
