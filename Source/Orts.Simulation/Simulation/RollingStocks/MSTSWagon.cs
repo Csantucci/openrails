@@ -4087,8 +4087,6 @@ namespace Orts.Simulation.RollingStocks
                 FreightAnimations.FreightType = (MSTSWagon.PickupType)type;
                 if (intakePoint.LinkedFreightAnim is FreightAnimationContinuous)
                     FreightAnimations.LoadedOne = (FreightAnimationContinuous)intakePoint.LinkedFreightAnim;
-                else
-                    FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
             }
             if (!unload)
             {
@@ -4115,19 +4113,16 @@ namespace Orts.Simulation.RollingStocks
         public void StartLoadingOrUnloading(PickupObj matchPickup, IntakePoint intakePoint, bool unload)
         {
             var type = matchPickup.PickupType;
-            var controller = WeightLoadController;
+ /*           var controller = WeightLoadController;
             if (controller == null)
             {
                 Simulator.Confirmer.Message(ConfirmLevel.Error, Simulator.Catalog.GetString("Incompatible data"));
                 return;
             }
-            controller.CommandStartTime = Simulator.ClockTime;  // for Replay to use 
+            controller.CommandStartTime = Simulator.ClockTime;  // for Replay to use */
 
- //           if (FreightAnimations.DiscreteLoadedOne == null)
-            {
-                FreightAnimations.FreightType = (MSTSWagon.PickupType)type;
-                FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
-            }
+            FreightAnimations.FreightType = (MSTSWagon.PickupType)type;
+
             var containerStation = Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == matchPickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
             if (containerStation.Status != ContainerHandlingItem.ContainerStationStatus.Idle)
             {
@@ -4144,9 +4139,8 @@ namespace Orts.Simulation.RollingStocks
  //               var container = containerStation.Containers.Last();
                 Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting load"));
                 // immediate load at the moment
-                FreightAnimations.DiscreteLoadedOne = (FreightAnimationDiscrete)intakePoint.LinkedFreightAnim;
 //                FreightAnimations.DiscreteLoadedOne.Container = container;
-                containerStation.PrepareForLoad(FreightAnimations.DiscreteLoadedOne);
+                containerStation.PrepareForLoad((FreightAnimationDiscrete)intakePoint.LinkedFreightAnim);
  //               FreightAnimations.DiscreteLoadedOne.Loaded = true;
             }
             else
@@ -4162,7 +4156,7 @@ namespace Orts.Simulation.RollingStocks
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Preparing for unload"));
                 // immediate unload at the moment
                 // switch from freightanimation to container
-                containerStation.PrepareForUnload(FreightAnimations.DiscreteLoadedOne);
+                containerStation.PrepareForUnload((FreightAnimationDiscrete)intakePoint.LinkedFreightAnim);
             }
 
         }
@@ -4206,7 +4200,7 @@ namespace Orts.Simulation.RollingStocks
 
         }
 
-        public bool Validity(bool onlyUnload, PickupObj pickup, ContainerManager containerManager)
+        public bool Validity(bool onlyUnload, PickupObj pickup, ContainerManager containerManager, FreightAnimations freightAnimations)
         {
             var validity = false;
             ContainerHandlingItem containerStation;
@@ -4220,37 +4214,27 @@ namespace Orts.Simulation.RollingStocks
                 if (containerStation.Containers.Count == 0 && !onlyUnload)
                     return validity;
             }
-            if (!load.DoubleStacker)
-            {
-                if (load.Container != null && !onlyUnload)
-                    return validity;
-                else if (load.Container == null && onlyUnload)
-                    return validity;
-                else if (load.Container == null)
-                {
-                    if (load.LoadingAreaLength < containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM)
-                        // there must be enough space for the container
-                        return validity;
-                }
-            }
-            else if (load.Container2 != null && !onlyUnload)
+            if (load.Container != null && !onlyUnload)
                 return validity;
-            else if (load.Container2 == null && load.Container == null && onlyUnload)
+            else if (load.Container == null && onlyUnload)
                 return validity;
-            else if (load.Container2 == null && load.Container == null)
+            if (freightAnimations.DoubleStacker)
             {
-                if (load.LoadingAreaLength < containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM)
-                    // there must be enough space for the container
-                    return validity;
+                if (onlyUnload)
+                    for (var i = freightAnimations.Animations.Count - 1; i >= 0; i--)
+                    {
+                        if (freightAnimations.Animations[i] is FreightAnimationDiscrete discreteAnimation)
+                            if (discreteAnimation.LoadPosition == LoadPosition.Above && load != discreteAnimation)
+                                return validity;
+                            else break;
+                    }
             }
-            else if (load.Container2 == null && !onlyUnload)
+            if (!onlyUnload)
             {
-                if (load.AboveLoadingAreaLength < containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM)
-                    // there must be enough space for the container
+                if (containerStation.Containers.Count == 0)
                     return validity;
-                else if (load.Container.LengthM == 6.1f && containerStation.Containers[containerStation.Containers.Count - 1]?.LengthM > 6.1f)
-                    // don't stack longer containers above a 20ft one
-                    return validity;
+                validity = freightAnimations.Validity(load.Wagon, containerStation.Containers[containerStation.Containers.Count - 1],
+                    load.LoadPosition, load.Offset, out Vector3 offset);
             }
             validity = true;
             return validity;

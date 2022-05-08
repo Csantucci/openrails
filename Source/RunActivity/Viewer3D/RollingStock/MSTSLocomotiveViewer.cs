@@ -482,7 +482,7 @@ namespace Orts.Viewer3D.RollingStock
                                 {
                                     if (intake.Type == MSTSWagon.PickupType.Container)
                                     {
-                                        if (!intake.Validity(onlyUnload, pickup, Viewer.Simulator.ContainerManager))
+                                        if (!intake.Validity(onlyUnload, pickup, Viewer.Simulator.ContainerManager, wagon.FreightAnimations))
                                             continue;
                                     }
                                     var intakePosition = new Vector3(0, 0, -intake.OffsetM);
@@ -629,18 +629,18 @@ namespace Orts.Viewer3D.RollingStock
                     FormatStrings.FormatSpeedLimit(match.Pickup.SpeedRange.MaxMpS, Viewer.MilepostUnitsMetric)));
                 return;
             }
-            if (match.Wagon is MSTSDieselLocomotive || match.Wagon is MSTSSteamLocomotive || match.Wagon is MSTSElectricLocomotive ||  (match.Wagon.WagonType == TrainCar.WagonTypes.Tender && match.SteamLocomotiveWithTender != null))
+            if (match.Wagon is MSTSDieselLocomotive || match.Wagon is MSTSSteamLocomotive || match.Wagon is MSTSElectricLocomotive || (match.Wagon.WagonType == TrainCar.WagonTypes.Tender && match.SteamLocomotiveWithTender != null))
             {
                 // Note: The tender contains the intake information, but the steam locomotive includes the controller information that is needed for the refueling process.
 
                 float fraction = 0;
 
                 // classical MSTS Freightanim, handled as usual
-                if(match.SteamLocomotiveWithTender != null)
+                if (match.SteamLocomotiveWithTender != null)
                     fraction = match.SteamLocomotiveWithTender.GetFilledFraction(match.Pickup.PickupType);
                 else
                     fraction = match.Wagon.GetFilledFraction(match.Pickup.PickupType);
-                                
+
                 if (fraction > 0.99)
                 {
                     Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: {0} supply now replenished.",
@@ -658,75 +658,57 @@ namespace Orts.Viewer3D.RollingStock
                     MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
                 }
             }
-            else if (match.Wagon.FreightAnimations?.Animations != null)
+            else if (match.Wagon.FreightAnimations?.Animations?.Count > 0 && match.Wagon.FreightAnimations.Animations[0] is FreightAnimationContinuous)
             {
-                if (match.Wagon.FreightAnimations?.Animations[0] is FreightAnimationContinuous)
+                // freight wagon animation
+                var fraction = match.Wagon.GetFilledFraction(match.Pickup.PickupType);
+                if (fraction > 0.99 && match.Pickup.PickupCapacity.FeedRateKGpS >= 0)
                 {
-                    // freight wagon animation
-                    var fraction = match.Wagon.GetFilledFraction(match.Pickup.PickupType);
-                    if (fraction > 0.99 && match.Pickup.PickupCapacity.FeedRateKGpS >= 0)
-                    {
-                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: {0} supply now replenished.",
-                            PickupTypeDictionary[match.Pickup.PickupType]));
-                        return;
-                    }
-                    else if (fraction < 0.01 && match.Pickup.PickupCapacity.FeedRateKGpS < 0)
-                    {
-                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Unload: {0} fuel or freight now unloaded.",
-                            PickupTypeDictionary[match.Pickup.PickupType]));
-                        return;
-                    }
-                    else
-                    {
-                        MSTSWagon.RefillProcess.OkToRefill = true;
-                        MSTSWagon.RefillProcess.Unload = match.Pickup.PickupCapacity.FeedRateKGpS < 0;
-                        match.Wagon.StartRefillingOrUnloading(match.Pickup, match.IntakePoint, fraction, MSTSWagon.RefillProcess.Unload);
-                        MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
-                    }
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Refill: {0} supply now replenished.",
+                        PickupTypeDictionary[match.Pickup.PickupType]));
+                    return;
                 }
-                else if (match.IntakePoint.LinkedFreightAnim is FreightAnimationDiscrete)
+                else if (fraction < 0.01 && match.Pickup.PickupCapacity.FeedRateKGpS < 0)
                 {
-                    var load = match.IntakePoint.LinkedFreightAnim as FreightAnimationDiscrete;
-                    // discrete freight wagon animation
-                    if (load == null)
-                    {
-                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("wag file not equipped for containers"));
-                        return;
-                    }
-                    else if (!load.DoubleStacker)
-                    {
-                        if (load.Loaded && !onlyUnload)
-                        {
-                            Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now loaded.",
-                                PickupTypeDictionary[match.Pickup.PickupType]));
-                            return;
-                        }
-                        else if (!load.Loaded && onlyUnload)
-                        {
-                            Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now unloaded.",
-                                PickupTypeDictionary[match.Pickup.PickupType]));
-                            return;
-                        }
-                    }
-                    else if (load.Container2 != null && !onlyUnload)
-                    {
-                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now loaded.",
-                            PickupTypeDictionary[match.Pickup.PickupType]));
-                        return;
-                    }
-                    else if (load.Container2 == null && load.Container == null && onlyUnload)
-                    {
-                        Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now unloaded.",
-                            PickupTypeDictionary[match.Pickup.PickupType]));
-                        return;
-                    }
-
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Unload: {0} fuel or freight now unloaded.",
+                        PickupTypeDictionary[match.Pickup.PickupType]));
+                    return;
+                }
+                else
+                {
                     MSTSWagon.RefillProcess.OkToRefill = true;
-                    MSTSWagon.RefillProcess.Unload = onlyUnload;
-                    match.Wagon.StartLoadingOrUnloading(match.Pickup, match.IntakePoint, MSTSWagon.RefillProcess.Unload);
+                    MSTSWagon.RefillProcess.Unload = match.Pickup.PickupCapacity.FeedRateKGpS < 0;
+                    match.Wagon.StartRefillingOrUnloading(match.Pickup, match.IntakePoint, fraction, MSTSWagon.RefillProcess.Unload);
                     MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
-
                 }
+            }
+            else if (match.IntakePoint.LinkedFreightAnim is FreightAnimationDiscrete)
+            {
+                var load = match.IntakePoint.LinkedFreightAnim as FreightAnimationDiscrete;
+                // discrete freight wagon animation
+                if (load == null)
+                {
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("wag file not equipped for containers"));
+                    return;
+                }
+                else if (load.Loaded && !onlyUnload)
+                {
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now loaded.",
+                        PickupTypeDictionary[match.Pickup.PickupType]));
+                    return;
+                }
+                else if (!load.Loaded && onlyUnload)
+                {
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("{0} now unloaded.",
+                        PickupTypeDictionary[match.Pickup.PickupType]));
+                    return;
+                }
+
+                MSTSWagon.RefillProcess.OkToRefill = true;
+                MSTSWagon.RefillProcess.Unload = onlyUnload;
+                match.Wagon.StartLoadingOrUnloading(match.Pickup, match.IntakePoint, MSTSWagon.RefillProcess.Unload);
+                MatchedWagonAndPickup = match;  // Save away for HandleUserInput() to use when key is released.
+
             }
         }
 

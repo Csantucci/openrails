@@ -292,6 +292,13 @@ namespace Orts.Formats.Msts
         Tutorial = 3,
     }
 
+    public struct LoadData
+    {
+        public string Name;
+        public string Folder;
+        public LoadPosition LoadPosition;
+    }
+
     /// <summary>
     /// Parse and *.act file.
     /// Naming for classes matches the terms in the *.act file.
@@ -1657,6 +1664,7 @@ namespace Orts.Formats.Msts
         public bool IsEngine;
         public bool IsEOT;
         public bool Flip;
+        public List<LoadData> LoadDataList;
 
         public Wagon(STFReader stf) {
             stf.MustMatch("(");
@@ -1666,6 +1674,18 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("enginedata", ()=>{ stf.MustMatch("("); Name = stf.ReadString(); Folder = stf.ReadString(); stf.MustMatch(")"); IsEngine = true; }),
                 new STFReader.TokenProcessor("wagondata", ()=>{ stf.MustMatch("("); Name = stf.ReadString(); Folder = stf.ReadString(); stf.MustMatch(")"); }),
                 new STFReader.TokenProcessor("eotdata", ()=>{ stf.MustMatch("("); Name = stf.ReadString(); Folder = stf.ReadString(); stf.MustMatch(")"); IsEOT = true;  }),
+                new STFReader.TokenProcessor("loaddata", ()=>
+                {
+                    stf.MustMatch("(");
+                    if (LoadDataList == null) LoadDataList = new List<LoadData>();
+                    LoadData loadData = new LoadData();
+                    loadData.Name = stf.ReadString();
+                    loadData.Folder = stf.ReadString();
+                    var positionString = stf.ReadString();
+                    Enum.TryParse(positionString, out loadData.LoadPosition);
+                    LoadDataList.Add(loadData);
+                    stf.MustMatch(")");
+                }),
             });
         }
 

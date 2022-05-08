@@ -122,7 +122,8 @@ namespace Orts.Parsers.OR
                     case JsonToken.Null:
                     case JsonToken.String:
                         Path = _path.ToString().Substring(basePosition);
-                        if (!tryParse(this)) TraceInformation($"Skipped unknown {_reader.TokenType} \"{_reader.Value}\" in {Path}");
+                        if (!tryParse(this)) 
+                            TraceInformation($"Skipped unknown {_reader.TokenType} \"{_reader.Value}\" in {Path}");
                         break;
                 }
             }
@@ -190,6 +191,18 @@ namespace Orts.Parsers.OR
                     return (float)StartTime.TotalSeconds;
                 default:
                     TraceWarning($"Expected string (time) value in {Path}; got {_reader.TokenType}");
+                    return defaultValue;
+            }
+        }
+
+        public bool AsBoolean(bool defaultValue)
+        {
+            switch (_reader.TokenType)
+            {
+                case JsonToken.Boolean:
+                    return (bool)_reader.Value;
+                default:
+                    TraceWarning($"Expected boolean in {Path}; got {_reader.TokenType}");
                     return defaultValue;
             }
         }

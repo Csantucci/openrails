@@ -72,4 +72,17 @@ namespace ORTS.Common
         Trailing
     }
 
+    /// <summary>
+    /// Defines the position of a load (e.g. a container) on a wagon
+    /// </summary>
+    public enum LoadPosition
+    {
+        Rear,
+        CenterRear,
+        Center,
+        CenterFront,
+        Front,
+        Above
+    }
+
 }

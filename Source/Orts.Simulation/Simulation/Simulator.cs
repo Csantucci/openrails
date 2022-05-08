@@ -1184,6 +1184,7 @@ namespace Orts.Simulation
                     if (car is EOT) train.EOT = car as EOT;
 
                     if (car is EOT) train.EOT = car as EOT;
+                    car.FreightAnimations?.Load(car as MSTSWagon, wagon.LoadDataList);
                     train.Length += car.CarLengthM;
 
                     var mstsDieselLocomotive = car as MSTSDieselLocomotive;
@@ -1385,6 +1386,7 @@ namespace Orts.Simulation
                             car.CarID = activityObject.ID + " - " + car.UiD;
                             if (car is EOT)
                                 train.EOT = car as EOT;
+                            car.FreightAnimations?.Load(car as MSTSWagon, wagon.LoadDataList);
                         }
                         catch (Exception error)
                         {
