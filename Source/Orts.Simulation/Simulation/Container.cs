@@ -596,10 +596,9 @@ namespace Orts.Simulation
                             if (Math.Abs(LinkedFreightAnimation.LoadingAreaLength - container.LengthM) > 0.01)
                             {
                                 var loadedFreightAnim = new FreightAnimationDiscrete(LinkedFreightAnimation, LinkedFreightAnimation.FreightAnimations);
-                                var loadedIntakePoint = new IntakePoint(LinkedFreightAnimation.LinkedIntakePoint);
-                                loadedFreightAnim.LinkedIntakePoint = loadedIntakePoint;
+                                var loadedIntakePoint = loadedFreightAnim.LinkedIntakePoint;
                                 if (!(container.ContainerType == ContainerType.C20ft && LinkedFreightAnimation.LoadPosition == LoadPosition.Center &&
-                                    LinkedFreightAnimation.LoadingAreaLength >= 12.19))
+                                    LinkedFreightAnimation.LoadingAreaLength + 0.01f >= 12.19))
                                 {
                                     if (loadedFreightAnim.LoadPosition != LoadPosition.Center && loadedFreightAnim.LoadPosition != LoadPosition.Above)
                                     {
@@ -626,13 +625,21 @@ namespace Orts.Simulation
                                 loadedFreightAnim.LoadingAreaLength = container.LengthM;
                                 loadedIntakePoint.OffsetM = loadedFreightAnim.Offset.Z;
                                 freightAnims.Animations.Add(loadedFreightAnim);
+                                loadedFreightAnim.Container = container;
                                 freightAnims.UpdateEmptyFreightAnims(container.LengthM);
+                                // Too early to have container on wagon
+                                loadedFreightAnim.Container = null;
                                 LinkedFreightAnimation = loadedFreightAnim;
                             }
                             else
                             {
                                 freightAnims.EmptyAnimations.Remove(LinkedFreightAnimation);
                                 freightAnims.Animations.Add(LinkedFreightAnimation);
+                                (freightAnims.Animations.Last() as FreightAnimationDiscrete).Container = container;
+                                freightAnims.EmptyAbove();
+                                (freightAnims.Animations.Last() as FreightAnimationDiscrete).Container = null;
+
+
                             }
                             TargetZ = PickingSurfaceRelativeTopStartPosition.Z - relativeAnimationPosition.Translation.Z - LinkedFreightAnimation.Offset.Z * 
                                 (WagonFlipped ? -1 : 1);
@@ -766,6 +773,7 @@ namespace Orts.Simulation
                         if (LinkedFreightAnimation.LoadPosition == LoadPosition.Above)
                         {
                             LinkedFreightAnimation.Offset.Y = freightAnims.Offset.Y;
+                            LinkedFreightAnimation.AboveLoadingAreaLength = freightAnims.AboveLoadingAreaLength;
                             freightAnims.EmptyAnimations.Add(LinkedFreightAnimation);
                         }
                         else
@@ -796,10 +804,10 @@ namespace Orts.Simulation
                             }
                             else
                             {
-                                // here merging of empty animations should be considered
                                 freightAnims.EmptyAnimations.Add(LinkedFreightAnimation);
                                 LinkedFreightAnimation.Container = null;
                                 LinkedFreightAnimation.Loaded = false;
+                                freightAnims.MergeEmptyAnims();
                             }
 
                         }

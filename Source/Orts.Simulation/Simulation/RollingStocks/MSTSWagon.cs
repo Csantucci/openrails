@@ -4140,7 +4140,7 @@ namespace Orts.Simulation.RollingStocks
                 Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Starting load"));
                 // immediate load at the moment
 //                FreightAnimations.DiscreteLoadedOne.Container = container;
-                containerStation.PrepareForLoad((FreightAnimationDiscrete)intakePoint.LinkedFreightAnim);
+                 containerStation.PrepareForLoad((FreightAnimationDiscrete)intakePoint.LinkedFreightAnim);
  //               FreightAnimations.DiscreteLoadedOne.Loaded = true;
             }
             else
@@ -4235,6 +4235,7 @@ namespace Orts.Simulation.RollingStocks
                     return validity;
                 validity = freightAnimations.Validity(load.Wagon, containerStation.Containers[containerStation.Containers.Count - 1],
                     load.LoadPosition, load.Offset, out Vector3 offset);
+                return validity;
             }
             validity = true;
             return validity;
