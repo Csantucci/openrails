@@ -2013,13 +2013,6 @@ namespace Orts.Simulation.RollingStocks
                             container.WorldPosition.TileX = WorldPosition.TileX;
                             container.WorldPosition.TileZ = WorldPosition.TileZ;
                         }
-                        if (discreteFreightAnim.Container2 != null)
-                        {
-                            var container = discreteFreightAnim.Container2;
-                            container.WorldPosition.XNAMatrix = Matrix.Multiply(container.RelativeContainerMatrix, discreteFreightAnim.Wagon.WorldPosition.XNAMatrix);
-                            container.WorldPosition.TileX = WorldPosition.TileX;
-                            container.WorldPosition.TileZ = WorldPosition.TileZ;
-                        }
                     }
                 }
             }

@@ -56,6 +56,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public IntakePoint GeneralIntakePoint;
         public bool DoubleStacker;
         public MSTSWagon Wagon;
+        public List<LoadData> LoadDataList;
 
         // additions to manage consequences of variable weight on friction and brake forces
         public float EmptyORTSDavis_A = -9999;
@@ -149,20 +150,17 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 new STFReader.TokenProcessor("loaddata", ()=>
                 {
                     stf.MustMatch("(");
+                    if (LoadDataList == null) LoadDataList = new List<LoadData>();
                     LoadData loadData = new LoadData();
                     loadData.Name = stf.ReadString();
                     loadData.Folder = stf.ReadString();
                     var positionString = stf.ReadString();
                     Enum.TryParse(positionString, out loadData.LoadPosition);
-                    string loadDataFolder = wagon.Simulator.BasePath + @"\trains\trainset\" + loadData.Folder;
-                    string loadFilePath = loadDataFolder + @"\" + loadData.Name + ".loa";
-                    if (!File.Exists(loadFilePath))
-                        Trace.TraceWarning($"Ignored missing load {loadFilePath}");
-                    else
-                        Load(wagon, loadFilePath, loadData.LoadPosition);
+                    LoadDataList.Add(loadData);
                     stf.MustMatch(")");
                 }),
             });
+            Load(Wagon, LoadDataList);
         }
 
         /// <summary>
@@ -235,7 +233,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 {
                     Animations.Add(new FreightAnimationStatic(freightAnim as FreightAnimationStatic));
                 }
-                else if (freightAnim is FreightAnimationDiscrete)
+/*                else if (freightAnim is FreightAnimationDiscrete)
                 {
                     Animations.Add(new FreightAnimationDiscrete(freightAnim as FreightAnimationDiscrete, this));
                     if ((Animations.Last() as FreightAnimationDiscrete).LoadedAtStart && wagon.Simulator.Initialize && (Animations.Last() as FreightAnimationDiscrete).Container != null)
@@ -254,7 +252,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             Trace.TraceWarning("The wagon can't be full with two different materials, only first is retained");
                         }
                     }
-                }
+                }*/
             }
             FreightWeight = copyFACollection.FreightWeight;
             FreightType = copyFACollection.FreightType;
@@ -268,6 +266,18 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             Offset = copyFACollection.Offset;
             GeneralIntakePoint = new IntakePoint(copyFACollection.GeneralIntakePoint);
             DoubleStacker = copyFACollection.DoubleStacker;
+            if (copyFACollection.LoadDataList?.Count >= 0)
+            {
+                foreach (var copyLoad in copyFACollection.LoadDataList)
+                {
+                    if (LoadDataList == null) LoadDataList = new List<LoadData>();
+                    LoadData loadData = new LoadData();
+                    loadData.Name = copyLoad.Name;
+                    loadData.Folder = copyLoad.Folder;
+                    loadData.LoadPosition = copyLoad.LoadPosition;
+                    LoadDataList.Add(loadData);
+                }
+            }
 
 
             // additions to manage consequences of variable weight on friction and brake forces
@@ -282,6 +292,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             ContinuousFreightAnimationsPresent = copyFACollection.ContinuousFreightAnimationsPresent;
             StaticFreightAnimationsPresent = copyFACollection.StaticFreightAnimationsPresent;
             DiscreteFreightAnimationsPresent = copyFACollection.DiscreteFreightAnimationsPresent;
+
+            Load(Wagon, LoadDataList);
         }
 
         public void Load(MSTSWagon wagon, string loadFilePath, LoadPosition loadPosition)
@@ -327,11 +339,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     if (!File.Exists(loadFilePath))
                     {
                         Trace.TraceWarning($"Ignored missing load {loadFilePath}");
-                        continue;
-                    }
-                    if (wagon.FreightAnimations == null)
-                    {
-                        Trace.TraceWarning($"Ignored loads for wagon {wagon.UiD}");
                         continue;
                     }
                    Load(wagon, loadFilePath, loadData.LoadPosition);
@@ -919,8 +926,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public MSTSWagon Wagon;
         public FreightAnimations FreightAnimations;
         public Container Container;
-        public Container Container2;
-        public bool DoubleStacker = false;
         public float LoadingAreaLength = 12.19f;
         public float AboveLoadingAreaLength = -1f;
         public LoadPosition LoadPosition = LoadPosition.Center;
@@ -956,10 +961,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     Offset = stf.ReadVector3Block(STFReader.UNITS.Distance,  new Vector3(0, 0, 0));
                     Offset.Z *= -1; // MSTS --> XNA
                 }),
-                new STFReader.TokenProcessor("doublestacker", ()=>
-                {
-                    DoubleStacker = stf.ReadBoolBlock(true);
-                }),
                 new STFReader.TokenProcessor("loadingarealength", ()=>{ LoadingAreaLength = stf.ReadFloatBlock(STFReader.UNITS.Distance, 12.19f);}),
                 new STFReader.TokenProcessor("aboveloadingarealength", ()=>{ AboveLoadingAreaLength = stf.ReadFloatBlock(STFReader.UNITS.Distance, 12.19f);}),
                 new STFReader.TokenProcessor("container", ()=>
@@ -968,14 +969,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     {
                         Container = new Container(stf, this);
                         Wagon.Simulator.ContainerManager.Containers.Add(Container);
-                    }
-                }),
-                new STFReader.TokenProcessor("container2", ()=>
-                {
-                    if (Wagon.Simulator.Initialize && DoubleStacker)
-                    {
-                        Container2 = new Container(stf, this);
-                        Wagon.Simulator.ContainerManager.Containers.Add(Container2);
                     }
                 }),
                 new STFReader.TokenProcessor("loadedatstart", ()=>{ LoadedAtStart = stf.ReadBoolBlock(true);}),
@@ -996,7 +989,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             }
             SubType = freightAnimDiscrete.SubType;
             LoadedAtStart = freightAnimDiscrete.LoadedAtStart;
-            DoubleStacker = freightAnimDiscrete.DoubleStacker;
             LoadingAreaLength = freightAnimDiscrete.LoadingAreaLength;
             AboveLoadingAreaLength = freightAnimDiscrete.AboveLoadingAreaLength;
             LoadPosition = freightAnimDiscrete.LoadPosition;
@@ -1048,7 +1040,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             LoadingAreaLength = freightAnimations.LoadingAreaLength;
             AboveLoadingAreaLength = freightAnimations.AboveLoadingAreaLength;
             Offset = freightAnimations.Offset;
-            DoubleStacker = freightAnimations.DoubleStacker;
         }
 
         public void Save(BinaryWriter outf)
@@ -1058,12 +1049,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             {
                 outf.Write(true);
                 Container.Save(outf);
-            }
-            else outf.Write(false);
-            if (Container2 != null)
-            {
-                outf.Write(true);
-                Container2.Save(outf);
             }
             else outf.Write(false);
         }
@@ -1078,11 +1063,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 Wagon.Simulator.ContainerManager.Containers.Add(Container);
             }
             containerPresent = inf.ReadBoolean();
-            if (containerPresent)
-            {
-                Container2 = new Container(inf, this, null);
-                Wagon.Simulator.ContainerManager.Containers.Add(Container2);
-            }
         }
     }
 }

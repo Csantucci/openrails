@@ -151,8 +151,7 @@ namespace Orts.Simulation
         public Container(FreightAnimationDiscrete freightAnimDiscreteCopy, FreightAnimationDiscrete freightAnimDiscrete, bool stacked = false)
         {
             Wagon = freightAnimDiscrete.Wagon;
-            var containerCopy = stacked? freightAnimDiscrete.Container2 : freightAnimDiscreteCopy.Container;
-            Copy(containerCopy);
+            Copy(freightAnimDiscreteCopy.Container);
 
             WorldPosition.XNAMatrix = Wagon.WorldPosition.XNAMatrix;
             WorldPosition.TileX = Wagon.WorldPosition.TileX;
@@ -292,7 +291,7 @@ namespace Orts.Simulation
         }
 
         public void ComputeWorldPosition (FreightAnimationDiscrete freightAnimDiscrete)
-        {
+         {
             WorldPosition.XNAMatrix = freightAnimDiscrete.Wagon.WorldPosition.XNAMatrix;
             WorldPosition.TileX = freightAnimDiscrete.Wagon.WorldPosition.TileX;
             WorldPosition.TileZ = freightAnimDiscrete.Wagon.WorldPosition.TileZ;
