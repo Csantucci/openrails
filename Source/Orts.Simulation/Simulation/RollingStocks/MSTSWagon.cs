@@ -4227,7 +4227,7 @@ namespace Orts.Simulation.RollingStocks
                 if (containerStation.Containers.Count == 0)
                     return validity;
                 validity = freightAnimations.Validity(load.Wagon, containerStation.Containers[containerStation.Containers.Count - 1],
-                    load.LoadPosition, load.Offset, out Vector3 offset);
+                    load.LoadPosition, load.Offset, load.LoadingAreaLength, out Vector3 offset);
                 return validity;
             }
             validity = true;

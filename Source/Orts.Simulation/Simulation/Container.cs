@@ -599,7 +599,12 @@ namespace Orts.Simulation
                                 if (!(container.ContainerType == ContainerType.C20ft && LinkedFreightAnimation.LoadPosition == LoadPosition.Center &&
                                     LinkedFreightAnimation.LoadingAreaLength + 0.01f >= 12.19))
                                 {
-                                    if (loadedFreightAnim.LoadPosition != LoadPosition.Center && loadedFreightAnim.LoadPosition != LoadPosition.Above)
+                                    if (LinkedFreightAnimation.LoadingAreaLength == freightAnims.LoadingAreaLength && !freightAnims.DoubleStacker)
+                                    {
+                                        loadedFreightAnim.LoadPosition = LoadPosition.Rear;
+                                        loadedFreightAnim.Offset.Z = freightAnims.Offset.Z + (freightAnims.LoadingAreaLength - container.LengthM) / 2;
+                                    }
+                                    else if (loadedFreightAnim.LoadPosition != LoadPosition.Center && loadedFreightAnim.LoadPosition != LoadPosition.Above)
                                     {
                                         var multiplier = 1;
                                         if (loadedFreightAnim.LoadPosition == LoadPosition.Front || loadedFreightAnim.LoadPosition == LoadPosition.CenterRear)
@@ -778,7 +783,7 @@ namespace Orts.Simulation
                         else
                         {
                             var discreteAnimCount = 0;
-                            if (freightAnims.EmptyAnimations.Last().LoadPosition == LoadPosition.Above)
+                            if (freightAnims.EmptyAnimations.Count > 0 && freightAnims.EmptyAnimations.Last().LoadPosition == LoadPosition.Above)
                             {
                                 UnloadContainer.Wagon.IntakePointList.Remove(freightAnims.EmptyAnimations.Last().LinkedIntakePoint);
                                 freightAnims.EmptyAnimations.Remove(freightAnims.EmptyAnimations.Last());
