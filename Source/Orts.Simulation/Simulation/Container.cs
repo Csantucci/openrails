@@ -606,10 +606,23 @@ namespace Orts.Simulation
                                     }
                                     else if (loadedFreightAnim.LoadPosition != LoadPosition.Center && loadedFreightAnim.LoadPosition != LoadPosition.Above)
                                     {
-                                        var multiplier = 1;
-                                        if (loadedFreightAnim.LoadPosition == LoadPosition.Front || loadedFreightAnim.LoadPosition == LoadPosition.CenterRear)
-                                            multiplier = -1;
-                                        loadedFreightAnim.Offset.Z += multiplier * (loadedFreightAnim.LoadingAreaLength - container.LengthM) / 2;
+                                        switch (loadedFreightAnim.LoadPosition)
+                                        {
+                                            case LoadPosition.Front:
+                                                loadedFreightAnim.Offset.Z = freightAnims.Offset.Z -(freightAnims.LoadingAreaLength - container.LengthM) / 2;
+                                                break;
+                                            case LoadPosition.Rear:
+                                                loadedFreightAnim.Offset.Z = freightAnims.Offset.Z + (freightAnims.LoadingAreaLength - container.LengthM) / 2;
+                                                break;
+                                            case LoadPosition.CenterFront:
+                                                loadedFreightAnim.Offset.Z = freightAnims.Offset.Z - container.LengthM / 2;
+                                                break;
+                                            case LoadPosition.CenterRear:
+                                                loadedFreightAnim.Offset.Z = freightAnims.Offset.Z + container.LengthM / 2;
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                     }         
                                 }
                                 else
@@ -627,7 +640,7 @@ namespace Orts.Simulation
                                     }
                                 }
                                 loadedFreightAnim.LoadingAreaLength = container.LengthM;
-                                loadedIntakePoint.OffsetM = loadedFreightAnim.Offset.Z;
+                                loadedIntakePoint.OffsetM = -loadedFreightAnim.Offset.Z;
                                 freightAnims.Animations.Add(loadedFreightAnim);
                                 loadedFreightAnim.Container = container;
                                 freightAnims.UpdateEmptyFreightAnims(container.LengthM);
@@ -696,11 +709,13 @@ namespace Orts.Simulation
                         DelayTimer.Start();
                         Status = ContainerStationStatus.LoadWaitingForLayingOnWagon;
                         var invertedWagonMatrix = Matrix.Invert(LinkedFreightAnimation.Wagon.WorldPosition.XNAMatrix);
-                        LinkedFreightAnimation.Container = Containers[AttachedContainerIndex];
-                        LinkedFreightAnimation.Container.RelativeContainerMatrix = Matrix.Multiply(LinkedFreightAnimation.Container.WorldPosition.XNAMatrix, invertedWagonMatrix);
+                        var freightAnim = LinkedFreightAnimation.Wagon.FreightAnimations.Animations.Last() as FreightAnimationDiscrete;
+                        freightAnim.Container = Containers[AttachedContainerIndex];
+                        freightAnim.Container.Wagon = LinkedFreightAnimation.Wagon;
+                        freightAnim.Container.RelativeContainerMatrix = Matrix.Multiply(LinkedFreightAnimation.Container.WorldPosition.XNAMatrix, invertedWagonMatrix);
                         Containers.RemoveAt(AttachedContainerIndex);
                         AttachedContainerIndex = -1;
-                        LinkedFreightAnimation.Loaded = true;
+                        freightAnim.Loaded = true;
                     }
                     break;
                 case ContainerStationStatus.LoadWaitingForLayingOnWagon:

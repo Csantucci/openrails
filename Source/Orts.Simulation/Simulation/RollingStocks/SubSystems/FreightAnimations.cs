@@ -429,21 +429,25 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         return false;
                     break;
             }
-            offset.Z = zOffset;
+            offset.Z = Offset.Z + zOffset;
             if (container.LengthM > loadingAreaLength + 0.01f && loadPosition != LoadPosition.Above) return false;
             if (container.LengthM > AboveLoadingAreaLength && loadPosition == LoadPosition.Above) return false;
-            if (container.LengthM > loadingAreaLength / 2 + 0.01f && (loadPosition == LoadPosition.CenterFront ||
+            if (container.LengthM > LoadingAreaLength / 2 + 0.01f && (loadPosition == LoadPosition.CenterFront ||
                 loadPosition == LoadPosition.CenterRear)) return false;
             if (Animations.Count == 0 && loadPosition != LoadPosition.Above) return true;
+            freightAnimDiscreteCount = 0;
+            foreach (var animation in Animations)
+                if (animation is FreightAnimationDiscrete)               
+                    freightAnimDiscreteCount++;
             if (freightAnimDiscreteCount == 0 && loadPosition != LoadPosition.Above) return true;
             // there are already other containers present; check that there aren't superpositions
             if (loadPosition == LoadPosition.Above)
                 return true;
             foreach (var animation in Animations)
             {
-                if (animation is FreightAnimationDiscrete)
-                    if ((animation as FreightAnimationDiscrete).LoadPosition != LoadPosition.Above && Math.Abs(zOffset - (animation as FreightAnimationDiscrete).Offset.Z) <
-                        (container.LengthM + (animation as FreightAnimationDiscrete).Container.LengthM) / 2)
+                if (animation is FreightAnimationDiscrete animationDiscrete)
+                    if ((animationDiscrete).LoadPosition != LoadPosition.Above && Math.Abs(offset.Z - (animationDiscrete).Offset.Z) + 0.01f <
+                        (container.LengthM + (animationDiscrete).Container.LengthM) / 2)
                         return false;
                     else return true;
             }
@@ -572,7 +576,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             var multiplier = 1;
                             if (anim.LoadPosition == LoadPosition.CenterFront) multiplier = -1;
                             emptyAnim.Offset.Z = Offset.Z + multiplier * (LoadingAreaLength / 2 - (LoadingAreaLength / 2 - anim.LoadingAreaLength) / 2);
-                            emptyAnim.LinkedIntakePoint.OffsetM = emptyAnim.Offset.Z;
+                            emptyAnim.LinkedIntakePoint.OffsetM = -emptyAnim.Offset.Z;
                             emptyAnim.LoadingAreaLength = LoadingAreaLength / 2 - anim.LoadingAreaLength;
                             continue;
                         }
@@ -581,7 +585,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             var multiplier = 1;
                             if (anim.LoadPosition == LoadPosition.Front) multiplier = -1;
                             emptyAnim.Offset.Z = Offset.Z + multiplier * (LoadingAreaLength / 2 - anim.LoadingAreaLength) / 2;
-                            emptyAnim.LinkedIntakePoint.OffsetM = emptyAnim.Offset.Z;
+                            emptyAnim.LinkedIntakePoint.OffsetM = -emptyAnim.Offset.Z;
                             emptyAnim.LoadingAreaLength = LoadingAreaLength / 2 - anim.LoadingAreaLength;
                             continue;
                         }
@@ -634,7 +638,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         var multiplier = 1;
                         if (anim.LoadPosition == LoadPosition.Rear) multiplier = -1;
                         emptyAnim.Offset.Z += multiplier * (LoadingAreaLength - anim.LoadingAreaLength) / 2;
-                        emptyAnim.LinkedIntakePoint.OffsetM = emptyAnim.Offset.Z;
+                        emptyAnim.LinkedIntakePoint.OffsetM = -emptyAnim.Offset.Z;
                         emptyAnim.LoadingAreaLength = LoadingAreaLength - anim.LoadingAreaLength;
                         continue;
                     }
@@ -650,7 +654,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             var multiplier = 1;
                             if (anim.LoadPosition == LoadPosition.CenterRear) multiplier = -1;
                             emptyAnim.Offset.Z = Offset.Z + multiplier * LoadingAreaLength / 4;
-                            emptyAnim.LinkedIntakePoint.OffsetM = emptyAnim.Offset.Z;
+                            emptyAnim.LinkedIntakePoint.OffsetM = -emptyAnim.Offset.Z;
                             emptyAnim.LoadingAreaLength = LoadingAreaLength / 2;
                             continue;
                         }
@@ -670,7 +674,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             var multiplier = 1;
                             if (anim.LoadPosition == LoadPosition.Rear) multiplier = -1;
                             emptyAnim.Offset.Z += multiplier * anim.LoadingAreaLength / 2;
-                            emptyAnim.LinkedIntakePoint.OffsetM = emptyAnim.Offset.Z;
+                            emptyAnim.LinkedIntakePoint.OffsetM = -emptyAnim.Offset.Z;
                             emptyAnim.LoadingAreaLength -= anim.LoadingAreaLength;
                             if (Math.Abs(emptyAnim.Offset.Z - Offset.Z) < 0.02f) emptyAnim.LoadPosition = LoadPosition.Center;
                             else if (Math.Abs(emptyAnim.LoadingAreaLength + anim.LoadingAreaLength - LoadingAreaLength / 2)< 0.02f)
@@ -685,7 +689,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         if (anim.LoadPosition == LoadPosition.CenterRear) multiplier = -1;
                         emptyAnim.LoadingAreaLength /= 2;
                         emptyAnim.Offset.Z += multiplier * emptyAnim.LoadingAreaLength / 2;
-                        emptyAnim.LinkedIntakePoint.OffsetM = emptyAnim.Offset.Z;
+                        emptyAnim.LinkedIntakePoint.OffsetM = -emptyAnim.Offset.Z;
                         emptyAnim.LoadPosition = anim.LoadPosition == LoadPosition.CenterRear ? LoadPosition.CenterFront : LoadPosition.CenterRear;
                         continue;
                     }
@@ -761,7 +765,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength = LoadingAreaLength / 2;
                                 EmptyAnimations[i].Offset.Z = Offset.Z - LoadingAreaLength / 2;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 return true;
                             }
                             break;
@@ -770,7 +774,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
                                 EmptyAnimations[i].Offset.Z = Offset.Z - LoadingAreaLength / 2 + EmptyAnimations[other].LoadingAreaLength / 2;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 return true;
                             }
                             break;
@@ -779,7 +783,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength = LoadingAreaLength;
                                 EmptyAnimations[i].Offset.Z = Offset.Z;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 return true;
                             }
                             break;
@@ -788,7 +792,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
                                 EmptyAnimations[i].Offset.Z = Offset.Z - LoadingAreaLength / 2 + EmptyAnimations[i].LoadingAreaLength / 2;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 return true;
                             }
                             break;
@@ -804,7 +808,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
                                 EmptyAnimations[i].Offset.Z = Offset.Z;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 EmptyAnimations[i].LoadPosition = LoadPosition.Center;
                                 return true;
                             }
@@ -814,7 +818,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
                                 EmptyAnimations[i].Offset.Z = Offset.Z + LoadingAreaLength / 2 - EmptyAnimations[i].LoadingAreaLength / 2;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 EmptyAnimations[i].LoadPosition = LoadPosition.Rear;
                                 return true;
                             }
@@ -831,7 +835,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
                                 EmptyAnimations[i].Offset.Z = Offset.Z + LoadingAreaLength / 2 - EmptyAnimations[i].LoadingAreaLength / 2;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 EmptyAnimations[i].LoadPosition = LoadPosition.Rear;
                                 return true;
                             }
@@ -848,7 +852,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
                                 EmptyAnimations[i].Offset.Z = Offset.Z + LoadingAreaLength / 2;
-                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = EmptyAnimations[i].Offset.Z;
+                                EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 EmptyAnimations[i].LoadPosition = LoadPosition.Rear;
                                 return true;
                             }
