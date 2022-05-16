@@ -351,7 +351,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 Trace.TraceWarning("No match between wagon and load");
         }
 
-        public void Load(MSTSWagon wagon, List<LoadData> loadDataList)
+        public void Load(MSTSWagon wagon, List<LoadData> loadDataList, bool listInWagFile = false)
         {
             if (loadDataList != null && loadDataList.Count != 0)
             {
@@ -367,6 +367,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                    Load(wagon, loadFilePath, loadData.LoadPosition);
                 }
             }
+            if (listInWagFile) return;
             var discrete = false;
             foreach (var animation in Animations)
             {
