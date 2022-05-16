@@ -970,6 +970,7 @@ namespace Orts.Simulation.RollingStocks
                         break;
                 }
             }
+            FreightAnimations?.Load(this, FreightAnimations.LoadDataList);
         }
 
         public override void InitializeMoving()

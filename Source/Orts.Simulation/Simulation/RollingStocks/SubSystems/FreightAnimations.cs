@@ -160,7 +160,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     stf.MustMatch(")");
                 }),
             });
-            Load(Wagon, LoadDataList);
+//            Load(Wagon, LoadDataList);
         }
 
         /// <summary>
@@ -172,6 +172,13 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             outf.Write(FreightWeight);
             outf.Write((int)FreightType);
             outf.Write(StaticFreightWeight);
+            var discreteAnimCount = 0;
+            foreach (var freightAnim in Animations)
+            {
+                if (freightAnim is FreightAnimationDiscrete)
+                    discreteAnimCount++;
+            }
+            outf.Write(discreteAnimCount);
             foreach (var freightAnim in Animations)
             {
                 if (freightAnim is FreightAnimationDiscrete)
@@ -179,6 +186,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     (freightAnim as FreightAnimationDiscrete).Save(outf);
                 }
             }
+            outf.Write(EmptyAnimations.Count);
+            foreach (var emptyAnim in EmptyAnimations)
+                emptyAnim.Save(outf);
         }
 
         /// <summary>
@@ -209,11 +219,24 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         }
                     }
                 }
-                else if (freightAnim is FreightAnimationDiscrete)
+            }
+            int discreteAnimCount = inf.ReadInt32();
+            if (discreteAnimCount > 0)
+            {
+                for (int i = 0; i < discreteAnimCount; i++)
                 {
-                    (freightAnim as FreightAnimationDiscrete).Restore(inf);
+                    var discreteFreightAnim = new FreightAnimationDiscrete(inf, this);
+                    Animations.Add(discreteFreightAnim);
                 }
-
+            }
+            int emptyAnimCount = inf.ReadInt32();
+            if (emptyAnimCount > 0)
+            {
+                for (int i = 0; i < emptyAnimCount; i++)
+                {
+                    var emptyFreightAnim = new FreightAnimationDiscrete(inf, this);
+                    EmptyAnimations.Add(emptyFreightAnim);
+                }
             }
         }
 
@@ -293,7 +316,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             StaticFreightAnimationsPresent = copyFACollection.StaticFreightAnimationsPresent;
             DiscreteFreightAnimationsPresent = copyFACollection.DiscreteFreightAnimationsPresent;
 
-            Load(Wagon, LoadDataList);
+//            Load(Wagon, LoadDataList);
         }
 
         public void Load(MSTSWagon wagon, string loadFilePath, LoadPosition loadPosition)
@@ -764,7 +787,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             if (Math.Abs(EmptyAnimations[i].LoadingAreaLength + EmptyAnimations[other].LoadingAreaLength - LoadingAreaLength / 2) < 0.02)
                             {
                                 EmptyAnimations[i].LoadingAreaLength = LoadingAreaLength / 2;
-                                EmptyAnimations[i].Offset.Z = Offset.Z - LoadingAreaLength / 2;
+                                EmptyAnimations[i].Offset.Z = Offset.Z - LoadingAreaLength / 4;
                                 EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 return true;
                             }
@@ -773,7 +796,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             if (Math.Abs(EmptyAnimations[i].LoadingAreaLength - LoadingAreaLength / 2) < 0.02)
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
-                                EmptyAnimations[i].Offset.Z = Offset.Z - LoadingAreaLength / 2 + EmptyAnimations[other].LoadingAreaLength / 2;
+                                EmptyAnimations[i].Offset.Z = Offset.Z - LoadingAreaLength / 4 + EmptyAnimations[other].LoadingAreaLength / 2;
                                 EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 return true;
                             }
@@ -851,7 +874,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                             if (Math.Abs(EmptyAnimations[other].LoadingAreaLength + EmptyAnimations[i].LoadingAreaLength - LoadingAreaLength / 2) < 0.02)
                             {
                                 EmptyAnimations[i].LoadingAreaLength += EmptyAnimations[other].LoadingAreaLength;
-                                EmptyAnimations[i].Offset.Z = Offset.Z + LoadingAreaLength / 2;
+                                EmptyAnimations[i].Offset.Z = Offset.Z + LoadingAreaLength / 4;
                                 EmptyAnimations[i].LinkedIntakePoint.OffsetM = -EmptyAnimations[i].Offset.Z;
                                 EmptyAnimations[i].LoadPosition = LoadPosition.Rear;
                                 return true;
@@ -1200,7 +1223,19 @@ namespace Orts.Simulation.RollingStocks.SubSystems
 
         public void Save(BinaryWriter outf)
         {
+            outf.Write(LinkedIntakePoint.OffsetM);
+            outf.Write(LinkedIntakePoint.WidthM);
+            outf.Write((int)LinkedIntakePoint.Type);
+            outf.Write(Offset.X);
+            outf.Write(Offset.Y);
+            outf.Write(Offset.Z);
+            outf.Write(LoadingAreaLength);
+            outf.Write(AboveLoadingAreaLength);
+            outf.Write((int)LoadPosition);
             outf.Write(Loaded);
+            outf.Write(LinkedIntakePoint.OffsetM);
+            outf.Write(LinkedIntakePoint.WidthM);
+            outf.Write((int)LinkedIntakePoint.Type);
             if (Container != null)
             {
                 outf.Write(true);
@@ -1209,16 +1244,34 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             else outf.Write(false);
         }
 
-        public void Restore(BinaryReader inf)
+        public FreightAnimationDiscrete(BinaryReader inf, FreightAnimations freightAnimations)
         {
+            FreightAnimations = freightAnimations;
+            Wagon = freightAnimations.Wagon;
+            LinkedIntakePoint = new IntakePoint();
+            LinkedIntakePoint.OffsetM = inf.ReadSingle();
+            LinkedIntakePoint.WidthM = inf.ReadSingle();
+            LinkedIntakePoint.Type = (MSTSWagon.PickupType)inf.ReadInt32();
+            Offset.X = inf.ReadSingle();
+            Offset.Y = inf.ReadSingle();
+            Offset.Z = inf.ReadSingle();
+            LoadingAreaLength = inf.ReadSingle();
+            AboveLoadingAreaLength = inf.ReadSingle();
+            LoadPosition = (LoadPosition)inf.ReadInt32();
             Loaded = inf.ReadBoolean();
+            var intake = new IntakePoint();
+            intake.OffsetM = inf.ReadSingle();
+            intake.WidthM = inf.ReadSingle();
+            intake.Type = (MSTSWagon.PickupType)inf.ReadInt32();
+            intake.LinkedFreightAnim = this;
+            Wagon.IntakePointList.Add(intake);
+            LinkedIntakePoint = intake;
             var containerPresent = inf.ReadBoolean();
             if (containerPresent)
             {
                 Container = new Container(inf, this, null);
                 Wagon.Simulator.ContainerManager.Containers.Add(Container);
             }
-            containerPresent = inf.ReadBoolean();
         }
     }
 }
