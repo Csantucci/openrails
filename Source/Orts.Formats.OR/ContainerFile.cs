@@ -59,10 +59,10 @@ namespace Orts.Formats.OR
 
     public class ContainerParameters
     {
+        public string Name;
         public string ShapeFileName;  
         public string ContainerType;  
         public Vector3 IntrinsicShapeOffset = new Vector3(0f, 1.17f, 0f);
-        public bool Flipped = false;
         private int Index;
 
 
@@ -78,7 +78,7 @@ namespace Orts.Formats.OR
             switch (item.Path)
             {
                 case "Container.": break;
-                case "Container.Comment": var garbage = item.AsString(""); break;
+                case "Container.Name": Name = item.AsString(""); break;
                 case "Container.Shape": ShapeFileName = item.AsString(ShapeFileName); break;
                 case "Container.ContainerType": ContainerType = item.AsString("40ftHC"); break;
                 case "Container.IntrinsicShapeOffset[]": 
@@ -98,7 +98,6 @@ namespace Orts.Formats.OR
                     }
                     Index++;
                     break;
-                case "Container.Flip": Flipped = item.AsBoolean(false); break;
                 default: return false;
             }
 

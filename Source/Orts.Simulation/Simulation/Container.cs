@@ -60,6 +60,7 @@ namespace Orts.Simulation
             WaitingForUnloading
         }
 
+        public string Name;
         public string ShapeFileName;
         public string BaseShapeFileFolderSlash;
         public float MassKG = 2000;
@@ -174,6 +175,7 @@ namespace Orts.Simulation
 
         public virtual void Copy(Container containerCopy)
         {
+            Name = containerCopy.Name;
             BaseShapeFileFolderSlash = containerCopy.BaseShapeFileFolderSlash;
             ShapeFileName = containerCopy.ShapeFileName;
             IntrinsicShapeOffset = containerCopy.IntrinsicShapeOffset;
@@ -187,6 +189,7 @@ namespace Orts.Simulation
         {
             if (fromContainerStation) ContainerStation = containerStation;
             else Wagon = freightAnimDiscrete.Wagon;
+            Name = inf.ReadString();
             BaseShapeFileFolderSlash = inf.ReadString();
             ShapeFileName = inf.ReadString();
             IntrinsicShapeOffset.X = inf.ReadSingle();
@@ -261,6 +264,7 @@ namespace Orts.Simulation
 
         public void Save(BinaryWriter outf, bool fromContainerStation = false)
         {
+            outf.Write(Name);
             outf.Write(BaseShapeFileFolderSlash);
             outf.Write(ShapeFileName);
             outf.Write(IntrinsicShapeOffset.X);
@@ -281,13 +285,13 @@ namespace Orts.Simulation
         {
             var containerFile = new ContainerFile(loadFilePath);
             var containerParameters = containerFile.ContainerParameters;
+            Name = containerParameters.Name;
             ShapeFileName = containerParameters.ShapeFileName;
             Enum.TryParse(containerParameters.ContainerType, out ContainerType containerType);
             ContainerType = containerType;
             ComputeDimensions();
             IntrinsicShapeOffset = containerParameters.IntrinsicShapeOffset;
             IntrinsicShapeOffset.Z *= -1;
-            Flipped = containerParameters.Flipped;
         }
 
         public void ComputeWorldPosition (FreightAnimationDiscrete freightAnimDiscrete)

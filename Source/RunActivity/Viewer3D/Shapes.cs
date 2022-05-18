@@ -1412,9 +1412,9 @@ namespace Orts.Viewer3D
             {
                 if (SharedShape.MatrixNames[imatrix].ToLower().StartsWith("cable"))
                     AnimateOneMatrix(imatrix, AnimationKeyY);
-                else if (SharedShape.MatrixNames[imatrix].ToLower() == "grabber01")
+                else if (SharedShape.MatrixNames[imatrix].ToLower().StartsWith("grabber01"))
                     AnimateOneMatrix(imatrix, AnimationKeyGrabber01);
-                else if (SharedShape.MatrixNames[imatrix].ToLower() == "grabber02")
+                else if (SharedShape.MatrixNames[imatrix].ToLower().StartsWith("grabber02"))
                     AnimateOneMatrix(imatrix, AnimationKeyGrabber02);
             }
 
