@@ -400,6 +400,7 @@ namespace Orts.Formats.Msts
         public int FuelWater = 100;		// percent
         public int FuelCoal = 100;		// percent
         public int FuelDiesel = 100;	// percent
+        public string LoadStationsOccupancyFile;
 
         public Tr_Activity_Header(STFReader stf) {
             stf.MustMatch("(");
@@ -423,6 +424,7 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("fuelwater", ()=>{ FuelWater = stf.ReadIntBlock(FuelWater); }),
                 new STFReader.TokenProcessor("fuelcoal", ()=>{ FuelCoal = stf.ReadIntBlock(FuelCoal); }),
                 new STFReader.TokenProcessor("fueldiesel", ()=>{ FuelDiesel = stf.ReadIntBlock(FuelDiesel); }),
+                new STFReader.TokenProcessor("ortsloadstationsoccupancy", ()=>{ LoadStationsOccupancyFile = stf.ReadStringBlock(null); }),
             });
         }
 

@@ -131,6 +131,7 @@ namespace Orts.Simulation
         public SuperElevation SuperElevation;
         public int SuperElevationMinLen = 50;
         public float SuperElevationGauge = 1.435f;//1.435 guage
+        public LoadStationsOccupancyFile LoadStationsOccupancyFile;
 
         // Used in save and restore form
         public string PathName = "<unknown>";
@@ -401,6 +402,11 @@ namespace Orts.Simulation
             ClockTime = StartTime.TotalSeconds;
             Season = Activity.Tr_Activity.Tr_Activity_Header.Season;
             WeatherType = Activity.Tr_Activity.Tr_Activity_Header.Weather;
+            if (Activity.Tr_Activity.Tr_Activity_Header.LoadStationsOccupancyFile != null)
+            {
+                var occupancyFilePath = RoutePath + @"\Activities\Openrails\" + Activity.Tr_Activity.Tr_Activity_Header.LoadStationsOccupancyFile + ".lso";
+                LoadStationsOccupancyFile = new LoadStationsOccupancyFile(occupancyFilePath);
+            }
             if (Activity.Tr_Activity.Tr_Activity_File.ActivityRestrictedSpeedZones != null)
             {
                 ActivityRun.AddRestrictZones(TRK.Tr_RouteFile, TSectionDat, TDB.TrackDB, Activity.Tr_Activity.Tr_Activity_File.ActivityRestrictedSpeedZones);
