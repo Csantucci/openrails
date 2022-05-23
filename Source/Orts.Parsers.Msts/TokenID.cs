@@ -1709,10 +1709,14 @@ namespace Orts.Parsers.Msts
         ORTSCraneSound,  // ORTS Specific for container stations
         ORTSMaxStackedContainers,
         ORTSStackLocations,
+        ORTSStackLocationsLength,
         ORTSPickingSurfaceYOffset,
         ORTSPickingSurfaceRelativeTopStartPosition,
         ORTSMaxGrabberSpan,
         StackLocation,
+        MaxStackedContainers,
+        Length,
+        Flipped,
 
         // TSRE specific
         Ruler

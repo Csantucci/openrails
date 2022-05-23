@@ -314,7 +314,8 @@ namespace Orts.Formats.Msts
         public List<TrItemId> TrItemIDList = new List<TrItemId>();
         public uint CollideFlags;
         public int MaxStackedContainers;
-        public StackXNALocationItems StackXNALocations;
+        public float StackLocationsLength = 12.19f;
+        public StackLocationItems StackLocations;
         public float PickingSurfaceYOffset;
         public Vector3 PickingSurfaceRelativeTopStartPosition;
         public float MaxGrabberSpan;
@@ -343,7 +344,8 @@ namespace Orts.Formats.Msts
                     subBlock.Skip(); // Discard the 2nd value (0 or 1 but significance is not known)
                     break;
                 case TokenID.ORTSMaxStackedContainers: MaxStackedContainers = subBlock.ReadInt(); break;
-                case TokenID.ORTSStackLocations: StackXNALocations = new StackXNALocationItems(subBlock); break;
+                case TokenID.ORTSStackLocationsLength: StackLocationsLength = subBlock.ReadFloat(); break;
+                case TokenID.ORTSStackLocations: StackLocations = new StackLocationItems(subBlock, this); break;
                 case TokenID.ORTSPickingSurfaceYOffset: PickingSurfaceYOffset = subBlock.ReadFloat(); break;
                 case TokenID.ORTSPickingSurfaceRelativeTopStartPosition: PickingSurfaceRelativeTopStartPosition = subBlock.ReadVector3(); break;
                 case TokenID.ORTSMaxGrabberSpan: MaxGrabberSpan = subBlock.ReadFloat(); break;
@@ -418,40 +420,55 @@ namespace Orts.Formats.Msts
             }
         }
 
-        public class StackXNALocationItems
+        public class StackLocationItems
         {
-            public readonly StackXNALocation[] Locations;
+            public readonly StackLocation[] Locations;
 
-            public StackXNALocationItems(SBR block)
+            public StackLocationItems(SBR block, PickupObj pickupObj)
             {
-                var locations = new List<StackXNALocation>();
-                block.VerifyID(TokenID.ORTSStackLocations);
+                var locations = new List<StackLocation>();
                 var count = block.ReadUInt();
                 for (var i = 0; i < count; i++)
                 {
                     using (var subBlock = block.ReadSubBlock())
                     {
-                       locations.Add(new StackXNALocation(subBlock));
+                        if (subBlock.ID == TokenID.StackLocation)
+                        {
+                            locations.Add(new StackLocation(subBlock));
+                        }
                     }
+                    if (locations[i].Length == 0) locations[i].Length = pickupObj.StackLocationsLength;
+                    if (locations[i].MaxStackedContainers == 0) locations[i].MaxStackedContainers = pickupObj.MaxStackedContainers;
                 }
                 block.VerifyEndOfBlock();
                 Locations = locations.ToArray();
+                locations.Clear();
             }
         }
 
-        public class StackXNALocation
+        public class StackLocation
         {
-            public float X;
-            public float Y;
-            public float Z;
+            public Vector3 Position;
+            public int MaxStackedContainers;
+            public float Length;
+            public bool Flipped;
 
-            public StackXNALocation(SBR block)
+            public StackLocation(SBR block)
             {
-                block.VerifyID(TokenID.StackLocation);
-                X = block.ReadFloat();
-                Y = block.ReadFloat();
-                Z = block.ReadFloat();
-                block.VerifyEndOfBlock();
+                while (!block.EndOfBlock())
+                {
+                    using (var subBlock = block.ReadSubBlock())
+                    {
+                        switch (subBlock.ID)
+                        {
+                            case TokenID.Position: Position = subBlock.ReadVector3(); break;
+                            case TokenID.MaxStackedContainers: MaxStackedContainers = subBlock.ReadInt(); break;
+                            case TokenID.Length: Length = subBlock.ReadFloat(); break;
+                            case TokenID.Flipped: subBlock.ReadInt();  Flipped = true; break;
+                            default: subBlock.Skip(); break;
+                        }
+                    }
+                }
             }
         }
     }

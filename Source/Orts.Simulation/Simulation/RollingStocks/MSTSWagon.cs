@@ -4139,7 +4139,7 @@ namespace Orts.Simulation.RollingStocks
             }
             else
             {
-                if (containerStation.Containers.Count >= containerStation.MaxStackedContainers * containerStation.StackXNALocationsCount)
+                if (containerStation.Containers.Count >= containerStation.MaxStackedContainers * containerStation.StackLocationsCount)
                 {
                     Simulator.Confirmer.Message(ConfirmLevel.Information, Simulator.Catalog.GetString("Container station full, can't unload"));
                     return;

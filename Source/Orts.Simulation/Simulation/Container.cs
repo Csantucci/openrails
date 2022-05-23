@@ -28,6 +28,7 @@ using ORTS.Common;
 using ORTS.Scripting.Api;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -69,6 +70,8 @@ namespace Orts.Simulation
         public float HeightM = 2.59f;
         public ContainerType ContainerType = ContainerType.C40ft;
         public bool Flipped = false;
+        public static float Length20ftM = 6.095f;
+        public static float Length40ftM = 12.19f;
 
         public WorldPosition WorldPosition = new WorldPosition();  // current position of the container
         public float RealRelativeYOffset = 0;
@@ -166,11 +169,16 @@ namespace Orts.Simulation
             RelativeContainerMatrix = Matrix.Multiply(WorldPosition.XNAMatrix, invWagonMatrix);
         }
 
-        public Container (MSTSWagon wagon, string  loadFilePath)
+        public Container (MSTSWagon wagon, string  loadFilePath, ContainerHandlingItem containerStation = null)
         {
             Wagon = wagon;
-            BaseShapeFileFolderSlash = Path.GetDirectoryName(wagon.WagFilePath) + @"\";
+            ContainerStation = containerStation;
             LoadFilePath = loadFilePath;
+            if (wagon != null)
+                BaseShapeFileFolderSlash = Path.GetDirectoryName(wagon.WagFilePath) + @"\";
+            else 
+                BaseShapeFileFolderSlash = Path.GetDirectoryName(LoadFilePath) + @"\";
+
         }
 
         public virtual void Copy(Container containerCopy)
@@ -207,7 +215,8 @@ namespace Orts.Simulation
                 var loadPositionVertical = containersCount - loadPositionHorizontal * containerStation.MaxStackedContainers;
                 var mstsOffset = IntrinsicShapeOffset;
                 mstsOffset.Z *= -1;
-                var totalOffset = containerStation.StackXNALocations[loadPositionHorizontal] - mstsOffset;
+                var totalOffset = containerStation.StackLocations[loadPositionHorizontal].Position - mstsOffset;
+                totalOffset.Z += LengthM * (containerStation.StackLocations[loadPositionHorizontal].Flipped ? -1 : 1) / 2;
                 if (containersCount != 0)
                 for (var iPos = (containersCount - 1); iPos >= containersCount- loadPositionVertical; iPos--)
                     totalOffset.Y += containerStation.Containers[iPos].HeightM;
@@ -255,6 +264,27 @@ namespace Orts.Simulation
                 default:
                     break;
             }
+        }
+
+        public void ComputeContainerStationContainerPosition (int stackLocationIndex, int loadPositionVertical)
+        {
+            // compute WorldPosition starting from offsets and position of container station
+            var mstsOffset = IntrinsicShapeOffset;
+            mstsOffset.Z *= -1;
+            var stackLocation = ContainerStation.StackLocations[stackLocationIndex];
+            var totalOffset = stackLocation.Position - mstsOffset;
+            totalOffset.Z += LengthM * (stackLocation.Flipped ? -1 : 1) / 2;
+            if (stackLocation.Containers != null && stackLocation.Containers.Count != 0)
+                for (var iPos = (stackLocation.Containers.Count - 1); iPos >= 0; iPos--)
+                    totalOffset.Y += stackLocation.Containers[iPos].HeightM;
+            totalOffset.Z *= -1;
+            Vector3.Transform(ref totalOffset, ref  ContainerStation.ShapePosition.XNAMatrix, out totalOffset);
+            //               WorldPosition = new WorldLocation(car.WorldPosition.TileX, car.WorldPosition.TileZ,
+            //                   totalOffset.X, totalOffset.Y, -totalOffset.Z);
+            WorldPosition.XNAMatrix = ContainerStation.ShapePosition.XNAMatrix;
+            WorldPosition.XNAMatrix.Translation = totalOffset;
+            WorldPosition.TileX = ContainerStation.ShapePosition.TileX;
+            WorldPosition.TileZ = ContainerStation.ShapePosition.TileZ;
         }
 
         public void Update()
@@ -367,8 +397,9 @@ namespace Orts.Simulation
         public List<Container> Containers = new List<Container>();
         public WorldPosition ShapePosition;
         public int MaxStackedContainers;
-        public Vector3[] StackXNALocations;
-        public int StackXNALocationsCount;
+        public StackLocation[] StackLocations;
+        public float StackLocationsLength = 12.19f;
+        public int StackLocationsCount;
  //       public int[] AllocatedContainerIndices;
         public float PickingSurfaceYOffset;
         public Vector3 PickingSurfaceRelativeTopStartPosition;
@@ -446,24 +477,37 @@ namespace Orts.Simulation
             Location = item.Location;
             TrackNode = item.TrackNode;
             MaxStackedContainers = thisWorldObj.MaxStackedContainers;
-            StackXNALocationsCount = thisWorldObj.StackXNALocations.Locations.Length;
-            StackXNALocations = new Vector3[StackXNALocationsCount];
-//            AllocatedContainerIndices = new int[StackXNALocationsCount * MaxStackedContainers];
- //           int i;
-//            for (i = 0; i < AllocatedContainerIndices.Length; i++)
-//                AllocatedContainerIndices[i] = -1;
-            int i = 0;
-            foreach (var stackLocation in thisWorldObj.StackXNALocations.Locations)
+            StackLocationsLength = thisWorldObj.StackLocationsLength;
+            StackLocationsCount = thisWorldObj.StackLocations.Locations.Length;
+            var stackLocationsCount = StackLocationsCount;
+            if (StackLocationsLength + 0.01f > 12.19f)  // locations can be double if loaded with 20ft containers
             {
-                StackXNALocations[i].X = stackLocation.X;
-                StackXNALocations[i].Y = stackLocation.Y;
-                StackXNALocations[i].Z = stackLocation.Z;
+                StackLocationsCount *= 2;
+            }
+            StackLocations = new StackLocation[StackLocationsCount];
+            int i = 0;
+            foreach (var worldStackLocation in thisWorldObj.StackLocations.Locations)
+            {
+                var stackLocation = new StackLocation(worldStackLocation);
+                StackLocations[i] = stackLocation;
+                if (StackLocationsLength + 0.01f > 12.19f)
+                {
+                    StackLocations[i + stackLocationsCount] = new StackLocation(stackLocation);
+                }
                 i++;
+            }
+            if (StackLocationsLength + 0.01f > 12.19f )  // locations can be double if loaded with 20ft containers
+            {
+                StackLocationsCount *= 2;
+
             }
             PickingSurfaceYOffset = thisWorldObj.PickingSurfaceYOffset;
             PickingSurfaceRelativeTopStartPosition = thisWorldObj.PickingSurfaceRelativeTopStartPosition;
             MaxGrabberSpan = thisWorldObj.MaxGrabberSpan;
             DelayTimer = new Timer(this);
+            // preload containers if not at restore time
+            if (Simulator.LoadStationsOccupancyFile != null)
+                PreloadContainerStation(thisWorldObj);
         }
 
         public void Save(BinaryWriter outf)
@@ -513,6 +557,60 @@ namespace Orts.Simulation
             return false;
         }
 
+        public void PreloadContainerStation(PickupObj thisWorldObj)
+        {
+            // Search if ContainerStation present in file
+            foreach (var loadStationOccupancy in Simulator.LoadStationsOccupancyFile.LoadStationsOccupancy)
+            {
+                var tileX = int.Parse(loadStationOccupancy.LoadStatID.wfile.Substring(1, 7));
+                var tileZ = int.Parse(loadStationOccupancy.LoadStatID.wfile.Substring(8, 7));
+                if (tileX == Location.TileX && tileZ == Location.TileZ  && loadStationOccupancy.LoadStatID.UiD == thisWorldObj.UID)
+                {
+                    foreach (var loadDataEntry in (loadStationOccupancy as ContainerStationOccupancy).LoadData)
+                    {
+                        string loadDataFolder = Simulator.BasePath + @"\trains\trainset\" + loadDataEntry.FolderName;
+                        string loadFilePath = loadDataFolder + @"\" + loadDataEntry.FileName + ".loa";
+                        if (!File.Exists(loadFilePath))
+                        {
+                            Trace.TraceWarning($"Ignored missing load {loadFilePath}");
+                            continue;
+                        }
+                        Preload(loadFilePath, loadDataEntry.StackLocation);
+                    }
+                    break;
+                }
+            }
+         }
+
+        public void Preload(string loadFilePath, int stackLocationIndex)
+        {
+            Container container;
+            container = new Container(null, loadFilePath, this);
+            if (ContainerManager.LoadedContainers.ContainsKey(loadFilePath))
+            {
+                container.Copy(ContainerManager.LoadedContainers[loadFilePath]);
+            }
+            else
+            {
+                container.LoadFromContainerFile(loadFilePath);
+                ContainerManager.LoadedContainers.Add(loadFilePath, container);
+            }
+            var stackLocation = StackLocations[stackLocationIndex];
+            if (stackLocation.Containers != null && stackLocation.Containers.Count >= stackLocation.MaxStackedContainers)
+                Trace.TraceWarning("Stack Location {0} is full, can't lay down container", stackLocationIndex);
+            else if (stackLocation.Containers != null && stackLocation.Containers[0].LengthM != container.LengthM)
+                Trace.TraceWarning("Stack Location {0} is occupied with containers of different length", stackLocationIndex);
+            else if (stackLocation.Containers != null && stackLocation.Length + 0.01f < container.LengthM)
+                Trace.TraceWarning("Stack Location {0} is too short for container {1}", stackLocationIndex, container.Name);
+            if (stackLocation.Containers == null) stackLocation.Containers = new List<Container>();
+            container.ComputeContainerStationContainerPosition(stackLocationIndex, stackLocation.Containers.Count);
+            stackLocation.Containers.Add(container);
+            Containers.Add(container);
+            Simulator.ContainerManager.Containers.Add(container);
+            if (container.ContainerType != ContainerType.C20ft)
+                StackLocations[stackLocationIndex + StackLocations.Length / 2].Usable = false;
+        }
+
         public void Update()
         {
             var subMissionTerminated = false;
@@ -533,8 +631,8 @@ namespace Orts.Simulation
                         Status = ContainerStationStatus.LoadHorizontallyMoveToPick;
                         var loadPositionHorizontal = (Containers.Count - 1) / MaxStackedContainers;
                         loadPositionVertical = (Containers.Count - 1) - loadPositionHorizontal * MaxStackedContainers;
-                        TargetX = StackXNALocations[loadPositionHorizontal].X;
-                        TargetZ = StackXNALocations[loadPositionHorizontal].Z;
+                        TargetX = StackLocations[loadPositionHorizontal].Position.X;
+                        TargetZ = StackLocations[loadPositionHorizontal].Position.Z + Containers[Containers.Count - 1].LengthM * (StackLocations[loadPositionHorizontal].Flipped ? -1 : 1) / 2;
  //                       TargetX = PickingSurfaceRelativeTopStartPosition.X;
  //                       TargetZ = PickingSurfaceRelativeTopStartPosition.Z - RelativeContainerPosition.Translation.Z + UnloadContainer.IntrinsicShapeZOffset;
  //                       RelativeContainerPosition.M43 = UnloadContainer.IntrinsicShapeZOffset;
@@ -850,8 +948,8 @@ namespace Orts.Simulation
                         // Search first free position
                         var freePositionHorizontal = AttachedContainerIndex / MaxStackedContainers;
                         freePositionVertical = AttachedContainerIndex - freePositionHorizontal * MaxStackedContainers;
-                        TargetX = StackXNALocations[freePositionHorizontal].X;
-                        TargetZ = StackXNALocations[freePositionHorizontal].Z;
+                        TargetX = StackLocations[freePositionHorizontal].Position.X;
+                        TargetZ = StackLocations[freePositionHorizontal].Position.Z + UnloadContainer.LengthM * (StackLocations[freePositionHorizontal].Flipped ? -1 : 1) / 2;
                         MoveX = MoveZ = true;
                         Status = ContainerStationStatus.UnloadHorizontallyMoveToLayOnEarth;
                     }
@@ -984,5 +1082,35 @@ namespace Orts.Simulation
         }
 
     } // end Class ContainerHandlingItem
+
+    public class StackLocation
+    {
+        // Fixed data
+        public Vector3 Position;
+        public int MaxStackedContainers;
+        public float Length;
+        public bool Flipped;
+
+        // Variable data
+        public List<Container> Containers;
+        public bool Usable = true;
+
+        public StackLocation(PickupObj.StackLocation worldStackLocation)
+        {
+            Position = worldStackLocation.Position;
+            MaxStackedContainers = worldStackLocation.MaxStackedContainers;
+            Length = worldStackLocation.Length;
+            Flipped = worldStackLocation.Flipped;
+        }
+
+        public StackLocation(StackLocation stackLocation)
+        {
+            MaxStackedContainers = stackLocation.MaxStackedContainers;
+            Length = 6.095f;
+            Flipped = stackLocation.Flipped;
+            Position = stackLocation.Position;
+            Position.Z += 6.095f * (Flipped ? -1 : 1);
+        }
+    }
 }
 
