@@ -402,11 +402,6 @@ namespace Orts.Simulation
             ClockTime = StartTime.TotalSeconds;
             Season = Activity.Tr_Activity.Tr_Activity_Header.Season;
             WeatherType = Activity.Tr_Activity.Tr_Activity_Header.Weather;
-            if (Activity.Tr_Activity.Tr_Activity_Header.LoadStationsOccupancyFile != null)
-            {
-                var occupancyFilePath = RoutePath + @"\Activities\Openrails\" + Activity.Tr_Activity.Tr_Activity_Header.LoadStationsOccupancyFile + ".lso";
-                LoadStationsOccupancyFile = new LoadStationsOccupancyFile(occupancyFilePath);
-            }
             if (Activity.Tr_Activity.Tr_Activity_File.ActivityRestrictedSpeedZones != null)
             {
                 ActivityRun.AddRestrictZones(TRK.Tr_RouteFile, TSectionDat, TDB.TrackDB, Activity.Tr_Activity.Tr_Activity_File.ActivityRestrictedSpeedZones);
@@ -450,6 +445,11 @@ namespace Orts.Simulation
         public void Start(CancellationToken cancellation)
         {
             ContainerManager = new ContainerManager(this);
+            if (Activity?.Tr_Activity?.Tr_Activity_Header?.LoadStationsOccupancyFile != null)
+            {
+                var occupancyFilePath = RoutePath + @"\Activities\Openrails\" + Activity.Tr_Activity.Tr_Activity_Header.LoadStationsOccupancyFile + ".lso";
+                LoadStationsOccupancyFile = new LoadStationsOccupancyFile(occupancyFilePath);
+            }
             Signals = new Signals(this, SIGCFG, cancellation);
             TurntableFile = new TurntableFile(RoutePath + @"\openrails\turntables.dat", RoutePath + @"\shapes\", MovingTables, this);
             LevelCrossings = new LevelCrossings(this);

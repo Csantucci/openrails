@@ -4194,10 +4194,10 @@ namespace Orts.Simulation.RollingStocks
 
         }
 
-        public bool Validity(bool onlyUnload, PickupObj pickup, ContainerManager containerManager, FreightAnimations freightAnimations)
+        public bool Validity(bool onlyUnload, PickupObj pickup, ContainerManager containerManager, FreightAnimations freightAnimations, out ContainerHandlingItem containerStation)
         {
             var validity = false;
-            ContainerHandlingItem containerStation;
+            containerStation = null;
             var load = LinkedFreightAnim as FreightAnimationDiscrete;
             // discrete freight wagon animation
             if (load == null)
@@ -4227,11 +4227,22 @@ namespace Orts.Simulation.RollingStocks
             {
                 if (containerStation.Containers.Count == 0)
                     return validity;
-                validity = freightAnimations.Validity(load.Wagon, containerStation.Containers[containerStation.Containers.Count - 1],
-                    load.LoadPosition, load.Offset, load.LoadingAreaLength, out Vector3 offset);
+                foreach (var stackLocation in containerStation.StackLocations)
+                {
+                    if (stackLocation.Containers?.Count > 0)
+                    {
+                        if (freightAnimations.Validity(load.Wagon, stackLocation.Containers[stackLocation.Containers.Count - 1],
+                            load.LoadPosition, load.Offset, load.LoadingAreaLength, out Vector3 offset))
+                            return true;
+                    }
+                }
                 return validity;
             }
-            validity = true;
+            if (onlyUnload)
+            {
+                validity = containerStation.CheckForEligibleStackPosition(load.Container);
+            }
+            else validity = true;
             return validity;
         }
 

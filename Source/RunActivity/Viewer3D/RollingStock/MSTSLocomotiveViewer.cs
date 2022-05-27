@@ -456,6 +456,7 @@ namespace Orts.Viewer3D.RollingStock
             WagonAndMatchingPickup nearestPickup = null;
             float distanceFromFrontOfTrainM = 0f;
             int index = 0;
+            ContainerHandlingItem containerStation = null;
             foreach (var car in train.Cars)
             {
                 if (car is MSTSWagon)
@@ -482,7 +483,7 @@ namespace Orts.Viewer3D.RollingStock
                                 {
                                     if (intake.Type == MSTSWagon.PickupType.Container)
                                     {
-                                        if (!intake.Validity(onlyUnload, pickup, Viewer.Simulator.ContainerManager, wagon.FreightAnimations))
+                                        if (!intake.Validity(onlyUnload, pickup, Viewer.Simulator.ContainerManager, wagon.FreightAnimations, out containerStation))
                                             continue;
                                     }
                                     var intakePosition = new Vector3(0, 0, -intake.OffsetM);
@@ -493,6 +494,19 @@ namespace Orts.Viewer3D.RollingStock
                                         intakePosition.X, intakePosition.Y, -intakePosition.Z);
 
                                     var d2 = WorldLocation.GetDistanceSquared(intakeLocation, pickup.Location);
+                                    if (intake.Type == MSTSWagon.PickupType.Container && containerStation != null && 
+                                        (wagon.Train.FrontTDBTraveller.TN.Index == containerStation.TrackNode.Index ||
+                                        wagon.Train.FrontTDBTraveller.TN.Index == containerStation.TrackNode.Index) &&
+                                        d2 < containerStation.MinZSpan * containerStation.MinZSpan)
+                                    // for container it's enough if the intake is within the reachable range of the container crane
+                                    {
+                                        nearestPickup = new WagonAndMatchingPickup();
+                                        nearestPickup.Pickup = pickup;
+                                        nearestPickup.Wagon = wagon;
+                                        nearestPickup.IntakePoint = intake;
+                                        return nearestPickup;
+                                    }
+
                                     if (d2 < shortestD2)
                                     {
                                         shortestD2 = d2;
@@ -586,7 +600,7 @@ namespace Orts.Viewer3D.RollingStock
             }
             float distanceToPickupM = GetDistanceToM(match);
             if (match.IntakePoint.LinkedFreightAnim != null && match.IntakePoint.LinkedFreightAnim is FreightAnimationDiscrete)
-                // for container cranes andle distance management using Z span of crane
+                // for container cranes handle distance management using Z span of crane
             {
                 var containerStation = Viewer.Simulator.ContainerManager.ContainerHandlingItems.Where(item => item.Key == match.Pickup.TrItemIDList[0].dbID).Select(item => item.Value).First();
                 if (distanceToPickupM > containerStation.MinZSpan)

@@ -1270,7 +1270,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             var containerPresent = inf.ReadBoolean();
             if (containerPresent)
             {
-                Container = new Container(inf, this, null);
+                Container = new Container(inf, this, null, false);
                 Wagon.Simulator.ContainerManager.Containers.Add(Container);
             }
         }

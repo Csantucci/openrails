@@ -1419,7 +1419,7 @@ namespace Orts.Viewer3D
             }
 
             SharedShape.PrepareFrame(frame, Location, XNAMatrices, Flags);
-            if (ContainerHandlingItem.AttachedContainerIndex != -1)
+            if (ContainerHandlingItem.ContainerAttached)
             {
                 var absAnimationMatrix = XNAMatrices[IAnimationMatrixY];
                 Matrix.Multiply(ref absAnimationMatrix, ref XNAMatrices[IAnimationMatrixX], out absAnimationMatrix);
