@@ -1348,9 +1348,26 @@ namespace Orts.Viewer3D
                     //                    if (AnimationKey == 0 && Sound != null) Sound.HandleEvent(Event.FuelTowerDown);
                     tempFrameRate = Math.Abs(AnimationKeyX - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
                     if (AnimationKeyX < animationTarget)
+                    {
                         AnimationKeyX += elapsedTime.ClockSeconds * tempFrameRate;
+                        // don't oscillate!
+                        if (AnimationKeyX >= animationTarget)
+                        {
+                            AnimationKeyX = animationTarget;
+                            ContainerHandlingItem.MoveX = false;
+                        }
+                    }
                     else if (AnimationKeyX > animationTarget)
+                    {
                         AnimationKeyX -= elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyX <= animationTarget)
+                        {
+                            AnimationKeyX = animationTarget;
+                            ContainerHandlingItem.MoveX = false;
+                        }
+                    }
+                    else
+                        ContainerHandlingItem.MoveX = false;
                     if (AnimationKeyX < 0)
                         AnimationKeyX = 0;
                 }
@@ -1360,9 +1377,25 @@ namespace Orts.Viewer3D
                     var animationTarget = Math.Abs((ContainerHandlingItem.TargetY - ((linear_key)controllerY[0]).Y) / (((linear_key)controllerY[1]).Y - ((linear_key)controllerY[0]).Y)) * controllerY[1].Frame;
                     tempFrameRate = Math.Abs(AnimationKeyY - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
                     if (AnimationKeyY < animationTarget)
-                        AnimationKeyY+= elapsedTime.ClockSeconds * tempFrameRate;
+                    {
+                        AnimationKeyY += elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyY >= animationTarget)
+                        {
+                            AnimationKeyY = animationTarget;
+                            ContainerHandlingItem.MoveY = false;
+                        }
+                    }
                     else if (AnimationKeyY > animationTarget)
+                    {
                         AnimationKeyY -= elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyY <= animationTarget)
+                        {
+                            AnimationKeyY = animationTarget;
+                            ContainerHandlingItem.MoveY = false;
+                        }
+                    }
+                    else
+                        ContainerHandlingItem.MoveY = false;
                     if (AnimationKeyY < 0)
                         AnimationKeyY = 0;
                 }
@@ -1371,10 +1404,26 @@ namespace Orts.Viewer3D
                 {
                     var animationTarget = Math.Abs((ContainerHandlingItem.TargetZ - ((linear_key)controllerZ[0]).Z) / (((linear_key)controllerZ[1]).Z - ((linear_key)controllerZ[0]).Z)) * controllerZ[1].Frame;
                     tempFrameRate = Math.Abs(AnimationKeyZ - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
-                    if (AnimationKeyZ< animationTarget)
+                    if (AnimationKeyZ < animationTarget)
+                    {
                         AnimationKeyZ += elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyZ >= animationTarget)
+                        {
+                            AnimationKeyZ = animationTarget;
+                            ContainerHandlingItem.MoveZ = false;
+                        }
+                    }
                     else if (AnimationKeyZ > animationTarget)
-                        AnimationKeyZ-= elapsedTime.ClockSeconds * tempFrameRate;
+                    {
+                        AnimationKeyZ -= elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyZ <= animationTarget)
+                        {
+                            AnimationKeyZ = animationTarget;
+                            ContainerHandlingItem.MoveZ = false;
+                        }
+                    }
+                    else
+                        ContainerHandlingItem.MoveZ = false;
                     if (AnimationKeyZ < 0)
                         AnimationKeyZ = 0;
                 }
@@ -1384,17 +1433,43 @@ namespace Orts.Viewer3D
                     var animationTarget = Math.Abs((ContainerHandlingItem.TargetGrabber01 - ((linear_key)controllerGrabber01[0]).Z) / (((linear_key)controllerGrabber01[1]).Z - ((linear_key)controllerGrabber01[0]).Z)) * controllerGrabber01[1].Frame;
                     tempFrameRate = Math.Abs(AnimationKeyGrabber01 - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
                     if (AnimationKeyGrabber01 < animationTarget)
+                    {
                         AnimationKeyGrabber01 += elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyGrabber01 >= animationTarget)
+                        {
+                            AnimationKeyGrabber01 = animationTarget;
+                        }
+                    }
                     else if (AnimationKeyGrabber01 > animationTarget)
+                    {
                         AnimationKeyGrabber01 -= elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyGrabber01 <= animationTarget)
+                        {
+                            AnimationKeyGrabber01 = animationTarget;
+                        }
+                    }
                     if (AnimationKeyGrabber01 < 0)
                         AnimationKeyGrabber01 = 0;
-                    animationTarget = Math.Abs((ContainerHandlingItem.TargetGrabber02 - ((linear_key)controllerGrabber02[0]).Z) / (((linear_key)controllerGrabber02[1]).Z - ((linear_key)controllerGrabber02[0]).Z)) * controllerGrabber02[1].Frame;
-                    tempFrameRate = Math.Abs(AnimationKeyGrabber01 - animationTarget) > slowDownThreshold ? FrameRate : FrameRate / 4;
-                    if (AnimationKeyGrabber02 < animationTarget)
+                    var animationTarget2 = Math.Abs((ContainerHandlingItem.TargetGrabber02 - ((linear_key)controllerGrabber02[0]).Z) / (((linear_key)controllerGrabber02[1]).Z - ((linear_key)controllerGrabber02[0]).Z)) * controllerGrabber02[1].Frame;
+                    tempFrameRate = Math.Abs(AnimationKeyGrabber01 - animationTarget2) > slowDownThreshold ? FrameRate : FrameRate / 4;
+                    if (AnimationKeyGrabber02 < animationTarget2)
+                    {
                         AnimationKeyGrabber02 += elapsedTime.ClockSeconds * tempFrameRate;
-                    else if (AnimationKeyGrabber02 > animationTarget)
+                        if (AnimationKeyGrabber02 >= animationTarget2)
+                        {
+                            AnimationKeyGrabber02 = animationTarget2;
+                        }
+                    }
+                    else if (AnimationKeyGrabber02 > animationTarget2)
+                    {
                         AnimationKeyGrabber02 -= elapsedTime.ClockSeconds * tempFrameRate;
+                        if (AnimationKeyGrabber02 <= animationTarget2)
+                        {
+                            AnimationKeyGrabber02 = animationTarget2;
+                        }
+                    }
+                    if (animationTarget == AnimationKeyGrabber01 && animationTarget2 == AnimationKeyGrabber02)
+                        ContainerHandlingItem.MoveGrabber = false;
                     if (AnimationKeyGrabber02 < 0)
                         AnimationKeyGrabber02 = 0;
                 }

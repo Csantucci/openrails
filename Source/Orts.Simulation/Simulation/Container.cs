@@ -626,11 +626,8 @@ namespace Orts.Simulation
         public void Update()
         {
             var subMissionTerminated = false;
-            if ((!MoveX || Math.Abs(ActualX - TargetX) < 0.02f) && (!MoveY || Math.Abs(ActualY - TargetY) < 0.02f) && 
-                (!MoveZ || Math.Abs(ActualZ - TargetZ) < 0.02f))
+            if (!MoveX && !MoveY && !MoveZ)
                 subMissionTerminated = true;
-            if (Math.Abs(ActualX - TargetX) < 0.02f) MoveX = false;
-            if (Math.Abs(ActualZ - TargetZ) < 0.02f) MoveZ = false;
 
             switch (Status)
             {
@@ -651,8 +648,7 @@ namespace Orts.Simulation
                     }
                     break;
                 case ContainerStationStatus.LoadHorizontallyMoveToPick:
-                    if (subMissionTerminated && (!MoveGrabber ||
-                        Math.Abs(ActualGrabber01 - TargetGrabber01) < 0.02f && Math.Abs(ActualGrabber02 - TargetGrabber02) < 0.02))
+                    if (subMissionTerminated && !MoveGrabber)
                     {
                         MoveX = false;
                         MoveZ = false;
@@ -868,8 +864,7 @@ namespace Orts.Simulation
                     }
                     break;
                 case ContainerStationStatus.UnloadHorizontallyMoveToPick:
-                    if (subMissionTerminated && (!MoveGrabber ||
-                        Math.Abs(ActualGrabber01 - TargetGrabber01) < 0.02f && Math.Abs(ActualGrabber02 - TargetGrabber02) < 0.02))
+                    if (subMissionTerminated && !MoveGrabber)
                     {
                         MoveX = false;
                         MoveZ = false;
