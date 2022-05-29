@@ -134,19 +134,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     StaticFreightAnimationsPresent = true;
                     FullPhysicsStaticOne = Animations.Last() as FreightAnimationStatic;
                 }),
-                new STFReader.TokenProcessor("freightanimdiscrete", ()=>
-                {
-                    Animations.Add(new FreightAnimationDiscrete(stf, this));
-                    if (wagon.WeightLoadController == null) wagon.WeightLoadController = new MSTSNotchController(0, 1, 0.01f);
-                    if ((Animations.Last() as FreightAnimationDiscrete).LoadedAtStart && wagon.Simulator.Initialize)
-                    {
-                        empty = false;
-                        FreightType = wagon.IntakePointList.Last().Type;
-                        var last = Animations.Last() as FreightAnimationDiscrete;
-                        FreightWeight += last.Container.MassKG;
-                        last.Loaded = true;
-                    }
-                }),
                 new STFReader.TokenProcessor("loaddata", ()=>
                 {
                     stf.MustMatch("(");
@@ -243,7 +230,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public FreightAnimations(FreightAnimations copyFACollection, MSTSWagon wagon)
         {
             Wagon = wagon;
-            var empty = true;
             foreach (FreightAnimation freightAnim in copyFACollection.Animations)
             {
                 if (freightAnim is FreightAnimationContinuous)
@@ -381,6 +367,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 // generate an empty freightAnim
                 EmptyAnimations.Add(new FreightAnimationDiscrete(this, LoadPosition.Center));
             EmptyAbove();
+            if (!listInWagFile)
+                wagon.UpdateLoadPhysics();
         }
 
         public void EmptyAbove()
@@ -1110,53 +1098,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public float AboveLoadingAreaLength = -1f;
         public LoadPosition LoadPosition = LoadPosition.Center;
 
-        public FreightAnimationDiscrete(STFReader stf, FreightAnimations freightAnimations)
-        {
-            FreightAnimations = freightAnimations;
-            Wagon = FreightAnimations.Wagon; ;
-            stf.MustMatch("(");
-            stf.ParseBlock(new STFReader.TokenProcessor[]
-            {
-                new STFReader.TokenProcessor("subtype", ()=>
-                {
-                        var typeString = stf.ReadStringBlock(null).ToLower();
-                        switch (typeString)
-	                    {
-                            case "container":
-                                SubType = FreightAnimationDiscrete.Type.Container;
-                            break;
-                            default:
-                                SubType = FreightAnimationDiscrete.Type.DEFAULT;
-                                break;
-	                    }
-                }),
-                new STFReader.TokenProcessor("intakepoint", ()=>
-                {
-                    Wagon.IntakePointList.Add(new IntakePoint(stf));
-                    Wagon.IntakePointList.Last().LinkedFreightAnim = this;
-                    LinkedIntakePoint = Wagon.IntakePointList.Last();
-                }),
-                new STFReader.TokenProcessor("offset", ()=>
-                { 
-                    Offset = stf.ReadVector3Block(STFReader.UNITS.Distance,  new Vector3(0, 0, 0));
-                    Offset.Z *= -1; // MSTS --> XNA
-                }),
-                new STFReader.TokenProcessor("loadingarealength", ()=>{ LoadingAreaLength = stf.ReadFloatBlock(STFReader.UNITS.Distance, 12.19f);}),
-                new STFReader.TokenProcessor("aboveloadingarealength", ()=>{ AboveLoadingAreaLength = stf.ReadFloatBlock(STFReader.UNITS.Distance, 12.19f);}),
-                new STFReader.TokenProcessor("container", ()=>
-                {
-                    if (Wagon.Simulator.Initialize)
-                    {
-                        Container = new Container(stf, this);
-                        Wagon.Simulator.ContainerManager.Containers.Add(Container);
-                    }
-                }),
-                new STFReader.TokenProcessor("loadedatstart", ()=>{ LoadedAtStart = stf.ReadBoolBlock(true);}),
-            });
-            if (AboveLoadingAreaLength == -1) AboveLoadingAreaLength = LoadingAreaLength;
-        }
-
-        // for copy
+         // for copy
         public FreightAnimationDiscrete(FreightAnimationDiscrete freightAnimDiscrete, FreightAnimations freightAnimations)
         {
             FreightAnimations = freightAnimations;

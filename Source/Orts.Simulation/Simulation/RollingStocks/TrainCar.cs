@@ -2333,6 +2333,22 @@ namespace Orts.Simulation.RollingStocks
             return false;
         }
 
+        //<comment>
+        //Initializes the physics of the car taking into account its variable discrete loads
+        //</comment>
+        public void InitializeLoadPhysics()
+        {
+            // TODO
+        }
+
+        //<comment>
+        //Updates the physics of the car taking into account its variable discrete loads
+        //</comment>
+        public void UpdateLoadPhysics()
+        {
+            // TODO
+        }
+
         public virtual float GetCouplerZeroLengthM()
         {
             return 0;

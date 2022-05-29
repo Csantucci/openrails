@@ -428,8 +428,8 @@ namespace Orts.Simulation
         public float Grabber02Max;
         public float MaxGrabberSpan;
         private FreightAnimationDiscrete LinkedFreightAnimation;
-        public float LoadingEndDelayS { get; protected set; } = 2f;
-        public float UnloadingStartDelayS { get; protected set; } = 3f;
+        public float LoadingEndDelayS { get; protected set; } = 3f;
+        public float UnloadingStartDelayS { get; protected set; } = 2f;
         protected Timer DelayTimer;
 
         private bool messageWritten = false;
@@ -829,6 +829,7 @@ namespace Orts.Simulation
                                 (StackLocations[SelectedStackLocationIndex - StackLocationsCount / 2].Containers == null || StackLocations[SelectedStackLocationIndex - StackLocationsCount / 2].Containers.Count == 0))
                                 StackLocations[SelectedStackLocationIndex].Usable = false;
                         }
+                        HandledContainer.Wagon.UpdateLoadPhysics();
                         HandledContainer = null;
                         ContainerAttached = false;
                         freightAnim.Loaded = true;
@@ -934,6 +935,7 @@ namespace Orts.Simulation
 
                         }
                         freightAnims.Animations.Remove(LinkedFreightAnimation);
+                        HandledContainer.Wagon.UpdateLoadPhysics();
                         LinkedFreightAnimation = null;
                         DelayTimer.Stop();
                         ContainerAttached = true;
@@ -1022,22 +1024,15 @@ namespace Orts.Simulation
             SelectedStackLocationIndex = SelectLoadPosition();
             if (SelectedStackLocationIndex == -1) return;
             HandledContainer = StackLocations[SelectedStackLocationIndex].Containers[StackLocations[SelectedStackLocationIndex].Containers.Count - 1];
+            RelativeContainerPosition = Matrix.Multiply(HandledContainer.WorldPosition.XNAMatrix, InitialInvAnimationXNAMatrix);
             ContainerFlipped = (Math.Abs(InitialInvAnimationXNAMatrix.M11 - HandledContainer.WorldPosition.XNAMatrix.M11) < 0.1f ? false : true);
             WagonFlipped = (Math.Abs(InitialInvAnimationXNAMatrix.M11 - LinkedFreightAnimation.Wagon.WorldPosition.XNAMatrix.M11) < 0.1f ? false : true);
-            if (ContainerFlipped)
-            {
-                RelativeContainerPosition.M11 = -1;
-                RelativeContainerPosition.M33 = -1;
-            }
-            else
-            {
-                RelativeContainerPosition.M11 = 1;
-                RelativeContainerPosition.M33 = 1;
-            }
+            RelativeContainerPosition.M41 = HandledContainer.IntrinsicShapeOffset.X * (ContainerFlipped ? 1 : -1);
+            RelativeContainerPosition.M42 = HandledContainer.IntrinsicShapeOffset.Y * (ContainerFlipped ? 1 : -1);
             RelativeContainerPosition.M43 = HandledContainer.IntrinsicShapeOffset.Z * (ContainerFlipped ? 1 : -1);
             Status = ContainerStationStatus.LoadRaiseToPick;
             TargetY = PickingSurfaceRelativeTopStartPosition.Y;
-            MoveY = true;
+            MoveY = true; 
             SetGrabbers(HandledContainer);
         }
 
