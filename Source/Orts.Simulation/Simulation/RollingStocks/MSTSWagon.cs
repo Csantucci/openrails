@@ -2000,24 +2000,6 @@ namespace Orts.Simulation.RollingStocks
                         WeightLoadController.StartDecrease(WeightLoadController.MinimumValue);
                 }
             }
-            // update position of container in discrete freight animations
-            if (FreightAnimations?.Animations != null)
-            {
-                foreach (var freightAnim in FreightAnimations.Animations)
-                {
-                    if (freightAnim is FreightAnimationDiscrete)
-                    {
-                        var discreteFreightAnim = freightAnim as FreightAnimationDiscrete;
-                        if (discreteFreightAnim.Loaded && discreteFreightAnim.Container != null)
-                        {
-                            var container = discreteFreightAnim.Container;
-                            container.WorldPosition.XNAMatrix = Matrix.Multiply(container.RelativeContainerMatrix, discreteFreightAnim.Wagon.WorldPosition.XNAMatrix);
-                            container.WorldPosition.TileX = WorldPosition.TileX;
-                            container.WorldPosition.TileZ = WorldPosition.TileZ;
-                        }
-                    }
-                }
-            }
         }
 
        private void UpdateLocomotiveLoadPhysics()
