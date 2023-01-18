@@ -1,0 +1,207 @@
+diff --git a/Source/ContentChecker/ContentChecker.csproj b/Source/ContentChecker/ContentChecker.csproj
+index 852bcd5fa..3bc1d5bd6 100644
+--- a/Source/ContentChecker/ContentChecker.csproj
++++ b/Source/ContentChecker/ContentChecker.csproj
+@@ -58,8 +58,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Windows.Forms" />
+diff --git a/Source/Contrib/ActivityEditor/ActivityEditor/ActivityEditor.csproj b/Source/Contrib/ActivityEditor/ActivityEditor/ActivityEditor.csproj
+index 4ed494f2f..cb6c16caf 100644
+--- a/Source/Contrib/ActivityEditor/ActivityEditor/ActivityEditor.csproj
++++ b/Source/Contrib/ActivityEditor/ActivityEditor/ActivityEditor.csproj
+@@ -61,8 +61,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\..\..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\..\..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Core" />
+diff --git a/Source/Contrib/ActivityEditor/LibAE/LibAE.csproj b/Source/Contrib/ActivityEditor/LibAE/LibAE.csproj
+index 1ba70355d..d1efea8e7 100644
+--- a/Source/Contrib/ActivityEditor/LibAE/LibAE.csproj
++++ b/Source/Contrib/ActivityEditor/LibAE/LibAE.csproj
+@@ -57,8 +57,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\..\..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\..\..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+diff --git a/Source/Contrib/DataCollector/DataCollector.csproj b/Source/Contrib/DataCollector/DataCollector.csproj
+index 61a714b08..c36f525a5 100644
+--- a/Source/Contrib/DataCollector/DataCollector.csproj
++++ b/Source/Contrib/DataCollector/DataCollector.csproj
+@@ -61,8 +61,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+   </ItemGroup>
+diff --git a/Source/Contrib/TrackViewer/TrackViewer.csproj b/Source/Contrib/TrackViewer/TrackViewer.csproj
+index 0b14cc0db..3c4d4cb5b 100644
+--- a/Source/Contrib/TrackViewer/TrackViewer.csproj
++++ b/Source/Contrib/TrackViewer/TrackViewer.csproj
+@@ -70,8 +70,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+diff --git a/Source/Menu/Menu.csproj b/Source/Menu/Menu.csproj
+index 21e8fb6ff..5fe41015d 100644
+--- a/Source/Menu/Menu.csproj
++++ b/Source/Menu/Menu.csproj
+@@ -71,8 +71,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Core" />
+diff --git a/Source/ORTS.Common/ORTS.Common.csproj b/Source/ORTS.Common/ORTS.Common.csproj
+index 58f8d69e6..3946f0e7c 100644
+--- a/Source/ORTS.Common/ORTS.Common.csproj
++++ b/Source/ORTS.Common/ORTS.Common.csproj
+@@ -64,8 +64,6 @@
+     </Reference>
+     <Reference Include="RailDriver, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+       <HintPath>..\packages\RailDriver.0.7.10\lib\netstandard2.0\RailDriver.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Core" />
+diff --git a/Source/ORTS.Settings/ORTS.Settings.csproj b/Source/ORTS.Settings/ORTS.Settings.csproj
+index ba78a5388..624f3a82c 100644
+--- a/Source/ORTS.Settings/ORTS.Settings.csproj
++++ b/Source/ORTS.Settings/ORTS.Settings.csproj
+@@ -62,8 +62,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.5.0.1046, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>$(SolutionDir)\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Core" />
+diff --git a/Source/Orts.Formats.Msts/Orts.Formats.Msts.csproj b/Source/Orts.Formats.Msts/Orts.Formats.Msts.csproj
+index b2adacb85..4b7323afd 100644
+--- a/Source/Orts.Formats.Msts/Orts.Formats.Msts.csproj
++++ b/Source/Orts.Formats.Msts/Orts.Formats.Msts.csproj
+@@ -55,8 +55,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Core" />
+diff --git a/Source/Orts.Formats.OR/Orts.Formats.OR.csproj b/Source/Orts.Formats.OR/Orts.Formats.OR.csproj
+index 8055c856f..1219bf1d4 100644
+--- a/Source/Orts.Formats.OR/Orts.Formats.OR.csproj
++++ b/Source/Orts.Formats.OR/Orts.Formats.OR.csproj
+@@ -64,8 +64,6 @@
+     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\3rdPartyLibs\Newtonsoft.Json.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Drawing" />
+diff --git a/Source/Orts.Parsers.Msts/Orts.Parsers.Msts.csproj b/Source/Orts.Parsers.Msts/Orts.Parsers.Msts.csproj
+index 8f8726035..2497fe457 100644
+--- a/Source/Orts.Parsers.Msts/Orts.Parsers.Msts.csproj
++++ b/Source/Orts.Parsers.Msts/Orts.Parsers.Msts.csproj
+@@ -59,8 +59,6 @@
+     <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Core" />
+diff --git a/Source/Orts.Parsers.OR/Orts.Parsers.OR.csproj b/Source/Orts.Parsers.OR/Orts.Parsers.OR.csproj
+index 86e1ef94c..1e7127214 100644
+--- a/Source/Orts.Parsers.OR/Orts.Parsers.OR.csproj
++++ b/Source/Orts.Parsers.OR/Orts.Parsers.OR.csproj
+@@ -46,7 +46,8 @@
+     <LangVersion>7.3</LangVersion>
+   </PropertyGroup>
+   <ItemGroup>
+-    <Reference Include="MonoGame.Framework">
++    <Reference Include="MonoGame.Framework, Version=3.7.1.189, Culture=neutral, processorArchitecture=MSIL">
++      <SpecificVersion>False</SpecificVersion>
+       <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+diff --git a/Source/Orts.Simulation/Orts.Simulation.csproj b/Source/Orts.Simulation/Orts.Simulation.csproj
+index 97a294e10..984668194 100644
+--- a/Source/Orts.Simulation/Orts.Simulation.csproj
++++ b/Source/Orts.Simulation/Orts.Simulation.csproj
+@@ -58,7 +58,7 @@
+       <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.4.0.1\lib\netstandard2.0\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+     </Reference>
+     <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
++      <HintPath>$(SolutionDir)\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+       <SpecificVersion>False</SpecificVersion>
+diff --git a/Source/RunActivity/RunActivity.csproj b/Source/RunActivity/RunActivity.csproj
+index f9abc6758..b9f7a73b1 100644
+--- a/Source/RunActivity/RunActivity.csproj
++++ b/Source/RunActivity/RunActivity.csproj
+@@ -91,11 +91,6 @@
+     </Reference>
+     <Reference Include="Swan.Lite, Version=3.0.0.0, Culture=neutral, PublicKeyToken=30c707c872729fff, processorArchitecture=MSIL">
+       <HintPath>..\packages\Unosquare.Swan.Lite.3.0.0\lib\net461\Swan.Lite.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+-    </Reference>
+-    <Reference Include="MonoGame.Framework.Content.Pipeline">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.Content.Pipeline.dll</HintPath>
+     </Reference>
+     <Reference Include="System" />
+     <Reference Include="System.Data" />
+diff --git a/Source/Tests/Tests.csproj b/Source/Tests/Tests.csproj
+index faeb156bc..ddc738f9a 100644
+--- a/Source/Tests/Tests.csproj
++++ b/Source/Tests/Tests.csproj
+@@ -3,7 +3,6 @@
+   <Import Project="..\packages\xunit.core.2.4.1\build\xunit.core.props" Condition="Exists('..\packages\xunit.core.2.4.1\build\xunit.core.props')" />
+   <Import Project="..\packages\xunit.runner.visualstudio.2.4.2\build\net452\xunit.runner.visualstudio.props" Condition="Exists('..\packages\xunit.runner.visualstudio.2.4.2\build\net452\xunit.runner.visualstudio.props')" />
+   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+-<Project Sdk="Microsoft.NET.Sdk">
+   <PropertyGroup>
+     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+@@ -75,8 +74,6 @@
+     </Reference>
+     <Reference Include="xunit.execution.desktop, Version=2.4.1.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
+       <HintPath>..\packages\xunit.extensibility.execution.2.4.1\lib\net452\xunit.execution.desktop.dll</HintPath>
+-    <Reference Include="MonoGame.Framework">
+-      <HintPath>..\3rdPartyLibs\MonoGame\MonoGame.Framework.dll</HintPath>
+     </Reference>
+   </ItemGroup>
+   <ItemGroup>
