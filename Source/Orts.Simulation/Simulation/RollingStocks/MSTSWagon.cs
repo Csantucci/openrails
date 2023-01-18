@@ -492,9 +492,15 @@ namespace Orts.Simulation.RollingStocks
             {
                 CarAirHoseHorizontalLengthM = 0.3862f; // 15.2 inches
             }
-            
+
+            // Disable derailment coefficent on "dummy" cars. NB: Ideally this should never be used as "dummy" cars interfer with the overall train physics.
+            if (MSTSWagonNumWheels == 0 && InitWagonNumAxles == 0 )
+            {
+                DerailmentCoefficientEnabled = false;
+            }
+
             // Ensure Drive Axles is set to a default if no OR value added to WAG file
-            if (WagonNumAxles == 0 && WagonType != WagonTypes.Engine)
+            if (InitWagonNumAxles == 0 && WagonType != WagonTypes.Engine)
             {
                 if (MSTSWagonNumWheels != 0 && MSTSWagonNumWheels < 6)
                 {
@@ -509,6 +515,10 @@ namespace Orts.Simulation.RollingStocks
                 {
                     Trace.TraceInformation("Number of Wagon Axles set to default value of {0}", WagonNumAxles);
                 }
+            }
+            else
+            {
+                WagonNumAxles = InitWagonNumAxles;
             }
 
             // Should always be at least one bogie on rolling stock. If is zero then NaN error occurs.
@@ -862,7 +872,7 @@ namespace Orts.Simulation.RollingStocks
                                 totalContainerMassKG += discreteAnim.Container.MassKG;
                             }
                     }
-                    MassKG = FreightAnimations.WagonEmptyWeight + FreightAnimations.FreightWeight + FreightAnimations.StaticFreightWeight + totalContainerMassKG;
+                    CalculateTotalMass(totalContainerMassKG);
 
                     if (FreightAnimations.StaticFreightAnimationsPresent) // If it is static freight animation, set wagon physics to full wagon value
                     {
@@ -949,6 +959,12 @@ namespace Orts.Simulation.RollingStocks
 
             if (BrakeSystem == null)
                 BrakeSystem = MSTSBrakeSystem.Create(CarBrakeSystemType, this);
+        }
+
+        // Compute total mass of wagon including freight animations and variable loads like containers
+        public void CalculateTotalMass(float totalContainerMassKG)
+        {
+            MassKG = FreightAnimations.WagonEmptyWeight + FreightAnimations.FreightWeight + FreightAnimations.StaticFreightWeight + totalContainerMassKG;
         }
 
         public void GetMeasurementUnits()
@@ -1380,8 +1396,8 @@ namespace Orts.Simulation.RollingStocks
                     break;
                 case "wagon(inside": HasInsideView = true; ParseWagonInside(stf); break;
                 case "wagon(orts3dcab": Parse3DCab(stf); break;
-                case "wagon(numwheels": MSTSWagonNumWheels= stf.ReadFloatBlock(STFReader.UNITS.None, 4.0f); break;
-                case "wagon(ortsnumberaxles": WagonNumAxles = stf.ReadIntBlock(null); break;
+                case "wagon(numwheels": MSTSWagonNumWheels= stf.ReadFloatBlock(STFReader.UNITS.None, null); break;
+                case "wagon(ortsnumberaxles": InitWagonNumAxles = stf.ReadIntBlock(null); break;
                 case "wagon(ortsnumberbogies": WagonNumBogies = stf.ReadIntBlock(null); break;
                 case "wagon(ortspantographs":
                     Pantographs.Parse(lowercasetoken, stf);
@@ -1477,7 +1493,8 @@ namespace Orts.Simulation.RollingStocks
             AuxTenderWaterMassKG = copy.AuxTenderWaterMassKG;
             TenderWagonMaxCoalMassKG = copy.TenderWagonMaxCoalMassKG;
             TenderWagonMaxWaterMassKG = copy.TenderWagonMaxWaterMassKG;
-            WagonNumAxles = copy.WagonNumAxles;
+            InitWagonNumAxles = copy.InitWagonNumAxles;
+            DerailmentCoefficientEnabled = copy.DerailmentCoefficientEnabled;
             WagonNumBogies = copy.WagonNumBogies;
             MSTSWagonNumWheels = copy.MSTSWagonNumWheels;
             MassKG = copy.MassKG;
@@ -2005,7 +2022,7 @@ namespace Orts.Simulation.RollingStocks
                 // Updates the mass of the wagon considering all types of loads
                 if (FreightAnimations != null && FreightAnimations.WagonEmptyWeight != -1)
                 {
-                    MassKG = FreightAnimations.WagonEmptyWeight + FreightAnimations.FreightWeight + FreightAnimations.StaticFreightWeight + totalContainerMassKG;
+                    CalculateTotalMass(totalContainerMassKG);
                 }
             }
         }

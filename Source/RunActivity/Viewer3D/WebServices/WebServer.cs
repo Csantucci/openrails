@@ -27,7 +27,10 @@ using Microsoft.Xna.Framework;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Orts.Formats.Msts;
+using Orts.Common;
+using Orts.Simulation.Physics;
 using Orts.Viewer3D.RollingStock;
+using ORTS.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,12 +123,12 @@ namespace Orts.Viewer3D.WebServices
         /// The Viewer to serve train data from.
         /// </summary>
         private readonly Viewer Viewer;
+        protected WorldLocation cameraLocation = new WorldLocation();
 
         public ORTSApiController(Viewer viewer)
         {
             Viewer = viewer;
         }
-
 
         #region /API/APISAMPLE
         public struct Embedded
@@ -280,6 +283,11 @@ namespace Orts.Viewer3D.WebServices
         #region /API/TIME
         [Route(HttpVerbs.Get, "/TIME")]
         public double Time() => Viewer.Simulator.ClockTime;
+        #endregion
+
+        #region /API/MAP
+        [Route(HttpVerbs.Get, "/MAP")]
+        public LatLon LatLon() => Viewer.Simulator.PlayerLocomotive.GetLatLon();
         #endregion
     }
 }

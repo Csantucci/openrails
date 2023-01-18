@@ -23,7 +23,6 @@ using Microsoft.Xna.Framework;
 using Orts.Common;
 using ORTS.Common;
 using Orts.Viewer3D.RollingStock.SubSystems;
-using System;
 using System.Collections.Generic;
 
 namespace Orts.Viewer3D
