@@ -7,9 +7,9 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <IsPublishable>False</IsPublishable>
     <AssemblyTitle>Open Rails Updater Library</AssemblyTitle>
-    <Description>Open Rails Transport Simulator</Description>
+    <Description>Open Rails NewYear MG Transport Simulator</Description>
     <Company>Open Rails</Company>
-    <Product>Open Rails</Product>
+    <Product>Open Rails NewYear MG</Product>
     <Copyright>Copyright © 2009 - 2022</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
   </PropertyGroup>

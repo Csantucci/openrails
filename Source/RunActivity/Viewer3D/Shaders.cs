@@ -264,6 +264,7 @@ namespace Orts.Viewer3D
         readonly EffectParameter sideVector;
         readonly EffectParameter imageBlurStep;
         readonly EffectParameter imageTexture;
+        readonly EffectParameter blurTexture;
 
         public void SetData(ref Matrix v)
         {
@@ -284,7 +285,7 @@ namespace Orts.Viewer3D
 
         public void SetBlurData(Texture2D texture)
         {
-            imageTexture.SetValue(texture);
+            blurTexture.SetValue(texture);
             imageBlurStep.SetValue(texture != null ? 1f / texture.Width : 0);
         }
 
@@ -295,6 +296,7 @@ namespace Orts.Viewer3D
             sideVector = Parameters["SideVector"];
             imageBlurStep = Parameters["ImageBlurStep"];
             imageTexture = Parameters["ImageTexture"];
+            blurTexture = Parameters["BlurTexture"];
         }
     }
 
@@ -680,7 +682,7 @@ namespace Orts.Viewer3D
         readonly EffectParameter pointerColor;
         readonly EffectParameter interventionColor;
         readonly EffectParameter backgroundColor;
-        //readonly EffectParameter imageTexture;
+        readonly EffectParameter imageTexture;
 
         public void SetData(Vector4 angle, Color gaugeColor, Color needleColor, Color overspeedColor)
         {
@@ -698,7 +700,7 @@ namespace Orts.Viewer3D
             pointerColor = Parameters["PointerColor"];
             backgroundColor = Parameters["BackgroundColor"];
             limitAngle = Parameters["LimitAngle"];
-            //imageTexture = Parameters["ImageTexture"];
+            imageTexture = Parameters["ImageTexture"];
             interventionColor = Parameters["InterventionColor"];
         }
     }

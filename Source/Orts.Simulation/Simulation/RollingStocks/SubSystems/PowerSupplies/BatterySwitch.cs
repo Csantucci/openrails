@@ -108,6 +108,16 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 }
             }
             Timer.Setup(DelayS);
+
+            if (DefaultOn)
+            {
+                On = true;
+
+                if (Mode == ModeType.Switch)
+                {
+                    CommandSwitch = true;
+                }
+            }
         }
 
         /// <summary>
