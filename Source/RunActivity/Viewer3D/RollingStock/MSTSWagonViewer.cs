@@ -743,7 +743,7 @@ namespace Orts.Viewer3D.RollingStock
 
             if (Car.BrakeSkid) // if car wheels are skidding because of brakes locking wheels up then stop wheels rotating.
             {
-                if ( ((MSTSLocomotive)MSTSWagon).DriveWheelOnlyBrakes)
+                if ( MSTSWagon is MSTSLocomotive loco && loco.DriveWheelOnlyBrakes)
                 {
                     distanceTravelledDrivenM = 0.0f;
                 }
