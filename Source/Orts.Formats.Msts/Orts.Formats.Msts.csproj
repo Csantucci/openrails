@@ -1,131 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{570709FA-0C8A-4B1D-BA2D-D9455AFD9B5C}</ProjectGuid>
+    <TargetFramework>net472</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Orts.Formats.Msts</RootNamespace>
-    <AssemblyName>Orts.Formats.Msts</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\Program\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <IsPublishable>False</IsPublishable>
     <AssemblyTitle>Open Rails MSTS Formats Library</AssemblyTitle>
-    <Description>Open Rails Transport Simulator</Description>
+    <Description>Open Rails NewYear MG Transport Simulator</Description>
     <Company>Open Rails</Company>
-    <Product>Open Rails</Product>
-    <Copyright>Copyright © 2009 - 2022</Copyright>
+    <Product>Open Rails NewYear MG</Product>
+    <Copyright>Copyright © 2009 - 2022 Open Rails</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\Program\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
     <DocumentationFile>..\..\Program\Orts.Formats.Msts.xml</DocumentationFile>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <Prefer32Bit>false</Prefer32Bit>
-    <LangVersion>7.3</LangVersion>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MonoGame.Framework, Version=3.6.0.1625, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\3rdPartyLibs\Monogame\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <ProjectReference Include="..\Orts.Parsers.Msts\Orts.Parsers.Msts.csproj" />
+    <ProjectReference Include="..\ORTS.Common\ORTS.Common.csproj" />
+    <ProjectReference Include="..\ORTS.IO\ORTS.IO.csproj" />
+    <ProjectReference Include="..\ORTS.Settings\ORTS.Settings.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AceFile.cs" />
-    <Compile Include="ActivityFile.cs" />
-    <Compile Include="CameraConfigurationFile.cs" />
-    <Compile Include="CarSpawnerFile.cs" />
-    <Compile Include="ConsistFile.cs" />
-    <Compile Include="CabViewFile.cs" />
-    <Compile Include="EngineFile.cs" />
-    <Compile Include="EnvironmentFile.cs" />
-    <Compile Include="Signalling\Enums.cs" />
-    <Compile Include="Signalling\Parser.cs" />
-    <Compile Include="Signalling\Tokenizer.cs" />
-    <Compile Include="Signalling\Tokens.cs" />
-    <Compile Include="SignalScripts.cs" />
-    <Compile Include="TerrainFlagsFile.cs" />
-    <Compile Include="HazardFile.cs" />
-    <Compile Include="LightCollection.cs" />
-    <Compile Include="MstsUtility.cs" />
-    <Compile Include="PathFile.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RoadDatabaseFile.cs" />
-    <Compile Include="ShapeDescriptorFile.cs" />
-    <Compile Include="ShapeFile.cs" />
-    <Compile Include="SignalConfigurationFile.cs" />
-    <Compile Include="SignalEnums.cs" />
-    <Compile Include="SpeedpostDatFile.cs" />
-    <Compile Include="SoundManagmentFile.cs" />
-    <Compile Include="ServiceFile.cs" />
-    <Compile Include="TrackDatabaseFile.cs" />
-    <Compile Include="TerrainFile.cs" />
-    <Compile Include="TrafficFile.cs" />
-    <Compile Include="RouteFile.cs" />
-    <Compile Include="TrackSectionsFile.cs" />
-    <Compile Include="TrackTypesFile.cs" />
-    <Compile Include="WagonFile.cs" />
-    <Compile Include="WorldFile.cs" />
-    <Compile Include="WorldSoundFile.cs" />
-    <Compile Include="TerrainAltitudeFile.cs" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Orts.Parsers.Msts\Orts.Parsers.Msts.csproj">
-      <Project>{8A84696C-3559-49B8-B27F-BB6932D8A1C6}</Project>
-      <Name>Orts.Parsers.Msts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ORTS.Common\ORTS.Common.csproj">
-      <Project>{DA94D876-7D35-46C3-AECE-AFACE72C686C}</Project>
-      <Name>ORTS.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ORTS.IO\ORTS.IO.csproj">
-      <Project>{6AB8B673-5775-4536-A58A-BA0A15899583}</Project>
-      <Name>ORTS.IO</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ORTS.Settings\ORTS.Settings.csproj">
-      <Project>{67f84996-8769-4fd8-819b-464af269037b}</Project>
-      <Name>ORTS.Settings</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
 </Project>

@@ -17,38 +17,27 @@
 
 // This file is the responsibility of the 3D & Environment Team. 
 
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Content.Pipeline;
-using Microsoft.Xna.Framework.Content.Pipeline.Graphics;
-using Microsoft.Xna.Framework.Content.Pipeline.Processors;
-using Orts.Viewer3D.Processes;
-using ORTS.Common;
 using System;
 using System.IO;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content.Pipeline;
+using Microsoft.Xna.Framework.Graphics;
+using Orts.Viewer3D.Processes;
+using ORTS.Common;
 
 namespace Orts.Viewer3D
 {
     public abstract class Shader : Effect
     {
-        public Shader(GraphicsDevice graphicsDevice, string filename)
+        protected Shader(GraphicsDevice graphicsDevice, string filename)
             : base(graphicsDevice, GetEffectCode(filename))
         {
         }
 
         static byte[] GetEffectCode(string filename)
         {
-            var basePath = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Content");
-            var effectFileName = System.IO.Path.Combine(basePath, filename + ".fx");
-
-            EffectContent effectSource = new EffectContent
-            {
-                Identity = new ContentIdentity(effectFileName),
-                EffectCode = File.ReadAllText(effectFileName),
-            };
-            EffectProcessor processor = new EffectProcessor();
-            CompiledEffectContent compiledEffect = processor.Process(effectSource, new ProcessorContext());
-            return compiledEffect.GetEffectCode();
+            string filePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Content", filename + ".mgfx");
+            return File.ReadAllBytes(filePath);
         }
     }
 
@@ -60,13 +49,15 @@ namespace Orts.Viewer3D
         public override string IntermediateDirectory { get { return string.Empty; } }
         public override string OutputDirectory { get { return string.Empty; } }
         public override string OutputFilename { get { return string.Empty; } }
-        public override ContentIdentity SourceIdentity { get { return new ContentIdentity(""); } }
+
+        public override ContentIdentity SourceIdentity { get { return sourceIdentity; } }
+        readonly ContentIdentity sourceIdentity = new ContentIdentity();
 
         public override OpaqueDataDictionary Parameters { get { return parameters; } }
-        OpaqueDataDictionary parameters = new OpaqueDataDictionary();
+        readonly OpaqueDataDictionary parameters = new OpaqueDataDictionary();
 
         public override ContentBuildLogger Logger { get { return logger; } }
-        ContentBuildLogger logger = new Logger();
+        readonly ContentBuildLogger logger = new Logger();
 
         public override void AddDependency(string filename) { }
         public override void AddOutputFile(string filename) { }
@@ -78,17 +69,9 @@ namespace Orts.Viewer3D
 
     class Logger : ContentBuildLogger
     {
-        public override void LogMessage(string message, params object[] messageArgs) { Console.WriteLine(message, messageArgs); }
-        public override void LogImportantMessage(string message, params object[] messageArgs) { Console.WriteLine(message, messageArgs); }
-        public override void LogWarning(string helpLink, ContentIdentity contentIdentity, string message, params object[] messageArgs)
-        {
-            var warning = "";
-            if (messageArgs != null && messageArgs.Length != 0)
-                warning += string.Format(message, messageArgs);
-            else if (!string.IsNullOrEmpty(message))
-                warning += message;
-            Console.WriteLine("{0}({1}): {2}", Path.GetFileName(contentIdentity.SourceFilename), contentIdentity.FragmentIdentifier, warning);
-        }
+        public override void LogMessage(string message, params object[] messageArgs) => Console.WriteLine(message, messageArgs);
+        public override void LogImportantMessage(string message, params object[] messageArgs) => Console.WriteLine(message, messageArgs);
+        public override void LogWarning(string helpLink, ContentIdentity contentIdentity, string message, params object[] messageArgs) => Console.WriteLine(message, messageArgs);
     }
 
     [CallOnThread("Render")]
@@ -658,7 +641,7 @@ namespace Orts.Viewer3D
             texSize.SetValue(new Vector2(width, height));
         }
 
-        public void SetLightPositions (Vector4 light1Position, Vector4 light2Position)
+        public void SetLightPositions(Vector4 light1Position, Vector4 light2Position)
         {
             light1Pos.SetValue(light1Position);
             light2Pos.SetValue(light2Position);

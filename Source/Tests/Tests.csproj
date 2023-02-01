@@ -33,10 +33,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <IsPublishable>False</IsPublishable>
     <AssemblyTitle>Open Rails Tests</AssemblyTitle>
-    <Description>Open Rails Transport Simulator</Description>
+    <Description>Open Rails NewYear MG Transport Simulator</Description>
     <Company>Open Rails</Company>
-    <Product>Open Rails</Product>
-    <Copyright>Copyright © 2009 - 2022</Copyright>
+    <Product>Open Rails NewYear MG</Product>
+    <Copyright>Copyright © 2009 - 2022 Open Rails</Copyright>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
@@ -88,6 +88,10 @@
     <Compile Include="TestFile.cs" />
   </ItemGroup>
   <ItemGroup>
+=======
+>>>>>>> ad1c4e33f8d02fd76961f20026e8297a63715ced
+=======
+>>>>>>> master
     <ProjectReference Include="..\Orts.Parsers.Msts\Orts.Parsers.Msts.csproj">
       <Project>{8A84696C-3559-49B8-B27F-BB6932D8A1C6}</Project>
       <Name>Orts.Parsers.Msts</Name>
@@ -109,7 +113,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Analyzer Include="..\packages\xunit.analyzers.0.10.0\analyzers\dotnet\cs\xunit.analyzers.dll" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

@@ -79,8 +79,6 @@ IF "%Mode%" == "Stable" (
 
 REM Get product version and code revision.
 FOR /F "usebackq tokens=1* delims==" %%A IN (`CALL GetVersion.cmd %Mode%`) DO SET %%A=%%B
-SET Version=%OpenRails_Version%
-SET Revision=%OpenRails_Revision%
 
 REM Restore NuGet packages.
 nuget restore Source\ORTS.sln || GOTO :error
@@ -101,24 +99,11 @@ REM Set update channel.
 >>Program\Updater.ini ECHO Channel=string:%Mode% || GOTO :error
 ECHO Set update channel to "%Mode%".
 
-REM Set version number.
-IF "%Mode%" == "Stable" (
-	>Program\Version.txt ECHO %Version% || GOTO :error
-	ECHO Set version number to "%Version%".
-) ELSE (
-	>Program\Version.txt ECHO %Mode:~0,1%%Version% || GOTO :error
-	ECHO Set version number to "%Mode:~0,1%%Version%".
-)
-
-REM Set revision number.
->Program\Revision.txt ECHO %Revision% || GOTO :error
-ECHO Set revision number to "%Revision%".
-
 REM Build locales.
 PUSHD Source\Locales && CALL Update.bat non-interactive && POPD || GOTO :error
 
 REM Run unit tests (9009 means XUnit itself wasn't found, which is an error).
-xunit.console.x86 Program\Tests.dll /nunit xunit.xml
+xunit.console.x86 Program\Tests.dll -nunit xunit.xml
 IF "%ERRORLEVEL%" == "9009" GOTO :error
 
 REM Copy the web content
@@ -126,16 +111,10 @@ ROBOCOPY /MIR /NJH /NJS "Source\RunActivity\Viewer3D\WebServices\Web" "Program\C
 IF %ERRORLEVEL% GEQ 8 GOTO :error
 
 REM Copy version number from OpenRails.exe into all other 1st party files
-SET VersionInfoVersion=0.0.0.0
-FOR /F "usebackq tokens=1 delims=-" %%V IN (`ECHO %Revision%`) DO SET VersionInfoVersion=%Version%.%%V
-IF "%VersionInfoVersion%" == "0.0.0.0" (
-	>&2 ECHO ERROR: No VersionInfoVersion found in "Program\OpenRails.exe".
-	GOTO :error
-)
 FOR %%F IN ("Program\*.exe", "Program\Orts.*.dll", "Program\Contrib.*.dll", "Program\Tests.dll") DO (
-	rcedit-x86.exe "%%~F" --set-product-version %VersionInfoVersion% --set-file-version %VersionInfoVersion% --set-version-string ProductVersion %VersionInfoVersion% --set-version-string FileVersion %VersionInfoVersion% || GOTO :error
+	rcedit-x86.exe "%%~F" --set-product-version %OpenRails_Revision% --set-version-string ProductVersion %OpenRails_Version% || GOTO :error
 )
-ECHO Set product and file version information to "%VersionInfoVersion%".
+ECHO Set product version information to "%OpenRails_Version%".
 
 REM *** Special build step: signs binaries ***
 IF NOT "%JENKINS_TOOLS%" == "" (
@@ -152,8 +131,8 @@ IF NOT "%Mode%" == "Unstable" (
 
 	REM Compile the documentation.
 	FOR %%E IN (doc docx docm xls xlsx xlsm odt) DO FOR %%F IN ("Source\Documentation\*.%%E") DO ECHO %%~F && OfficeToPDF.exe /bookmarks /print "%%~F" "Program\Documentation\%%~nF.pdf" || GOTO :error
-	>"Source\Documentation\Manual\version.py" ECHO version = '%Version%' || GOTO :error
-	>>"Source\Documentation\Manual\version.py" ECHO release = '%Revision%' || GOTO :error
+	>"Source\Documentation\Manual\version.py" ECHO version = '%OpenRails_Version%' || GOTO :error
+	>>"Source\Documentation\Manual\version.py" ECHO release = '%OpenRails_Revision%' || GOTO :error
 	PUSHD "Source\Documentation\Manual" && CALL make.bat clean & POPD || GOTO :error
 	PUSHD "Source\Documentation\Manual" && CALL make.bat latexpdf && POPD || GOTO :error
 
@@ -174,7 +153,7 @@ IF "%Mode%" == "Stable" (
 	IF %ERRORLEVEL% GEQ 8 GOTO :error
 	ROBOCOPY /MIR /NJH /NJS "Program\Documentation" "Open Rails\Documentation"
 	IF %ERRORLEVEL% GEQ 8 GOTO :error
-	>"Source\Installer\Version.iss" ECHO #define MyAppVersion "%Version%" || GOTO :error
+	>"Source\Installer\Version.iss" ECHO #define MyAppVersion "%OpenRails_Version%" || GOTO :error
 	iscc "Source\Installer\Installer.iss" || GOTO :error
 	CALL :move "Source\Installer\Output\OpenRailsSetup.exe" "OpenRails-%Mode%-Setup.exe" || GOTO :error
 	REM *** Special build step: signs binaries ***
