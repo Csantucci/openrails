@@ -1553,7 +1553,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
             if (GearBox != null)
             {
-                if ((Locomotive.IsLeadLocomotive()))
+                if ((Locomotive.IsLeadLocomotive()) || Locomotive.Train.HasControlCarWithGear)
                 {
                     if (GearBox.GearBoxOperation == GearBoxOperation.Manual)
                     {
@@ -1568,6 +1568,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     if (GearBox.GearBoxOperation == GearBoxOperation.Manual)
                     {
                         if (Locomotive.GearboxGearIndex > 0)
+
                             GearBox.NextGear = GearBox.Gears[Locomotive.GearboxGearIndex - 1];
                         else
                             GearBox.NextGear = null;
