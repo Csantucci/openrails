@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.137
-January 20th, 2023
+﻿Open Rails, NewYear version README - Rev.138
+February 11th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -11,7 +11,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-237, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-271, 
 plus some of the features already present in the Unstable release.
 
 
@@ -55,11 +55,10 @@ This version includes some features not (yet) available in the Open Rails testin
 - fix crash when reinitializing EOTs on a carless train
 - keyboard commands for Overcharge and Quick Release, by cesarBLG
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
-  - added new parameter for battery switch, by Serana (PR #735)
-  - PR #757 - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes
+  - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
   - Extends CabControls for user input, by cjakeman (PR #753)
-  - NEW: fix: Improve sky dome distortion causing bug #1471416 (PR #764, by twpol)
-  - NEW: manage partial turntables  
+  - manage partial turntables
+  - NEW: Temporary bug fix for https://bugs.launchpad.net/or/+bug/2004100 Casting error crash  
 
 
 Info about content of the various PR to the Unstable release can be found here
