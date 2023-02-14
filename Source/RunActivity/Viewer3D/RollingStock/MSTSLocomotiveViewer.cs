@@ -246,7 +246,7 @@ namespace Orts.Viewer3D.RollingStock
                 foreach (var kvp in external.CabControls)
                 {
 
-                    if (_CabRenderer == null) break;
+                    if (_CabRenderer == null && !_has3DCabRenderer) break;
                     if (!kvp.Value.Changed) continue;
                     float val = kvp.Value.Value;
                     switch (kvp.Key.Item1.Type)
