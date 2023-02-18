@@ -229,7 +229,7 @@ namespace Orts.Viewer3D.Popups
         }
 
         [CallOnThread("Render")]
-        void Draw(SpriteBatch spriteBatch, Point position, float rotation, int width, string text, LabelAlignment align, Color color, Color outline)
+        public void Draw(SpriteBatch spriteBatch, Point position, float rotation, int width, string text, LabelAlignment align, Color color, Color outline)
         {
             if (text == null) return;
             EnsureCharacterData(text);
