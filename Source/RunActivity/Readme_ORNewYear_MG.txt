@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.138
-February 11th, 2023
+﻿Open Rails, NewYear version README - Rev.139
+March 5th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -11,10 +11,8 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-271, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-340, 
 plus some of the features already present in the Unstable release.
-
-
 
 
 This version includes some features not (yet) available in the Open Rails testing official version, that is:
@@ -54,11 +52,12 @@ This version includes some features not (yet) available in the Open Rails testin
 - multiple preset viewpoints for 3D cabs, see http://www.elvastower.com/forums/index.php?/topic/36339-multiple-preset-viewpoints-for-3d-cabs/
 - fix crash when reinitializing EOTs on a carless train
 - keyboard commands for Overcharge and Quick Release, by cesarBLG
+- NEW: Enable rotation of the DPU table, see http://www.elvastower.com/forums/index.php?/topic/26249-remote-control-dpu-units/page__view__findpost__p__294403
+- NEW: fix two brake values in DPU table, see http://www.elvastower.com/forums/index.php?/topic/26249-remote-control-dpu-units/page__view__findpost__p__294519
+- NEW: allow for .sms sound specific for AI trains
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
-  - Extends CabControls for user input, by cjakeman (PR #753)
-  - manage partial turntables
-  - NEW: Temporary bug fix for https://bugs.launchpad.net/or/+bug/2004100 Casting error crash  
+  - NEW: fix: Stop z-fighting by pushing world/view/projection multiplications onto the GPU, by James Ross (PR #807) 
 
 
 Info about content of the various PR to the Unstable release can be found here
