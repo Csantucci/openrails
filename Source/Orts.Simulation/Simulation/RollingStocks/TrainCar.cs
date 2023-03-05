@@ -1776,7 +1776,7 @@ namespace Orts.Simulation.RollingStocks
         public virtual void UpdateCurveSpeedLimit()
         {
             float s = AbsSpeedMpS; // speed of train
-            var train = Simulator.PlayerLocomotive.Train;//Debrief Eval
+            var train = Simulator.PlayerLocomotive != null ? Simulator.PlayerLocomotive.Train : null;//Debrief Eval (timetable train can exist without engine)
 
             if (CurveSpeedDependent || CurveResistanceDependent)  // Function enabled by menu selection for either curve resistance or curve speed limit
             {

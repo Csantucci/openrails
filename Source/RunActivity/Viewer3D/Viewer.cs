@@ -1706,6 +1706,7 @@ namespace Orts.Viewer3D
             if (SelectedTrain == e.OldTrain)
             {
                 SelectedTrain = e.NewTrain;
+                SetCommandReceivers();
             }
         }
 
