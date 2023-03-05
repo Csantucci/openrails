@@ -75,6 +75,7 @@ namespace Orts.Simulation.AIs
         public float doorOpenDelay = -1f;
         public float doorCloseAdvance = -1f;
         public AILevelCrossingHornPattern LevelCrossingHornPattern { get; set; }
+        public bool ApproachTriggerSet = false;         // station approach trigger for AI trains has been set
 
         public float PathLength;
 
@@ -251,6 +252,7 @@ namespace Orts.Simulation.AIs
             UncondAttach = inf.ReadBoolean();
             doorCloseAdvance = inf.ReadSingle();
             doorOpenDelay = inf.ReadSingle();
+            ApproachTriggerSet = inf.ReadBoolean();
             if ( !Simulator.TimetableMode && doorOpenDelay <= 0 && doorCloseAdvance > 0 && Simulator.OpenDoorsInAITrains &&
                 MovementState == AI_MOVEMENT_STATE.STATION_STOP && StationStops.Count > 0)
             {
@@ -344,6 +346,7 @@ namespace Orts.Simulation.AIs
             outf.Write(UncondAttach);
             outf.Write(doorCloseAdvance);
             outf.Write(doorOpenDelay);
+            outf.Write(ApproachTriggerSet);
             if (LevelCrossingHornPattern != null)
             {
                 outf.Write(0);
@@ -1343,6 +1346,7 @@ namespace Orts.Simulation.AIs
                         AIActionItem newAction = new AIActionItem(null, AIActionItem.AI_ACTION_TYPE.STATION_STOP);
                         newAction.SetParam(distancesM[1], 0.0f, distancesM[0], DistanceTravelledM);
                         requiredActions.InsertAction(newAction);
+                        ApproachTriggerSet = false;
 
 #if DEBUG_REPORTS
                 if (StationStops[0].ActualStopType == StationStop.STOPTYPE.STATION_STOP)
@@ -2127,6 +2131,7 @@ namespace Orts.Simulation.AIs
 
                 Delay = TimeSpan.FromSeconds((presentTime - thisStation.DepartTime) % (24 * 3600));
             }
+            if (Cars[0] is MSTSLocomotive) Cars[0].SignalEvent(Event.AITrainLeavingStation);
 
 #if DEBUG_REPORTS
             DateTime baseDTd = new DateTime();
@@ -2698,6 +2703,13 @@ namespace Orts.Simulation.AIs
                         }
                     }
                 }
+            }
+
+            if (nextActionInfo != null && nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.STATION_STOP &&
+                distanceToGoM < 150 + StationStops[0].PlatformItem.Length && !ApproachTriggerSet)
+            {
+                if (Cars[0] is MSTSLocomotive) Cars[0].SignalEvent(Event.AITrainApproachingStation);
+                ApproachTriggerSet = true;
             }
 
             if (nextActionInfo != null && nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.STATION_STOP)
@@ -4473,6 +4485,7 @@ namespace Orts.Simulation.AIs
                     Simulator.OnPlayerLocomotiveChanged();
                     AI.AITrains.Add(this);
                 }
+                else if (attachTrain is AITrain) RedefineAITriggers(attachTrain as AITrain);
                 if (!UncondAttach)
                 {
                     RemoveTrain();
@@ -4592,6 +4605,7 @@ namespace Orts.Simulation.AIs
             ResetActions(true);
             ReinitializeEOT();
             physicsUpdate(0);
+            RedefineAITriggers(this);
 
         }
 
@@ -4835,7 +4849,8 @@ namespace Orts.Simulation.AIs
             // move WP, if any, just under the loco;
             AuxActionsContain.MoveAuxActionAfterReversal(this);
             ResetActions(true);
-
+            RedefineAITriggers(this);
+            if (attachTrain is AITrain) RedefineAITriggers(attachTrain as AITrain);
             physicsUpdate(0);   // stop the wheels from moving etc
 
         }
@@ -6762,6 +6777,27 @@ namespace Orts.Simulation.AIs
                     }
                     if (AuxActionsContain.SpecAuxActions.Count > 1 && AuxActionsContain.SpecAuxActions[1] is AIActSigDelegateRef)
                         (AuxActionsContain.SpecAuxActions[1] as AIActSigDelegateRef).Delay = delay;
+                }
+            }
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// Redefine sound triggers for AI trains
+        /// </summary>
+        public void RedefineAITriggers(AITrain train)
+        {
+            var leadFound = false;
+            foreach (var car in train.Cars)
+            {
+                if (car is MSTSLocomotive)
+                {
+                    if (!leadFound)
+                    {
+                        car.SignalEvent(Event.AITrainLeadLoco);
+                        leadFound = true;
+                    }
+                    else car.SignalEvent(Event.AITrainHelperLoco);
                 }
             }
         }
