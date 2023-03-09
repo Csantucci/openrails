@@ -5,14 +5,14 @@ XCOPY "Source\RunActivity\Viewer3D\WebServices\Web" "Program\Content\Web" /S /Y
 DEL "Program\RunActivityLAA.*"
 DEL "Program\RunActivity32.*"
 DEL "Program\*.nlp"
-XCOPY "Program\Runactivity.exe"
-XCOPY "Program\Runactivity.pdb"
-XCOPY "Program\Runactivity.exe.config"
-REN Runactivity.exe Runactivity32.exe
-REN Runactivity.pdb Runactivity32.pdb
-REN Runactivity.exe.config Runactivity32.exe.config
-XCOPY "Runactivity32.*" "Program"
-DEL "Runactivity32.*"
+XCOPY "Program\RunActivity.exe"
+XCOPY "Program\RunActivity.pdb"
+XCOPY "Program\RunActivity.exe.config"
+REN RunActivity.exe RunActivity32.exe
+REN RunActivity.pdb Runactivity32.pdb
+REN RunActivity.exe.config RunActivity32.exe.config
+XCOPY "RunActivity32.*" "Program"
+DEL "RunActivity32.*"
 
 REM Effects compilation
 

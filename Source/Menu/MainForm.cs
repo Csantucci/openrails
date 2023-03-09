@@ -182,6 +182,7 @@ namespace ORTS
 
                 var coreExecutables = new[] {
                     "OpenRails.exe",
+                    "OpenRails64.exe",
                     "Menu.exe",
                     "RunActivity.exe",
                     "RunActivity32.exe",
@@ -197,7 +198,7 @@ namespace ORTS
                     var toolInfo = FileVersionInfo.GetVersionInfo(executable);
 
                     // Skip any executable that isn't part of this product (e.g. Visual Studio hosting files).
-                    if (toolInfo.ProductName != Application.ProductName)
+                    if (toolInfo.ProductName != Application.ProductName && toolInfo.ProductName != "Open Rails")
                         continue;
 
                     // Remove the product name from the tool's name and localise.
