@@ -681,6 +681,7 @@ namespace Orts.Simulation.AIs
         public float RequiredSpeedMpS;
         public float RequiredDistance;
         public int Delay;
+        public int OriginalDelay;
         public int EndSignalIndex { get; protected set; }
 
         public AUX_ACTION NextAction = AUX_ACTION.NONE;
@@ -889,6 +890,7 @@ namespace Orts.Simulation.AIs
             : base (thisTrain, inf)
         {
             Delay = inf.ReadInt32();
+            OriginalDelay = inf.ReadInt32();
             NextAction = AUX_ACTION.WAITING_POINT;
 #if WITH_PATH_DEBUG
             File.AppendAllText(@"C:\temp\checkpath.txt", "\tRestore one WPAuxAction" +
@@ -916,6 +918,7 @@ namespace Orts.Simulation.AIs
 #endif
             base.save(outf, cnt);
             outf.Write(Delay);
+            outf.Write(OriginalDelay);
         }
 
         public override AIActionItem Handler(params object[] list)

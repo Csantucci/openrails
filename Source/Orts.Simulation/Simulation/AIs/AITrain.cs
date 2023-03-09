@@ -4039,6 +4039,7 @@ namespace Orts.Simulation.AIs
                             RandomizedWPDelay(ref randomizedDelay);
                         }
                         action.SetDelay(randomizedDelay);
+                        action.OriginalDelay = action.Delay;
                         AuxActionsContain.Add(action);
                         if (insertSigDelegate && (waitingPoint[2] != 60002) && signalIndex[iWait] > -1)
                         {
@@ -6710,7 +6711,7 @@ namespace Orts.Simulation.AIs
             var matchingWPDelay = restartWaitingTrain.MatchingWPDelay;
             int presentTime = Convert.ToInt32(Math.Floor(Simulator.ClockTime));
             var roughActualDepart = presentTime + delayToRestart;
-            if (MovementState == AITrain.AI_MOVEMENT_STATE.HANDLE_ACTION && (((nextActionInfo as AuxActionWPItem).ActionRef as AIActionWPRef).Delay == matchingWPDelay ||
+            if (MovementState == AITrain.AI_MOVEMENT_STATE.HANDLE_ACTION && (((nextActionInfo as AuxActionWPItem).ActionRef as AIActionWPRef).OriginalDelay == matchingWPDelay ||
                 (AuxActionsContain.specRequiredActions.Count > 0 && ((AuxActSigDelegate)(AuxActionsContain.specRequiredActions).First.Value).currentMvmtState == AITrain.AI_MOVEMENT_STATE.HANDLE_ACTION &&
                 (((AuxActSigDelegate)(AuxActionsContain.specRequiredActions).First.Value).ActionRef as AIActSigDelegateRef).Delay == matchingWPDelay)))
             {
