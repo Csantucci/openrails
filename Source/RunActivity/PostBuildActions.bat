@@ -9,7 +9,7 @@ XCOPY "Program\RunActivity.exe"
 XCOPY "Program\RunActivity.pdb"
 XCOPY "Program\RunActivity.exe.config"
 REN RunActivity.exe RunActivity32.exe
-REN RunActivity.pdb Runactivity32.pdb
+REN RunActivity.pdb RunActivity32.pdb
 REN RunActivity.exe.config RunActivity32.exe.config
 XCOPY "RunActivity32.*" "Program"
 DEL "RunActivity32.*"
