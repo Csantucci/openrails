@@ -61,6 +61,10 @@ namespace Orts.Formats.Msts
                             LightViews.Add(Path.Combine(path, Path.Combine("CABLIGHT", name)));
                         }),
                         new STFReader.TokenProcessor("cabviewcontrols", ()=>{ CabViewControls = new CabViewControls(stf, basePath); }),
+                        new STFReader.TokenProcessor("ortscabviewcontrols", ()=>{ 
+                            if (CabViewControls == null) CabViewControls = new CabViewControls(stf, basePath);
+                            else CabViewControls.AddCabviewControls(stf, basePath);
+                        }),
                     });}),
                 });
 		}
@@ -377,6 +381,11 @@ namespace Orts.Formats.Msts
     public class CabViewControls : List<CabViewControl>
     {
         public CabViewControls(STFReader stf, string basepath)
+        {
+            AddCabviewControls(stf, basepath);
+        }
+
+        public void AddCabviewControls(STFReader stf, string basepath)
         {
             stf.MustMatch("(");
             int count = stf.ReadInt(null);
