@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.139
-March 5th, 2023
+﻿Open Rails, NewYear version README - Rev.140
+March 26th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -11,7 +11,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-340, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-351, 
 plus some of the features already present in the Unstable release.
 
 
@@ -52,12 +52,13 @@ This version includes some features not (yet) available in the Open Rails testin
 - multiple preset viewpoints for 3D cabs, see http://www.elvastower.com/forums/index.php?/topic/36339-multiple-preset-viewpoints-for-3d-cabs/
 - fix crash when reinitializing EOTs on a carless train
 - keyboard commands for Overcharge and Quick Release, by cesarBLG
-- NEW: Enable rotation of the DPU table, see http://www.elvastower.com/forums/index.php?/topic/26249-remote-control-dpu-units/page__view__findpost__p__294403
-- NEW: fix two brake values in DPU table, see http://www.elvastower.com/forums/index.php?/topic/26249-remote-control-dpu-units/page__view__findpost__p__294519
-- NEW: allow for .sms sound specific for AI trains
+- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008
+- NEW: fix ORNYMG bug preventing some tools to appear in the menu
+- NEW: Allow definition of side view cab controls in a separate compound block, see http://www.elvastower.com/forums/index.php?/topic/35640-inserting-cabview-controls-in-side-views-of-2d-cabs/page__view__findpost__p__295207
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
-  - NEW: fix: Stop z-fighting by pushing world/view/projection multiplications onto the GPU, by James Ross (PR #807) 
+  - NEW: Refine sunrise and sunset, by Kames Ross (PR #767)
+  - NRE: Refactored garbage generators (improves performance and memory management), by gpz (PR #813)
 
 
 Info about content of the various PR to the Unstable release can be found here
