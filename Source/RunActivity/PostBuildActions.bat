@@ -22,3 +22,10 @@ FOR %%i IN (Source\RunActivity\Content\*.fx) DO (
     echo Compiling Source\RunActivity\Content\%%~ni.mgfx
 	dotnet tool run mgfxc Source\RunActivity\Content\%%~nxi Program\Content\%%~ni.mgfx /Profile:DirectX_11
 )
+REM Copy source effects
+IF EXIST "Program\ShaderSources" RMDIR "Program\ShaderSources" /S /Q
+IF NOT EXIST "Program\ShaderSources" MKDIR "Program\ShaderSources"
+XCOPY "Source\RunActivity\Content\*.fx" "Program\ShaderSources"
+XCOPY "Source\RunActivity\ShaderCompile.bat" "Program\ShaderSources"
+XCOPY "Source\RunActivity\mgfxInstall.bat" "Program\ShaderSources"
+XCOPY "Source\RunActivity\Readme_ShaderCompile.txt" "Program\ShaderSources"
