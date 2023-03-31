@@ -4431,6 +4431,8 @@ namespace Orts.Simulation.AIs
                 Cars.Clear();
                 attachTrain.Length += Length;
 
+                attachTrain.ReinitializeEOT();
+
                 // recalculate position of formed train
                 if (attachTrainFront)  // coupled to front, so rear position is still valid
                 {
@@ -4459,7 +4461,6 @@ namespace Orts.Simulation.AIs
                 // set various items
                 attachTrain.CheckFreight();
                 attachTrain.SetDPUnitIDs();
-                attachTrain.ReinitializeEOT();
                 attachTrain.activityClearingDistanceM = attachTrain.Cars.Count < standardTrainMinCarNo ? shortClearingDistanceM : standardClearingDistanceM;
                 attachCar.SignalEvent(Event.Couple);
 
@@ -4546,6 +4547,8 @@ namespace Orts.Simulation.AIs
             Length += attachTrain.Length;
             attachTrain.Cars.Clear();
 
+            ReinitializeEOT();
+
             // recalculate position of formed train
             if (thisTrainFront)  // coupled to front, so rear position is still valid
             {
@@ -4604,7 +4607,6 @@ namespace Orts.Simulation.AIs
                 TCRoute.SetReversalOffset(Length, Simulator.TimetableMode);
             }
             ResetActions(true);
-            ReinitializeEOT();
             physicsUpdate(0);
             RedefineAITriggers(this);
 
@@ -4773,6 +4775,8 @@ namespace Orts.Simulation.AIs
             UncoupledFrom = attachTrain;
             attachTrain.UncoupledFrom = this;
 
+            ReinitializeEOT();
+            attachTrain.ReinitializeEOT();
 
             // recalculate position of coupling train
             if (thisTrainFront)  // coupled to front, so rear position is still valid
@@ -4833,11 +4837,9 @@ namespace Orts.Simulation.AIs
             // set various items
             CheckFreight();
             SetDPUnitIDs();
-            ReinitializeEOT();
             activityClearingDistanceM = Cars.Count < standardTrainMinCarNo ? shortClearingDistanceM : standardClearingDistanceM;
             attachTrain.CheckFreight();
             attachTrain.SetDPUnitIDs();
-            attachTrain.ReinitializeEOT();
             attachTrain.activityClearingDistanceM = attachTrain.Cars.Count < standardTrainMinCarNo ? shortClearingDistanceM : standardClearingDistanceM;
             // anticipate reversal point and remove active action
             TCRoute.ReversalInfo[TCRoute.activeSubpath].ReverseReversalOffset = Math.Max(PresentPosition[0].TCOffset - 10f, 0.3f);

@@ -1766,6 +1766,10 @@ namespace Orts.Simulation
 
             }
 
+            // update EOT state
+            train.ReinitializeEOT();
+            train2.ReinitializeEOT();
+
             // and fix up the travellers
             if (train.IsActualPlayerTrain && j >= i || !keepFront)
             {
@@ -1876,10 +1880,8 @@ namespace Orts.Simulation
 
             train.CheckFreight();
             train.SetDPUnitIDs();
-            train.ReinitializeEOT();
             train2.CheckFreight();
             train2.SetDPUnitIDs();
-            train2.ReinitializeEOT();
 
             train.Update(0);   // stop the wheels from moving etc
             train2.Update(0);  // stop the wheels from moving etc
