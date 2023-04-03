@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orts.Simulation", "Orts.Sim
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataCollector", "Contrib\DataCollector\DataCollector.csproj", "{22CC0DE5-5E0C-4CA4-9CC0-FF1FE6C6B2BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Updater", "Updater\Updater.csproj", "{9C6D17E1-DC48-4B96-B9DA-A9B41F685327}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Updater", "Updater\Updater.csproj", "{9C6D17E1-DC48-4B96-B9DA-A9B41F685327}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orts.Parsers.OR", "Orts.Parsers.OR\Orts.Parsers.OR.csproj", "{1CC3BD5C-06C5-4784-B067-F93945A7CA2C}"
 EndProject
@@ -259,12 +259,12 @@ Global
 		{B558F620-3BF7-4371-B7A1-9EE8D828DE21}.Release|x64.Build.0 = Release|Any CPU
 		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Debug|x64.Build.0 = Debug|Any CPU
+		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Debug|x64.ActiveCfg = Debug|x64
+		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Debug|x64.Build.0 = Debug|x64
 		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|Any CPU.Build.0 = Release|Any CPU
-		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|x64.ActiveCfg = Release|Any CPU
-		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|x64.Build.0 = Release|Any CPU
+		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|x64.ActiveCfg = Release|x64
+		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

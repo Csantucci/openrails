@@ -22,6 +22,9 @@
   <PropertyGroup>
     <ApplicationManifest>..\Launcher\app.manifest</ApplicationManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="GNU.Gettext, Version=1.1.5151.39896, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
