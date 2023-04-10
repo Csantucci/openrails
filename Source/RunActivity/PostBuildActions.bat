@@ -27,5 +27,6 @@ IF EXIST "Program\ShaderSources" RMDIR "Program\ShaderSources" /S /Q
 IF NOT EXIST "Program\ShaderSources" MKDIR "Program\ShaderSources"
 XCOPY "Source\RunActivity\Content\*.fx" "Program\ShaderSources"
 XCOPY "Source\RunActivity\ShaderCompile.bat" "Program\ShaderSources"
-XCOPY "Source\RunActivity\mgfxInstall.bat" "Program\ShaderSources"
 XCOPY "Source\RunActivity\Readme_ShaderCompile.txt" "Program\ShaderSources"
+IF NOT EXIST "Program\ShaderSources\.config" MKDIR "Program\ShaderSources\.config"
+XCOPY ".config\dotnet-tools.json" "Program\ShaderSources\.config"

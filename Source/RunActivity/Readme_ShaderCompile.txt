@@ -1,9 +1,9 @@
 
-How to compile the Shader sources (rev. 1.1 of this readme)
+How to compile the Shader sources (rev. 1.2 of this readme)
 
 This is neeeded only if you want to create your own version of the Shaders (*.fx files).
 
-Starting from ORNYMG 140.1, you will find in folder ShaderSources (which is within OR_NewYear_MG folder) the original Shader sources (*.fx files).
+Starting from ORNYMG 140.4, you will find in folder ShaderSources (which is within OR_NewYear_MG folder) the original Shader sources (*.fx files).
 The compiled shaders (*.mgfx files) are in folder Content, as in the official versions of OR.
 
 Steps to be performed only once
@@ -12,7 +12,6 @@ Steps to be performed only once
  if you have there a subfolder named 6.0 or higher.
 If there is one subfolder like that, you have .Net 6.0 SDK installed. If this is the case, skip following step 2). 
 2) If not, download .Net 6.0 SDK from here https://dotnet.microsoft.com/en-us/download and install it.
-3) With Windows Explorer move to your ORNYMG installation, go to folder ShaderSources and double-click on mgfxinstall.bat. This will install the Shaders compiler.
 
 Steps to be performed every time you want to modify the standard compiled shaders
 
