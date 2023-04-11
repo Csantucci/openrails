@@ -130,7 +130,11 @@ namespace Orts.Simulation.Signalling
         public void SH_process_script(SignalHead thisHead, SignalScripts.SCRScripts signalScript, SIGSCRfile sigscr)
         {
 
-            int[] localFloats = new int[signalScript.TotalLocalFloats];
+            if (thisHead.LocalFloats == null)
+                thisHead.LocalFloats = signalScript.TotalLocalFloats == 0 ? Array.Empty<int>() : new int[signalScript.TotalLocalFloats];
+            else
+                Array.Clear(thisHead.LocalFloats, 0, thisHead.LocalFloats.Length);
+            int[] localFloats = thisHead.LocalFloats;
 
             // process script
 
