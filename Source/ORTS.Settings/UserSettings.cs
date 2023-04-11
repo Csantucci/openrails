@@ -171,8 +171,8 @@ namespace ORTS.Settings
         public bool GraduatedRelease { get; set; }
         [Default(false)]
         public bool RetainersOnAllCars { get; set; }
-        [Default(false)]
-        public bool SuppressConfirmations { get; set; }
+        [Default(0)]
+        public int SuppressConfirmations { get; set; }
         [Default(21)]
         public int BrakePipeChargingRate { get; set; }
         [Default("")]

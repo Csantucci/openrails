@@ -47,13 +47,19 @@ bottom of the screen.
 This is helpful for operations that don't have visible feedback and also
 allows you to control the train without being in the cab.
 
-Uncheck this option if you prefer to monitor your cab instruments and
-don't want to see these messages.
+Informational, Warning and Error messages are displayed here also. 
+
+The default setting of this option is to show all messages. Dropdown list gives the following choices:
+
+- None: no messages suppressed (default)
+- Information: informational messages and control confirmations suppressed
+- Warning: warning messages and the ones mentioned above suppressed
+- Error: error messages and the ones mentioned above suppressed
 
 OR uses the same message scheme for system messages such as "Game saved"
 or "Replay ended" but you cannot suppress these system messages.
 
-Control confirmations can also be toggled on and off at runtime using the 
+Once the game has started, you can cycle through the above settings using the 
 key combination Ctrl-Alt-F10. 
 
 

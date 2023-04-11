@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.bindingSourceContent = new System.Windows.Forms.BindingSource(this.components);
@@ -110,8 +110,6 @@
             this.tabPageSystem = new System.Windows.Forms.TabPage();
             this.labelPortNumber = new System.Windows.Forms.Label();
             this.numericWebServerPort = new System.Windows.Forms.NumericUpDown();
-            this.pbControlConfirmations = new System.Windows.Forms.PictureBox();
-            this.checkControlConfirmations = new System.Windows.Forms.CheckBox();
             this.pbLanguage = new System.Windows.Forms.PictureBox();
             this.labelLanguage = new System.Windows.Forms.Label();
             this.comboLanguage = new System.Windows.Forms.ComboBox();
@@ -246,6 +244,9 @@
             this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
             this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
+            this.pbControlConfirmations = new System.Windows.Forms.PictureBox();
+            this.comboControlConfirmations = new System.Windows.Forms.ComboBox();
+            this.labelControlConfirmations = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceContent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
@@ -285,7 +286,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).BeginInit();
             this.tabPageSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).BeginInit();
             this.tabPageContent.SuspendLayout();
             this.groupBoxContent.SuspendLayout();
@@ -327,6 +327,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOK
@@ -628,8 +629,6 @@
             this.trackLODBias.TabIndex = 27;
             this.trackLODBias.TickFrequency = 10;
             this.toolTip1.SetToolTip(this.trackLODBias, "Default is 0%");
-//            this.trackLODBias.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-//            this.trackLODBias.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             this.trackLODBias.ValueChanged += new System.EventHandler(this.trackLODBias_ValueChanged);
             // 
             // numericSuperElevationMinLen
@@ -1291,10 +1290,11 @@
             // 
             // tabPageSystem
             // 
+            this.tabPageSystem.Controls.Add(this.pbControlConfirmations);
+            this.tabPageSystem.Controls.Add(this.comboControlConfirmations);
+            this.tabPageSystem.Controls.Add(this.labelControlConfirmations);
             this.tabPageSystem.Controls.Add(this.labelPortNumber);
             this.tabPageSystem.Controls.Add(this.numericWebServerPort);
-            this.tabPageSystem.Controls.Add(this.pbControlConfirmations);
-            this.tabPageSystem.Controls.Add(this.checkControlConfirmations);
             this.tabPageSystem.Controls.Add(this.pbLanguage);
             this.tabPageSystem.Controls.Add(this.labelLanguage);
             this.tabPageSystem.Controls.Add(this.comboLanguage);
@@ -1349,25 +1349,6 @@
             0,
             0,
             0});
-            // 
-            // pbControlConfirmations
-            // 
-            this.pbControlConfirmations.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbControlConfirmations.Location = new System.Drawing.Point(11, 268);
-            this.pbControlConfirmations.Name = "pbControlConfirmations";
-            this.pbControlConfirmations.Size = new System.Drawing.Size(18, 18);
-            this.pbControlConfirmations.TabIndex = 56;
-            this.pbControlConfirmations.TabStop = false;
-            // 
-            // checkControlConfirmations
-            // 
-            this.checkControlConfirmations.AutoSize = true;
-            this.checkControlConfirmations.Location = new System.Drawing.Point(35, 269);
-            this.checkControlConfirmations.Name = "checkControlConfirmations";
-            this.checkControlConfirmations.Size = new System.Drawing.Size(285, 17);
-            this.checkControlConfirmations.TabIndex = 55;
-            this.checkControlConfirmations.Text = "Show control confirmations                                            ";
-            this.checkControlConfirmations.UseVisualStyleBackColor = true;
             // 
             // pbLanguage
             // 
@@ -1591,27 +1572,27 @@
             this.dataGridViewContent.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridViewContent.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dataGridViewContent.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewContent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewContent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.dataGridViewContent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridViewContent.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.nameDataGridViewTextBoxColumn,
             this.pathDataGridViewTextBoxColumn});
             this.dataGridViewContent.DataSource = this.bindingSourceContent;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewContent.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewContent.DefaultCellStyle = dataGridViewCellStyle4;
             this.dataGridViewContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewContent.Location = new System.Drawing.Point(0, 0);
             this.dataGridViewContent.MultiSelect = false;
@@ -3103,6 +3084,36 @@
             this.checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
             this.checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
             // 
+            // pbControlConfirmations
+            // 
+            this.pbControlConfirmations.Image = global::ORTS.Properties.Resources.info_18;
+            this.pbControlConfirmations.Location = new System.Drawing.Point(11, 266);
+            this.pbControlConfirmations.Name = "pbControlConfirmations";
+            this.pbControlConfirmations.Size = new System.Drawing.Size(18, 18);
+            this.pbControlConfirmations.TabIndex = 61;
+            this.pbControlConfirmations.TabStop = false;
+            this.pbControlConfirmations.Click += new System.EventHandler(this.HelpIcon_Click);
+            this.pbControlConfirmations.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
+            this.pbControlConfirmations.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            // 
+            // comboControlConfirmations
+            // 
+            this.comboControlConfirmations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboControlConfirmations.FormattingEnabled = true;
+            this.comboControlConfirmations.Location = new System.Drawing.Point(35, 265);
+            this.comboControlConfirmations.Name = "comboControlConfirmations";
+            this.comboControlConfirmations.Size = new System.Drawing.Size(121, 21);
+            this.comboControlConfirmations.TabIndex = 59;
+            // 
+            // labelControlConfirmations
+            // 
+            this.labelControlConfirmations.Location = new System.Drawing.Point(161, 267);
+            this.labelControlConfirmations.Margin = new System.Windows.Forms.Padding(3);
+            this.labelControlConfirmations.Name = "labelControlConfirmations";
+            this.labelControlConfirmations.Size = new System.Drawing.Size(200, 21);
+            this.labelControlConfirmations.TabIndex = 60;
+            this.labelControlConfirmations.Text = "Messages suppressed       ";
+            // 
             // OptionsForm
             // 
             this.AcceptButton = this.buttonOK;
@@ -3161,7 +3172,6 @@
             this.tabPageSystem.ResumeLayout(false);
             this.tabPageSystem.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).EndInit();
             this.tabPageContent.ResumeLayout(false);
             this.tabPageContent.PerformLayout();
@@ -3213,6 +3223,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -3429,10 +3440,11 @@
         private System.Windows.Forms.CheckBox checkSignalLightGlow;
         private System.Windows.Forms.Label labelPortNumber;
         private System.Windows.Forms.NumericUpDown numericWebServerPort;
-        private System.Windows.Forms.PictureBox pbControlConfirmations;
-        private System.Windows.Forms.CheckBox checkControlConfirmations;
         private System.Windows.Forms.PictureBox pbLanguage;
         private System.Windows.Forms.Label labelLanguage;
         private System.Windows.Forms.ComboBox comboLanguage;
+        private System.Windows.Forms.PictureBox pbControlConfirmations;
+        private System.Windows.Forms.ComboBox comboControlConfirmations;
+        private System.Windows.Forms.Label labelControlConfirmations;
     }
 }

@@ -142,7 +142,20 @@ namespace ORTS
             checkAlerterExternal.Enabled = Settings.Alerter;
             checkAlerterExternal.Checked = Settings.Alerter && !Settings.AlerterDisableExternal;
             checkOverspeedMonitor.Checked = Settings.SpeedControl;
-            checkControlConfirmations.Checked = !Settings.SuppressConfirmations; // Inverted as "Show confirmations" is better UI than "Suppress confirmations"
+
+            // keep values in line with enum Orts.Simulation.ConfirmLevel
+            // see also function Message(CabControl control, ConfirmLevel level, string message)
+            // in Source\Orts.Simulation\Simulation\Confirmer.cs
+            comboControlConfirmations.DataSource = new[] {
+                new ComboBoxMember { Code = "None", Name = catalog.GetString("None") },
+                new ComboBoxMember { Code = "Information", Name = catalog.GetString("Information") },
+                new ComboBoxMember { Code = "Warning", Name = catalog.GetString("Warning") },
+                new ComboBoxMember { Code = "Error", Name = catalog.GetString("Error") },
+            }.ToList();
+            comboControlConfirmations.DisplayMember = "Name";
+            comboControlConfirmations.ValueMember = "Code";
+            comboControlConfirmations.SelectedIndex = Settings.SuppressConfirmations;
+
             checkRetainers.Checked = Settings.RetainersOnAllCars;
             checkGraduatedRelease.Checked = Settings.GraduatedRelease;
             numericBrakePipeChargingRate.Value = Settings.BrakePipeChargingRate;
@@ -447,7 +460,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             Settings.Alerter = checkAlerter.Checked;
             Settings.AlerterDisableExternal = !checkAlerterExternal.Checked;
             Settings.SpeedControl = checkOverspeedMonitor.Checked;
-            Settings.SuppressConfirmations = !checkControlConfirmations.Checked;
+            Settings.SuppressConfirmations = comboControlConfirmations.SelectedIndex;
             Settings.RetainersOnAllCars = checkRetainers.Checked;
             Settings.GraduatedRelease = checkGraduatedRelease.Checked;
             Settings.BrakePipeChargingRate = (int)numericBrakePipeChargingRate.Value;
@@ -868,7 +881,6 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             var helpIconControls = new (PictureBox, Control[])[]
             {
                 (pbAlerter, new[] { checkAlerter }),
-                (pbControlConfirmations, new[] { checkControlConfirmations }),
                 (pbRetainers, new[] { checkRetainers }),
                 (pbGraduatedRelease, new[] { checkGraduatedRelease }),
                 (pbBrakePipeChargingRate, new[] { lBrakePipeChargingRate }),
@@ -905,7 +917,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                 (pbLanguage, new Control[] { labelLanguage, comboLanguage }),
                 (pbUpdateMode, new Control[] { labelUpdateMode }),
                 (pbWindowGlass, new[] { checkWindowGlass }),
-                (pbControlConfirmations, new[] { checkControlConfirmations }),
+                (pbControlConfirmations, new Control[] { labelControlConfirmations, comboControlConfirmations }),
                 (pbWebServerPort, new Control[] { labelWebServerPort }),
                 (pbPerformanceTuner, new Control[] { checkPerformanceTuner, labelPerformanceTunerTarget }),
             };
