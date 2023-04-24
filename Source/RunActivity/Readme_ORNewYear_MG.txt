@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.140
-March 26th, 2023
+﻿Open Rails, NewYear version README - Rev.141
+April 24th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -11,7 +11,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-351, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-376, 
 plus some of the features already present in the Unstable release.
 
 
@@ -53,12 +53,14 @@ This version includes some features not (yet) available in the Open Rails testin
 - fix crash when reinitializing EOTs on a carless train
 - keyboard commands for Overcharge and Quick Release, by cesarBLG
 - allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008
-- NEW: fix ORNYMG bug preventing some tools to appear in the menu
-- NEW: Allow definition of side view cab controls in a separate compound block, see http://www.elvastower.com/forums/index.php?/topic/35640-inserting-cabview-controls-in-side-views-of-2d-cabs/page__view__findpost__p__295207
+- Allow definition of side view cab controls in a separate compound block, see http://www.elvastower.com/forums/index.php?/topic/35640-inserting-cabview-controls-in-side-views-of-2d-cabs/page__view__findpost__p__295207
+- enable modifying and compiling the .fx shader files, see http://www.elvastower.com/forums/index.php?/topic/36968-mgfxwhywhen-nov-2022what-does-a-user-do-now/page__view__findpost__p__295571
+- NEW: Select track sound volume percent retained in .eng and .wag files, see http://www.elvastower.com/forums/index.php?/topic/37055-external-sound-attenuation-in-internal-views/page__view__findpost__p__296364
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
-  - NEW: Refine sunrise and sunset, by Kames Ross (PR #767)
-  - NRE: Refactored garbage generators (improves performance and memory management), by gpz (PR #813)
+  - Refactored garbage generators (improves performance and memory management), by gpz (PR #813)
+  - NEW: fix bug for master key delay option not working, by sweiland-openrails (PR#820) 
+
 
 
 Info about content of the various PR to the Unstable release can be found here
@@ -75,12 +77,11 @@ This unofficial version couldn't have been created without following contributio
 - perpetualKid
 - Jindrich
 - Dennis A T (dennisat)
-- DR-Aeronautics
 - Mauricio (mbm_OR)
-- cjakeman
 - BillC
+- cjakeman
+- James Ross
 - Peter Newell (steamer_ctn)
-- Rob Roeterdink (roeter)
 - jonas
 - YoRyan
 - césarbl
