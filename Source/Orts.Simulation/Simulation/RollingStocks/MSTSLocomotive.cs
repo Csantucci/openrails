@@ -353,6 +353,7 @@ namespace Orts.Simulation.RollingStocks
         public float TrainBrakePipeLeakPSIorInHgpS = 0.0f;    // Air leakage from train brake pipe - should normally be no more then 5psi/min - default off
         public float CompressorRestartPressurePSI = 110;
         public float CompressorChargingRateM3pS = 0.075f;
+        public bool CompressorIsMUControlled = false;
         public float MainResChargingRatePSIpS = 0.4f;
         public float EngineBrakeReleaseRatePSIpS = 12.5f;
         public float EngineBrakeApplyRatePSIpS = 12.5f;
@@ -373,6 +374,7 @@ namespace Orts.Simulation.RollingStocks
         public float DynamicBrakeMaxCurrentA;
         public float DynamicBrakeDelayS;
         public bool DynamicBrakeAutoBailOff;
+        public bool DynamicBrakePartialBailOff;
         public bool UsingRearCab;
         public bool BrakeOverchargeSoundOn = false;
 
@@ -1013,6 +1015,7 @@ public List<CabView> CabViewList = new List<CabView>();
                         CompressorIsMechanical = true;
                     }
                     break;
+                case "engine(ortscompressorismucontrolled": CompressorIsMUControlled = stf.ReadBoolBlock(false); break;
                 case "engine(trainpipeleakrate": TrainBrakePipeLeakPSIorInHgpS = stf.ReadFloatBlock(STFReader.UNITS.PressureRateDefaultPSIpS, null); break;
                 case "engine(vacuumbrakesvacuumpumpresistance": VacuumPumpResistanceN = stf.ReadFloatBlock(STFReader.UNITS.Force, null); break;
 
@@ -1047,6 +1050,7 @@ public List<CabView> CabViewList = new List<CabView>();
                 case "engine(dynamicbrakesmaximumforce": MaxDynamicBrakeForceN = stf.ReadFloatBlock(STFReader.UNITS.Force, null); break;
                 case "engine(dynamicbrakehasautobailoff":
                 case "engine(ortsdynamicbrakeshasautobailoff": DynamicBrakeAutoBailOff = stf.ReadBoolBlock(true); break;
+                case "engine(ortsdynamicbrakeshaspartialbailoff": DynamicBrakePartialBailOff = stf.ReadBoolBlock(false); break;
                 case "engine(dynamicbrakesdelaytimebeforeengaging": DynamicBrakeDelayS = stf.ReadFloatBlock(STFReader.UNITS.Time, null); break;
                 case "engine(dynamicbrakesresistorcurrentlimit": DynamicBrakeMaxCurrentA = stf.ReadFloatBlock(STFReader.UNITS.Current, null); break;
                 case "engine(numwheels": MSTSLocoNumDrvWheels = stf.ReadFloatBlock(STFReader.UNITS.None, 4.0f); if (MSTSLocoNumDrvWheels < 1) STFException.TraceWarning(stf, "Engine:NumWheels is less than 1, parts of the simulation may not function correctly"); break;
@@ -1166,6 +1170,7 @@ public List<CabView> CabViewList = new List<CabView>();
             ContinuousForceTimeFactor = locoCopy.ContinuousForceTimeFactor;
             DynamicBrakeForceCurves = locoCopy.DynamicBrakeForceCurves;
             DynamicBrakeAutoBailOff = locoCopy.DynamicBrakeAutoBailOff;
+            DynamicBrakePartialBailOff = locoCopy.DynamicBrakePartialBailOff;
             DynamicBrakeMaxCurrentA = locoCopy.DynamicBrakeMaxCurrentA;
             CombinedControlType = locoCopy.CombinedControlType;
             CombinedControlSplitPosition = locoCopy.CombinedControlSplitPosition;
@@ -1201,6 +1206,7 @@ public List<CabView> CabViewList = new List<CabView>();
 
             CompressorIsMechanical = locoCopy.CompressorIsMechanical;
             CompressorRestartPressurePSI = locoCopy.CompressorRestartPressurePSI;
+            CompressorIsMUControlled = locoCopy.CompressorIsMUControlled;
             TrainBrakePipeLeakPSIorInHgpS = locoCopy.TrainBrakePipeLeakPSIorInHgpS;
             MaxMainResPressurePSI = locoCopy.MaxMainResPressurePSI;
             MainResPressurePSI = locoCopy.MaxMainResPressurePSI;
@@ -1841,14 +1847,12 @@ public List<CabView> CabViewList = new List<CabView>();
         /// </summary>
         public void DynamicBrakeBlending(float elapsedClockSeconds)
         {
-            if (Math.Abs(SpeedMpS) > DynamicBrakeSpeed1MpS && airPipeSystem != null && ((airPipeSystem is EPBrakeSystem && Train.BrakeLine4 > 0f) || airPipeSystem.BrakeLine1PressurePSI < TrainBrakeController.MaxPressurePSI - 1f)
-                && ThrottleController.CurrentValue == 0f && !(DynamicBrakeController != null && DynamicBrakeBlendingOverride && DynamicBrakeController.CurrentValue > 0f)
-                /* && (!DynamicBrakeBlendingLeverOverride && DynamicBrakeController != null && DynamicBrakeIntervention < DynamicBrakeController.CurrentValue)*/)
+            // Local blending
+            if (Math.Abs(SpeedMpS) > DynamicBrakeSpeed1MpS && airPipeSystem != null && airPipeSystem.AutoCylPressurePSI > 0.1f
+                && ThrottlePercent == 0 && !(DynamicBrakeController != null && DynamicBrakeBlendingOverride && DynamicBrakeController.CurrentValue > 0))
             {
-                float threshold = DynamicBrakeBlendingForceMatch ? 100f : 0.01f;
                 float maxCylPressurePSI = airPipeSystem.GetMaxCylPressurePSI();
-                float targetDynamicBrakePercent = airPipeSystem is EPBrakeSystem ? Train.BrakeLine4 : Math.Min(((TrainBrakeController.MaxPressurePSI - airPipeSystem.BrakeLine1PressurePSI) * airPipeSystem.GetAuxCylVolumeRatio()) / maxCylPressurePSI, 1f);
-                //DynamicBrakeIntervention = Math.Min(((TrainBrakeController.CurrentValue - DynamicBrakeBlendingStart) / (DynamicBrakeBlendingStop - DynamicBrakeBlendingStart)), 1f);
+                float target = airPipeSystem.AutoCylPressurePSI / maxCylPressurePSI;
 
                 if (!DynamicBrakeBlended)
                 {
@@ -1861,11 +1865,19 @@ public List<CabView> CabViewList = new List<CabView>();
                 }
                 if (DynamicBrake)
                 {
-                    float diff = DynamicBrakeBlendingForceMatch ? targetDynamicBrakePercent * MaxBrakeForceN - DynamicBrakeForceN : targetDynamicBrakePercent - DynamicBrakeIntervention;
-                    if (diff > threshold && DynamicBrakeIntervention <= 1)
-                        DynamicBrakeIntervention = Math.Min( DynamicBrakeIntervention + elapsedClockSeconds * (airPipeSystem.GetMaxApplicationRatePSIpS() / maxCylPressurePSI), 1.0f);
-                    else if (diff < -threshold)
-                        DynamicBrakeIntervention -= elapsedClockSeconds * (airPipeSystem.GetMaxReleaseRatePSIpS() / maxCylPressurePSI);
+                    if (DynamicBrakeBlendingForceMatch)
+                    {
+                        float diff = target * MaxBrakeForceN - DynamicBrakeForceN;
+                        float threshold = 100;
+                        if (diff > threshold && DynamicBrakeIntervention < 1)
+                            DynamicBrakeIntervention = Math.Min(DynamicBrakeIntervention + elapsedClockSeconds, 1);
+                        else if (diff < -threshold && DynamicBrakeIntervention > 0.01f)
+                            DynamicBrakeIntervention = Math.Max(DynamicBrakeIntervention - elapsedClockSeconds, 0.01f);
+                    }
+                    else
+                    {
+                        DynamicBrakeIntervention = target;
+                    }
                 }
                 if (DynamicBrakeController != null)
                     DynamicBrakeIntervention = Math.Max(DynamicBrakeIntervention, DynamicBrakeController.CurrentValue);
@@ -1874,6 +1886,17 @@ public List<CabView> CabViewList = new List<CabView>();
             {
                 DynamicBrakeIntervention = -1;
                 DynamicBrakeBlended = false;
+            }
+            // Train blending
+            if (IsLeadLocomotive())
+            {
+                if (TrainBrakeController.TrainDynamicBrakeIntervention > DynamicBrakeIntervention)
+                {
+                    DynamicBrakeBlended = true;
+                    DynamicBrakeIntervention = TrainBrakeController.TrainDynamicBrakeIntervention;
+                }
+                if (TrainBrakeController.TrainDynamicBrakeCommandStartTime > DynamicBrakeCommandStartTime)
+                    DynamicBrakeCommandStartTime = TrainBrakeController.TrainDynamicBrakeCommandStartTime;
             }
         }
 
@@ -2292,6 +2315,7 @@ public List<CabView> CabViewList = new List<CabView>();
             }
 
             DynamicBrakeBlending(elapsedClockSeconds);
+
             if (DynamicBrakeController != null && DynamicBrakeController.CommandStartTime > DynamicBrakeCommandStartTime) // use the latest command time
                 DynamicBrakeCommandStartTime = DynamicBrakeController.CommandStartTime;
 
@@ -2695,9 +2719,20 @@ public List<CabView> CabViewList = new List<CabView>();
 
             // Turn compressor on and off
             if (MainResPressurePSI < CompressorRestartPressurePSI && LocomotivePowerSupply.AuxiliaryPowerSupplyState == PowerSupplyState.PowerOn && !CompressorIsOn)
+            {
                 SignalEvent(Event.CompressorOn);
+                foreach (var loco in Train.Cars.OfType<MSTSLocomotive>())
+                {
+                    if (loco.RemoteControlGroup == 0 && loco.LocomotivePowerSupply.AuxiliaryPowerSupplyOn && !loco.CompressorIsOn && loco.CompressorIsMUControlled)
+                    {
+                        loco.SignalEvent(Event.CompressorOn);
+                    }
+                }
+            }
             else if ((MainResPressurePSI >= MaxMainResPressurePSI || LocomotivePowerSupply.AuxiliaryPowerSupplyState != PowerSupplyState.PowerOn) && CompressorIsOn)
+            {
                 SignalEvent(Event.CompressorOff);
+            }
 
             if (CompressorIsOn)
                 MainResPressurePSI += elapsedClockSeconds * reservoirChargingRate;

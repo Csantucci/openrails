@@ -1218,7 +1218,7 @@ namespace Orts.Viewer3D.Popups
                 var car = train.Cars[i];
                 if (car.BrakeSystem is VacuumSinglePipe)
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}",
                         //0
                         Viewer.Catalog.GetString("Car"),
                         //1
@@ -1239,17 +1239,19 @@ namespace Orts.Viewer3D.Popups
                         //8
                         Viewer.Catalog.GetString(""),
                         //9
-                        Viewer.Catalog.GetString("Handbrk"),
+                        Viewer.Catalog.GetString(""),
                         //10
-                        Viewer.Catalog.GetString("Conn"),
+                        Viewer.Catalog.GetString("Handbrk"),
                         //11
+                        Viewer.Catalog.GetString("Conn"),
+                        //12
                         Viewer.Catalog.GetString("AnglCock")
                         //Add new header data here, if addining additional column.
                         ));
                 }
                 else if (car.BrakeSystem is ManualBraking)
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}",
                         //0
                         Viewer.Catalog.GetString("Car"),
                         //1
@@ -1271,12 +1273,14 @@ namespace Orts.Viewer3D.Popups
                         //9
                         Viewer.Catalog.GetString(""),
                         //10
+                        Viewer.Catalog.GetString(""),
+                        //11
                         Viewer.Catalog.GetString("Handbrk")
                     ));
                 }
                 else if ((Viewer.PlayerLocomotive as MSTSLocomotive).BrakeSystem is SMEBrakeSystem)
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{13}",
                     //0
                     Viewer.Catalog.GetString("Car"),
                     //1
@@ -1292,25 +1296,27 @@ namespace Orts.Viewer3D.Popups
                     //6
                     Viewer.Catalog.GetString("StrPipe"),
                     //7
-                    Viewer.Catalog.GetString("RetValve"),
+                    Viewer.Catalog.GetString("CtrlRes"),
                     //8
-                    Viewer.Catalog.GetString("TripleValve"),
+                    Viewer.Catalog.GetString("RetValve"),
                     //9
-                    Viewer.Catalog.GetString(""),
+                    Viewer.Catalog.GetString("TripleValve"),
                     //10
-                    Viewer.Catalog.GetString("Handbrk"),
+                    Viewer.Catalog.GetString(""),
                     //11
-                    Viewer.Catalog.GetString("Conn"),
+                    Viewer.Catalog.GetString("Handbrk"),
                     //12
-                    Viewer.Catalog.GetString("AnglCock"),
+                    Viewer.Catalog.GetString("Conn"),
                     //13
+                    Viewer.Catalog.GetString("AnglCock"),
+                    //14
                     Viewer.Catalog.GetString("BleedOff")
                     //Add new header data here, if adding additional column.
                     ));
                 }
                 else // default air braked
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}",
                     //0
                     Viewer.Catalog.GetString("Car"),
                     //1
@@ -1326,18 +1332,20 @@ namespace Orts.Viewer3D.Popups
                     //6
                     Viewer.Catalog.GetString("MRPipe"),
                     //7
-                    Viewer.Catalog.GetString("RetValve"),
+                    Viewer.Catalog.GetString("CtrlRes"),
                     //8
-                    Viewer.Catalog.GetString("TripleValve"),
+                    Viewer.Catalog.GetString("RetValve"),
                     //9
-                    Viewer.Catalog.GetString(""),
+                    Viewer.Catalog.GetString("TripleValve"),
                     //10
-                    Viewer.Catalog.GetString("Handbrk"),
+                    Viewer.Catalog.GetString(""),
                     //11
-                    Viewer.Catalog.GetString("Conn"),
+                    Viewer.Catalog.GetString("Handbrk"),
                     //12
-                    Viewer.Catalog.GetString("AnglCock"),
+                    Viewer.Catalog.GetString("Conn"),
                     //13
+                    Viewer.Catalog.GetString("AnglCock"),
+                    //14
                     Viewer.Catalog.GetString("BleedOff")
                     //Add new header data here, if adding additional column.
                     ));
