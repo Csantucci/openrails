@@ -1,5 +1,5 @@
 ﻿Open Rails, NewYear version README - Rev.141
-April 24th, 2023
+April 26th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -60,6 +60,8 @@ This version includes some features not (yet) available in the Open Rails testin
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
   - Refactored garbage generators (improves performance and memory management), by gpz (PR #813)
   - NEW: fix bug for master key delay option not working, by sweiland-openrails (PR#820) 
+  - NEW: merge updated PR#813 Refactored garbage generators, by pzgulyas
+  - NEW: merge PR#732, improvements for air brakes, by cesarBLG, https://blueprints.launchpad.net/or/+spec/braking-enhancement
 
 
 
