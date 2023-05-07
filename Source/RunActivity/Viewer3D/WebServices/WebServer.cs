@@ -268,14 +268,16 @@ namespace Orts.Viewer3D.WebServices
         public async Task SetCabControls()
         {
             var data = await HttpContext.GetRequestDataAsync<IEnumerable<ControlValuePost>>(WebServer.DeserializationCallback<IEnumerable<ControlValuePost>>);
-                var dev = UserInput.WebDeviceState;
+            var dev = UserInput.WebDeviceState;
             foreach (var control in data)
             {
                 var key = (new CabViewControlType(control.TypeName), control.ControlIndex);
                 if (!dev.CabControls.TryGetValue(key, out var state))
                 {
                     state = new ExternalDeviceCabControl();
-                    dev.CabControls[key] = state;
+                    var controls = new Dictionary<(CabViewControlType, int), ExternalDeviceCabControl>(dev.CabControls);
+                    controls[key] = state;
+                    dev.CabControls = controls;
                 }
                 state.Value = (float)control.Value;
             }
