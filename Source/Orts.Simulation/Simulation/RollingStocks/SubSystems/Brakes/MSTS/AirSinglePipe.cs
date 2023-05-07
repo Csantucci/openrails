@@ -350,11 +350,13 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
 
         public void UpdateTripleValveState(float elapsedClockSeconds)
         {
+            var prevState = TripleValveState;
             var valveType = (Car as MSTSWagon).BrakeValve;
+            bool disableGradient = !(Car.Train.LeadLocomotive is MSTSLocomotive) && Car.Train.TrainType != Orts.Simulation.Physics.Train.TRAINTYPE.STATIC;
             if (valveType == MSTSWagon.BrakeValveType.Distributor)
             {
                 float targetPressurePSI = (ControlResPressurePSI - BrakeLine1PressurePSI) * AuxCylVolumeRatio;
-                if (targetPressurePSI > AutoCylPressurePSI && EmergencyValveActuationRatePSIpS > 0 && (prevBrakePipePressurePSI - BrakeLine1PressurePSI) > Math.Max(elapsedClockSeconds, 0.0001f) * EmergencyValveActuationRatePSIpS)
+                if (!disableGradient && targetPressurePSI > AutoCylPressurePSI && EmergencyValveActuationRatePSIpS > 0 && (prevBrakePipePressurePSI - BrakeLine1PressurePSI) > Math.Max(elapsedClockSeconds, 0.0001f) * EmergencyValveActuationRatePSIpS)
                     TripleValveState = ValveState.Emergency;
                 else if (targetPressurePSI < AutoCylPressurePSI - (TripleValveState != ValveState.Release ? 2.2f : 0f)
                     || targetPressurePSI < 2.2f) // The latter is a UIC regulation (0.15 bar)
@@ -366,7 +368,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             }
             else if (valveType == MSTSWagon.BrakeValveType.TripleValve || valveType == MSTSWagon.BrakeValveType.DistributingValve)
             {
-                if (BrakeLine1PressurePSI < AuxResPressurePSI - 1 && EmergencyValveActuationRatePSIpS > 0 && (prevBrakePipePressurePSI - BrakeLine1PressurePSI) > Math.Max(elapsedClockSeconds, 0.0001f) * EmergencyValveActuationRatePSIpS)
+                if (!disableGradient && BrakeLine1PressurePSI < AuxResPressurePSI - 1 && EmergencyValveActuationRatePSIpS > 0 && (prevBrakePipePressurePSI - BrakeLine1PressurePSI) > Math.Max(elapsedClockSeconds, 0.0001f) * EmergencyValveActuationRatePSIpS)
                     TripleValveState = ValveState.Emergency;
                 else if (BrakeLine1PressurePSI > AuxResPressurePSI + 1)
                     TripleValveState = ValveState.Release;
@@ -381,6 +383,15 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             {
                 TripleValveState = ValveState.Release;
             }
+            if (TripleValveState == ValveState.Emergency)
+            {
+                if (prevState != ValveState.Emergency)
+                {
+                    EmergencyDumpStartTime = (float)Car.Simulator.GameTime;
+                    Car.SignalEvent(Event.EmergencyVentValveOn);
+                }
+            }
+            else EmergencyDumpStartTime = null;
             prevBrakePipePressurePSI = BrakeLine1PressurePSI;
         }
 
@@ -449,6 +460,20 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                             dp = (EmergResPressurePSI - AuxResPressurePSI) / (1 + EmergAuxVolumeRatio);
                         EmergResPressurePSI -= dp;
                         AuxResPressurePSI += dp * EmergAuxVolumeRatio;
+                    }
+                    if (EmergencyDumpValveTimerS == 0)
+                    {
+                        if (BrakeLine1PressurePSI < 1) EmergencyDumpStartTime = null;
+                    }
+                    else if (Car.Simulator.GameTime - EmergencyDumpStartTime > EmergencyDumpValveTimerS)
+                    {
+                        EmergencyDumpStartTime = null;
+                    }
+                    if (EmergencyDumpValveRatePSIpS > 0 && EmergencyDumpStartTime != null)
+                    {
+                        BrakeLine1PressurePSI -= elapsedClockSeconds * EmergencyDumpValveRatePSIpS;
+                        if (BrakeLine1PressurePSI < 0)
+                            BrakeLine1PressurePSI = 0;
                     }
                 }
             }
