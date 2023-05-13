@@ -5901,6 +5901,16 @@ public List<CabView> CabViewList = new List<CabView>();
                         data = state >= DoorState.Opening ? 1 : 0;
                     }
                     break;
+                case CABViewControlTypes.ORTS_LEFTWINDOW:
+                case CABViewControlTypes.ORTS_2DEXTERNALLEFTWINDOW:
+                    data = UsingRearCab ? (RightWindowRearState == WindowState.Closing || RightWindowRearState == WindowState.Opening ? 1 : 0) :
+                        (LeftWindowFrontState == WindowState.Closing || LeftWindowFrontState == WindowState.Opening ? 1 : 0);
+                    break;
+                case CABViewControlTypes.ORTS_RIGHTWINDOW:
+                case CABViewControlTypes.ORTS_2DEXTERNALRIGHTWINDOW:
+                    data = UsingRearCab ? (LeftWindowRearState == WindowState.Closing || LeftWindowRearState == WindowState.Opening ? 1 : 0) :
+                        (RightWindowFrontState == WindowState.Closing || RightWindowFrontState == WindowState.Opening ? 1 : 0);
+                    break;
                 case CABViewControlTypes.ORTS_MIRRORS:
                     data = MirrorOpen ? 1 : 0;
                     break;

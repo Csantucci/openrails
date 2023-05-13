@@ -184,6 +184,8 @@ namespace Orts.Formats.Msts
         ORTS_MIRRORS,
         ORTS_PANTOGRAPH3,
         ORTS_PANTOGRAPH4,
+        ORTS_LEFTWINDOW,
+        ORTS_RIGHTWINDOW,
         ORTS_LARGE_EJECTOR,
         ORTS_WATER_SCOOP,
         ORTS_HOURDIAL,
@@ -208,6 +210,8 @@ namespace Orts.Formats.Msts
         ORTS_ELECTRIC_TRAIN_SUPPLY_COMMAND_SWITCH,
         ORTS_ELECTRIC_TRAIN_SUPPLY_ON,
         ORTS_2DEXTERNALWIPERS,
+        ORTS_2DEXTERNALLEFTWINDOW,
+        ORTS_2DEXTERNALRIGHTWINDOW,
         ORTS_GENERIC_ITEM1,
         ORTS_GENERIC_ITEM2,
         ORTS_SCREEN_SELECT,
@@ -277,6 +281,8 @@ namespace Orts.Formats.Msts
         ORTS_ITEM2CONTINUOUS,
         ORTS_ITEM1TWOSTATE,
         ORTS_ITEM2TWOSTATE,
+        ORTS_EXTERNALLEFTWINDOW,
+        ORTS_EXTERNALRIGHTWINDOW
     }
 
     public enum CABViewControlStyles
@@ -1484,6 +1490,7 @@ namespace Orts.Formats.Msts
                     for (int i = Values.Count; i < FramesCount; i++)
                         Values.Add(-10000);
                 }),
+                new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
             });
         }
         protected int ParseNumStyle(STFReader stf)

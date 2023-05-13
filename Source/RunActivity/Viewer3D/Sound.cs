@@ -1430,17 +1430,18 @@ namespace Orts.Viewer3D
                     volume *= Interpolate(x, MSTSStream.VolumeCurves[i]);
                 }
 
+            var wag = (MSTSWagon)SoundSource.Viewer.Camera.AttachedCar;
             if (SoundSource.IsExternal && SoundSource.Viewer.Camera.Style != Camera.Styles.External && !SoundSource.IsUnattenuated)
             {
-                if (SoundSource.Viewer.Camera.AttachedCar == null || ((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar).ExternalSoundPassThruPercent == -1)
-                    volume *= Program.Viewer.Settings.ExternalSoundPassThruPercent * 0.01f;
-                else volume *= ((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar).ExternalSoundPassThruPercent * 0.01f;
+                if (wag == null || wag.ExternalSoundPassThruPercent == -1)
+                    volume *= Program.Viewer.Settings.ExternalSoundPassThruPercent * 0.01f + (1 - Program.Viewer.Settings.ExternalSoundPassThruPercent * 0.01f) * wag.SoundHeardInternallyCorrection;
+                else volume *= wag.ExternalSoundPassThruPercent * 0.01f + (1 - wag.ExternalSoundPassThruPercent * 0.01f) * wag.SoundHeardInternallyCorrection;
             }
 
             if (SoundSource.IsInternalTrackSound && SoundSource.Viewer.Camera.Style != Camera.Styles.External)
             {
-                if (((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar)?.TrackSoundPassThruPercent != -1)
-                    volume *= ((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar).TrackSoundPassThruPercent * 0.01f;
+                if (wag?.TrackSoundPassThruPercent != -1)
+                    volume *= wag.TrackSoundPassThruPercent * 0.01f + (1 - wag.TrackSoundPassThruPercent * 0.01f) * wag.SoundHeardInternallyCorrection;
             }
 
             ALSoundSource.Volume = volume;
