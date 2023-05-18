@@ -80,11 +80,13 @@ namespace Orts.Simulation.RollingStocks
             Opening,
             Open,
         }
-        public WindowState LeftWindowFrontState;
-        public WindowState RightWindowFrontState;
-        public WindowState LeftWindowRearState;
-        public WindowState RightWindowRearState;
-        public float SoundHeardInternallyCorrection;
+
+        public static int LeftWindowFrontIndex = 0;
+        public static int RightWindowFrontIndex = 1;
+        public static int LeftWindowRearIndex = 2;
+        public static int RightWindowRearIndex = 3;
+        public WindowState[] WindowStates = new WindowState[4];
+        public float[] SoundHeardInternallyCorrection = new float[2];
 
         public bool MirrorOpen;
         public bool UnloadingPartsOpen;
@@ -1765,6 +1767,10 @@ namespace Orts.Simulation.RollingStocks
             outf.Write(DerailPossible);
             outf.Write(DerailExpected);
             outf.Write(DerailElapsedTimeS);
+            for (int index = 0; index < 4; index++)
+            {
+                outf.Write((int)WindowStates[index]);
+            }
 
             base.Save(outf);
         }
@@ -1818,6 +1824,10 @@ namespace Orts.Simulation.RollingStocks
             DerailPossible = inf.ReadBoolean();
             DerailExpected = inf.ReadBoolean();
             DerailElapsedTimeS = inf.ReadSingle();
+            for (int index = 0; index < 4; index++)
+            {
+                WindowStates[index] = (WindowState)inf.ReadInt32();
+            }
 
             base.Restore(inf);
         }
@@ -3448,50 +3458,17 @@ namespace Orts.Simulation.RollingStocks
         public void ToggleWindow(bool rear, bool left)
         {
             var open = false;
+            var index = (left ? 0 : 1) + 2 * (rear ? 1 : 0);
+                if (WindowStates[index] == WindowState.Closed || WindowStates[index] == WindowState.Closing)
+                    WindowStates[index] = WindowState.Opening;
+                else if (WindowStates[index] == WindowState.Open || WindowStates[index] == WindowState.Opening)
+                    WindowStates[index] = WindowState.Closing;
+                if (WindowStates[index] == WindowState.Opening) open = true;
 
-            if (rear)
-            {
-                if (left)
-                {
-                    if (RightWindowRearState == WindowState.Closed || RightWindowRearState == WindowState.Closing)
-                        RightWindowRearState = WindowState.Opening;
-                    else if (RightWindowRearState == WindowState.Open || RightWindowRearState == WindowState.Opening)
-                        RightWindowRearState = WindowState.Closing;
-                    if (RightWindowRearState == WindowState.Opening) open = true;
-                }
-                else
-                {
-                    if (LeftWindowRearState == WindowState.Closed || LeftWindowRearState == WindowState.Closing)
-                        LeftWindowRearState = WindowState.Opening;
-                    else if (LeftWindowRearState == WindowState.Open || LeftWindowRearState == WindowState.Opening)
-                        LeftWindowRearState = WindowState.Closing;
-                    if (LeftWindowRearState == WindowState.Opening) open = true;
-                }
-            }
-            else
-            {
-                if (left)
-                {
-                    if (LeftWindowFrontState == WindowState.Closed || LeftWindowFrontState == WindowState.Closing)
-                        LeftWindowFrontState = WindowState.Opening;
-                    else if (LeftWindowFrontState == WindowState.Open || LeftWindowFrontState == WindowState.Opening)
-                        LeftWindowFrontState = WindowState.Closing;
-                    if (LeftWindowFrontState == WindowState.Opening) open = true;
-                }
-                else
-                {
-                    if (RightWindowFrontState == WindowState.Closed || RightWindowFrontState == WindowState.Closing)
-                        RightWindowFrontState = WindowState.Opening;
-                    else if (RightWindowFrontState == WindowState.Open || RightWindowFrontState == WindowState.Opening)
-                        RightWindowFrontState = WindowState.Closing;
-                    if (RightWindowFrontState == WindowState.Opening) open = true;
-                }
-            }
 
             if (open) SignalEvent(Event.WindowOpening); // hook for sound trigger
             else SignalEvent(Event.WindowClosing);
-            // TODO
-            if (Simulator.PlayerLocomotive == this) Simulator.Confirmer.Confirm(left ? CabControl.WindowLeft : CabControl.WindowRight, open ? CabSetting.On : CabSetting.Off);
+            if (Simulator.PlayerLocomotive == this) Simulator.Confirmer.Confirm(left ^ rear ? CabControl.WindowLeft : CabControl.WindowRight, open ? CabSetting.On : CabSetting.Off);
         }
 
         public void FindControlActiveLocomotive()
