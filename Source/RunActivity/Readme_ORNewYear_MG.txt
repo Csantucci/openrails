@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.141
-April 26th, 2023
+﻿Open Rails, NewYear version README - Rev.142
+May 19th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -11,7 +11,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-376, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-411, 
 plus some of the features already present in the Unstable release.
 
 
@@ -41,7 +41,6 @@ This version includes some features not (yet) available in the Open Rails testin
 - camera following detached wagons in hump yard operation by pressing Ctrl key while clicking with mouse on coupler in Train Operations Window to uncouple wagon
 - bug fix that didn't check for null label text, see http://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__273496
 - Various fixes related to reversals and couplings, see e.g. http://www.elvastower.com/forums/index.php?/topic/29383-assistance-with-ai-shunting/page__view__findpost__p__277369
-- Insert cabview controls in side views of 2D cabs, see http://www.elvastower.com/forums/index.php?/topic/35640-inserting-cabview-controls-in-side-views-of-2d-cabs/ 
 - workaround for http://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__278074 
 - "ORNYMG only" option tab, including all option checkboxes available only in ORNYMG
 - kept Locomotive() TCS script hook
@@ -53,15 +52,18 @@ This version includes some features not (yet) available in the Open Rails testin
 - fix crash when reinitializing EOTs on a carless train
 - keyboard commands for Overcharge and Quick Release, by cesarBLG
 - allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008
-- Allow definition of side view cab controls in a separate compound block, see http://www.elvastower.com/forums/index.php?/topic/35640-inserting-cabview-controls-in-side-views-of-2d-cabs/page__view__findpost__p__295207
 - enable modifying and compiling the .fx shader files, see http://www.elvastower.com/forums/index.php?/topic/36968-mgfxwhywhen-nov-2022what-does-a-user-do-now/page__view__findpost__p__295571
-- NEW: Select track sound volume percent retained in .eng and .wag files, see http://www.elvastower.com/forums/index.php?/topic/37055-external-sound-attenuation-in-internal-views/page__view__findpost__p__296364
+- NEW: Animating trainset windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
-  - Refactored garbage generators (improves performance and memory management), by gpz (PR #813)
-  - NEW: fix bug for master key delay option not working, by sweiland-openrails (PR#820) 
-  - NEW: merge updated PR#813 Refactored garbage generators, by pzgulyas
-  - NEW: merge PR#732, improvements for air brakes, by cesarBLG, https://blueprints.launchpad.net/or/+spec/braking-enhancement
+  - merge updated PR#813 Refactored garbage generators, by pzgulyas
+  - Select track sound volume percent retained in .eng and .wag files (PR#823), see http://www.elvastower.com/forums/index.php?/topic/37055-external-sound-attenuation-in-internal-views/page__view__findpost__p__296364
+  - Emergency dump valves (PR#829 by cesarBLG)
+  - NEW: Allow independent drive axles for locomotives (PR#818 by cesarBLG)
+  - NEW: Fix Cruise Control independent together with train brake (PR#832 by cesarBLG), see http://www.elvastower.com/forums/index.php?/topic/33841-cruise-control/page__view__findpost__p__296962
+  - NEW: Implement brake relay valve (PR#833 by cesarBLG), see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__view__findpost__p__297020
+  - NEW: Correct Brake Shoe Force Calculation (PR#835 by peternewell), see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__view__findpost__p__297184
+
 
 
 
