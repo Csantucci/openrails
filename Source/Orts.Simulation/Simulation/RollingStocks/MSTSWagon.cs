@@ -1793,6 +1793,8 @@ namespace Orts.Simulation.RollingStocks
 
             LocomotiveAxles.Save(outf);
 
+            LocomotiveAxles.Save(outf);
+
             base.Save(outf);
         }
 
@@ -1849,6 +1851,9 @@ namespace Orts.Simulation.RollingStocks
             {
                 WindowStates[index] = (WindowState)inf.ReadInt32();
             }
+
+            MoveParamsToAxle();
+            LocomotiveAxles.Restore(inf);
 
             MoveParamsToAxle();
             LocomotiveAxles.Restore(inf);
