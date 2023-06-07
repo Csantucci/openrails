@@ -238,7 +238,7 @@ namespace ORTS.Settings
 
         // Simulation settings:
 
-        [Default(true)]
+        [Default(false)]
         public bool SimpleControlPhysics { get; set; }
         [Default(true)]
         public bool UseAdvancedAdhesion { get; set; }
