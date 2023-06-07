@@ -704,6 +704,7 @@ namespace Orts.Simulation.RollingStocks
 
         public virtual void Initialize()
         {
+            BrakeSystem.Initialize();
             CurveResistanceDependent = Simulator.Settings.CurveResistanceDependent;
             CurveSpeedDependent = Simulator.Settings.CurveSpeedDependent;
             TunnelResistanceDependent = Simulator.Settings.TunnelResistanceDependent;
