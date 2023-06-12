@@ -149,6 +149,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         protected float SpeedDeltaToEnableTrainBrake = 5;
         protected float SpeedDeltaToEnableFullTrainBrake = 10;
         public float MinimumSpeedForCCEffectMpS = 0;
+        public bool AutoGeneratesForceAlsoInReverse = true;
         protected float speedRegulatorIntermediateValue = 0;
         protected float StepSize = 20;
         protected float RelativeAccelerationMpSS => Locomotive.Direction == Direction.Reverse ? -Locomotive.AccelerationMpSS : Locomotive.AccelerationMpSS; // Acceleration relative to state of reverser
@@ -266,7 +267,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             StartInAutoMode = other.StartInAutoMode;
             ThrottleNeutralPosition = other.ThrottleNeutralPosition;
             ModeSwitchAllowedWithThrottleNotAtZero = other.ModeSwitchAllowedWithThrottleNotAtZero;
-
+            AutoGeneratesForceAlsoInReverse = other.AutoGeneratesForceAlsoInReverse;
         }
 
         public void Parse(STFReader stf)
@@ -358,6 +359,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     case "startinautomode": StartInAutoMode = stf.ReadBoolBlock(false); break;
                     case "throttleneutralposition": ThrottleNeutralPosition = stf.ReadBoolBlock(false); break;
                     case "modeswitchallowedwiththrottlenotatzero": ModeSwitchAllowedWithThrottleNotAtZero = stf.ReadBoolBlock(false); break;
+                    case "autogeneratesforcealsoinreverse": AutoGeneratesForceAlsoInReverse = stf.ReadBoolBlock(true); break;
                     case "docomputenumberofaxles": DoComputeNumberOfAxles = stf.ReadBoolBlock(false); break;
                     case "options":
                         foreach (var speedRegulatorOption in stf.ReadStringBlock("").ToLower().Replace(" ", "").Split(','))
@@ -457,6 +459,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             }
             else if (SpeedRegMode == SpeedRegulatorMode.Auto)
             {
+                if (Simulator.PlayerLocomotive == Locomotive && Locomotive.Direction == Direction.Reverse && !AutoGeneratesForceAlsoInReverse)
+                    return;
                 if ((SpeedSelMode == SpeedSelectorMode.On || SpeedSelMode == SpeedSelectorMode.Start) && !TrainBrakePriority)
                 {
                     if (Locomotive.AbsSpeedMpS == 0)
