@@ -1448,6 +1448,12 @@ namespace Orts.Viewer3D
                 }
             }
 
+            if (SoundSource.IsInternalTrackSound && SoundSource.Viewer.Camera.Style != Camera.Styles.External)
+            {
+                if (((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar)?.TrackSoundPassThruPercent != -1)
+                    volume *= ((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar).TrackSoundPassThruPercent * 0.01f;
+            }
+
             ALSoundSource.Volume = volume;
         }
 

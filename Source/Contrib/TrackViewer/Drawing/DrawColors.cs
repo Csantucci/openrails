@@ -47,6 +47,7 @@ namespace ORTS.TrackViewer.Drawing
         public static ColorScheme colorsRoadsHotlight = new ColorScheme(HighlightType.Hotlight);
         public static ColorScheme colorsPathMain = new ColorScheme();
         public static ColorScheme colorsPathSiding = new ColorScheme();
+        public static ColorScheme colorsEvent = new ColorScheme();
 
         static ColorsGroupTrack trackGroupFlat = new ColorsGroupTrack();
         static ColorsGroupTrack roadTrackGroupFlat = new ColorsGroupTrack();
@@ -213,6 +214,11 @@ namespace ORTS.TrackViewer.Drawing
                 TrackViewer.catalog.GetString("Select speedpost color"));
             itemColors.Speedpost = itemColor;
 
+            itemColor = new ColorWithHighlights(Color.DarkGray, 40);
+            itemColor.MakeIntoUserPreference(preferenceChanger, "event",
+                TrackViewer.catalog.GetString("Select event color"));
+            itemColors.Event = itemColor;
+
             itemColor = new ColorWithHighlights(Color.Blue, 40);
             itemColors.CandidateNode = itemColor;
 
@@ -322,6 +328,7 @@ namespace ORTS.TrackViewer.Drawing
         public ColorWithHighlights RoadCrossing { get; set; }
         public ColorWithHighlights Speedpost { get; set; }
         public ColorWithHighlights Siding { get; set; }
+        public ColorWithHighlights Event { get; set; }
 
         public ColorWithHighlights Text { get; set; }
         public ColorWithHighlights ClearWindowInset { get; set; }
@@ -363,6 +370,7 @@ namespace ORTS.TrackViewer.Drawing
         public Color RoadCrossing { get { return TrackItemColors.RoadCrossing.Colors[highlightType]; } }
         public Color Speedpost { get { return TrackItemColors.Speedpost.Colors[highlightType]; } }
         public Color Siding { get { return TrackItemColors.Siding.Colors[highlightType]; } }
+        public Color Event { get { return TrackItemColors.Event.Colors[highlightType]; } }
 
         public Color ActiveNode { get { return TrackItemColors.ActiveNode.Colors[highlightType]; } }
         public Color CandidateNode { get { return TrackItemColors.CandidateNode.Colors[highlightType]; } }
