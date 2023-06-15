@@ -739,6 +739,12 @@ namespace Orts.Simulation
             EOTMountCommand.Receiver = (MSTSLocomotive)PlayerLocomotive;
         }
 
+        public void SetWagonCommandReceivers(MSTSWagon wag)
+        {
+            ToggleWindowLeftCommand.Receiver = wag;
+            ToggleWindowRightCommand.Receiver = wag;
+        }
+
         public TrainCar SetPlayerLocomotive(Train playerTrain)
         {
             TrainCar PlayerLocomotive = null;
