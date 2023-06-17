@@ -293,7 +293,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             ContinuousFreightAnimationsPresent = copyFACollection.ContinuousFreightAnimationsPresent;
             StaticFreightAnimationsPresent = copyFACollection.StaticFreightAnimationsPresent;
             DiscreteFreightAnimationsPresent = copyFACollection.DiscreteFreightAnimationsPresent;
-
+            StaticFreightWeight = copyFACollection.StaticFreightWeight;
         }
 
         public void Load(string loadFilePath, LoadPosition loadPosition, LoadState loadState)
