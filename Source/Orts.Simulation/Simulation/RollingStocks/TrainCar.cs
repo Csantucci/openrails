@@ -578,9 +578,10 @@ namespace Orts.Simulation.RollingStocks
 
         public float TunnelForceN;  // Resistive force due to tunnel, in Newtons
         public float FrictionForceN; // in Newtons ( kg.m/s^2 ) unsigned, includes effects of curvature
-        public float BrakeForceN;    // brake force applied to slow train (Newtons) - will be impacted by wheel/rail friction
+        public float BrakeForceN;    // current braking force applied to slow train (Newtons) - will be impacted by wheel/rail friction
         public float BrakeRetardForceN;    // brake force applied to wheel by brakeshoe (Newtons) independent of friction wheel/rail friction
         public float BrakeShoeForceN;
+        public float FrictionBrakeBlendingMaxForceN; // This is the maximum force for the friction barke when it is blended with the dynamic brake
 
         // Sum of all the forces acting on a Traincar in the direction of driving.
         // MotiveForceN and GravityForceN act to accelerate the train. The others act to brake the train.
@@ -686,9 +687,9 @@ namespace Orts.Simulation.RollingStocks
         public enum BrakeShoeTypes
         {
             Unknown,
-            CastIron,
-            HiFrictionCompost,
-            UserDefined,
+            Cast_Iron,
+            High_Friction_Composite,
+            User_Defined,
         }
         public BrakeShoeTypes BrakeShoeType;
 
@@ -3266,15 +3267,15 @@ namespace Orts.Simulation.RollingStocks
                 float NewtonsTokNewtons = 0.001f;
                 float brakeShoeForcekN = (NewtonsTokNewtons * BrakeShoeForceN) / NumberCarBrakeShoes;
 
-                if (BrakeShoeType == BrakeShoeTypes.CastIron)
+                if (BrakeShoeType == BrakeShoeTypes.Cast_Iron)
                 {
                     frictionfraction = 0.6f * ((1.6f * brakeShoeForcekN + 100.0f) / (8.0f * brakeShoeForcekN + 100.0f)) * ((MpS.ToKpH(AbsSpeedMpS) + 100.0f) / (5.0f * MpS.ToKpH(AbsSpeedMpS) + 100.0f));
                 }
-                else if (BrakeShoeType == BrakeShoeTypes.HiFrictionCompost)
+                else if (BrakeShoeType == BrakeShoeTypes.High_Friction_Composite)
                 {
                     frictionfraction = 0.44f * ((0.1f * brakeShoeForcekN + 20.0f) / (0.4f * brakeShoeForcekN + 20.0f)) * ((MpS.ToKpH(AbsSpeedMpS) + 150.0f) / (2.0f * MpS.ToKpH(AbsSpeedMpS) + 150.0f));
                 }
-                else if (BrakeShoeType == BrakeShoeTypes.UserDefined)
+                else if (BrakeShoeType == BrakeShoeTypes.User_Defined)
                 {
                     frictionfraction = BrakeShoeFrictionFactor[MpS.ToKpH(AbsSpeedMpS)];
                 }
@@ -3333,15 +3334,15 @@ namespace Orts.Simulation.RollingStocks
                 float NewtonsTokNewtons = 0.001f;
                 float brakeShoeForcekN = NewtonsTokNewtons * BrakeShoeForceN / NumberCarBrakeShoes;
 
-                if (BrakeShoeType == BrakeShoeTypes.CastIron)
+                if (BrakeShoeType == BrakeShoeTypes.Cast_Iron)
                 {
                     frictionfraction = 0.6f * ((1.6f * brakeShoeForcekN + 100.0f) / (8.0f * brakeShoeForcekN + 100.0f)) * ((MpS.ToKpH(AbsSpeedMpS) + 100.0f) / (5.0f * MpS.ToKpH(AbsSpeedMpS) + 100.0f));
                 }
-                else if (BrakeShoeType == BrakeShoeTypes.HiFrictionCompost)
+                else if (BrakeShoeType == BrakeShoeTypes.High_Friction_Composite)
                 {
                     frictionfraction = 0.44f * ((0.1f * brakeShoeForcekN + 20.0f) / (0.4f * brakeShoeForcekN + 20.0f)) * ((MpS.ToKpH(AbsSpeedMpS) + 150.0f) / (2.0f * MpS.ToKpH(AbsSpeedMpS) + 150.0f));
                 }
-                else if (BrakeShoeType == BrakeShoeTypes.UserDefined)
+                else if (BrakeShoeType == BrakeShoeTypes.User_Defined)
                 {
                     frictionfraction = BrakeShoeFrictionFactor[MpS.ToKpH(AbsSpeedMpS)];
                 }
