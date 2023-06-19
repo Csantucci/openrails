@@ -258,6 +258,8 @@ namespace ORTS.Settings
         public bool HotStart { get; set; }
         [Default(false)]
         public bool NoDieselEngineStart { get; set; }
+        [Default(true)]
+        public bool ElectricHotStart { get; set; }
 
         // Data logger settings:
         [Default("comma")]

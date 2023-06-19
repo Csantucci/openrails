@@ -207,6 +207,7 @@ namespace ORTS
             checkForcedRedAtStationStops.Checked = !Settings.NoForcedRedAtStationStops;
             checkDoorsAITrains.Checked = Settings.OpenDoorsInAITrains;
             checkDieselEnginesStarted.Checked = !Settings.NoDieselEngineStart; // Inverted as "EngineStart" is better UI than "NoEngineStart"
+            checkElectricPowerConnected.Checked = Settings.ElectricHotStart;
 
             // Keyboard tab
             InitializeKeyboardSettings();
@@ -505,6 +506,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             Settings.NoForcedRedAtStationStops = !checkForcedRedAtStationStops.Checked;
             Settings.OpenDoorsInAITrains = checkDoorsAITrains.Checked;
             Settings.NoDieselEngineStart = !checkDieselEnginesStarted.Checked; // Inverted as "EngineStart" is better UI than "NoEngineStart"
+            Settings.ElectricHotStart = checkElectricPowerConnected.Checked;
 
             // Keyboard tab
             // These are edited live.
