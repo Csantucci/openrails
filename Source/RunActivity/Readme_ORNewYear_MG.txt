@@ -1,17 +1,15 @@
-﻿Open Rails, NewYear version README - Rev.142
-May 19th, 2023
+﻿Open Rails, NewYear version README - Rev.143
+June 20th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
 INSTALLATION
-- the requirements for installation of the official Open Rails version apply, with the precisions of next lines
-- XNA 3.1 Redistributable is not needed
-- you must have at least a Windows Vista computer. Windows XP is not supported
+- the requirements for installation of the official Open Rails version apply;
 - start openrails simply by clicking on Openrails.exe.
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-411, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-442, 
 plus some of the features already present in the Unstable release.
 
 
@@ -53,16 +51,16 @@ This version includes some features not (yet) available in the Open Rails testin
 - keyboard commands for Overcharge and Quick Release, by cesarBLG
 - allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008
 - enable modifying and compiling the .fx shader files, see http://www.elvastower.com/forums/index.php?/topic/36968-mgfxwhywhen-nov-2022what-does-a-user-do-now/page__view__findpost__p__295571
-- NEW: Animating trainset windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
+  - Additional parameters for Cruise Control, see https://blueprints.launchpad.net/or/+spec/additional-cruise-control-parameters (PR #839)
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
-  - merge updated PR#813 Refactored garbage generators, by pzgulyas
-  - Select track sound volume percent retained in .eng and .wag files (PR#823), see http://www.elvastower.com/forums/index.php?/topic/37055-external-sound-attenuation-in-internal-views/page__view__findpost__p__296364
   - Emergency dump valves (PR#829 by cesarBLG)
-  - NEW: Allow independent drive axles for locomotives (PR#818 by cesarBLG)
-  - NEW: Fix Cruise Control independent together with train brake (PR#832 by cesarBLG), see http://www.elvastower.com/forums/index.php?/topic/33841-cruise-control/page__view__findpost__p__296962
-  - NEW: Implement brake relay valve (PR#833 by cesarBLG), see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__view__findpost__p__297020
-  - NEW: Correct Brake Shoe Force Calculation (PR#835 by peternewell), see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__view__findpost__p__297184
+  - Implement brake relay valve (PR#833 by cesarBLG), see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__view__findpost__p__297020
+  - Animating locomotive windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/ (PR #841)
+  - NEW: animating carriage windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/page__view__findpost__p__298183 (PR #841)
+  - NEW: electric locomotive hot start, by cesarBLD (PR #830). see http://www.elvastower.com/forums/index.php?/topic/35301-menu-options/page__view__findpost__p__296766
+  - NEW: Bug fix for sanding max speed not working, by SteelFill (PR #840), see http://www.elvastower.com/forums/index.php?/topic/37178-ineffective-train-brakes/page__view__findpost__p__297807
+   
 
 
 
