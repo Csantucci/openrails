@@ -984,12 +984,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
         public void Initialize()
         {
-            if (!Simulator.Settings.NoDieselEngineStart && !Locomotive.gearSaved)
+            if (!Simulator.Settings.NoDieselEngineStart && !Locomotive.IsResume)
             {
                 RealRPM = IdleRPM;
                 State = DieselEngineState.Running;
             }
-            else if (Locomotive.gearSaved)
+            else if (Locomotive.IsResume)
             {
                 State = (DieselEngineState)Locomotive.dieselEngineRestoreState;
             }
