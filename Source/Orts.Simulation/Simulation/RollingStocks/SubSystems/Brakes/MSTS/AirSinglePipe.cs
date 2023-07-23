@@ -327,10 +327,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             CylPressurePSI = AutoCylPressurePSI * RelayValveRatio;
             AuxResPressurePSI = Math.Max(TwoPipes ? maxPressurePSI : maxPressurePSI - AutoCylPressurePSI / AuxCylVolumeRatio, BrakeLine1PressurePSI);
             if ((Car as MSTSWagon).EmergencyReservoirPresent)
-            {
                 EmergResPressurePSI = Math.Max(AuxResPressurePSI, maxPressurePSI);
-                if (EmergencyValveActuationRatePSIpS == 0) EmergencyValveActuationRatePSIpS = 15;
-            }
             TripleValveState = AutoCylPressurePSI < 1 ? ValveState.Release : ValveState.Lap;
             HoldingValve = ValveState.Release;
             HandbrakePercent = handbrakeOn & (Car as MSTSWagon).HandBrakePresent ? 100 : 0;
@@ -345,7 +342,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
         {
             // reducing size of Emergency Reservoir for short (fake) cars
             if (Car.Simulator.Settings.CorrectQuestionableBrakingParams && Car.CarLengthM <= 1)
-            EmergResVolumeM3 = Math.Min (0.02f, EmergResVolumeM3);
+                EmergResVolumeM3 = Math.Min (0.02f, EmergResVolumeM3);
 
             // Install a plain triple valve if no brake valve defined
             // Do not install it for tenders if not defined, to allow tenders with straight brake only
@@ -361,6 +358,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
 
             if (MaxTripleValveCylPressurePSI == 0) MaxTripleValveCylPressurePSI = MaxCylPressurePSI / RelayValveRatio;
             if (EngineRelayValveRatio == 0) EngineRelayValveRatio = RelayValveRatio;
+
+            if ((Car as MSTSWagon).EmergencyReservoirPresent && EmergencyValveActuationRatePSIpS == 0)
+                EmergencyValveActuationRatePSIpS = 15;
 
             if (EmergResVolumeM3 > 0 && EmergAuxVolumeRatio > 0 && BrakePipeVolumeM3 > 0)
                 AuxBrakeLineVolumeRatio = EmergResVolumeM3 / EmergAuxVolumeRatio / BrakePipeVolumeM3;
