@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.143
-June 20th, 2023
+﻿Open Rails, NewYear version README - Rev.144
+July 29th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-442, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-535, 
 plus some of the features already present in the Unstable release.
 
 
@@ -54,13 +54,10 @@ This version includes some features not (yet) available in the Open Rails testin
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   - Additional parameters for Cruise Control, see https://blueprints.launchpad.net/or/+spec/additional-cruise-control-parameters (PR #839)
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
-  - Emergency dump valves (PR#829 by cesarBLG)
-  - Implement brake relay valve (PR#833 by cesarBLG), see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__view__findpost__p__297020
-  - Animating locomotive windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/ (PR #841)
-  - NEW: animating carriage windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/page__view__findpost__p__298183 (PR #841)
-  - NEW: electric locomotive hot start, by cesarBLD (PR #830). see http://www.elvastower.com/forums/index.php?/topic/35301-menu-options/page__view__findpost__p__296766
-  - NEW: Bug fix for sanding max speed not working, by SteelFill (PR #840), see http://www.elvastower.com/forums/index.php?/topic/37178-ineffective-train-brakes/page__view__findpost__p__297807
-   
+  - Animating locomotive and carriage windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/ (PR #841)
+
+
+
 
 
 
