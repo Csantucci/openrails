@@ -93,7 +93,6 @@ namespace Orts.Simulation.RollingStocks
         public int currentGearIndexRestore = -1;
         public int currentnextGearRestore = -1;
         public bool gearSaved;
-        public bool IsResume;
         public int dieselEngineRestoreState;
 
         public float EngineRPM;
@@ -526,7 +525,6 @@ namespace Orts.Simulation.RollingStocks
             base.Save(outf);
             outf.Write(DieselLevelL);
             outf.Write(CurrentLocomotiveSteamHeatBoilerWaterCapacityL);
-            outf.Write(true);
             DieselEngines.Save(outf);
             ControllerFactory.Save(GearBoxController, outf);
         }
@@ -540,7 +538,6 @@ namespace Orts.Simulation.RollingStocks
             base.Restore(inf);
             DieselLevelL = inf.ReadSingle();
             CurrentLocomotiveSteamHeatBoilerWaterCapacityL = inf.ReadSingle();
-            IsResume = inf.ReadBoolean();
             DieselEngines.Restore(inf);
             ControllerFactory.Restore(GearBoxController, inf);
             
