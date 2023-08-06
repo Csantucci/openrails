@@ -1165,10 +1165,10 @@ namespace Orts.Simulation.RollingStocks
                     InitialCentreOfGravityM.X = stf.ReadFloat(STFReader.UNITS.Distance, null);
                     InitialCentreOfGravityM.Y = stf.ReadFloat(STFReader.UNITS.Distance, null);
                     InitialCentreOfGravityM.Z = stf.ReadFloat(STFReader.UNITS.Distance, null);
-                    if (Math.Abs(InitialCentreOfGravityM.Z) > 1)
+                    if (Math.Abs(InitialCentreOfGravityM.Z) > 5)
                     {
-                        STFException.TraceWarning(stf, string.Format("Ignored CentreOfGravity Z value {0} outside range -1 to +1", InitialCentreOfGravityM.Z));
-                        InitialCentreOfGravityM.Z = 0;
+                        STFException.TraceWarning(stf, string.Format("Clamped CentreOfGravity Z value {0} outside range -5 to +5", InitialCentreOfGravityM.Z));
+                        InitialCentreOfGravityM.Z = MathHelper.Clamp(InitialCentreOfGravityM.Z, -5, 5);
                     }
                     stf.SkipRestOfBlock();
                     break;
