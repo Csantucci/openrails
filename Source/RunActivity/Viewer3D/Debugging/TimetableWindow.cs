@@ -15,10 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Open Rails.  If not, see <http://www.gnu.org/licenses/>.
 
-using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Orts.Formats.Msts;
 using Orts.MultiPlayer;
@@ -27,10 +23,53 @@ using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.Signalling;
 using ORTS.Common;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
 using Color = System.Drawing.Color;
 
 namespace Orts.Viewer3D.Debugging
 {
+    // Color theme
+    public class ExTheme
+    {
+        public System.Drawing.Color Background;
+        public System.Drawing.Color Siding_Text;
+        public System.Drawing.Color Platform_Text;
+        public System.Drawing.Color UI_Background;
+        public System.Drawing.Color UI_Titles;
+        public System.Drawing.Color UI_Labels;
+        public void setThemeColoe(bool color_select)
+        {
+            if (!color_select)
+            {   // Dark Color Theme
+                Background = System.Drawing.Color.FromArgb(33, 32, 32);
+                Siding_Text = System.Drawing.Color.FromArgb(140, 140, 140);
+                Platform_Text = System.Drawing.Color.FromArgb(190, 190, 190);
+                UI_Background = System.Drawing.Color.FromArgb(43, 42, 42);
+                UI_Titles = System.Drawing.Color.FromArgb(224, 224, 224);
+                UI_Labels = System.Drawing.Color.FromArgb(168, 168, 168);
+            }
+            else
+            {   // White Color Theme
+                Background = System.Drawing.Color.FromArgb(233, 232, 232);
+                Siding_Text = System.Drawing.Color.FromArgb(40, 40, 40);
+                Platform_Text = System.Drawing.Color.FromArgb(90, 90, 90);
+                UI_Background = System.Drawing.Color.FromArgb(243, 242, 242);
+                UI_Titles = System.Drawing.Color.FromArgb(24, 24, 24);
+                UI_Labels = System.Drawing.Color.FromArgb(68, 68, 68);
+            }
+
+        }
+        public ExTheme(bool Color_Select)
+        {
+            setThemeColoe(Color_Select);
+        }
+
+    }
+
     public class TimetableWindow
     {
         public DispatchViewer F { get; set; } // Shortest possible abbreviation so code is easier to read.
@@ -46,8 +85,8 @@ namespace Orts.Viewer3D.Debugging
             if (F.tWindow.SelectedIndex == 1) // 0 for Dispatch Window, 1 for Timetable Window
             {
                 // Default is All Trains, unless in Timetable mode
-                F.rbShowActiveTrainLabels.Checked = F.simulator.TimetableMode;
-                F.rbShowAllTrainLabels.Checked = !(F.rbShowActiveTrainLabels.Checked);
+                F.uiShowActiveTrainLabels.Checked = F.simulator.TimetableMode;
+                F.uiShowAllTrainLabels.Checked = !(F.uiShowActiveTrainLabels.Checked);
 
                 ShowTimetableControls(true);
                 ShowDispatchControls(false);
@@ -82,9 +121,9 @@ namespace Orts.Viewer3D.Debugging
             F.rmvButton.Visible = multiPlayer;
 
             if (multiPlayer)
-            {
+            {   // AnchorPoint label add instead of using res label
                 F.chkShowAvatars.Checked = Program.Simulator.Settings.ShowAvatar;
-                F.pbCanvas.Location = new System.Drawing.Point(F.pbCanvas.Location.X, F.label1.Location.Y + 18);
+                F.pbCanvas.Location = new System.Drawing.Point(F.pbCanvas.Location.X, F.AnchorPoint.Location.Y + 18);
                 F.refreshButton.Text = "View Self";
             }
 
@@ -93,68 +132,129 @@ namespace Orts.Viewer3D.Debugging
             F.chkPickSwitches.Visible = dispatchView;
             F.btnSeeInGame.Visible = dispatchView;
             F.btnFollow.Visible = dispatchView;
-            F.windowSizeUpDown.Visible = dispatchView;
-            F.label1.Visible = dispatchView;
-            F.resLabel.Visible = dispatchView;
+            //F.windowSizeUpDown.Visible = dispatchView;
+            F.AnchorPoint.Visible = dispatchView;
+            //F.resLabel.Visible = dispatchView;
             F.refreshButton.Visible = dispatchView;
+            //F.lblSimulationTimeText.Visible = dispatchView;
+            //F.lblSimulationTime.Visible = dispatchView; 
         }
 
         private void SetDispatchMedia()
         {
-            F.trainFont = new Font("Arial", 14, FontStyle.Bold);
-            F.sidingFont = new Font("Arial", 12, FontStyle.Bold);
+            F.trainFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
+            F.sidingFont = new Font("Segoe UI Regular", 10, FontStyle.Regular);    
             F.trainBrush = new SolidBrush(Color.Red);
-            F.sidingBrush = new SolidBrush(Color.Blue);
-            F.pbCanvas.BackColor = Color.White;
+            F.sidingBrush = new SolidBrush( F.Extheme.Platform_Text);
+            F.pbCanvas.BackColor = F.Extheme.Background;
+            F.btnSeeInGame.ForeColor = F.Extheme.UI_Labels;
+            F.btnSeeInGame.BackColor = F.Extheme.Background;
+            F.btnAssist.ForeColor = F.Extheme.UI_Labels;
+            F.btnAssist.BackColor = F.Extheme.Background;
+            F.btnNormal.ForeColor = F.Extheme.UI_Labels;
+            F.refreshButton.ForeColor = F.Extheme.UI_Labels;
+            F.refreshButton.BackColor = F.Extheme.Background;
+            F.rmvButton.ForeColor = F.Extheme.UI_Labels;
+            F.btnFollow.ForeColor = F.Extheme.UI_Labels;
+            F.btnFollow.BackColor = F.Extheme.Background; 
+            F.chkAllowNew.ForeColor = F.Extheme.UI_Titles;
+            F.pbCanvas.BackColor = F.Extheme.Background;
+            F.BackColor = F.Extheme.UI_Background;
+            F.chkDrawPath.ForeColor = F.Extheme.UI_Labels;
+            F.chkPickSignals.ForeColor = F.Extheme.UI_Labels;
+            F.chkPickSwitches.ForeColor = F.Extheme.UI_Labels;
+            F.chkAllowNew.ForeColor= F.Extheme.UI_Labels;
+            F.chkShowAvatars.ForeColor = F.Extheme.UI_Labels;
+            F.chkAllowUserSwitch.ForeColor = F.Extheme.UI_Labels;
+            F.chkPreferGreen.ForeColor = F.Extheme.UI_Labels;
+            F.chkBoxPenalty.ForeColor = F.Extheme.UI_Labels;
+            F.label1.ForeColor = F.Extheme.UI_Labels;
+            F.resLabel.ForeColor = F.Extheme.UI_Labels;
+            F.windowSizeUpDown.BackColor = F.Extheme.UI_Background;
+            F.windowSizeUpDown.ForeColor = F.Extheme.UI_Titles;
+            F.nudDaylightOffsetHrs.BackColor = F.Extheme.UI_Background;
+            F.nudDaylightOffsetHrs.ForeColor = F.Extheme.UI_Labels;
+            F.uibThemeChance.ForeColor = F.Extheme.UI_Labels;
+            F.uibThemeChance.BackColor = F.Extheme.UI_Background;
+            F.lblSimulationTimeText.ForeColor = F.Extheme.UI_Labels;
+            F.lblSimulationTime.ForeColor = F.Extheme.UI_Labels;
         }
 
         private void ShowTimetableControls(bool timetableView)
         {
-            F.lblSimulationTimeText.Visible = timetableView;
-            F.lblSimulationTime.Visible = timetableView;
-            F.lblShow.Visible = timetableView;
-            F.cbShowPlatforms.Visible = timetableView;
-            F.cbShowPlatformLabels.Visible = timetableView;
-            F.cbShowSidings.Visible = timetableView;
-            F.cbShowSwitches.Visible = timetableView;
-            F.cbShowSignals.Visible = timetableView;
-            F.cbShowSignalState.Visible = timetableView;
-            F.cbShowTrainLabels.Visible = timetableView;
-            F.cbShowTrainState.Visible = timetableView;
-            F.bTrainKey.Visible = timetableView;
-            F.gbTrainLabels.Visible = timetableView;
-            F.rbShowActiveTrainLabels.Visible = timetableView;
-            F.rbShowAllTrainLabels.Visible = timetableView;
-            F.lblDayLightOffsetHrs.Visible = timetableView;
+            F.uiRouteLabel.Visible = timetableView;
+            F.uiShowPlatforms.Visible = timetableView;
+            F.uiShowPlatformLabels.Visible = timetableView;
+            F.uiShowSidings.Visible = timetableView;
+            F.uiShowSwitches.Visible = timetableView;
+            F.uiShowSignals.Visible = timetableView;
+            F.uiShowSignalState.Visible = timetableView;
+            F.uiShowTrainLabels.Visible = timetableView;
+            F.uiShowTrainState.Visible = timetableView;
+            F.uibTrainKey.Visible = timetableView;
+            F.uiShowActiveTrainLabels.Visible = timetableView;
+            F.uiShowAllTrainLabels.Visible = timetableView;
+            F.uilblDayLightOffsetHrs.Visible = timetableView;
             F.nudDaylightOffsetHrs.Visible = timetableView;
-            F.bBackgroundColor.Visible = timetableView;
+            F.uiRouteLabel.Visible = timetableView;
+            F.uiTrackLabel.Visible = timetableView;
+            F.uiTrainLabel.Visible = timetableView;
         }
 
         private void SetTimetableMedia()
         {
+            
             F.Name = "Timetable Window";
             F.trainFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
-            F.sidingFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
-            F.PlatformFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
-            F.SignalFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
+            F.sidingFont = new Font("Segoe UI Regular", 10, FontStyle.Regular);
+            F.PlatformFont = new Font("Segoe UI SemiBold", 10, FontStyle.Regular);
+            F.SignalFont = new Font("Segoe UI Semibold", 8, FontStyle.Regular);
             F.trainBrush = new SolidBrush(Color.Red);
             F.InactiveTrainBrush = new SolidBrush(Color.DarkRed);
-            F.sidingBrush = new SolidBrush(Color.Blue);
-            F.PlatformBrush = new SolidBrush(Color.DarkBlue);
+            F.sidingBrush = new SolidBrush( F.Extheme.Siding_Text ); 
+            F.PlatformBrush = new SolidBrush( F.Extheme.Platform_Text); 
             F.SignalBrush = new SolidBrush(Color.DarkRed);
-            F.pbCanvas.BackColor = Color.FromArgb(250, 240, 230);
+            F.pbCanvas.BackColor = F.Extheme.Background;
+            F.uiRouteLabel.ForeColor = F.Extheme.UI_Titles;
+            F.uiTrackLabel.ForeColor = F.Extheme.UI_Titles;
+            F.uiTrainLabel.ForeColor = F.Extheme.UI_Titles;
+            F.BackColor = F.Extheme.UI_Background;
+            F.uiShowPlatforms.ForeColor = F.Extheme.UI_Labels;
+            F.uiShowSidings.ForeColor = F.Extheme.UI_Labels;
+            F.uiShowPlatformLabels.ForeColor = F.Extheme.UI_Labels;
+            F.uiShowSwitches.ForeColor = F.Extheme.UI_Labels;;
+            F.uiShowSignals.ForeColor = F.Extheme.UI_Labels;
+            F.uiShowSignalState.ForeColor = F.Extheme.UI_Labels; 
+            F.uiShowTrainLabels.ForeColor = F.Extheme.UI_Labels;
+            F.uiShowTrainState.ForeColor = F.Extheme.UI_Labels; 
+            F.uibTrainKey.ForeColor = F.Extheme.UI_Labels;
+            F.uibTrainKey.BackColor = F.Extheme.Background;
+            F.windowSizeUpDown.BackColor = F.Extheme.UI_Background;
+            F.windowSizeUpDown.ForeColor = F.Extheme.UI_Titles;
+            F.uiShowAllTrainLabels.ForeColor = F.Extheme.UI_Labels;
+            F.uiShowAllTrainLabels.ForeColor = F.Extheme.UI_Labels;
+            F.uiShowActiveTrainLabels.ForeColor = F.Extheme.UI_Labels;
+            F.uilblDayLightOffsetHrs.ForeColor = F.Extheme.UI_Labels;
+            F.uibThemeChance.ForeColor = F.Extheme.UI_Labels;
+            F.uibThemeChance.BackColor = F.Extheme.UI_Background;
+            F.label1.ForeColor = F.Extheme.UI_Labels;
+            F.resLabel.ForeColor = F.Extheme.UI_Labels;
+            F.nudDaylightOffsetHrs.BackColor = F.Extheme.UI_Background;
+            F.nudDaylightOffsetHrs.ForeColor = F.Extheme.UI_Labels;
+            F.lblSimulationTimeText.ForeColor = F.Extheme.UI_Labels;
+            F.lblSimulationTime.ForeColor = F.Extheme.UI_Labels;
         }
 
         private void AdjustControlLocations()
         {
             if (F.Height < 600 || F.Width < 800) return;
 
-            if (F.oldHeight != F.Height || F.oldWidth != F.Width) //use the label "Res" as anchor point to determine the picture size
+            if (F.oldHeight != F.Height || F.oldWidth != F.Width) //use the lable AnchorPoint as anchor point to determine the picture size
             {
                 F.oldWidth = F.Width; F.oldHeight = F.Height;
 
                 F.pbCanvas.Top = 50;
-                F.pbCanvas.Width = F.label1.Left - 25;                  // 25 pixels found by trial and error
+                F.pbCanvas.Width = F.AnchorPoint.Left - 25;                  // 25 pixels found by trial and error
                 F.pbCanvas.Height = F.Height - F.pbCanvas.Top - 45;  // 45 pixels found by trial and error
 
                 if (F.pbCanvas.Image != null)
@@ -390,7 +490,7 @@ namespace Orts.Viewer3D.Debugging
 
         private void DrawPlatforms(Graphics g, int penWidth)
         {
-            if (F.cbShowPlatforms.Checked)
+            if (F.uiShowPlatforms.Checked)
             {
                 // Platforms can be obtrusive, so draw in solid blue only when zoomed in and fade them as we zoom out
                 switch (penWidth)
@@ -462,7 +562,7 @@ namespace Orts.Viewer3D.Debugging
 
         private void ShowSwitches(Graphics g, float width)
         {
-            if (F.cbShowSwitches.Checked)
+            if (F.uiShowSwitches.Checked)
                 for (var i = 0; i < F.switches.Count; i++)
                 {
                     SwitchWidget sw = F.switches[i];
@@ -486,7 +586,7 @@ namespace Orts.Viewer3D.Debugging
 
         private void ShowSignals(Graphics g, PointF scaledB, float width)
         {
-            if (F.cbShowSignals.Checked)
+            if (F.uiShowSignals.Checked)
                 foreach (var s in F.signals)
                 {
                     if (float.IsNaN(s.Location.X) || float.IsNaN(s.Location.Y))
@@ -529,7 +629,7 @@ namespace Orts.Viewer3D.Debugging
 
         private void ShowSignalState(Graphics g, PointF scaledItem, SignalWidget sw)
         {
-            if (F.cbShowSignalState.Checked)
+            if (F.uiShowSignalState.Checked)
             {
                 var item = sw.Item as SignalItem;
                 var trainNumber = sw.Signal?.enabledTrain?.Train?.Number;
@@ -551,7 +651,7 @@ namespace Orts.Viewer3D.Debugging
 
         private void ShowSidingLabels(Graphics g)
         {
-            if (F.cbShowSidings.CheckState == System.Windows.Forms.CheckState.Checked)
+            if (F.uiShowSidings.CheckState == System.Windows.Forms.CheckState.Checked)
                 foreach (var s in F.sidings)
                 {
                     var scaledItem = new PointF();
@@ -567,7 +667,7 @@ namespace Orts.Viewer3D.Debugging
         {
             var platformMarginPxX = 5;
 
-            if (F.cbShowPlatformLabels.CheckState == System.Windows.Forms.CheckState.Checked)
+            if (F.uiShowPlatformLabels.CheckState == System.Windows.Forms.CheckState.Checked)
                 foreach (var p in F.platforms)
                 {
                     var scaledItem = new PointF();
@@ -669,7 +769,7 @@ namespace Orts.Viewer3D.Debugging
                 var scaledTrain = new PointF();
                 scaledTrain.X = (worldPos.TileX * 2048 - F.subX + worldPos.Location.X) * F.xScale;
                 scaledTrain.Y = -25 + F.pbCanvas.Height - (worldPos.TileZ * 2048 - F.subY + worldPos.Location.Z) * F.yScale;
-                if (F.cbShowTrainLabels.Checked)
+                if (F.uiShowTrainLabels.Checked)
                     DrawTrainLabels(g, train, trainName, locoCar, scaledTrain);
             }
         }
@@ -797,7 +897,7 @@ namespace Orts.Viewer3D.Debugging
             WorldPosition worldPos = firstCar.WorldPosition;
             scaledTrain.X = (worldPos.TileX * 2048 - F.subX + worldPos.Location.X) * F.xScale;
             scaledTrain.Y = -25 + F.pbCanvas.Height - (worldPos.TileZ * 2048 - F.subY + worldPos.Location.Z) * F.yScale;
-            if (F.rbShowActiveTrainLabels.Checked)
+            if (F.uiShowActiveTrainLabels.Checked)
             {
                 if (t is Simulation.AIs.AITrain && IsActiveTrain(t as Simulation.AIs.AITrain))
                     ShowTrainNameAndState(g, scaledTrain, t, trainName);
@@ -831,7 +931,7 @@ namespace Orts.Viewer3D.Debugging
 
                     if (IsActiveTrain(tTTrain))
                     {
-                        if (F.cbShowTrainState.Checked)
+                        if (F.uiShowTrainState.Checked)
                         {
                             // 4:AI mode, 6:Mode, 7:Auth, 9:Signal, 12:Path
                             var status = tTTrain.GetStatus(F.Viewer.MilepostUnitsMetric);
