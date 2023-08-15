@@ -2096,29 +2096,46 @@ namespace Orts.Simulation.RollingStocks
                                 // Wheelbase = 1.25 x (Loco Drive Axles - 1.0) x Drive Wheel diameter
 
                                 RigidWheelBaseM = 1.25f * (LocoNumDrvAxles - 1.0f) * (DriverWheelRadiusM * 2.0f);
- 
+
                             }
-
                         }
-
-
                     }
 
-                    // Curve Resistance = (Vehicle mass x Coeff Friction) * (Track Gauge + Vehicle Fixed Wheelbase) / (2 * curve radius)
+                    // References:
+
+                    // i) The modern locomotive by  Clarence Edgar Allen – 1912 – pg 82 - https://archive.org/details/modernlocomotive00allerich
+
+                    //  ii)	Resistance to Traffic of Railway Rolling Stock by P.N.Astakhov – Moscow 1966 – pg 112
+                    //  http://scbist.com/scb/uploaded/1_astahov_p_n_soprotivlenie_dvizheniyu_zheleznodorozhnogo_podv.pdf
+
+                    // The CurveForce is a combination of these two components such that resistance will vary with stock characteristics and speed.
+                    // These formulas are a mix of imperial and metric expressions so these will be retained and converted to a common UoM in Newtons once calculations are complete.
+
+                    // Base Curve Resistance (from refernce i)) = (Vehicle mass x Coeff Friction) * (Track Gauge + Vehicle Fixed Wheelbase) / (2 * curve radius)
                     // Vehicle Fixed Wheel base is the distance between the wheels, ie bogie or fixed wheels
 
-                    CurveForceN = MassKG * Train.WagonCoefficientFriction * (TrackGaugeM + RigidWheelBaseM) / (2.0f * CurrentCurveRadius);
-                    float CurveResistanceSpeedFactor = Math.Abs((MaxCurveEqualLoadSpeedMps - AbsSpeedMpS) / MaxCurveEqualLoadSpeedMps) * StartCurveResistanceFactor;
-                    CurveForceN *= CurveResistanceSpeedFactor * CurveResistanceZeroSpeedFactor;
-                    CurveForceN *= GravitationalAccelerationMpS2; // to convert to Newtons
+                    var rBaseWagonN = N.FromLbf(Kg.ToLb(MassKG) * Train.WagonCoefficientFriction * (Me.ToFt(TrackGaugeM) + Me.ToFt(RigidWheelBaseM)) / (2.0f * Me.ToFt(CurrentCurveRadius)));
+
+                    //                if (CurrentCurveRadius > 0)
+                    //                    Trace.TraceInformation("Curve Friction - CarID {0}  Friction {1} Weight {2} WagonFriction {3} Gauge {4} WheelBase {5} CurveRadius {6}", CarID, rBaseWagonN, Kg.ToLb(MassKG), Train.WagonCoefficientFriction, Me.ToFt(TrackGaugeM), Me.ToFt(RigidWheelBaseM), Me.ToFt(CurrentCurveRadius));
+
+                    // Speed Curve Resistance (from reference ii) - second term only) = ((Speed^2 / Curve Radius) - (Superelevation / Track Gauge) * Gravitational acceleration) * Constant
+
+                    var speedConstant = 1.5f;
+                    var MToMM = 1000;
+                    var rspeedKgpTonne = speedConstant * Math.Abs((SpeedMpS * SpeedMpS / CurrentCurveRadius) - ((MToMM * SuperelevationM / MToMM * TrackGaugeM) * GravitationalAccelerationMpS2));
+                    var rSpeedWagonN = GravitationalAccelerationMpS2 * (Kg.ToTonne(MassKG) * rspeedKgpTonne);
+
+                    //                if (CurrentCurveRadius > 0)
+                    //                    Trace.TraceInformation("Curve Friction Speed - CarID {0}  Weight {1} WagonFriction {2} Gauge {3} CurveRadius {4} SuperElevation {5} Gauge {6} rspeedKgpTonne {7} rSpeedWagonN {8} rBaseWagonN {9}", CarID, Kg.ToTonne(MassKG), Train.WagonCoefficientFriction, TrackGaugeM, CurrentCurveRadius, SuperelevationM, TrackGaugeM, rspeedKgpTonne, rSpeedWagonN, rBaseWagonN);
+
+
+                    CurveForceN = rBaseWagonN + rSpeedWagonN;
                 }
                 else
                 {
                     CurveForceN = 0f;
                 }
-                //CurveForceNFiltered = CurveForceFilter.Filter(CurveForceN, elapsedClockSeconds);
-                CurveForceFilter.Update(elapsedClockSeconds, CurveForceN);
-                CurveForceNFiltered = CurveForceFilter.SmoothedValue;
             }
         }
 
