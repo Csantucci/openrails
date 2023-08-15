@@ -196,6 +196,7 @@ namespace Orts.Formats.Msts
         ORTS_BAILOFF,
         ORTS_QUICKRELEASE,
         ORTS_OVERCHARGE,
+        ORTS_AIR_FLOW_METER,
         ORTS_BATTERY,
         ORTS_POWERKEY,
         ORTS_BATTERY_SWITCH_COMMAND_SWITCH,
@@ -344,7 +345,12 @@ namespace Orts.Formats.Msts
         FEET,
         YARDS,
 
-        PERCENT
+        PERCENT,
+
+        CUBIC_FT_MIN,
+        LITRES_S,
+        LITERS_S,
+        CUBIC_M_S
     }
 
     public enum DiscreteStates
