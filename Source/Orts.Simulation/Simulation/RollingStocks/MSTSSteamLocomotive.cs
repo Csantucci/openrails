@@ -5197,19 +5197,8 @@ namespace Orts.Simulation.RollingStocks
                     float connectRodInertiaAngleFactor = 0;
 
                     // Calculate the "angle variation factors" for the Inertia
-                    // Account for the position of the crosshead position. In other words it depends upon whether the Rods and Reciporating gear is above or below the axle.
-                    if (crankAngleRad > 0 && crankAngleRad < Math.PI)
-                    {
-                        // forward stroke
-                        reciprocatingInertiaAngleFactor = (cos + ((CrankRadiusFt / ConnectRodLengthFt) * (float)Math.Cos(2 * crankAngleRad)));
-                        connectRodInertiaAngleFactor = (cos + ((CrankRadiusFt * RodCoGFt) / (ConnectRodLengthFt * ConnectRodLengthFt)) * (float)Math.Cos(2 * crankAngleRad));
-                    }
-                    else
-                    {   
-                        // reverse stroke
-                        reciprocatingInertiaAngleFactor = (cos - ((CrankRadiusFt / ConnectRodLengthFt) * (float)Math.Cos(2 * crankAngleRad)));
-                        connectRodInertiaAngleFactor = (cos - ((CrankRadiusFt * RodCoGFt) / (ConnectRodLengthFt * ConnectRodLengthFt)) * (float)Math.Cos(2 * crankAngleRad));
-                    }
+                    reciprocatingInertiaAngleFactor = (cos + ((CrankRadiusFt / ConnectRodLengthFt) * (float)Math.Cos(2 * crankAngleRad)));
+                    connectRodInertiaAngleFactor = (cos + ((CrankRadiusFt * RodCoGFt) / (ConnectRodLengthFt * ConnectRodLengthFt)) * (float)Math.Cos(2 * crankAngleRad));
 
                     // Calculate the speed factor to allow for variation in speed
                     // Adjust the above factor to allow for the speed of rotation on the parts - based upon Eq 8 (pg 21)
@@ -5247,6 +5236,13 @@ namespace Orts.Simulation.RollingStocks
                     // To convert the force at the crank to the force at wheel tread = Crank Force * Cylinder Stroke / Diameter of Drive Wheel (inches) - internal friction
                     // should be deducted from this as well.
                     float tangentialWheelTreadForceLbf = tangentialCrankWheelForceLbf * Me.ToIn(CylinderStrokeM) / Me.ToIn(DrvWheelDiaM);
+
+                    if (throttle <= 0)
+                    {
+                        tangentialWheelTreadForceLbf = 0; // force wheel force to zero if throttle - problem seems to only happen at higher speeds,
+                                                          // so could be a decrease in sampling points as the wheels rotate faster.
+                    }
+
                     DisplayTangentialWheelTreadForceLbf += tangentialWheelTreadForceLbf;
                     TractiveForceN += N.FromLbf(Math.Max(tangentialWheelTreadForceLbf, -1000));
 
