@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.144
-July 29th, 2023
+﻿Open Rails, NewYear version README - Rev.145
+August 15th, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -51,10 +51,21 @@ This version includes some features not (yet) available in the Open Rails testin
 - keyboard commands for Overcharge and Quick Release, by cesarBLG
 - allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008
 - enable modifying and compiling the .fx shader files, see http://www.elvastower.com/forums/index.php?/topic/36968-mgfxwhywhen-nov-2022what-does-a-user-do-now/page__view__findpost__p__295571
+- accept ORTSAirBrakeMainResVolume as .eng files token, used in some TrainSimulations routes (see https://www.trainsim.com/forums/forum/open-rails/open-rails-discussion/2284903-shasta-route-available?p=2285365#post2285365)
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   - Additional parameters for Cruise Control, see https://blueprints.launchpad.net/or/+spec/additional-cruise-control-parameters (PR #839)
   - Unify Raildriver code implementation, by cesarBLG; includes management of external devices different from Raildriver, plus two minor RD  code fixes (PR #757)
   - Animating locomotive and carriage windows, see http://www.elvastower.com/forums/index.php?/topic/37120-opening-and-closing-trainset-windows/ (PR #841)
+  - NEW: Fix wheel animation problems, by cesarBLG, see http://www.elvastower.com/forums/index.php?/topic/37367-weird-graphics-problem/ (PR #858)
+  - NEW: Adding air flow meters, by SteelFill, see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__st__570__p__299318#entry299318 (PR #857); air flow indication now available also in DPU displays
+  - NEW: Fix steam adhesion bug, by Peter Newell, see http://www.elvastower.com/forums/index.php?/topic/37327-issues-with-advanced-adhesion/ (PR #859)
+  - NEW: Fix curve friction calculation, by Peter Newell, see http://www.elvastower.com/forums/index.php?/topic/37372-excessive-curve-resistance-on-curves-less-than-100m-radius/ (PR #861)
+  - NEW: Fix engine air leak problem, by cesarBLG, see http://www.elvastower.com/forums/index.php?/topic/37388-acela-hhp-8-engineering/page__p__299632#entry299632 (PR #862)
+  - NEW: Changes in Car Operaions Menu re braking, by sweiland, see http://www.elvastower.com/forums/index.php?/topic/37062-proposal-f9-train-operations/page__p__296373__hl__%2Btrain+%2Boperations__fromsearch__1#entry296373 (PR #860)
+- NEW: Provide more tolerance for CentreOfGravity, see http://www.elvastower.com/forums/index.php?/topic/37366-centreofgravity/
+- NEW: Map View dark modded, by ExRail, see http://www.elvastower.com/forums/index.php?/topic/37362-map-view-dark-moddded/
+
+
 
 
 
@@ -86,6 +97,9 @@ This unofficial version couldn't have been created without following contributio
 - césarbl
 - Paolo
 - Weter
+- sweiland
+- SteelFill
+- ExRail
 - Carlo Santucci
 
 - all those who contributed with ideas and provided contents for testing and pointed to malfunctions.
