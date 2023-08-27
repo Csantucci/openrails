@@ -675,7 +675,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                 }
                 if (BrakeLine1PressurePSI - dpPipe < 0)
                 {
+                    // Prevent pipe pressure from going negative, also reset quick service to prevent runaway condition
                     dpPipe = BrakeLine1PressurePSI;
+                    QuickServiceActive = false;
                 }
 
                 if (TripleValveState != ValveState.Emergency && BrakeLine1PressurePSI < AuxResPressurePSI + 1)
@@ -699,7 +701,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                 AutoCylPressurePSI += dp;
                 BrakeLine1PressurePSI -= dpPipe;
 
-                if (QuickServiceActive && AutoCylPressurePSI > QuickServiceLimitPSI) // Reset quick service if brake cylinder is above limiting valve setting
+                // Reset quick service if brake cylinder is above limiting valve setting
+                // Also reset quick service if cylinders manage to equalize to prevent runaway condition
+                if (QuickServiceActive && (AutoCylPressurePSI > QuickServiceLimitPSI || AutoCylPressurePSI >= AuxResPressurePSI)) 
                     QuickServiceActive = false;
 
                 if (TripleValveState == ValveState.Emergency)
@@ -798,9 +802,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             // Manage emergency res charging
             if ((Car as MSTSWagon).EmergencyReservoirPresent)
             {
-                if (TripleValveState == ValveState.Release && EmergResPressurePSI > BrakeLine1PressurePSI && AutoCylPressurePSI > 5)
+                if (TripleValveState == ValveState.Release && EmergResPressurePSI > BrakeLine1PressurePSI)
                 {
-                    if (EmergResQuickRelease) // Quick release: Emergency res charges brake pipe during release
+                    if (EmergResQuickRelease && AutoCylPressurePSI > 5) // Quick release: Emergency res charges brake pipe during release
                     {
                         float dp = elapsedClockSeconds * EmergResChargingRatePSIpS;
                         if (EmergResPressurePSI - dp < BrakeLine1PressurePSI + dp * EmergBrakeLineVolumeRatio)
@@ -808,13 +812,15 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                         EmergResPressurePSI -= dp;
                         BrakeLine1PressurePSI += dp * EmergBrakeLineVolumeRatio;
                     }
-                    else // Quick recharge: Emergency res air used to recharge aux res on older control valves
+                    else if (!EmergResQuickRelease) // Quick recharge: Emergency res air used to recharge aux res on older control valves
                     {
                         float dp = elapsedClockSeconds * MaxAuxilaryChargingRatePSIpS;
                         if (AuxResPressurePSI + dp > EmergResPressurePSI - dp / EmergAuxVolumeRatio)
                             dp = (EmergResPressurePSI - AuxResPressurePSI) * EmergAuxVolumeRatio / (1 + EmergAuxVolumeRatio);
                         if (BrakeLine1PressurePSI < AuxResPressurePSI + dp)
                             dp = (BrakeLine1PressurePSI - AuxResPressurePSI);
+                        if (dp < 0)
+                            dp = 0;
                         AuxResPressurePSI += dp;
                         EmergResPressurePSI -= dp / EmergAuxVolumeRatio;
                     }
