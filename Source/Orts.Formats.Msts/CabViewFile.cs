@@ -333,6 +333,7 @@ namespace Orts.Formats.Msts
         KILO_LBS,
         METRES_PER_SEC,
         LITRES,
+        LITERS,
         GALLONS,
         INCHES_OF_MERCURY,
         MILI_AMPS,
@@ -348,6 +349,8 @@ namespace Orts.Formats.Msts
         PERCENT,
 
         CUBIC_FT_MIN,
+        LITRES_MIN,
+        LITERS_MIN,
         LITRES_S,
         LITERS_S,
         CUBIC_M_S
