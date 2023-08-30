@@ -2136,6 +2136,9 @@ namespace Orts.Simulation.RollingStocks
                 {
                     CurveForceN = 0f;
                 }
+            //CurveForceNFiltered = CurveForceFilter.Filter(CurveForceN, elapsedClockSeconds);
+            CurveForceFilter.Update(elapsedClockSeconds, CurveForceN);
+            CurveForceNFiltered = CurveForceFilter.SmoothedValue;
             }
         }
 
