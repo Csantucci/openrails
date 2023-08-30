@@ -1620,7 +1620,7 @@ namespace Orts.Viewer3D.Popups
                     FormatStrings.FormatVeryShortDistanceDisplay(car.CouplerSlackM, car.IsMetric),
                     FormatStrings.FormatLargeMass(car.MassKG, car.IsMetric, car.IsUK),
                     -car.CurrentElevationPercent,
-                    FormatStrings.FormatDistance(car.CurrentCurveRadius, car.IsMetric),
+                    FormatStrings.FormatDistance(car.CurrentCurveRadiusM, car.IsMetric),
                     car.HuDBrakeShoeFriction * 100.0f,//15
                     (car.HUDBrakeSkid ? Viewer.Catalog.GetString("Yes") : Viewer.Catalog.GetString("No")),
                     FormatStrings.FormatTemperature(car.WheelBearingTemperatureDegC, car.IsMetric, false) + " " + car.DisplayWheelBearingTemperatureStatus,
