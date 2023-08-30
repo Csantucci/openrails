@@ -184,6 +184,8 @@ namespace Orts.Viewer3D.Debugging
                         variable1.Text = Variable1.ToString("0.#%");
                         variable2.Text = Variable2.ToString("0.#%");
                         variable3.Text = Variable3.ToString("0.#%");
+                        curveforce.Text = selectedSoundSource.Car.CurveForceNFiltered.ToString("F0");
+                        brakecyl.Text = selectedSoundSource.Car.BrakeSystem.GetCylPressurePSI().ToString("F0");
                     }
                     else
                     {
@@ -191,6 +193,8 @@ namespace Orts.Viewer3D.Debugging
                         variable1.Text = "-";
                         variable2.Text = "-";
                         variable3.Text = "-";
+                        curveforce.Text = "-";
+                        brakecyl.Text = "-";
                     }
 
                     float gain;
@@ -204,6 +208,8 @@ namespace Orts.Viewer3D.Debugging
                     variable1.Text = "-";
                     variable2.Text = "-";
                     variable3.Text = "-";
+                    curveforce.Text = "-";
+                    brakecyl.Text = "-";
                     smsVolume.Text = "-";
                     activeSoundList.SelectedNode = null;
                     inactiveSoundList.SelectedNode = null;
