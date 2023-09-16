@@ -2942,10 +2942,9 @@ namespace Orts.Viewer3D.RollingStock
                             index = PercentToIndex((CycleTimeS - CumulativeTime) / halfCycleS);
                     }
                     break;
-                    //TODO
                 case CABViewControlTypes.ORTS_2DEXTERNALLEFTWINDOW:
                 case CABViewControlTypes.ORTS_2DEXTERNALRIGHTWINDOW:
-                    var windowIndex = Locomotive.UsingRearCab ? MSTSWagon.RightWindowRearIndex :  MSTSWagon.LeftWindowFrontIndex;
+                    var windowIndex = Locomotive.UsingRearCab ? MSTSWagon.RightWindowRearIndex : MSTSWagon.LeftWindowFrontIndex;
                     var soundCorrectionIndex = windowIndex;
                     if (ControlDiscrete.ControlType.Type == CABViewControlTypes.ORTS_2DEXTERNALRIGHTWINDOW)
                     {

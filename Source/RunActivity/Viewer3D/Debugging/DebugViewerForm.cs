@@ -171,6 +171,7 @@ namespace Orts.Viewer3D.Debugging
             TimetableWindow = new TimetableWindow(this);
 
             nodes = simulator.TDB.TrackDB.TrackNodes;
+            if (MultiPlayer.MPManager.IsMultiPlayer()) { MultiPlayer.MPManager.AllowedManualSwitch = false; }
 
             // initialise the timer used to handle user input
             UITimer = new Timer();
@@ -228,13 +229,13 @@ namespace Orts.Viewer3D.Debugging
 		{
 			ViewWindow = new RectangleF(0, 0, 5000f, 5000f);
 			windowSizeUpDown.Accelerations.Add(new NumericUpDownAcceleration(1, 100));
-			boxSetSignal.Items.Add("System Controlled");
+            boxSetSignal.Items.Clear();
+            boxSetSignal.Items.Add("System Controlled");
 			boxSetSignal.Items.Add("Stop");
 			boxSetSignal.Items.Add("Approach");
 			boxSetSignal.Items.Add("Proceed");
 			chkAllowUserSwitch.Checked = false;
 			selectedTrainList = new List<Train>();
-			if (MultiPlayer.MPManager.IsMultiPlayer()) { MultiPlayer.MPManager.AllowedManualSwitch = false; }
 
 			InitData();
 			InitImage();
