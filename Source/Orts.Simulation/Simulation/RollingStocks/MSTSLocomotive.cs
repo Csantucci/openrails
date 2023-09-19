@@ -4995,7 +4995,7 @@ namespace Orts.Simulation.RollingStocks
 
             base.SignalEvent(evt);
         }
-
+        private float elapsedTime;
         public virtual float GetDataOf(CabViewControl cvc)
         {
             float data = 0;
@@ -5003,6 +5003,13 @@ namespace Orts.Simulation.RollingStocks
             {
                 case CABViewControlTypes.SPEEDOMETER:
                     {
+                        cvc.ElapsedTime += elapsedTime;
+                        if (cvc.ElapsedTime < cvc.UpdateTime)
+                        {
+                            data = cvc.PreviousData;
+                            break;
+                        }
+                        cvc.ElapsedTime = 0;
                         //data = SpeedMpS;
                         if (AdvancedAdhesionModel)
                             data = WheelSpeedMpS;
@@ -5014,6 +5021,13 @@ namespace Orts.Simulation.RollingStocks
                         else // MPH
                             data *= 2.2369f;
                         data = Math.Abs(data);
+                        if (cvc.Precision > 0)
+                        {
+                            data = data * cvc.Precision;
+                            data = (float)Math.Round(data, 0);
+                            data = data / cvc.Precision;
+                        }
+                        cvc.PreviousData = data;
                         break;
                     }
                 case CABViewControlTypes.SPEED_PROJECTED:
