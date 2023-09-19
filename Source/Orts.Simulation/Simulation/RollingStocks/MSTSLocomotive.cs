@@ -1910,6 +1910,7 @@ namespace Orts.Simulation.RollingStocks
         /// </summary>
         public override void Update(float elapsedClockSeconds)
         {
+            elapsedTime = elapsedClockSeconds;
             // A control car typically doesn't have its own compressor and relies on the attached power car. However OR uses the lead locomotive as the reference car for compressor calculations.
             // Hence whilst users are encouraged to leave these parameters out of the ENG file, they need to be setup for OR to work correctly.
             // Some parameters need to be split across the unpowered and powered car for correct timing and volume calculations.
@@ -4995,7 +4996,7 @@ namespace Orts.Simulation.RollingStocks
 
             base.SignalEvent(evt);
         }
-        private float elapsedTime;
+        public float elapsedTime;
         public virtual float GetDataOf(CabViewControl cvc)
         {
             float data = 0;
