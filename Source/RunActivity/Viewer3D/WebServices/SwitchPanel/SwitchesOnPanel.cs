@@ -131,8 +131,8 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
             SwitchesOnPanelArray[2, 0].InitDefinition(UserCommand.GameChangeCab);
             SwitchesOnPanelArray[2, 1].InitDefinition(UserCommand.GameSwitchManualMode);
             SwitchesOnPanelArray[2, 2].InitDefinition(UserCommand.GameAutopilotMode);
-            SwitchesOnPanelArray[2, 3].InitDefinition(UserCommand.GameSwitchAhead);
-            SwitchesOnPanelArray[2, 4].InitDefinition(UserCommand.GameSwitchBehind);
+            SwitchesOnPanelArray[2, 3].InitDefinition(UserCommand.GameFacingSwitchAhead);
+            SwitchesOnPanelArray[2, 4].InitDefinition(UserCommand.GameFacingSwitchBehind);
             SwitchesOnPanelArray[2, 5].InitDefinition(UserCommand.GameClearSignalForward);
 
             SwitchesOnPanelArray[3, 0].InitDefinition(UserCommand.GameMultiPlayerDispatcher);

@@ -166,11 +166,11 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
              */
             switch (userCommand)
             {
-                case ORTS.Common.Input.UserCommand.GameSwitchAhead:
-                    description = Viewer.Catalog.GetParticularString("SwitchPanel", "Switch Ahead");
+                case ORTS.Common.Input.UserCommand.GameFacingSwitchAhead:
+                    description = Viewer.Catalog.GetParticularString("SwitchPanel", "Facing Switch Ahead");
                     break;
-                case ORTS.Common.Input.UserCommand.GameSwitchBehind:
-                    description = Viewer.Catalog.GetParticularString("SwitchPanel", "Switch Behind");
+                case ORTS.Common.Input.UserCommand.GameFacingSwitchBehind:
+                    description = Viewer.Catalog.GetParticularString("SwitchPanel", "Facing Switch Behind");
                     break;
                 case ORTS.Common.Input.UserCommand.GameChangeCab:
                     description = Viewer.Catalog.GetParticularString("SwitchPanel", "Change Cab");
