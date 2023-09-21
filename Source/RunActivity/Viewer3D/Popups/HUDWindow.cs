@@ -52,6 +52,7 @@ namespace Orts.Viewer3D.Popups
 
         readonly Viewer Viewer;
         readonly Action<TableData>[] TextPages;
+        public readonly int TextPagesLength;
         readonly WindowTextFont TextFont;
         readonly HUDGraphMaterial HUDGraphMaterial;
 
@@ -81,7 +82,7 @@ namespace Orts.Viewer3D.Popups
 
         public int WebServerPageNo = 0;
         public bool WebServerEnabled = false;
-        int TextPage;
+        public int TextPage;
         int LocomotivePage = 2;
         int LastTextPage;
         TableData TextTable = new TableData() { Cells = new string[0, 0] };
@@ -125,6 +126,7 @@ namespace Orts.Viewer3D.Popups
             textPages.Add(TextPageWeather);
             textPages.Add(TextPageDebugInfo);
             TextPages = textPages.ToArray();
+            TextPagesLength = TextPages.Length;
 
             TextFont = owner.TextFontMonoSpacedOutlined;
 

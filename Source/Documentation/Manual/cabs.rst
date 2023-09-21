@@ -855,6 +855,8 @@ are ORTS_LEFTDOOR, ORTS_RIGHTDOOR, ORTS_MIRRORS, ORTS_BATTERY and ORTS_POWERKEY.
 
 Animation for 2D cab windows is described :ref:`here <features-windows>` .
 
+Animation for 2D cab windows is described :ref:`here <features-windows>` .
+
 .. _cabs-generic-items:
 
 Cab controls for generic items
