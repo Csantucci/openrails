@@ -440,6 +440,8 @@ namespace Orts.Simulation.RollingStocks
         public MSTSNotchController DPThrottleController;
         public MSTSNotchController DPDynamicBrakeController;
 
+        public bool IsMSTSControlCar; // used to apply simple adhesion to get usable MotiveForceN values
+
         private int PreviousGearBoxNotch;
         private int previousChangedGearBoxNotch;
 
@@ -509,6 +511,7 @@ namespace Orts.Simulation.RollingStocks
         public override void LoadFromWagFile(string wagFilePath)
         {
             base.LoadFromWagFile(wagFilePath);
+            IsMSTSControlCar = CheckMSTSControlCar();
 
             // Assumes that CabViewList[0] is the front cab
             // and that CabViewList[1] is the rear cab, if present.
@@ -565,6 +568,14 @@ namespace Orts.Simulation.RollingStocks
             IsDriveable = true;
 
             MoveParamsToAxle();
+        }
+
+        /// <summary>
+        /// This checks wheter this is a control car due to low power and force values
+        /// </summary>
+        public bool CheckMSTSControlCar()
+        {
+            return MaxPowerW < 20000 && MaxForceN < 2000 && MaxContinuousForceN < 2000 && EngineType != EngineTypes.Control;
         }
 
         protected void CheckCoherence()
@@ -1269,6 +1280,7 @@ namespace Orts.Simulation.RollingStocks
             WaterScoopWidthM = locoCopy.WaterScoopWidthM;
             CruiseControl = locoCopy.CruiseControl?.Clone(this);
             MultiPositionControllers = locoCopy.CloneMPC(this);
+            IsMSTSControlCar = locoCopy.IsMSTSControlCar;
         }
 
         /// <summary>
@@ -2107,7 +2119,7 @@ namespace Orts.Simulation.RollingStocks
                     }
 
                     // SimpleControlPhysics and if locomotive is a control car advanced adhesion will be "disabled".
-                    if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && EngineType != EngineTypes.Control) 
+                    if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && EngineType != EngineTypes.Control && !IsMSTSControlCar) 
                     {
                         AdvancedAdhesion(elapsedClockSeconds); // Use advanced adhesion model
                         AdvancedAdhesionModel = true;  // Set flag to advise advanced adhesion model is in use
