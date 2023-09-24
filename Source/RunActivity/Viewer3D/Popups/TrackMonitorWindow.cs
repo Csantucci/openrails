@@ -396,7 +396,11 @@ namespace Orts.Viewer3D.Popups
                 {
                     TMCdrawAutoInfo("", offset);
                 }
-                else if (thisInfo.ControlMode == Train.TRAIN_CONTROL.TURNTABLE) return;
+                else if (thisInfo.ControlMode == Train.TRAIN_CONTROL.TURNTABLE)
+                {
+                    DataUpdating = false;
+                    return;
+                }
                 else
                 {
                     TMCdrawManualInfo("", offset);
