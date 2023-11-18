@@ -5381,6 +5381,7 @@ namespace Orts.Simulation.AIs
                     if (actionState != AI_MOVEMENT_STATE.INIT_ACTION && actionState != AI_MOVEMENT_STATE.HANDLE_ACTION)
                         MovementState = actionState;
                 }
+                if (thisAction == null) break;
             }
         }
 
