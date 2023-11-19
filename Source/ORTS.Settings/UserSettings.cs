@@ -183,6 +183,10 @@ namespace ORTS.Settings
         public String Units { get; set; }
         [Default(false)]
         public bool DisableTCSScripts { get; set; }
+        [Default(false)]
+        public bool AutoSaveActive { get; set; }
+        [Default (15)]
+        public int AutoSaveInterval { get; set; }
         [Default(true)]
         public bool EnableWatchdog { get; set; }
         [Default(true)]

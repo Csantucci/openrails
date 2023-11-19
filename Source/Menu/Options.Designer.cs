@@ -29,12 +29,17 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle4 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.bindingSourceContent = new System.Windows.Forms.BindingSource(this.components);
             this.pbLAA = new System.Windows.Forms.PictureBox();
+            this.labelAutoSaveInterval = new System.Windows.Forms.Label();
+            this.ButtonAutoSave60 = new System.Windows.Forms.RadioButton();
+            this.ButtonAutoSave30 = new System.Windows.Forms.RadioButton();
+            this.ButtonAutoSave15 = new System.Windows.Forms.RadioButton();
+            this.checkAutoSaveActive = new System.Windows.Forms.CheckBox();
             this.pbViewingFOV = new System.Windows.Forms.PictureBox();
             this.labelDefaultDetail = new System.Windows.Forms.Label();
             this.pbUpdateMode = new System.Windows.Forms.PictureBox();
@@ -108,6 +113,9 @@
             this.labelPerformanceTunerTarget = new System.Windows.Forms.Label();
             this.checkPerformanceTuner = new System.Windows.Forms.CheckBox();
             this.tabPageSystem = new System.Windows.Forms.TabPage();
+            this.pbControlConfirmations = new System.Windows.Forms.PictureBox();
+            this.comboControlConfirmations = new System.Windows.Forms.ComboBox();
+            this.labelControlConfirmations = new System.Windows.Forms.Label();
             this.labelPortNumber = new System.Windows.Forms.Label();
             this.numericWebServerPort = new System.Windows.Forms.NumericUpDown();
             this.pbLanguage = new System.Windows.Forms.PictureBox();
@@ -242,9 +250,6 @@
             this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
             this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
-            this.pbControlConfirmations = new System.Windows.Forms.PictureBox();
-            this.comboControlConfirmations = new System.Windows.Forms.ComboBox();
-            this.labelControlConfirmations = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceContent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
@@ -283,6 +288,7 @@
             this.tabPageExperimental.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).BeginInit();
             this.tabPageSystem.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).BeginInit();
             this.tabPageContent.SuspendLayout();
@@ -324,7 +330,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOK
@@ -360,6 +365,62 @@
             this.pbLAA.Size = new System.Drawing.Size(100, 50);
             this.pbLAA.TabIndex = 0;
             this.pbLAA.TabStop = false;
+            // 
+            // labelAutoSaveInterval
+            // 
+            this.labelAutoSaveInterval.AutoSize = true;
+            this.labelAutoSaveInterval.Location = new System.Drawing.Point(111, 309);
+            this.labelAutoSaveInterval.Name = "labelAutoSaveInterval";
+            this.labelAutoSaveInterval.Size = new System.Drawing.Size(48, 13);
+            this.labelAutoSaveInterval.TabIndex = 35;
+            this.labelAutoSaveInterval.Text = "Interval :";
+            // 
+            // ButtonAutoSave60
+            // 
+            this.ButtonAutoSave60.AutoSize = true;
+            this.ButtonAutoSave60.Location = new System.Drawing.Point(159, 341);
+            this.ButtonAutoSave60.Name = "ButtonAutoSave60";
+            this.ButtonAutoSave60.Size = new System.Drawing.Size(61, 17);
+            this.ButtonAutoSave60.TabIndex = 34;
+            this.ButtonAutoSave60.TabStop = true;
+            this.ButtonAutoSave60.Text = "60 mins";
+            this.ButtonAutoSave60.UseVisualStyleBackColor = true;
+            this.ButtonAutoSave60.CheckedChanged += new System.EventHandler(this.buttonAutoSaveInterval_checkchanged);
+            // 
+            // ButtonAutoSave30
+            // 
+            this.ButtonAutoSave30.AutoSize = true;
+            this.ButtonAutoSave30.Location = new System.Drawing.Point(159, 324);
+            this.ButtonAutoSave30.Name = "ButtonAutoSave30";
+            this.ButtonAutoSave30.Size = new System.Drawing.Size(61, 17);
+            this.ButtonAutoSave30.TabIndex = 33;
+            this.ButtonAutoSave30.TabStop = true;
+            this.ButtonAutoSave30.Text = "30 mins";
+            this.ButtonAutoSave30.UseVisualStyleBackColor = true;
+            this.ButtonAutoSave30.CheckedChanged += new System.EventHandler(this.buttonAutoSaveInterval_checkchanged);
+            // 
+            // ButtonAutoSave15
+            // 
+            this.ButtonAutoSave15.AutoSize = true;
+            this.ButtonAutoSave15.Location = new System.Drawing.Point(159, 307);
+            this.ButtonAutoSave15.Name = "ButtonAutoSave15";
+            this.ButtonAutoSave15.Size = new System.Drawing.Size(61, 17);
+            this.ButtonAutoSave15.TabIndex = 32;
+            this.ButtonAutoSave15.TabStop = true;
+            this.ButtonAutoSave15.Text = "15 mins";
+            this.ButtonAutoSave15.UseVisualStyleBackColor = true;
+            this.ButtonAutoSave15.CheckedChanged += new System.EventHandler(this.buttonAutoSaveInterval_checkchanged);
+            // 
+            // checkAutoSaveActive
+            // 
+            this.checkAutoSaveActive.AutoSize = true;
+            this.checkAutoSaveActive.Location = new System.Drawing.Point(32, 308);
+            this.checkAutoSaveActive.Name = "checkAutoSaveActive";
+            this.checkAutoSaveActive.Size = new System.Drawing.Size(73, 17);
+            this.checkAutoSaveActive.TabIndex = 31;
+            this.checkAutoSaveActive.Text = "AutoSave";
+            this.checkAutoSaveActive.UseVisualStyleBackColor = true;
+            this.checkAutoSaveActive.CheckedChanged += new System.EventHandler(this.checkAutoSave_checkchanged);
             // 
             // pbViewingFOV
             // 
@@ -1316,6 +1377,36 @@
             this.tabPageSystem.Text = "System";
             this.tabPageSystem.UseVisualStyleBackColor = true;
             // 
+            // pbControlConfirmations
+            // 
+            this.pbControlConfirmations.Image = global::ORTS.Properties.Resources.info_18;
+            this.pbControlConfirmations.Location = new System.Drawing.Point(11, 266);
+            this.pbControlConfirmations.Name = "pbControlConfirmations";
+            this.pbControlConfirmations.Size = new System.Drawing.Size(18, 18);
+            this.pbControlConfirmations.TabIndex = 61;
+            this.pbControlConfirmations.TabStop = false;
+            this.pbControlConfirmations.Click += new System.EventHandler(this.HelpIcon_Click);
+            this.pbControlConfirmations.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
+            this.pbControlConfirmations.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            // 
+            // comboControlConfirmations
+            // 
+            this.comboControlConfirmations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboControlConfirmations.FormattingEnabled = true;
+            this.comboControlConfirmations.Location = new System.Drawing.Point(35, 265);
+            this.comboControlConfirmations.Name = "comboControlConfirmations";
+            this.comboControlConfirmations.Size = new System.Drawing.Size(121, 21);
+            this.comboControlConfirmations.TabIndex = 59;
+            // 
+            // labelControlConfirmations
+            // 
+            this.labelControlConfirmations.Location = new System.Drawing.Point(161, 267);
+            this.labelControlConfirmations.Margin = new System.Windows.Forms.Padding(3);
+            this.labelControlConfirmations.Name = "labelControlConfirmations";
+            this.labelControlConfirmations.Size = new System.Drawing.Size(200, 21);
+            this.labelControlConfirmations.TabIndex = 60;
+            this.labelControlConfirmations.Text = "Messages suppressed       ";
+            // 
             // labelPortNumber
             // 
             this.labelPortNumber.AutoSize = true;
@@ -1569,27 +1660,27 @@
             this.dataGridViewContent.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dataGridViewContent.CellBorderStyle = System.Windows.Forms.DataGridViewCellBorderStyle.None;
             this.dataGridViewContent.ColumnHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.SystemColors.Control;
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.ControlText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.dataGridViewContent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.dataGridViewContent.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.dataGridViewContent.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridViewContent.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.nameDataGridViewTextBoxColumn,
             this.pathDataGridViewTextBoxColumn});
             this.dataGridViewContent.DataSource = this.bindingSourceContent;
-            dataGridViewCellStyle4.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle4.BackColor = System.Drawing.SystemColors.Window;
-            dataGridViewCellStyle4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle4.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle4.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle4.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle4.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.dataGridViewContent.DefaultCellStyle = dataGridViewCellStyle4;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.dataGridViewContent.DefaultCellStyle = dataGridViewCellStyle2;
             this.dataGridViewContent.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridViewContent.Location = new System.Drawing.Point(0, 0);
             this.dataGridViewContent.MultiSelect = false;
@@ -2498,6 +2589,11 @@
             // 
             // tabPageGeneral
             // 
+            this.tabPageGeneral.Controls.Add(this.labelAutoSaveInterval);
+            this.tabPageGeneral.Controls.Add(this.ButtonAutoSave60);
+            this.tabPageGeneral.Controls.Add(this.ButtonAutoSave30);
+            this.tabPageGeneral.Controls.Add(this.ButtonAutoSave15);
+            this.tabPageGeneral.Controls.Add(this.checkAutoSaveActive);
             this.tabPageGeneral.Controls.Add(this.pbOverspeedMonitor);
             this.tabPageGeneral.Controls.Add(this.pbEnableTcsScripts);
             this.tabPageGeneral.Controls.Add(this.pbOtherUnits);
@@ -3047,36 +3143,6 @@
             this.checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
             this.checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
             // 
-            // pbControlConfirmations
-            // 
-            this.pbControlConfirmations.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbControlConfirmations.Location = new System.Drawing.Point(11, 266);
-            this.pbControlConfirmations.Name = "pbControlConfirmations";
-            this.pbControlConfirmations.Size = new System.Drawing.Size(18, 18);
-            this.pbControlConfirmations.TabIndex = 61;
-            this.pbControlConfirmations.TabStop = false;
-            this.pbControlConfirmations.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbControlConfirmations.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbControlConfirmations.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // comboControlConfirmations
-            // 
-            this.comboControlConfirmations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboControlConfirmations.FormattingEnabled = true;
-            this.comboControlConfirmations.Location = new System.Drawing.Point(35, 265);
-            this.comboControlConfirmations.Name = "comboControlConfirmations";
-            this.comboControlConfirmations.Size = new System.Drawing.Size(121, 21);
-            this.comboControlConfirmations.TabIndex = 59;
-            // 
-            // labelControlConfirmations
-            // 
-            this.labelControlConfirmations.Location = new System.Drawing.Point(161, 267);
-            this.labelControlConfirmations.Margin = new System.Windows.Forms.Padding(3);
-            this.labelControlConfirmations.Name = "labelControlConfirmations";
-            this.labelControlConfirmations.Size = new System.Drawing.Size(200, 21);
-            this.labelControlConfirmations.TabIndex = 60;
-            this.labelControlConfirmations.Text = "Messages suppressed       ";
-            // 
             // OptionsForm
             // 
             this.AcceptButton = this.buttonOK;
@@ -3134,6 +3200,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).EndInit();
             this.tabPageSystem.ResumeLayout(false);
             this.tabPageSystem.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).EndInit();
             this.tabPageContent.ResumeLayout(false);
@@ -3185,7 +3252,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -3282,6 +3348,13 @@
         private System.Windows.Forms.Button buttonCheckKeys;
         private System.Windows.Forms.Panel panelKeys;
         private System.Windows.Forms.TabPage tabPageSimulation;
+
+        private System.Windows.Forms.CheckBox checkAutoSaveActive;
+        private System.Windows.Forms.Label labelAutoSaveInterval;
+        private System.Windows.Forms.RadioButton ButtonAutoSave60;
+        private System.Windows.Forms.RadioButton ButtonAutoSave30;
+        private System.Windows.Forms.RadioButton ButtonAutoSave15;
+
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.CheckBox checkUseLocationPassingPaths;
         private System.Windows.Forms.CheckBox checkDoorsAITrains;
