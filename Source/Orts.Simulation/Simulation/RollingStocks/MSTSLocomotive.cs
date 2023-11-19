@@ -5011,996 +5011,997 @@ namespace Orts.Simulation.RollingStocks
         public float elapsedTime;
         public virtual float GetDataOf(CabViewControl cvc)
         {
-            float data = 0;
-            switch (cvc.ControlType.Type)
+            float data = cvc.PreviousData;
+            if (cvc.ElapsedTime == 0)
             {
-                case CABViewControlTypes.SPEEDOMETER:
-                    {
-                        cvc.ElapsedTime += elapsedTime;
-                        if (cvc.ElapsedTime < cvc.UpdateTime)
+                switch (cvc.ControlType.Type)
+                {
+                    case CABViewControlTypes.SPEEDOMETER:
                         {
-                            data = cvc.PreviousData;
+                            //data = SpeedMpS;
+                            if (AdvancedAdhesionModel)
+                                data = WheelSpeedMpS;
+                            else
+                                data = SpeedMpS;
+
+                            if (cvc.Units == CABViewControlUnits.KM_PER_HOUR)
+                                data *= 3.6f;
+                            else // MPH
+                                data *= 2.2369f;
+                            data = Math.Abs(data);
                             break;
                         }
-                        cvc.ElapsedTime = 0;
-                        //data = SpeedMpS;
-                        if (AdvancedAdhesionModel)
-                            data = WheelSpeedMpS;
-                        else
-                            data = SpeedMpS;
-
-                        if (cvc.Units == CABViewControlUnits.KM_PER_HOUR)
-                            data *= 3.6f;
-                        else // MPH
-                            data *= 2.2369f;
-                        data = Math.Abs(data);
-                        if (cvc.Precision > 0)
+                    case CABViewControlTypes.SPEED_PROJECTED:
                         {
-                            data = data * cvc.Precision;
-                            data = (float)Math.Round(data, 0);
-                            data = data / cvc.Precision;
+                            if (Train != null)
+                                data = Train.ProjectedSpeedMpS;
+                            else data = 0;
+                            if (cvc.Units == CABViewControlUnits.KM_PER_HOUR)
+                                data *= 3.6f;
+                            else // MPH
+                                data *= 2.2369f;
+                            data = Math.Abs(data);
+                            break;
                         }
-                        cvc.PreviousData = data;
-                        break;
-                    }
-                case CABViewControlTypes.SPEED_PROJECTED:
-                    {
-                        if (Train != null)
-                            data = Train.ProjectedSpeedMpS;
-                        else data = 0;
-                        if (cvc.Units == CABViewControlUnits.KM_PER_HOUR)
-                            data *= 3.6f;
-                        else // MPH
-                            data *= 2.2369f;
-                        data = Math.Abs(data);
-                        break;
-                    }
-                case CABViewControlTypes.ACCELEROMETER:
-                    {
-                        switch (cvc.Units)
+                    case CABViewControlTypes.ACCELEROMETER:
                         {
-                            case CABViewControlUnits.METRES_SEC_SEC:
-                                data = this.AccelerationMpSS;
-                                break;
+                            switch (cvc.Units)
+                            {
+                                case CABViewControlUnits.METRES_SEC_SEC:
+                                    data = this.AccelerationMpSS;
+                                    break;
 
-                            case CABViewControlUnits.METRES_SEC_HOUR:
-                                data = this.AccelerationMpSS * 3600.0f;
-                                break;
+                                case CABViewControlUnits.METRES_SEC_HOUR:
+                                    data = this.AccelerationMpSS * 3600.0f;
+                                    break;
 
-                            case CABViewControlUnits.KM_HOUR_SEC:
-                                data = this.AccelerationMpSS * 3.6f;
-                                break;
+                                case CABViewControlUnits.KM_HOUR_SEC:
+                                    data = this.AccelerationMpSS * 3.6f;
+                                    break;
 
-                            case CABViewControlUnits.KM_HOUR_HOUR:
-                                data = this.AccelerationMpSS * 3.6f * 3600.0f;
-                                break;
+                                case CABViewControlUnits.KM_HOUR_HOUR:
+                                    data = this.AccelerationMpSS * 3.6f * 3600.0f;
+                                    break;
 
-                            case CABViewControlUnits.MILES_HOUR_MIN:
-                                data = this.AccelerationMpSS * 2.236936f * 60.0f;
-                                break;
+                                case CABViewControlUnits.MILES_HOUR_MIN:
+                                    data = this.AccelerationMpSS * 2.236936f * 60.0f;
+                                    break;
 
-                            case CABViewControlUnits.MILES_HOUR_HOUR:
-                                // 
-                                data = this.AccelerationMpSS * 2.236936f * 3600.0f;
-                                break;
+                                case CABViewControlUnits.MILES_HOUR_HOUR:
+                                    // 
+                                    data = this.AccelerationMpSS * 2.236936f * 3600.0f;
+                                    break;
 
-                            default:
-                                data = this.AccelerationMpSS;
-                                break;
+                                default:
+                                    data = this.AccelerationMpSS;
+                                    break;
 
+                            }
+                            break;
                         }
+
+                    case CABViewControlTypes.ORTS_WATER_SCOOP:
+                        data = WaterScoopDown ? 1 : 0;
                         break;
-                    }
 
-                 case CABViewControlTypes.ORTS_WATER_SCOOP:
-                    data = WaterScoopDown ? 1 : 0;
-                    break;
+                    case CABViewControlTypes.STEAM_HEAT:
+                        data = SteamHeatController.CurrentValue;
+                        break;
 
-                case CABViewControlTypes.STEAM_HEAT:
-                    data = SteamHeatController.CurrentValue;
-                    break;
-                
-                case CABViewControlTypes.AMMETER: // Current not modelled yet to ammeter shows tractive effort until then.
-                case CABViewControlTypes.AMMETER_ABS:
-                    {
-                        var direction = 0; // Forwards
-                        if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
-                            direction = ((CVCGauge)cvc).Direction;
-                        if (MaxCurrentA == 0)
-                            MaxCurrentA = (float)cvc.MaxValue;
-                        if (LocomotiveAxles.Count > 0)
+                    case CABViewControlTypes.AMMETER: // Current not modelled yet to ammeter shows tractive effort until then.
+                    case CABViewControlTypes.AMMETER_ABS:
                         {
+                            var direction = 0; // Forwards
+                            if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
+                                direction = ((CVCGauge)cvc).Direction;
+                            if (MaxCurrentA == 0)
+                                MaxCurrentA = (float)cvc.MaxValue;
+                            if (LocomotiveAxles.Count > 0)
+                            {
+                                data = 0.0f;
+                                if (ThrottlePercent > 0)
+                                {
+                                    //float rangeFactor = direction == 0 ? (float)cvc.MaxValue : (float)cvc.MinValue;
+                                    float rangeFactor = direction == 0 ? MaxCurrentA : (float)cvc.MinValue;
+                                    if (FilteredMotiveForceN != 0)
+                                        data = this.FilteredMotiveForceN / MaxForceN * rangeFactor;
+                                    else
+                                        data = this.LocomotiveAxles[cvc.ControlId].DriveForceN / MaxForceN * rangeFactor;
+                                    data = Math.Abs(data);
+                                }
+                                if (DynamicBrakePercent > 0 && MaxDynamicBrakeForceN > 0)
+                                {
+                                    float rangeFactor;
+                                    if (cvc.ControlType.Type == CABViewControlTypes.AMMETER_ABS)
+                                    {
+                                        if (DynamicBrakeMaxCurrentA == 0)
+                                            rangeFactor = direction == 0 ? (float)cvc.MaxValue : (float)cvc.MinValue;
+                                        else
+                                            rangeFactor = direction == 0 ? DynamicBrakeMaxCurrentA : (float)cvc.MinValue;
+                                    }
+                                    else
+                                    {
+                                        if (DynamicBrakeMaxCurrentA == 0)
+                                            rangeFactor = direction == 0 ? (float)cvc.MinValue : (float)cvc.MaxValue;
+                                        else
+                                            rangeFactor = direction == 0 ? -DynamicBrakeMaxCurrentA : (float)cvc.MaxValue;
+                                    }
+                                    data = DynamicBrakeForceN / MaxDynamicBrakeForceN * rangeFactor;
+                                }
+                                if (direction == 1)
+                                    data = -data;
+                                if (cvc.ControlType.Type == CABViewControlTypes.AMMETER_ABS) data = Math.Abs(data);
+                                break;
+                            }
+                            data = this.MotiveForceN / MaxForceN * MaxCurrentA;
+                            if (cvc.ControlType.Type == CABViewControlTypes.AMMETER_ABS) data = Math.Abs(data);
+                            break;
+                        }
+                    case CABViewControlTypes.LOAD_METER:
+                        {
+                            var direction = 0; // Forwards
+                            if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
+                                direction = ((CVCGauge)cvc).Direction;
+                            if (MaxCurrentA == 0)
+                                MaxCurrentA = (float)cvc.MaxValue;
+                            if (DynamicBrakeMaxCurrentA == 0)
+                                DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
                             data = 0.0f;
                             if (ThrottlePercent > 0)
                             {
-                                //float rangeFactor = direction == 0 ? (float)cvc.MaxValue : (float)cvc.MinValue;
-                                float rangeFactor = direction == 0 ? MaxCurrentA : (float)cvc.MinValue;
                                 if (FilteredMotiveForceN != 0)
-                                    data = this.FilteredMotiveForceN / MaxForceN * rangeFactor;
+                                    data = this.FilteredMotiveForceN / MaxForceN * MaxCurrentA;
                                 else
-                                    data = this.LocomotiveAxles[cvc.ControlId].DriveForceN / MaxForceN * rangeFactor;
+                                    data = this.LocomotiveAxles[cvc.ControlId].DriveForceN / MaxForceN * MaxCurrentA;
                                 data = Math.Abs(data);
                             }
                             if (DynamicBrakePercent > 0 && MaxDynamicBrakeForceN > 0)
                             {
-                                float rangeFactor;
-                                if (cvc.ControlType.Type == CABViewControlTypes.AMMETER_ABS)
-                                {
-                                    if (DynamicBrakeMaxCurrentA == 0)
-                                        rangeFactor = direction == 0 ? (float)cvc.MaxValue : (float)cvc.MinValue;
-                                    else
-                                        rangeFactor = direction == 0 ? DynamicBrakeMaxCurrentA : (float)cvc.MinValue;
-                                }
-                                else
-                                {
-                                    if (DynamicBrakeMaxCurrentA == 0)
-                                        rangeFactor = direction == 0 ? (float)cvc.MinValue : (float)cvc.MaxValue;
-                                    else
-                                        rangeFactor = direction == 0 ? -DynamicBrakeMaxCurrentA : (float)cvc.MaxValue;
-                                }
-                                data = DynamicBrakeForceN / MaxDynamicBrakeForceN * rangeFactor;
+                                data = DynamicBrakeForceN / MaxDynamicBrakeForceN * DynamicBrakeMaxCurrentA;
+                                data = -Math.Abs(data); // Ensure that dynamic force is seen as a "-ve force", changes colour on the load meter
                             }
                             if (direction == 1)
                                 data = -data;
-                            if (cvc.ControlType.Type == CABViewControlTypes.AMMETER_ABS) data = Math.Abs(data);
                             break;
                         }
-                        data = this.MotiveForceN / MaxForceN * MaxCurrentA;
-                        if (cvc.ControlType.Type == CABViewControlTypes.AMMETER_ABS) data = Math.Abs(data);
-                        break;
-                    }
-                case CABViewControlTypes.LOAD_METER:
-                    {
-                        var direction = 0; // Forwards
-                        if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
-                            direction = ((CVCGauge)cvc).Direction;
-                        if (MaxCurrentA == 0)
-                            MaxCurrentA = (float)cvc.MaxValue;
-                        if (DynamicBrakeMaxCurrentA == 0)
-                            DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
-                        data = 0.0f;
-                        if (ThrottlePercent > 0)
+                    case CABViewControlTypes.TRACTION_BRAKING:
                         {
-                            if (FilteredMotiveForceN != 0)
-                                data = this.FilteredMotiveForceN / MaxForceN * MaxCurrentA;
-                            else
-                                data = this.LocomotiveAxles[cvc.ControlId].DriveForceN / MaxForceN * MaxCurrentA;
-                            data = Math.Abs(data);
-                        }
-                        if (DynamicBrakePercent > 0 && MaxDynamicBrakeForceN > 0)
-                        {
-                            data = DynamicBrakeForceN / MaxDynamicBrakeForceN * DynamicBrakeMaxCurrentA;
-                            data = -Math.Abs(data); // Ensure that dynamic force is seen as a "-ve force", changes colour on the load meter
-                        }
-                        if (direction == 1)
-                            data = -data;
-                        break;
-                    }
-                case CABViewControlTypes.TRACTION_BRAKING:
-                    {
-                        var direction = 0; // Forwards
-                        if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
-                            direction = ((CVCGauge)cvc).Direction;
-                        data = 0.0f;
-                        if (FilteredMotiveForceN != 0)
-                            data = this.FilteredMotiveForceN;
-                        else
-                            data = this.LocomotiveAxles[cvc.ControlId].DriveForceN;
-                        if (DynamicBrakePercent > 0)
-                        {
-                            data = DynamicBrakeForceN;
-                        }
-                        data = Math.Abs(data);
-                        switch (cvc.Units)
-                        {
-                            case CABViewControlUnits.AMPS:
-                                if (MaxCurrentA == 0)
-                                    MaxCurrentA = (float)cvc.MaxValue;
-                                if (DynamicBrakeMaxCurrentA == 0)
-                                    DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
-                                if (ThrottlePercent > 0)
-                                {
-                                    data = (data / MaxForceN) * MaxCurrentA;
-                                 }
-                                if (DynamicBrakePercent > 0)
-                                {
-                                    data = (DynamicBrakeForceN / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
-                                }
-                                data = Math.Abs(data);
-                                break;
-                    
-                            case CABViewControlUnits.NEWTONS:
-                                break;
-                    
-                            case CABViewControlUnits.KILO_NEWTONS:
-                                data = data / 1000.0f;
-                                break;
-                    
-                            case CABViewControlUnits.KILO_LBS:
-                                data = N.ToLbf(data) * 0.001f;
-                                break;
-                        }                   
-                        if (direction == 1 && !(cvc is CVCGauge))
-                            data = -data;
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_SIGNED_TRACTION_BRAKING:
-                    {
-                        var direction = 0; // Forwards
-                        if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
-                            direction = ((CVCGauge)cvc).Direction;
-                        data = 0.0f;
-                        if (FilteredMotiveForceN != 0)
-                            data = Math.Abs(this.FilteredMotiveForceN);
-                        else
-                            data = Math.Abs(this.LocomotiveAxles[cvc.ControlId].DriveForceN);
-                        if (DynamicBrakePercent > 0)
-                        {
-                            data = -Math.Abs(DynamicBrakeForceN);
-                        }
-                        switch (cvc.Units)
-                        {
-                            case CABViewControlUnits.AMPS:
-                                if (MaxCurrentA == 0)
-                                    MaxCurrentA = (float)cvc.MaxValue;
-                                if (DynamicBrakeMaxCurrentA == 0)
-                                    DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
-                                if (ThrottlePercent >= 0 && DynamicBrakePercent == -1)
-                                {
-                                    data = (data / MaxForceN) * MaxCurrentA;
-                                }
-                                if (ThrottlePercent == 0 && DynamicBrakePercent >= 0)
-                                {
-                                    data = (data / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
-                                }
-                                if (ThrottlePercent == 0 && data > 0)
-                                {
-                                    data = DynamicBrakePercent == -1 ? (data / MaxForceN) * MaxCurrentA
-                                        : DynamicBrakePercent == 0 ? (data / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA
-                                        : data;
-                                }
-                                break;
-
-                            case CABViewControlUnits.NEWTONS:
-                                break;
-
-                            case CABViewControlUnits.KILO_NEWTONS:
-                                data = data / 1000.0f;
-                                break;
-
-                            case CABViewControlUnits.KILO_LBS:
-                                data = N.ToLbf(data) * 0.001f;
-                                break;
-                        }
- //                       if (direction == 1 && !(cvc is CVCGauge))
- //                           data = -data;
-                        break;
-                    }
-                    // this considers both the dynamic as well as the train braking
-                case CABViewControlTypes.ORTS_SIGNED_TRACTION_TOTAL_BRAKING:
-                    {
-                        var direction = 0; // Forwards
-                        if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
-                            direction = ((CVCGauge)cvc).Direction;
-                        data = 0.0f;
-                        if (Math.Abs(SpeedMpS) == 0.0f)
+                            var direction = 0; // Forwards
+                            if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
+                                direction = ((CVCGauge)cvc).Direction;
                             data = 0.0f;
-                        else if (Math.Abs(TractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) > 0)
-                            data = Math.Abs(this.FilteredMotiveForceN);
-                        else if (Math.Abs(TractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) < 0)
-                            data = -Math.Abs(BrakeForceN + DynamicBrakeForceN);
-                        switch (cvc.Units)
-                        {
-                            case CABViewControlUnits.NEWTONS:
-                                break;
+                            if (FilteredMotiveForceN != 0)
+                                data = this.FilteredMotiveForceN;
+                            else
+                                data = this.LocomotiveAxles[cvc.ControlId].DriveForceN;
+                            if (DynamicBrakePercent > 0)
+                            {
+                                data = DynamicBrakeForceN;
+                            }
+                            data = Math.Abs(data);
+                            switch (cvc.Units)
+                            {
+                                case CABViewControlUnits.AMPS:
+                                    if (MaxCurrentA == 0)
+                                        MaxCurrentA = (float)cvc.MaxValue;
+                                    if (DynamicBrakeMaxCurrentA == 0)
+                                        DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
+                                    if (ThrottlePercent > 0)
+                                    {
+                                        data = (data / MaxForceN) * MaxCurrentA;
+                                    }
+                                    if (DynamicBrakePercent > 0)
+                                    {
+                                        data = (DynamicBrakeForceN / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
+                                    }
+                                    data = Math.Abs(data);
+                                    break;
 
-                            case CABViewControlUnits.KILO_NEWTONS:
-                                data = data / 1000.0f;
-                                break;
+                                case CABViewControlUnits.NEWTONS:
+                                    break;
 
-                            case CABViewControlUnits.KILO_LBS:
-                                data = N.ToLbf(data) * 0.001f;
-                                break;
+                                case CABViewControlUnits.KILO_NEWTONS:
+                                    data = data / 1000.0f;
+                                    break;
 
-                            case CABViewControlUnits.PERCENT:
-                                if (Math.Abs(SpeedMpS) != 0.0f)
-                                {
-                                    if (Math.Abs(TractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) >= 0)
-                                        data = data / MaxForceN * 100;
-                                    else
-                                        data = data / (MaxBrakeForceN + MaxDynamicBrakeForceN) * 100;
-                                }
-                                break;
-
-                        }
-                        break;
-                    }
-                case CABViewControlTypes.DYNAMIC_BRAKE_FORCE:
-                    {
-                        var direction = 0; // Forwards
-                        if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
-                            direction = ((CVCGauge)cvc).Direction;
-                        data = 0.0f;
-                        data = DynamicBrakeForceN;
-                        if (data > 0 && SpeedMpS > 0 || data < 0 && SpeedMpS < 0)
-                        {
-                            data = 0;
+                                case CABViewControlUnits.KILO_LBS:
+                                    data = N.ToLbf(data) * 0.001f;
+                                    break;
+                            }
+                            if (direction == 1 && !(cvc is CVCGauge))
+                                data = -data;
                             break;
                         }
-                        data = Math.Abs(data);
-                        switch (cvc.Units)
+                    case CABViewControlTypes.ORTS_SIGNED_TRACTION_BRAKING:
                         {
-                            case CABViewControlUnits.AMPS:
-                                if (MaxCurrentA == 0)
-                                    MaxCurrentA = (float)cvc.MaxValue;
-                                if (DynamicBrakeMaxCurrentA == 0)
-                                    DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
-                                if (ThrottlePercent > 0)
+                            var direction = 0; // Forwards
+                            if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
+                                direction = ((CVCGauge)cvc).Direction;
+                            data = 0.0f;
+                            if (FilteredMotiveForceN != 0)
+                                data = Math.Abs(this.FilteredMotiveForceN);
+                            else
+                                data = Math.Abs(this.LocomotiveAxles[cvc.ControlId].DriveForceN);
+                            if (DynamicBrakePercent > 0)
+                            {
+                                data = -Math.Abs(DynamicBrakeForceN);
+                            }
+                            switch (cvc.Units)
+                            {
+                                case CABViewControlUnits.AMPS:
+                                    if (MaxCurrentA == 0)
+                                        MaxCurrentA = (float)cvc.MaxValue;
+                                    if (DynamicBrakeMaxCurrentA == 0)
+                                        DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
+                                    if (ThrottlePercent >= 0 && DynamicBrakePercent == -1)
+                                    {
+                                        data = (data / MaxForceN) * MaxCurrentA;
+                                    }
+                                    if (ThrottlePercent == 0 && DynamicBrakePercent >= 0)
+                                    {
+                                        data = (data / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
+                                    }
+                                    if (ThrottlePercent == 0 && data > 0)
+                                    {
+                                        data = DynamicBrakePercent == -1 ? (data / MaxForceN) * MaxCurrentA
+                                            : DynamicBrakePercent == 0 ? (data / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA
+                                            : data;
+                                    }
+                                    break;
+
+                                case CABViewControlUnits.NEWTONS:
+                                    break;
+
+                                case CABViewControlUnits.KILO_NEWTONS:
+                                    data = data / 1000.0f;
+                                    break;
+
+                                case CABViewControlUnits.KILO_LBS:
+                                    data = N.ToLbf(data) * 0.001f;
+                                    break;
+                            }
+                            //                       if (direction == 1 && !(cvc is CVCGauge))
+                            //                           data = -data;
+                            break;
+                        }
+                    // this considers both the dynamic as well as the train braking
+                    case CABViewControlTypes.ORTS_SIGNED_TRACTION_TOTAL_BRAKING:
+                        {
+                            var direction = 0; // Forwards
+                            if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
+                                direction = ((CVCGauge)cvc).Direction;
+                            data = 0.0f;
+                            if (Math.Abs(SpeedMpS) == 0.0f)
+                                data = 0.0f;
+                            else if (Math.Abs(TractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) > 0)
+                                data = Math.Abs(this.FilteredMotiveForceN);
+                            else if (Math.Abs(TractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) < 0)
+                                data = -Math.Abs(BrakeForceN + DynamicBrakeForceN);
+                            switch (cvc.Units)
+                            {
+                                case CABViewControlUnits.NEWTONS:
+                                    break;
+
+                                case CABViewControlUnits.KILO_NEWTONS:
+                                    data = data / 1000.0f;
+                                    break;
+
+                                case CABViewControlUnits.KILO_LBS:
+                                    data = N.ToLbf(data) * 0.001f;
+                                    break;
+
+                                case CABViewControlUnits.PERCENT:
+                                    if (Math.Abs(SpeedMpS) != 0.0f)
+                                    {
+                                        if (Math.Abs(TractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) >= 0)
+                                            data = data / MaxForceN * 100;
+                                        else
+                                            data = data / (MaxBrakeForceN + MaxDynamicBrakeForceN) * 100;
+                                    }
+                                    break;
+
+                            }
+                            break;
+                        }
+                    case CABViewControlTypes.DYNAMIC_BRAKE_FORCE:
+                        {
+                            var direction = 0; // Forwards
+                            if (cvc is CVCGauge && ((CVCGauge)cvc).Orientation == 0)
+                                direction = ((CVCGauge)cvc).Direction;
+                            data = 0.0f;
+                            data = DynamicBrakeForceN;
+                            if (data > 0 && SpeedMpS > 0 || data < 0 && SpeedMpS < 0)
+                            {
+                                data = 0;
+                                break;
+                            }
+                            data = Math.Abs(data);
+                            switch (cvc.Units)
+                            {
+                                case CABViewControlUnits.AMPS:
+                                    if (MaxCurrentA == 0)
+                                        MaxCurrentA = (float)cvc.MaxValue;
+                                    if (DynamicBrakeMaxCurrentA == 0)
+                                        DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
+                                    if (ThrottlePercent > 0)
+                                    {
+                                        data = 0;
+                                    }
+                                    if (DynamicBrakePercent > 0)
+                                    {
+                                        data = (DynamicBrakeForceN / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
+                                    }
+                                    data = Math.Abs(data);
+                                    break;
+
+                                case CABViewControlUnits.NEWTONS:
+                                    break;
+
+                                case CABViewControlUnits.KILO_NEWTONS:
+                                    data = data / 1000.0f;
+                                    break;
+
+                                case CABViewControlUnits.KILO_LBS:
+                                    data = N.ToLbf(data) * 0.001f;
+                                    break;
+                            }
+                            if (direction == 1 && !(cvc is CVCGauge))
+                                data = -data;
+                            break;
+                        }
+                    case CABViewControlTypes.MAIN_RES:
+                        {
+                            data = ConvertFromPSI(cvc, MainResPressurePSI);
+                            break;
+                        }
+                    case CABViewControlTypes.MAIN_RES_PIPE:
+                        {
+                            data = ConvertFromPSI(cvc, this.BrakeSystem.BrakeLine2PressurePSI);
+                            break;
+                        }
+                    case CABViewControlTypes.BRAKE_PIPE:
+                        {
+                            data = ConvertFromPSI(cvc, this.BrakeSystem.BrakeLine1PressurePSI);
+                            break;
+                        }
+                    case CABViewControlTypes.EQ_RES:
+                        {
+                            data = ConvertFromPSI(cvc, this.Train.EqualReservoirPressurePSIorInHg);
+                            break;
+                        }
+                    case CABViewControlTypes.BRAKE_CYL:
+                        {
+                            data = ConvertFromPSI(cvc, BrakeSystem.GetCylPressurePSI());
+                            break;
+                        }
+                    case CABViewControlTypes.VACUUM_RESERVOIR_PRESSURE:
+                        {
+                            data = ConvertFromPSI(cvc, BrakeSystem.GetVacResPressurePSI());
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_EOT_BRAKE_PIPE:
+                        {
+                            data = ConvertFromPSI(cvc, this.Train.Cars.Last().BrakeSystem.BrakeLine1PressurePSI);
+                            break;
+                        }
+
+                    case CABViewControlTypes.RPM:
+                        {
+
+                            if (EngineType == EngineTypes.Control)
+                            {
+                                FindControlActiveLocomotive();
+
+                                if (ControlActiveLocomotive != null)
                                 {
-                                    data = 0;
+                                    var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
+                                    if (activeloco.DieselEngines[0] != null)
+                                        data = activeloco.DieselEngines[0].RealRPM;
                                 }
-                                if (DynamicBrakePercent > 0)
+
+                            }
+                            else
+                            {
+                                var mstsDieselLocomotive = this as MSTSDieselLocomotive;
+                                if (mstsDieselLocomotive.DieselEngines[0] != null)
+                                    data = mstsDieselLocomotive.DieselEngines[0].RealRPM;
+                            }
+                            break;
+                        }
+
+                    case CABViewControlTypes.RPM_2:
+                        {
+
+                            FindControlActiveLocomotive();
+
+                            if (ControlActiveLocomotive != null)
+                            {
+                                var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
+                                var mstsDieselLocomotive = this as MSTSDieselLocomotive;
+
+                                if (EngineType == EngineTypes.Control && activeloco.DieselEngines.NumOfActiveEngines > 1)
                                 {
-                                    data = (DynamicBrakeForceN / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
+
+                                    if (activeloco.DieselEngines[1] != null)
+                                        data = activeloco.DieselEngines[1].RealRPM;
                                 }
-                                data = Math.Abs(data);
-                                break;
-
-                            case CABViewControlUnits.NEWTONS:
-                                break;
-
-                            case CABViewControlUnits.KILO_NEWTONS:
-                                data = data / 1000.0f;
-                                break;
-
-                            case CABViewControlUnits.KILO_LBS:
-                                data = N.ToLbf(data) * 0.001f;
-                                break;
+                                else if (EngineType == EngineTypes.Diesel && mstsDieselLocomotive.DieselEngines.NumOfActiveEngines > 1)
+                                {
+                                    if (mstsDieselLocomotive.DieselEngines[1] != null)
+                                        data = mstsDieselLocomotive.DieselEngines[1].RealRPM;
+                                }
+                            }
+                            break;
                         }
-                        if (direction == 1 && !(cvc is CVCGauge))
-                            data = -data;
-                        break;
-                    }
-                case CABViewControlTypes.MAIN_RES:
-                    {
-                        data = ConvertFromPSI(cvc, MainResPressurePSI);
-                        break;
-                    }
-                case CABViewControlTypes.MAIN_RES_PIPE:
-                    {
-                        data = ConvertFromPSI(cvc, this.BrakeSystem.BrakeLine2PressurePSI);
-                        break;
-                    }
-                case CABViewControlTypes.BRAKE_PIPE:
-                    {
-                        data = ConvertFromPSI(cvc, this.BrakeSystem.BrakeLine1PressurePSI);
-                        break;
-                    }
-                case CABViewControlTypes.EQ_RES:
-                    {
-                        data = ConvertFromPSI(cvc, this.Train.EqualReservoirPressurePSIorInHg);
-                        break;
-                    }
-                case CABViewControlTypes.BRAKE_CYL:
-                    {
-                        data = ConvertFromPSI(cvc, BrakeSystem.GetCylPressurePSI());
-                        break;
-                    }
-                case CABViewControlTypes.VACUUM_RESERVOIR_PRESSURE:
-                    {
-                        data = ConvertFromPSI(cvc, BrakeSystem.GetVacResPressurePSI());
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_EOT_BRAKE_PIPE:
-                    {
-                        data = ConvertFromPSI(cvc, this.Train.Cars.Last().BrakeSystem.BrakeLine1PressurePSI);
-                        break;
-                    }
 
-                case CABViewControlTypes.RPM:
-                    {
-
-                        if (EngineType == EngineTypes.Control)
+                    case CABViewControlTypes.ORTS_DIESEL_TEMPERATURE:
                         {
-                            FindControlActiveLocomotive();
 
-                            if (ControlActiveLocomotive != null)
+                            if (EngineType == EngineTypes.Control)
                             {
-                                var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
-                                if (activeloco.DieselEngines[0] != null)
-                                    data = activeloco.DieselEngines[0].RealRPM;
+                                FindControlActiveLocomotive();
+
+                                if (ControlActiveLocomotive != null)
+                                {
+                                    var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
+                                    if (activeloco.DieselEngines[0] != null)
+                                        data = activeloco.DieselEngines[0].DieselTemperatureDeg;
+                                }
+
                             }
-
-                        }
-                        else
-                        {
-                            var mstsDieselLocomotive = this as MSTSDieselLocomotive;
-                            if (mstsDieselLocomotive.DieselEngines[0] != null)
-                                data = mstsDieselLocomotive.DieselEngines[0].RealRPM;
-                        }
-                        break;
-                    }
-
-                case CABViewControlTypes.RPM_2:
-                    {
-
-                        FindControlActiveLocomotive();
-
-                        if (ControlActiveLocomotive != null)
-                        {
-                            var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
-                            var mstsDieselLocomotive = this as MSTSDieselLocomotive;
-
-                            if (EngineType == EngineTypes.Control && activeloco.DieselEngines.NumOfActiveEngines > 1)
+                            else
                             {
-                             
-                                if (activeloco.DieselEngines[1] != null)
-                                    data = activeloco.DieselEngines[1].RealRPM;
+                                var mstsDieselLocomotive = this as MSTSDieselLocomotive;
+                                if (mstsDieselLocomotive.DieselEngines[0] != null)
+                                    data = mstsDieselLocomotive.DieselEngines[0].DieselTemperatureDeg;
                             }
-                            else if (EngineType == EngineTypes.Diesel && mstsDieselLocomotive.DieselEngines.NumOfActiveEngines > 1)
-                            {                      
-                                if (mstsDieselLocomotive.DieselEngines[1] != null)
-                                    data = mstsDieselLocomotive.DieselEngines[1].RealRPM;
-                            }
+                            break;
                         }
-                        break;
-                    }
 
-                case CABViewControlTypes.ORTS_DIESEL_TEMPERATURE:
-                    {
-
-                        if (EngineType == EngineTypes.Control)
+                    case CABViewControlTypes.ORTS_OIL_PRESSURE:
                         {
-                            FindControlActiveLocomotive();
-
-                            if (ControlActiveLocomotive != null)
+                            if (EngineType == EngineTypes.Control)
                             {
-                                var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
-                                if (activeloco.DieselEngines[0] != null)
-                                    data = activeloco.DieselEngines[0].DieselTemperatureDeg;
+                                FindControlActiveLocomotive();
+
+                                if (ControlActiveLocomotive != null)
+                                {
+                                    var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
+                                    if (activeloco.DieselEngines[0] != null)
+                                        data = activeloco.DieselEngines[0].DieselOilPressurePSI;
+                                }
+
                             }
-
-                        }
-                        else
-                        {
-                            var mstsDieselLocomotive = this as MSTSDieselLocomotive;
-                            if (mstsDieselLocomotive.DieselEngines[0] != null)
-                                data = mstsDieselLocomotive.DieselEngines[0].DieselTemperatureDeg;
-                        }
-                        break;
-                    }
-
-                case CABViewControlTypes.ORTS_OIL_PRESSURE:
-                    {
-                        if (EngineType == EngineTypes.Control)
-                        {
-                            FindControlActiveLocomotive();
-
-                            if (ControlActiveLocomotive != null)
+                            else
                             {
-                                var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
-                                if (activeloco.DieselEngines[0] != null)
-                                    data = activeloco.DieselEngines[0].DieselOilPressurePSI;
+                                var mstsDieselLocomotive = this as MSTSDieselLocomotive;
+                                if (mstsDieselLocomotive.DieselEngines[0] != null)
+                                    data = mstsDieselLocomotive.DieselEngines[0].DieselOilPressurePSI;
                             }
-
+                            break;
                         }
-                        else
+
+                    case CABViewControlTypes.THROTTLE:
                         {
-                            var mstsDieselLocomotive = this as MSTSDieselLocomotive;
-                            if (mstsDieselLocomotive.DieselEngines[0] != null)
-                                data = mstsDieselLocomotive.DieselEngines[0].DieselOilPressurePSI;
+                            if (CruiseControl != null && CruiseControl.SkipThrottleDisplay) break;
+                            data = GetThrottleHandleValue(Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING ? ThrottlePercent / 100f : LocalThrottlePercent / 100f);
+                            break;
                         }
-                        break;
-                    }
-
-                case CABViewControlTypes.THROTTLE:
-                    {
-                        if (CruiseControl != null && CruiseControl.SkipThrottleDisplay) break;
-                        data = GetThrottleHandleValue(Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING ? ThrottlePercent / 100f : LocalThrottlePercent / 100f);
-                        break;
-                    }
-                case CABViewControlTypes.THROTTLE_DISPLAY:
-                case CABViewControlTypes.CPH_DISPLAY:
-                    {
-                        if (CruiseControl != null && CruiseControl.SkipThrottleDisplay) break;
-                        data = Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING? ThrottlePercent / 100f : LocalThrottlePercent / 100f;
-                        break;
-                    }
-                case CABViewControlTypes.ENGINE_BRAKE:
-                    {
-                        data = (EngineBrakeController == null) ? 0.0f : EngineBrakeController.CurrentValue;
-                        break;
-                    }
-                case CABViewControlTypes.TRAIN_BRAKE:
-                    {
-                        if (CruiseControl != null)
-                            if (CruiseControl.CCIsUsingTrainBrake) break;
-                        data = (TrainBrakeController == null) ? 0.0f : TrainBrakeController.CurrentValue;
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_BAILOFF:
-                    {
-                        data = BailOff ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_QUICKRELEASE:
-                    {
-                        data = (TrainBrakeController == null || !TrainBrakeController.QuickReleaseButtonPressed) ? 0 : 1;
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_OVERCHARGE:
-                    {
-                        data = (TrainBrakeController == null || !TrainBrakeController.OverchargeButtonPressed) ? 0 : 1;
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_AIR_FLOW_METER:
-                    {
-                        switch (cvc.Units)
+                    case CABViewControlTypes.THROTTLE_DISPLAY:
+                    case CABViewControlTypes.CPH_DISPLAY:
                         {
-                            case CABViewControlUnits.CUBIC_FT_MIN:
-                                data = this.FilteredBrakePipeFlowM3pS * 35.3147f * 60.0f;
-                                break;
-
-                            case CABViewControlUnits.LITRES_S:
-                            case CABViewControlUnits.LITERS_S:
-                                data = this.FilteredBrakePipeFlowM3pS * 1000.0f;
-                                break;
-
-                            case CABViewControlUnits.LITRES_MIN:
-                            case CABViewControlUnits.LITERS_MIN:
-                                data = this.FilteredBrakePipeFlowM3pS * 1000.0f * 60.0f;
-                                break;
-
-                            case CABViewControlUnits.CUBIC_M_S:
-                            default:
-                                data = this.FilteredBrakePipeFlowM3pS;
-                                break;
-
+                            if (CruiseControl != null && CruiseControl.SkipThrottleDisplay) break;
+                            data = Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING ? ThrottlePercent / 100f : LocalThrottlePercent / 100f;
+                            break;
                         }
-                        break;
-                    }
-                case CABViewControlTypes.FRICTION_BRAKING:
-                    {
-                        data = (BrakeSystem == null) ? 0.0f : BrakeSystem.GetCylPressurePSI();
-                        break;
-                    }
-                case CABViewControlTypes.DYNAMIC_BRAKE:
-                case CABViewControlTypes.DYNAMIC_BRAKE_DISPLAY:
-                    //case CABViewControlTypes.CP_HANDLE:
-                    {
-                        data = DynamicBrakePercent / 100f;
-                        break;
-                    }
-                case CABViewControlTypes.WIPERS:
-                    {
-                        data = Wiper ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.VACUUM_EXHAUSTER:
-                    {
-                        if (FastVacuumExhausterFitted)
+                    case CABViewControlTypes.ENGINE_BRAKE:
                         {
-                            data = VacuumExhausterPressed ? 1 : 0;
+                            data = (EngineBrakeController == null) ? 0.0f : EngineBrakeController.CurrentValue;
+                            break;
                         }
-                        else
+                    case CABViewControlTypes.TRAIN_BRAKE:
                         {
-                            data = 0;
+                            if (CruiseControl != null)
+                                if (CruiseControl.CCIsUsingTrainBrake) break;
+                            data = (TrainBrakeController == null) ? 0.0f : TrainBrakeController.CurrentValue;
+                            break;
                         }
-                        break;
-                    }
-
-                case CABViewControlTypes.HORN:
-                    {
-                        data = Horn ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.BELL:
-                    {
-                        data = Bell ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.RESET:
-                    {
-                        if (TrainControlSystem.AlerterButtonPressed)
-                            data = 1;
-                        else
-                            data = 0;
-                        break;
-                    }
-
-                case CABViewControlTypes.ALERTER_DISPLAY:
-                    {
-                        if (Simulator.Settings.Alerter)
+                    case CABViewControlTypes.ORTS_BAILOFF:
                         {
-                            if (TrainControlSystem.VigilanceEmergency)
-                                data = 2;
-                            else if (TrainControlSystem.VigilanceAlarm)
+                            data = BailOff ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_QUICKRELEASE:
+                        {
+                            data = (TrainBrakeController == null || !TrainBrakeController.QuickReleaseButtonPressed) ? 0 : 1;
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_OVERCHARGE:
+                        {
+                            data = (TrainBrakeController == null || !TrainBrakeController.OverchargeButtonPressed) ? 0 : 1;
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_AIR_FLOW_METER:
+                        {
+                            switch (cvc.Units)
+                            {
+                                case CABViewControlUnits.CUBIC_FT_MIN:
+                                    data = this.FilteredBrakePipeFlowM3pS * 35.3147f * 60.0f;
+                                    break;
+
+                                case CABViewControlUnits.LITRES_S:
+                                case CABViewControlUnits.LITERS_S:
+                                    data = this.FilteredBrakePipeFlowM3pS * 1000.0f;
+                                    break;
+
+                                case CABViewControlUnits.LITRES_MIN:
+                                case CABViewControlUnits.LITERS_MIN:
+                                    data = this.FilteredBrakePipeFlowM3pS * 1000.0f * 60.0f;
+                                    break;
+
+                                case CABViewControlUnits.CUBIC_M_S:
+                                default:
+                                    data = this.FilteredBrakePipeFlowM3pS;
+                                    break;
+
+                            }
+                            break;
+                        }
+                    case CABViewControlTypes.FRICTION_BRAKING:
+                        {
+                            data = (BrakeSystem == null) ? 0.0f : BrakeSystem.GetCylPressurePSI();
+                            break;
+                        }
+                    case CABViewControlTypes.DYNAMIC_BRAKE:
+                    case CABViewControlTypes.DYNAMIC_BRAKE_DISPLAY:
+                        //case CABViewControlTypes.CP_HANDLE:
+                        {
+                            data = DynamicBrakePercent / 100f;
+                            break;
+                        }
+                    case CABViewControlTypes.WIPERS:
+                        {
+                            data = Wiper ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.VACUUM_EXHAUSTER:
+                        {
+                            if (FastVacuumExhausterFitted)
+                            {
+                                data = VacuumExhausterPressed ? 1 : 0;
+                            }
+                            else
+                            {
+                                data = 0;
+                            }
+                            break;
+                        }
+
+                    case CABViewControlTypes.HORN:
+                        {
+                            data = Horn ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.BELL:
+                        {
+                            data = Bell ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.RESET:
+                        {
+                            if (TrainControlSystem.AlerterButtonPressed)
                                 data = 1;
                             else
                                 data = 0;
+                            break;
                         }
-                        break;
-                    }
-                case CABViewControlTypes.OVERSPEED:
-                    {
-                        data = TrainControlSystem.OverspeedWarning ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.PENALTY_APP:
-                    {
-                        data = TrainControlSystem.PenaltyApplication ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.EMERGENCY_BRAKE:
-                    {
-                        data = EmergencyButtonPressed ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.DOORS_DISPLAY:
-                    {
-                        data = Train.DoorState(DoorSide.Both) != DoorState.Closed ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.SANDERS:
-                    {
-                        data = Sander ? 1 : 0;
-                        break;
-                    }
-                // MultStateDisplay entry in CVF file had Type SANDING. W/O the below entry and another entry at line 3625
-                // the independant sanding light found in some cabs would not work.
-                case CABViewControlTypes.SANDING:
-                    {
-                        data = Sander ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.CLOCK:
-                    {
-                        data = 0;
-                        break;
-                    }
 
-                case CABViewControlTypes.FRONT_HLIGHT:
-                    {
-                        data = Headlight;
-                        break;
-                    }
-                case CABViewControlTypes.WHEELSLIP:
-                    {
-                        if (EngineType == EngineTypes.Control)
+                    case CABViewControlTypes.ALERTER_DISPLAY:
                         {
-                            FindControlActiveLocomotive();
-
-                            if (ControlActiveLocomotive != null)
+                            if (Simulator.Settings.Alerter)
                             {
-                                var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
-                                if (activeloco.DieselEngines[0] != null)
-                                {
-                                    if (activeloco.AdvancedAdhesionModel && Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
-                                        data = activeloco.WheelSlipWarning ? 1 : 0;
-                                    else
-                                        data = activeloco.WheelSlip ? 1 : 0;
+                                if (TrainControlSystem.VigilanceEmergency)
+                                    data = 2;
+                                else if (TrainControlSystem.VigilanceAlarm)
+                                    data = 1;
+                                else
+                                    data = 0;
+                            }
+                            break;
+                        }
+                    case CABViewControlTypes.OVERSPEED:
+                        {
+                            data = TrainControlSystem.OverspeedWarning ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.PENALTY_APP:
+                        {
+                            data = TrainControlSystem.PenaltyApplication ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.EMERGENCY_BRAKE:
+                        {
+                            data = EmergencyButtonPressed ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.DOORS_DISPLAY:
+                        {
+                            data = Train.DoorState(DoorSide.Both) != DoorState.Closed ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.SANDERS:
+                        {
+                            data = Sander ? 1 : 0;
+                            break;
+                        }
+                    // MultStateDisplay entry in CVF file had Type SANDING. W/O the below entry and another entry at line 3625
+                    // the independant sanding light found in some cabs would not work.
+                    case CABViewControlTypes.SANDING:
+                        {
+                            data = Sander ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.CLOCK:
+                        {
+                            data = 0;
+                            break;
+                        }
 
+                    case CABViewControlTypes.FRONT_HLIGHT:
+                        {
+                            data = Headlight;
+                            break;
+                        }
+                    case CABViewControlTypes.WHEELSLIP:
+                        {
+                            if (EngineType == EngineTypes.Control)
+                            {
+                                FindControlActiveLocomotive();
+
+                                if (ControlActiveLocomotive != null)
+                                {
+                                    var activeloco = ControlActiveLocomotive as MSTSDieselLocomotive;
+                                    if (activeloco.DieselEngines[0] != null)
+                                    {
+                                        if (activeloco.AdvancedAdhesionModel && Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
+                                            data = activeloco.WheelSlipWarning ? 1 : 0;
+                                        else
+                                            data = activeloco.WheelSlip ? 1 : 0;
+
+                                    }
                                 }
                             }
-                        }
-                        else
-                        {
-                            if (AdvancedAdhesionModel && Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
-                                data = WheelSlipWarning ? 1 : 0;
                             else
-                                data = WheelSlip ? 1 : 0;
-                        }
-                        break;
-                    }
-
-                case CABViewControlTypes.DIRECTION:
-                case CABViewControlTypes.DIRECTION_DISPLAY:
-                    {
-                        if (Direction == Direction.Forward)
-                            data = 2;
-                        else if (Direction == Direction.Reverse)
-                            data = 0;
-                        else
-                            data = 1;
-                        break;
-                    }
-                case CABViewControlTypes.ASPECT_DISPLAY:
-                    {
-                        switch (TrainControlSystem.CabSignalAspect)
-                        {
-                            case TrackMonitorSignalAspect.Stop:
-                                {
-                                    data = 0;
-                                    break;
-                                }
-                            case TrackMonitorSignalAspect.StopAndProceed:
-                                {
-                                    data = 1;
-                                    break;
-                                }
-                            case TrackMonitorSignalAspect.Restricted:
-                                {
-                                    data = 2;
-                                    break;
-                                }
-                            case TrackMonitorSignalAspect.Approach_1:
-                                {
-                                    data = 3;
-                                    break;
-                                }
-                            case TrackMonitorSignalAspect.Approach_2:
-                                {
-                                    data = 4;
-                                    break;
-                                }
-                            case TrackMonitorSignalAspect.Approach_3:
-                                {
-                                    data = 5;
-                                    break;
-                                }
-                            case TrackMonitorSignalAspect.Clear_1:
-                                {
-                                    data = 6;
-                                    break;
-                                }
-                            case TrackMonitorSignalAspect.Clear_2:
-                                {
-                                    data = 7;
-                                    break;
-                                }
-                            default:
-                                {
-                                    data = 7;
-                                    break;
-                                }
-                        }
-                        break;
-                    }
-                case CABViewControlTypes.SPEEDLIMIT:
-                    {
-                        // Displays current allowable speed
-                        bool metric = cvc.Units == CABViewControlUnits.KM_PER_HOUR;
-                        data = MpS.FromMpS(TrainControlSystem.CurrentSpeedLimitMpS, metric);
-                        break;
-                    }
-                case CABViewControlTypes.SPEEDLIM_DISPLAY:
-                    {
-                        // Displays allowable speed shown on next signal
-                        bool metric = cvc.Units == CABViewControlUnits.KM_PER_HOUR;
-                        data = MpS.FromMpS(TrainControlSystem.NextSpeedLimitMpS, metric);
-                        break;
-                    }
-                case CABViewControlTypes.GEARS_DISPLAY:
-                    {
-                        data = 0;
-                        if (this is MSTSDieselLocomotive)
-                        {
-                            var dieselLoco = this as MSTSDieselLocomotive;
-                            if (dieselLoco.DieselEngines.HasGearBox)
-                                data = dieselLoco.DieselEngines[0].GearBox.GearIndication;
-                        }
-                        break;
-                    }
-                case CABViewControlTypes.CAB_RADIO:
-                    {
-                        data = CabRadioOn ? 1 : 0;
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE:
-                    {
-                        data = 0;
-                        if (this is MSTSDieselLocomotive)
-                        {
-                            var dieselLoco = this as MSTSDieselLocomotive;
-                            data = (dieselLoco.DieselEngines[0].State == DieselEngineState.Running ||
-                                dieselLoco.DieselEngines[0].State == DieselEngineState.Starting) ? 1 : 0;
-                        }
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_HELPERS_DIESEL_ENGINES:
-                    {
-                        foreach (var car in Train.Cars)
-                        {
-                            var dieselLoco = car as MSTSDieselLocomotive;
-                            if (dieselLoco != null && dieselLoco.RemoteControlGroup != -1)
                             {
-                                if (car == Simulator.PlayerLocomotive && dieselLoco.DieselEngines.Count > 1)
+                                if (AdvancedAdhesionModel && Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
+                                    data = WheelSlipWarning ? 1 : 0;
+                                else
+                                    data = WheelSlip ? 1 : 0;
+                            }
+                            break;
+                        }
+
+                    case CABViewControlTypes.DIRECTION:
+                    case CABViewControlTypes.DIRECTION_DISPLAY:
+                        {
+                            if (Direction == Direction.Forward)
+                                data = 2;
+                            else if (Direction == Direction.Reverse)
+                                data = 0;
+                            else
+                                data = 1;
+                            break;
+                        }
+                    case CABViewControlTypes.ASPECT_DISPLAY:
+                        {
+                            switch (TrainControlSystem.CabSignalAspect)
+                            {
+                                case TrackMonitorSignalAspect.Stop:
+                                    {
+                                        data = 0;
+                                        break;
+                                    }
+                                case TrackMonitorSignalAspect.StopAndProceed:
+                                    {
+                                        data = 1;
+                                        break;
+                                    }
+                                case TrackMonitorSignalAspect.Restricted:
+                                    {
+                                        data = 2;
+                                        break;
+                                    }
+                                case TrackMonitorSignalAspect.Approach_1:
+                                    {
+                                        data = 3;
+                                        break;
+                                    }
+                                case TrackMonitorSignalAspect.Approach_2:
+                                    {
+                                        data = 4;
+                                        break;
+                                    }
+                                case TrackMonitorSignalAspect.Approach_3:
+                                    {
+                                        data = 5;
+                                        break;
+                                    }
+                                case TrackMonitorSignalAspect.Clear_1:
+                                    {
+                                        data = 6;
+                                        break;
+                                    }
+                                case TrackMonitorSignalAspect.Clear_2:
+                                    {
+                                        data = 7;
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        data = 7;
+                                        break;
+                                    }
+                            }
+                            break;
+                        }
+                    case CABViewControlTypes.SPEEDLIMIT:
+                        {
+                            // Displays current allowable speed
+                            bool metric = cvc.Units == CABViewControlUnits.KM_PER_HOUR;
+                            data = MpS.FromMpS(TrainControlSystem.CurrentSpeedLimitMpS, metric);
+                            break;
+                        }
+                    case CABViewControlTypes.SPEEDLIM_DISPLAY:
+                        {
+                            // Displays allowable speed shown on next signal
+                            bool metric = cvc.Units == CABViewControlUnits.KM_PER_HOUR;
+                            data = MpS.FromMpS(TrainControlSystem.NextSpeedLimitMpS, metric);
+                            break;
+                        }
+                    case CABViewControlTypes.GEARS_DISPLAY:
+                        {
+                            data = 0;
+                            if (this is MSTSDieselLocomotive)
+                            {
+                                var dieselLoco = this as MSTSDieselLocomotive;
+                                if (dieselLoco.DieselEngines.HasGearBox)
+                                    data = dieselLoco.DieselEngines[0].GearBox.GearIndication;
+                            }
+                            break;
+                        }
+                    case CABViewControlTypes.CAB_RADIO:
+                        {
+                            data = CabRadioOn ? 1 : 0;
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE:
+                        {
+                            data = 0;
+                            if (this is MSTSDieselLocomotive)
+                            {
+                                var dieselLoco = this as MSTSDieselLocomotive;
+                                data = (dieselLoco.DieselEngines[0].State == DieselEngineState.Running ||
+                                    dieselLoco.DieselEngines[0].State == DieselEngineState.Starting) ? 1 : 0;
+                            }
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_HELPERS_DIESEL_ENGINES:
+                        {
+                            foreach (var car in Train.Cars)
+                            {
+                                var dieselLoco = car as MSTSDieselLocomotive;
+                                if (dieselLoco != null && dieselLoco.RemoteControlGroup != -1)
                                 {
-                                    data = (dieselLoco.DieselEngines[1].State == DieselEngineState.Running ||
-                                        dieselLoco.DieselEngines[1].State == DieselEngineState.Starting) ? 1 : 0;
-                                    break;
+                                    if (car == Simulator.PlayerLocomotive && dieselLoco.DieselEngines.Count > 1)
+                                    {
+                                        data = (dieselLoco.DieselEngines[1].State == DieselEngineState.Running ||
+                                            dieselLoco.DieselEngines[1].State == DieselEngineState.Starting) ? 1 : 0;
+                                        break;
+                                    }
+                                    else if (car != Simulator.PlayerLocomotive)
+                                    {
+                                        data = (dieselLoco.DieselEngines[0].State == DieselEngineState.Running ||
+                                            dieselLoco.DieselEngines[0].State == DieselEngineState.Starting) ? 1 : 0;
+                                        break;
+                                    }
                                 }
-                                else if (car != Simulator.PlayerLocomotive)
-                                {
-                                    data = (dieselLoco.DieselEngines[0].State == DieselEngineState.Running ||
-                                        dieselLoco.DieselEngines[0].State == DieselEngineState.Starting) ? 1 : 0;
-                                    break;
-                                }
-                             }
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE_STATE:
-                    {
-                        data = 0;
-                        if (this is MSTSDieselLocomotive)
+                    case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE_STATE:
                         {
-                            var dieselLoco = this as MSTSDieselLocomotive;
-                            data = (int)dieselLoco.DieselEngines[0].State;
+                            data = 0;
+                            if (this is MSTSDieselLocomotive)
+                            {
+                                var dieselLoco = this as MSTSDieselLocomotive;
+                                data = (int)dieselLoco.DieselEngines[0].State;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE_STARTER:
-                    {
-                        data = 0;
-                        if (this is MSTSDieselLocomotive)
+                    case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE_STARTER:
                         {
-                            var dieselLoco = this as MSTSDieselLocomotive;
-                            data = dieselLoco.DieselEngines[0].State == DieselEngineState.Starting ? 1 : 0;
+                            data = 0;
+                            if (this is MSTSDieselLocomotive)
+                            {
+                                var dieselLoco = this as MSTSDieselLocomotive;
+                                data = dieselLoco.DieselEngines[0].State == DieselEngineState.Starting ? 1 : 0;
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE_STOPPER:
-                    {
-                        data = 0;
-                        if (this is MSTSDieselLocomotive)
+                    case CABViewControlTypes.ORTS_PLAYER_DIESEL_ENGINE_STOPPER:
                         {
-                            var dieselLoco = this as MSTSDieselLocomotive;
-                            data = dieselLoco.DieselEngines[0].State == DieselEngineState.Stopping ? 1 : 0;
+                            data = 0;
+                            if (this is MSTSDieselLocomotive)
+                            {
+                                var dieselLoco = this as MSTSDieselLocomotive;
+                                data = dieselLoco.DieselEngines[0].State == DieselEngineState.Stopping ? 1 : 0;
+                            }
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_CABLIGHT:
+                        data = CabLightOn ? 1 : 0;
+                        break;
+                    case CABViewControlTypes.ORTS_LEFTDOOR:
+                    case CABViewControlTypes.ORTS_RIGHTDOOR:
+                        {
+                            bool right = (cvc.ControlType.Type == CABViewControlTypes.ORTS_RIGHTDOOR) ^ Flipped ^ GetCabFlipped();
+                            var state = Train.DoorState(right ? DoorSide.Right : DoorSide.Left);
+                            data = state >= DoorState.Opening ? 1 : 0;
                         }
                         break;
-                    }
-                case CABViewControlTypes.ORTS_CABLIGHT:
-                    data = CabLightOn ? 1 : 0;
-                    break;
-                case CABViewControlTypes.ORTS_LEFTDOOR:
-                case CABViewControlTypes.ORTS_RIGHTDOOR:
-                    {
-                        bool right = (cvc.ControlType.Type == CABViewControlTypes.ORTS_RIGHTDOOR) ^ Flipped ^ GetCabFlipped();
-                        var state = Train.DoorState(right ? DoorSide.Right : DoorSide.Left);
-                        data = state >= DoorState.Opening ? 1 : 0;
-                    }
-                    break;
-                case CABViewControlTypes.ORTS_LEFTWINDOW:
-                case CABViewControlTypes.ORTS_2DEXTERNALLEFTWINDOW:
-                    data = UsingRearCab ? (WindowStates[RightWindowRearIndex] == WindowState.Closing || WindowStates[RightWindowRearIndex] == WindowState.Opening ? 1 : 0) :
-                        (WindowStates[LeftWindowFrontIndex] == WindowState.Closing || WindowStates[LeftWindowFrontIndex] == WindowState.Opening ? 1 : 0);
-                    break;
-                case CABViewControlTypes.ORTS_RIGHTWINDOW:
-                case CABViewControlTypes.ORTS_2DEXTERNALRIGHTWINDOW:
-                    data = UsingRearCab ? (WindowStates[LeftWindowRearIndex] == WindowState.Closing || WindowStates[LeftWindowRearIndex] == WindowState.Opening ? 1 : 0) :
-                        (WindowStates[RightWindowFrontIndex] == WindowState.Closing || WindowStates[RightWindowFrontIndex] == WindowState.Opening ? 1 : 0);
-                    break;
-                case CABViewControlTypes.ORTS_MIRRORS:
-                    data = MirrorOpen ? 1 : 0;
-                    break;
-                case CABViewControlTypes.ORTS_BATTERY:
-                    data = Battery ? 1 : 0;
-                    break;
-                case CABViewControlTypes.ORTS_POWERKEY:
-                    data = PowerKey ? 1 : 0;
-                    break;
-                case CABViewControlTypes.ORTS_2DEXTERNALWIPERS:
-                    data = Wiper ? 1 : 0;
-                    break;
-                case CABViewControlTypes.ORTS_HOURDIAL:
-                    float hour = (float)(Simulator.ClockTime / 3600) % 12;
-                    if (hour < 0)
-                        hour += 12;
-                    data = hour;
-                    break;
-                case CABViewControlTypes.ORTS_MINUTEDIAL:
-                    float minute = (float)(Simulator.ClockTime / 60) % 60;
-                    if (minute < 0)
-                        minute += 60;
-                    data = minute;
-                    break;
-                case CABViewControlTypes.ORTS_SECONDDIAL:
-                    int seconds = (int)Simulator.ClockTime % 60;
-                    if (seconds < 0)
-                        seconds += 60;
-                    data = seconds;
-                    break;
-                case CABViewControlTypes.ORTS_GENERIC_ITEM1:
-                    {
-                        data = GenericItem1 ? 1 : 0;
+                    case CABViewControlTypes.ORTS_LEFTWINDOW:
+                    case CABViewControlTypes.ORTS_2DEXTERNALLEFTWINDOW:
+                        data = UsingRearCab ? (WindowStates[RightWindowRearIndex] == WindowState.Closing || WindowStates[RightWindowRearIndex] == WindowState.Opening ? 1 : 0) :
+                            (WindowStates[LeftWindowFrontIndex] == WindowState.Closing || WindowStates[LeftWindowFrontIndex] == WindowState.Opening ? 1 : 0);
                         break;
-                    }
-                case CABViewControlTypes.ORTS_GENERIC_ITEM2:
-                    {
-                        data = GenericItem2 ? 1 : 0;
+                    case CABViewControlTypes.ORTS_RIGHTWINDOW:
+                    case CABViewControlTypes.ORTS_2DEXTERNALRIGHTWINDOW:
+                        data = UsingRearCab ? (WindowStates[LeftWindowRearIndex] == WindowState.Closing || WindowStates[LeftWindowRearIndex] == WindowState.Opening ? 1 : 0) :
+                            (WindowStates[RightWindowFrontIndex] == WindowState.Closing || WindowStates[RightWindowFrontIndex] == WindowState.Opening ? 1 : 0);
                         break;
-                    }
-
-                case CABViewControlTypes.ORTS_TCS:
-                    TrainControlSystem.CabDisplayControls.TryGetValue(cvc.ControlType.Id - 1, out data);
-                    break;
-
-                case CABViewControlTypes.ORTS_BATTERY_SWITCH_COMMAND_SWITCH:
-                    data = LocomotivePowerSupply.BatterySwitch.CommandSwitch ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_BATTERY_SWITCH_COMMAND_BUTTON_CLOSE:
-                    data = LocomotivePowerSupply.BatterySwitch.CommandButtonOn ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_BATTERY_SWITCH_COMMAND_BUTTON_OPEN:
-                    data = LocomotivePowerSupply.BatterySwitch.CommandButtonOff ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_BATTERY_SWITCH_ON:
-                    data = LocomotivePowerSupply.BatterySwitch.On ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_MASTER_KEY:
-                    data = LocomotivePowerSupply.MasterKey.CommandSwitch ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_CURRENT_CAB_IN_USE:
-                    data = LocomotivePowerSupply.MasterKey.On ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_OTHER_CAB_IN_USE:
-                    data = LocomotivePowerSupply.MasterKey.OtherCabInUse ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_SERVICE_RETENTION_BUTTON:
-                    data = LocomotivePowerSupply.ServiceRetentionButton ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_SERVICE_RETENTION_CANCELLATION_BUTTON:
-                    data = LocomotivePowerSupply.ServiceRetentionCancellationButton ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_ELECTRIC_TRAIN_SUPPLY_COMMAND_SWITCH:
-                    data = LocomotivePowerSupply.ElectricTrainSupplySwitch.CommandSwitch ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_ELECTRIC_TRAIN_SUPPLY_ON:
-                    data = LocomotivePowerSupply.ElectricTrainSupplyOn ? 1 : 0;
-                    break;
-
-                case CABViewControlTypes.ORTS_ODOMETER:
-                    switch (cvc.Units)
-                    {
-                        case CABViewControlUnits.KILOMETRES:
-                            data = (float)Me.ToKiloM(OdometerM);
+                    case CABViewControlTypes.ORTS_MIRRORS:
+                        data = MirrorOpen ? 1 : 0;
+                        break;
+                    case CABViewControlTypes.ORTS_BATTERY:
+                        data = Battery ? 1 : 0;
+                        break;
+                    case CABViewControlTypes.ORTS_POWERKEY:
+                        data = PowerKey ? 1 : 0;
+                        break;
+                    case CABViewControlTypes.ORTS_2DEXTERNALWIPERS:
+                        data = Wiper ? 1 : 0;
+                        break;
+                    case CABViewControlTypes.ORTS_HOURDIAL:
+                        float hour = (float)(Simulator.ClockTime / 3600) % 12;
+                        if (hour < 0)
+                            hour += 12;
+                        data = hour;
+                        break;
+                    case CABViewControlTypes.ORTS_MINUTEDIAL:
+                        float minute = (float)(Simulator.ClockTime / 60) % 60;
+                        if (minute < 0)
+                            minute += 60;
+                        data = minute;
+                        break;
+                    case CABViewControlTypes.ORTS_SECONDDIAL:
+                        int seconds = (int)Simulator.ClockTime % 60;
+                        if (seconds < 0)
+                            seconds += 60;
+                        data = seconds;
+                        break;
+                    case CABViewControlTypes.ORTS_GENERIC_ITEM1:
+                        {
+                            data = GenericItem1 ? 1 : 0;
                             break;
-                        case CABViewControlUnits.MILES:
-                            data = (float)Me.ToMi(OdometerM);
+                        }
+                    case CABViewControlTypes.ORTS_GENERIC_ITEM2:
+                        {
+                            data = GenericItem2 ? 1 : 0;
                             break;
-                        case CABViewControlUnits.FEET:
-                            data = (float)Me.ToFt(OdometerM);
-                            break;
-                        case CABViewControlUnits.YARDS:
-                            data = (float)Me.ToYd(OdometerM);
-                            break;
-                        case CABViewControlUnits.METRES:
-                        default:
-                            data = OdometerM;
-                            break;
-                    }
-                    break;
-                case CABViewControlTypes.ORTS_ODOMETER_DIRECTION:
-                    data = OdometerCountingUp ? 1 : 0;
-                    break;
-                case CABViewControlTypes.ORTS_ODOMETER_RESET:
-                    data = OdometerResetButtonPressed ? 1 : 0;
-                    break;
-                case CABViewControlTypes.ORTS_MULTI_POSITION_CONTROLLER:
-                    if (MultiPositionControllers != null)
-                    {
-                        var mpc = MultiPositionControllers.Where(x => x.ControllerId == cvc.ControlId).FirstOrDefault();
-                        if (mpc != null) data = mpc.GetDataOf(cvc);
-                    }
-                    break;
+                        }
 
-                default:
-                    if (CruiseControl != null)
-                        data = CruiseControl.GetDataOf(cvc);
-                    if (Train?.EOT != null && data == 0)
-                        data = Train.EOT.GetDataOf(cvc);
-                    break;
+                    case CABViewControlTypes.ORTS_TCS:
+                        TrainControlSystem.CabDisplayControls.TryGetValue(cvc.ControlType.Id - 1, out data);
+                        break;
+
+                    case CABViewControlTypes.ORTS_BATTERY_SWITCH_COMMAND_SWITCH:
+                        data = LocomotivePowerSupply.BatterySwitch.CommandSwitch ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_BATTERY_SWITCH_COMMAND_BUTTON_CLOSE:
+                        data = LocomotivePowerSupply.BatterySwitch.CommandButtonOn ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_BATTERY_SWITCH_COMMAND_BUTTON_OPEN:
+                        data = LocomotivePowerSupply.BatterySwitch.CommandButtonOff ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_BATTERY_SWITCH_ON:
+                        data = LocomotivePowerSupply.BatterySwitch.On ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_MASTER_KEY:
+                        data = LocomotivePowerSupply.MasterKey.CommandSwitch ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_CURRENT_CAB_IN_USE:
+                        data = LocomotivePowerSupply.MasterKey.On ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_OTHER_CAB_IN_USE:
+                        data = LocomotivePowerSupply.MasterKey.OtherCabInUse ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_SERVICE_RETENTION_BUTTON:
+                        data = LocomotivePowerSupply.ServiceRetentionButton ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_SERVICE_RETENTION_CANCELLATION_BUTTON:
+                        data = LocomotivePowerSupply.ServiceRetentionCancellationButton ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_ELECTRIC_TRAIN_SUPPLY_COMMAND_SWITCH:
+                        data = LocomotivePowerSupply.ElectricTrainSupplySwitch.CommandSwitch ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_ELECTRIC_TRAIN_SUPPLY_ON:
+                        data = LocomotivePowerSupply.ElectricTrainSupplyOn ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_ODOMETER:
+                        switch (cvc.Units)
+                        {
+                            case CABViewControlUnits.KILOMETRES:
+                                data = (float)Me.ToKiloM(OdometerM);
+                                break;
+                            case CABViewControlUnits.MILES:
+                                data = (float)Me.ToMi(OdometerM);
+                                break;
+                            case CABViewControlUnits.FEET:
+                                data = (float)Me.ToFt(OdometerM);
+                                break;
+                            case CABViewControlUnits.YARDS:
+                                data = (float)Me.ToYd(OdometerM);
+                                break;
+                            case CABViewControlUnits.METRES:
+                            default:
+                                data = OdometerM;
+                                break;
+                        }
+                        break;
+                    case CABViewControlTypes.ORTS_ODOMETER_DIRECTION:
+                        data = OdometerCountingUp ? 1 : 0;
+                        break;
+                    case CABViewControlTypes.ORTS_ODOMETER_RESET:
+                        data = OdometerResetButtonPressed ? 1 : 0;
+                        break;
+                    case CABViewControlTypes.ORTS_MULTI_POSITION_CONTROLLER:
+                        if (MultiPositionControllers != null)
+                        {
+                            var mpc = MultiPositionControllers.Where(x => x.ControllerId == cvc.ControlId).FirstOrDefault();
+                            if (mpc != null) data = mpc.GetDataOf(cvc);
+                        }
+                        break;
+
+                    default:
+                        if (CruiseControl != null)
+                            data = CruiseControl.GetDataOf(cvc);
+                        if (Train?.EOT != null && data == 0)
+                            data = Train.EOT.GetDataOf(cvc);
+                        break;
+                }
+                if (cvc.Precision > 0)
+                {
+                    data = data * cvc.Precision;
+                    data = (float)Math.Round(data, 0);
+                    data = data / cvc.Precision;
+                }
+                cvc.PreviousData = data;
+            }
+            cvc.ElapsedTime += elapsedTime;
+            if (cvc.ElapsedTime >= cvc.UpdateTime)
+            {
+                cvc.ElapsedTime = 0;
             }
             return data;
         }

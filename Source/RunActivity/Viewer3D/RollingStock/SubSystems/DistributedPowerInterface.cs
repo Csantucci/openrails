@@ -106,14 +106,14 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
             Windows.Add(window);
         }
 
-        public void PrepareFrame(float elapsedSeconds)
+        public void PrepareFrame(ElapsedTime elapsedTime)
         {
             Active = DPIStatus != null && DPIStatus.DPIActive;
             if (!Active) return;
 
             foreach (var area in Windows)
             {
-                area.PrepareFrame(DPIStatus);
+                area.PrepareFrame(DPIStatus, elapsedTime);
             }
         }
         public void SizeTo(float width, float height)
@@ -172,7 +172,7 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
                 sUnits = sUnits.Replace('/', '_');
                 CABViewControlUnits.TryParse(sUnits, out LoadUnits);
             }
-            DPITable = new DPITable(FullTable, LoadUnits, fullScreen:true, dpi:dpi, (control as CVCScreen).Rotation);
+            DPITable = new DPITable(FullTable, LoadUnits, fullScreen:true, dpi:dpi, control as CVCScreen);
             AddToLayout(DPITable, new Point(0, 0));
         }
     }
@@ -283,7 +283,7 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
                 DrawIntRectangle(spriteBatch, drawPosition, 0, Height - 1, Width, 1, ColorShadow);
             }
         }
-        public virtual void PrepareFrame(DPIStatus status) { }
+        public virtual void PrepareFrame(DPIStatus status, ElapsedTime elapsedSeconds) { }
 
         public void DrawRectangle(SpriteBatch spriteBatch, Point drawPosition, float x, float y, float width, float height, Color color)
         {
@@ -322,13 +322,13 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
         protected DPIWindow(DistributedPowerInterface dpi, int width, int height) : base(dpi, width, height)
         {
         }
-        public override void PrepareFrame(DPIStatus status)
+        public override void PrepareFrame(DPIStatus status, ElapsedTime elapsedTime)
         {
             if (!Visible) return;
-            base.PrepareFrame(status);
+            base.PrepareFrame(status, elapsedTime);
             foreach(var area in SubAreas)
             {
-                area.PrepareFrame(status);
+                area.PrepareFrame(status, elapsedTime);
             }
         }
         public override void Draw(SpriteBatch spriteBatch, Point drawPosition)
@@ -374,6 +374,7 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
         public bool FullTable = true;
         public CABViewControlUnits LoadUnits;
         private float DrawRotation = 0;
+        private CVCScreen Control;
 
         // Change text color
         readonly Dictionary<string, Color> ColorCodeCtrl = new Dictionary<string, Color>
@@ -392,13 +393,14 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
 
         public readonly string[] FirstColumn = { "ID", "Throttle", "Load", "BP", "Flow", "Remote", "ER", "BC", "MR" };
 
-        public DPITable(bool fullTable, CABViewControlUnits loadUnits, bool fullScreen, DistributedPowerInterface dpi, float drawRotation) : base(dpi, 640,  fullTable? 230 : 162)
+        public DPITable(bool fullTable, CABViewControlUnits loadUnits, bool fullScreen, DistributedPowerInterface dpi, CVCScreen control) : base(dpi, 640,  fullTable? 230 : 162)
         {
             DPI = dpi;
             FullScreen = fullScreen;
             FullTable = fullTable;
             LoadUnits = loadUnits;
-            DrawRotation = drawRotation;
+            Control = control;
+            DrawRotation = Control.Rotation;
             BackgroundColor = DPI.BlackWhiteTheme ? Color.Black : ColorBackground;
             SetFont();
             string text = "";
@@ -442,14 +444,17 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
                 }
         }
 
-        public override void PrepareFrame(DPIStatus dpiStatus)
+        public override void PrepareFrame(DPIStatus dpiStatus, ElapsedTime elapsedTime)
         {
             string[,] tempStatus;
             var locomotive = DPI.Locomotive;
             var train = locomotive.Train;
             var multipleUnitsConfiguration = locomotive.GetMultipleUnitsConfiguration();
             int dieselLocomotivesCount = 0;
-
+            Control.ElapsedTime += elapsedTime.ClockSeconds;
+            if (Control.ElapsedTime < Control.UpdateTime)
+                return;
+            Control.ElapsedTime = 0;
             if (locomotive != null)
             {
                 int numberOfDieselLocomotives = 0;
@@ -568,7 +573,7 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
                 DPI.SizeTo(DrawPosition.Width, DrawPosition.Height);
                 DPI.DPDefaultWindow.BackgroundColor = Color.Transparent;
             }
-            DPI.PrepareFrame(elapsedTime.ClockSeconds);
+            DPI.PrepareFrame(elapsedTime);
         }
 
         public override void Draw(GraphicsDevice graphicsDevice)
@@ -776,7 +781,7 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
         }
 
         //update the 3D cab DPI table
-        public void Update3DDPITable()
+        public void Update3DDPITable(ElapsedTime elapsedTime)
         {
 
             Material UsedMaterial = Material; //use default material
@@ -784,7 +789,7 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
             //update text string
             bool Alert = false;
             //            string speed = CVFR.Get3DDigits(out Alert);
-            DPITable.PrepareFrame(DPIStatus);
+            DPITable.PrepareFrame(DPIStatus, elapsedTime);
 
             //           NumVertices = NumIndices = 0;
 
@@ -980,7 +985,7 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
             if (!CVFR.IsPowered && CVFR.Control.HideIfDisabled)
                 return;
 
-            Update3DDPITable();
+            Update3DDPITable(elapsedTime);
             Matrix mx = TrainCarShape.Location.XNAMatrix;
             mx.M41 += (TrainCarShape.Location.TileX - Viewer.Camera.TileX) * 2048;
             mx.M43 += (-TrainCarShape.Location.TileZ + Viewer.Camera.TileZ) * 2048;
