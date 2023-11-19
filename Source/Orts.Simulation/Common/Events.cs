@@ -282,6 +282,8 @@ namespace Orts.Common
 
         MPCChangePosition,
 
+        SteamBoosterChange,
+
     }
 
     public static class Events
@@ -561,13 +563,15 @@ namespace Orts.Common
 
                         case 310: return Event.MPCChangePosition;
 
+                        case 320: return Event.SteamBoosterChange;
+
                         // AI train related events
-                        case 320: return Event.AITrainLeadLoco;
-                        case 321: return Event.AITrainHelperLoco;
-                        case 322: return Event.PlayerTrainLeadLoco;
-                        case 323: return Event.PlayerTrainHelperLoco;
-                        case 324: return Event.AITrainApproachingStation;
-                        case 325: return Event.AITrainLeavingStation;
+                        case 330: return Event.AITrainLeadLoco;
+                        case 331: return Event.AITrainHelperLoco;
+                        case 332: return Event.PlayerTrainLeadLoco;
+                        case 333: return Event.PlayerTrainHelperLoco;
+                        case 334: return Event.AITrainApproachingStation;
+                        case 335: return Event.AITrainLeavingStation;
 
                         default: return 0;
                     }
