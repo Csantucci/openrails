@@ -43,6 +43,7 @@ using Orts.Simulation.RollingStocks.SubSystems;
 using Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS;
 using Orts.Simulation.Signalling;
 using ORTS.Common;
+using ORTS.Scripting.Api;
 using Event = Orts.Common.Event;
 
 namespace Orts.Simulation.AIs
@@ -678,7 +679,7 @@ namespace Orts.Simulation.AIs
             // Update position, route clearance and objects
             if (MovementState == AI_MOVEMENT_STATE.AI_STATIC)
             {
-                CalculatePositionOfCars(0, 0); // Required to make train visible; set elapsed time to zero to avoid actual movement
+                UpdateAIStatic(elapsedClockSeconds);
             }
             else
             {
@@ -740,7 +741,7 @@ namespace Orts.Simulation.AIs
             switch (MovementState)
             {
                 case AI_MOVEMENT_STATE.AI_STATIC:
-                    UpdateAIStaticState(presentTime);
+                    UpdateAIStaticState(presentTime, elapsedClockSeconds);
                     break;
                 case AI_MOVEMENT_STATE.STOPPED:
                     if (nextActionInfo != null && nextActionInfo.GetType().IsSubclassOf(typeof(AuxActionItem)))
@@ -1041,6 +1042,19 @@ namespace Orts.Simulation.AIs
 
             CalculatePositionOfCars(elapsedClockSeconds, distanceM);
 
+            // update engine state for all engines in consist
+            foreach (var car in Cars)
+            {
+                if (car is MSTSLocomotive)
+                {
+                    MSTSLocomotive loco = car as MSTSLocomotive;
+                    if (!loco.HasRequiredEngineState(PowerState))
+                    {
+                        loco.UpdateEngineState(elapsedClockSeconds);
+                    }
+                }
+            }
+
             DistanceTravelledM += distanceM;
 
             // Perform overall update
@@ -1054,6 +1068,27 @@ namespace Orts.Simulation.AIs
                 ObtainRequiredActions(movedBackward);                                               // process Actions
                 UpdateRouteClearanceAhead(SignalObjIndex, movedBackward, elapsedClockSeconds);      // update route clearance
                 UpdateSignalState(movedBackward);                                                   // update signal state
+            }
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// Update trains in AIStatic mode
+        /// </summary>
+
+        public virtual void UpdateAIStatic(float elapsedClockSeconds)
+        {
+            CalculatePositionOfCars(0, 0);          //required to make train visible ; set elapsed time to zero to avoid actual movement
+            foreach (var car in Cars)               //loop through engines to set correct engine state
+            {
+                if (car is MSTSLocomotive)
+                {
+                    MSTSLocomotive loco = car as MSTSLocomotive;
+                    if (!loco.HasRequiredEngineState(PowerState))
+                    {
+                        loco.UpdateEngineState(elapsedClockSeconds);
+                    }
+                }
             }
         }
 
@@ -1487,7 +1522,7 @@ namespace Orts.Simulation.AIs
         /// Update AI Static state
         /// </summary>
         /// <param name="presentTime"></param>
-        public override void UpdateAIStaticState(int presentTime)
+        public override void UpdateAIStaticState(int presentTime, float elapsedClockSeconds)
         {
             // Start if start time is reached
             if (StartTime.HasValue && StartTime.Value < presentTime && TrainHasPower())
