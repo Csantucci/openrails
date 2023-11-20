@@ -144,8 +144,7 @@ namespace Orts.Simulation.Signalling
                 File.AppendAllText(dpe_fileLoc + @"printproc.txt", "\n\nSIGNAL : " + thisHead.TDBIndex.ToString() + "\n");
                 File.AppendAllText(dpe_fileLoc + @"printproc.txt", "OBJECT : " + thisHead.mainSignal.thisRef.ToString() + "\n");
                 File.AppendAllText(dpe_fileLoc + @"printproc.txt", "type   : " + signalScript.scriptname + "\n");
-                String fnstring = String.Copy(thisHead.mainSignal.signalRef.Simulator.SIGCFG.ORTSFunctionTypes[thisHead.ORTSsigFunctionIndex]);
-                File.AppendAllText(dpr_fileLoc + @"printproc.txt", "fntype : " + thisHead.ORTSsigFunctionIndex + " = " + fnstring + "\n\n");
+                File.AppendAllText(dpr_fileLoc + @"printproc.txt", "fntype : " + thisHead.SignalTypeName + " = " + thisHead.Function + "\n\n");
             }
 #endif
 #if DEBUG_PRINT_PROCESS
@@ -153,10 +152,8 @@ namespace Orts.Simulation.Signalling
             {
                 File.AppendAllText(dpr_fileLoc + @"printproc.txt", "\n\nSIGNAL : " + thisHead.TDBIndex.ToString() + "\n");
                 File.AppendAllText(dpr_fileLoc + @"printproc.txt", "OBJECT : " + thisHead.mainSignal.thisRef.ToString() + "\n");
-                File.AppendAllText(dpr_fileLoc + @"printproc.txt", "type   : " + signalScript.ScriptName + "\n");
-                String fnstring = String.Copy(thisHead.mainSignal.signalRef.Simulator.SIGCFG.ORTSFunctionTypes[thisHead.ORTSsigFunctionIndex]);
-                File.AppendAllText(dpr_fileLoc + @"printproc.txt", "fntype : " + thisHead.ORTSsigFunctionIndex + " = " + fnstring + "\n\n");
-
+                File.AppendAllText(dpr_fileLoc + @"printproc.txt", "type   : " + signalScript.scriptname + "\n");
+                File.AppendAllText(dpr_fileLoc + @"printproc.txt", "fntype : " + thisHead.SignalTypeName + " = " + thisHead.Function + "\n\n");
                 if (thisHead.mainSignal.localStorage.Count > 0)
                 {
                     File.AppendAllText(dpr_fileLoc + @"printproc.txt", "\n  local storage : \n");
@@ -585,18 +582,18 @@ namespace Orts.Simulation.Signalling
                     {
                         File.AppendAllText(dpe_fileLoc + @"printproc.txt",
                                 " NEXT_SIG_LR : Located signal : " +
-                                               thisHead.mainSignal.sigfound[parameter1_value].ToString() + "\n");
+                                               thisHead.mainSignal.sigfound[function1].ToString() + "\n");
                     }
 #endif
 #if DEBUG_PRINT_PROCESS
                     if (TDB_debug_ref.Contains(thisHead.TDBIndex) || OBJ_debug_ref.Contains(thisHead.mainSignal.thisRef))
                     {
                         var sob = new StringBuilder();
-                        sob.AppendFormat(" NEXT_SIG_LR : Located signal : {0}", thisHead.mainSignal.sigfound[parameter1_value].ToString());
+                        sob.AppendFormat(" NEXT_SIG_LR : Located signal : {0}", thisHead.mainSignal.sigfound[function1].ToString());
 
-                        if (thisHead.mainSignal.sigfound[parameter1_value] > 0)
+                        if (thisHead.mainSignal.sigfound[function1] > 0)
                         {
-                            SignalObject otherSignal = thisHead.mainSignal.signalRef.SignalObjects[thisHead.mainSignal.sigfound[parameter1_value]];
+                            SignalObject otherSignal = thisHead.mainSignal.signalRef.SignalObjects[thisHead.mainSignal.sigfound[function1]];
                             sob.AppendFormat(" (");
 
                             foreach (SignalHead otherHead in otherSignal.SignalHeads)
@@ -623,7 +620,7 @@ namespace Orts.Simulation.Signalling
                     {
                         File.AppendAllText(dpe_fileLoc + @"printproc.txt",
                                 " NEXT_SIG_MR : Located signal : " +
-                                               thisHead.mainSignal.sigfound[parameter1_value].ToString() + "\n");
+                                               thisHead.mainSignal.sigfound[function1].ToString() + "\n");
                     }
 #endif
 #if DEBUG_PRINT_PROCESS
@@ -631,7 +628,7 @@ namespace Orts.Simulation.Signalling
                     {
                         File.AppendAllText(dpr_fileLoc + @"printproc.txt",
                                         " NEXT_SIG_MR : Located signal : " +
-                                               thisHead.mainSignal.sigfound[parameter1_value].ToString() + "\n");
+                                               thisHead.mainSignal.sigfound[function1].ToString() + "\n");
                     }
 #endif
                     break;
@@ -660,7 +657,7 @@ namespace Orts.Simulation.Signalling
                     if (thisHead.mainSignal.enabledTrain != null)
                     {
                         SignalObject foundSignal = null;
-                        int dummy = (int)thisHead.opp_sig_lr(parameter1_value, ref foundSignal);
+                        int dummy = (int)thisHead.opp_sig_lr(function1, ref foundSignal);
                         int foundRef = foundSignal != null ? foundSignal.thisRef : -1;
                         File.AppendAllText(dpe_fileLoc + @"printproc.txt",
                                 " OPP_SIG_LR : Located signal : " + foundRef.ToString() + "\n");
@@ -670,7 +667,7 @@ namespace Orts.Simulation.Signalling
                     if (TDB_debug_ref.Contains(thisHead.TDBIndex) || OBJ_debug_ref.Contains(thisHead.mainSignal.thisRef))
                     {
                         SignalObject foundSignal = null;
-                        int dummy = (int)thisHead.opp_sig_lr(parameter1_value, ref foundSignal);
+                        int dummy = (int)thisHead.opp_sig_lr(function1, ref foundSignal);
                         int foundRef = foundSignal != null ? foundSignal.thisRef : -1;
                         File.AppendAllText(dpr_fileLoc + @"printproc.txt",
                                 " OPP_SIG_LR : Located signal : " + foundRef.ToString() + "\n");
@@ -1372,7 +1369,7 @@ namespace Orts.Simulation.Signalling
                     {
                         File.AppendAllText(dpe_fileLoc + @"printproc.txt",
                                 " NEXT_SIG_LVAR : Located signal : " +
-                                               thisHead.mainSignal.sigfound[parameter1_value].ToString() + "\n");
+                                               thisHead.mainSignal.sigfound[function1].ToString() + "\n");
                         File.AppendAllText(dpe_fileLoc + @"printproc.txt", "                 returned value : " + return_value + "\n");
                     }
 #endif
@@ -1380,11 +1377,11 @@ namespace Orts.Simulation.Signalling
                     if (TDB_debug_ref.Contains(thisHead.TDBIndex) || OBJ_debug_ref.Contains(thisHead.mainSignal.thisRef))
                     {
                         var sob = new StringBuilder();
-                        sob.AppendFormat(" NEXT_SIG_LVAR : Located signal : {0}", thisHead.mainSignal.sigfound[parameter1_value].ToString());
+                        sob.AppendFormat(" NEXT_SIG_LVAR : Located signal : {0}", thisHead.mainSignal.sigfound[function1].ToString());
 
-                        if (thisHead.mainSignal.sigfound[parameter1_value] > 0)
+                        if (thisHead.mainSignal.sigfound[function1] > 0)
                         {
-                            SignalObject otherSignal = thisHead.mainSignal.signalRef.SignalObjects[thisHead.mainSignal.sigfound[parameter1_value]];
+                            SignalObject otherSignal = thisHead.mainSignal.signalRef.SignalObjects[thisHead.mainSignal.sigfound[function1]];
                             sob.AppendFormat(" (");
 
                             foreach (SignalHead otherHead in otherSignal.SignalHeads)
