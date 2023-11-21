@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.147
-September 25th, 2023
+﻿Open Rails, NewYear version README - Rev.148
+November 21st, 2023
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-638, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-687, 
 plus some of the features already present in the Unstable release.
 
 
@@ -46,31 +46,27 @@ This version includes some features not (yet) available in the Open Rails testin
 - add PERCENT UoM to ORTS_SIGNED_TRACTION_TOTAL_BRAKING
 - add cabview controls ODOMETER_UP and ODOMETER_DOWN
 - fix crash when reinitializing EOTs on a carless train
-- keyboard commands for Overcharge and Quick Release, by cesarBLG
-- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008
 - enable modifying and compiling the .fx shader files, see http://www.elvastower.com/forums/index.php?/topic/36968-mgfxwhywhen-nov-2022what-does-a-user-do-now/page__view__findpost__p__295571
 - accept ORTSAirBrakeMainResVolume as .eng files token, used in some TrainSimulations routes (see https://www.trainsim.com/forums/forum/open-rails/open-rails-discussion/2284903-shasta-route-available?p=2285365#post2285365)
 - Provide more tolerance for CentreOfGravity, see http://www.elvastower.com/forums/index.php?/topic/37366-centreofgravity/
 - Map View dark modded, by ExRail, see http://www.elvastower.com/forums/index.php?/topic/37362-map-view-dark-moddded/
 - Add curve force and brake cylinder pressure in sound debug window
+- Sort of hack to fix http://www.elvastower.com/forums/index.php?/topic/37448-ammeter-configuration-steeringcarriages-emudmu/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
+  - allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
+  (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
   - Additional parameters for Cruise Control, see https://blueprints.launchpad.net/or/+spec/additional-cruise-control-parameters (PR #839)
-  - Support for air flow meters, by SteelFill, see http://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__st__570__p__299318#entry299318 (PR #857)
-  - NEW: Fix for bug when switching player train with 3Dcab, see https://bugs.launchpad.net/or/+bug/2036346 (PR #875)
-- NEW: Fix ORNYMG bug, see http://www.elvastower.com/forums/index.php?/topic/37437-ornymg-rev-145-gaps-between-rolling-stock/
-- NEW: Re-instate Precision and UpdateTime for SPEEDOMETER in cabvies, see http://www.elvastower.com/forums/index.php?/topic/37448-ammeter-configuration-steeringcarriages-emudmu/page__view__findpost__p__300651
-- NEW: Sort of hack to fix http://www.elvastower.com/forums/index.php?/topic/37448-ammeter-configuration-steeringcarriages-emudmu/
-- NEW: Fix ORNYMG bug, see for http://www.elvastower.com/forums/index.php?/topic/37464-still-on-turntable/
-
-
-
-
-
-
-
-
-
-
+  - Fix for bug when switching player train with 3Dcab, see https://bugs.launchpad.net/or/+bug/2036346 (PR #875)
+  - NEW: (signalling) No speed update parameter, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37573-proposed-new-signal-aspect-parameter-or-nospeedupdate/page__view__findpost__p__302320 (PR #889)
+  - NEW: (timetables) Allow depart early, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__296371 (PR #890) 
+  - NEW: Auto-save, by roeter, see https://www.elvastower.com/forums/index.php?/topic/35870-auto-save/page__view__findpost__p__280206 (PR #891)
+  - NEW: Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
+  - NEW: Fix signal errors, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37570-debug-code/page__view__findpost__p__302315 (PR #893)
+  - NEW: Fix decrease colour bug in cabs, by roeter, see bug report https://bugs.launchpad.net/or/+bug/2043690 (PR #894)
+  - NEW: (timetables) Many options to define power and light related features, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__293894 (PR #895)
+- NEW: Re-instate and extend Precision and UpdateTime for SPEEDOMETER in cabvies, see http://www.elvastower.com/forums/index.php?/topic/37448-ammeter-configuration-steeringcarriages-emudmu/page__view__findpost__p__300651 
+- NEW: Fix (ORNYMG only?) bug https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__302120
+- NEW: Tentative (ORNYMG only?) bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__302440
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
@@ -99,6 +95,7 @@ This unofficial version couldn't have been created without following contributio
 - sweiland
 - SteelFill
 - ExRail
+- roeter
 - Carlo Santucci
 
 - all those who contributed with ideas and provided contents for testing and pointed to malfunctions.
