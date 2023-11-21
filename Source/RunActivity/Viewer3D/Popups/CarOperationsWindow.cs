@@ -47,23 +47,24 @@ namespace Orts.Viewer3D.Popups
         protected override ControlLayout Layout(ControlLayout layout)
         {
             Label ID, buttonHandbrake, buttonTogglePower, buttonToggleMU, buttonToggleBatterySwitch, buttonToggleElectricTrainSupplyCable, buttonToggleFrontBrakeHose, buttonToggleRearBrakeHose, buttonToggleAngleCockA, buttonToggleAngleCockB, buttonToggleBleedOffValve, buttonClose;
-
-            TrainCar trainCar = Viewer.PlayerTrain.Cars[CarPosition];
-            BrakeSystem brakeSystem = (trainCar as MSTSWagon).BrakeSystem;
+            var vbox = base.Layout(layout).AddLayoutVertical();
+            var carPosition = CarPosition;
+            if (carPosition > Viewer.PlayerTrain.Cars.Count - 1) return vbox;
+            TrainCar trainCar = Viewer.PlayerTrain.Cars[carPosition];
             MSTSLocomotive locomotive = trainCar as MSTSLocomotive;
             MSTSWagon wagon = trainCar as MSTSWagon;
+            BrakeSystem brakeSystem = wagon.BrakeSystem;
 
             BrakeSystem rearBrakeSystem = null;
-            if (CarPosition + 1 < Viewer.PlayerTrain.Cars.Count)
+            if (carPosition + 1 < Viewer.PlayerTrain.Cars.Count)
             {
-                TrainCar rearTrainCar = Viewer.PlayerTrain.Cars[CarPosition + 1];
+                TrainCar rearTrainCar = Viewer.PlayerTrain.Cars[carPosition + 1];
                 rearBrakeSystem = (rearTrainCar as MSTSWagon).BrakeSystem;
             }
 
-            bool isElectricDieselLocomotive = (Viewer.PlayerTrain.Cars[CarPosition] is MSTSElectricLocomotive) || (Viewer.PlayerTrain.Cars[CarPosition] is MSTSDieselLocomotive);
+            bool isElectricDieselLocomotive = (locomotive is MSTSElectricLocomotive || locomotive is MSTSDieselLocomotive);
  
-            var vbox = base.Layout(layout).AddLayoutVertical();
-            vbox.Add(ID = new Label(vbox.RemainingWidth, Owner.TextFontDefault.Height, Viewer.Catalog.GetString("Car ID") + "  " + (CarPosition >= Viewer.PlayerTrain.Cars.Count ? " " : Viewer.PlayerTrain.Cars[CarPosition].CarID), LabelAlignment.Center));
+            vbox.Add(ID = new Label(vbox.RemainingWidth, Owner.TextFontDefault.Height, Viewer.Catalog.GetString("Car ID") + "  " + (carPosition >= Viewer.PlayerTrain.Cars.Count ? " " : trainCar.CarID), LabelAlignment.Center));
             ID.Color = Color.Red;
             vbox.AddHorizontalSeparator();
 
@@ -118,7 +119,7 @@ namespace Orts.Viewer3D.Popups
 
             // Rear Brake Hose
             string buttonToggleRearBrakeHoseText = "";
-            if (((CarPosition + 1) < Viewer.PlayerTrain.Cars.Count) && (rearBrakeSystem.FrontBrakeHoseConnected))
+            if (((carPosition + 1) < Viewer.PlayerTrain.Cars.Count) && (rearBrakeSystem.FrontBrakeHoseConnected))
                 buttonToggleRearBrakeHoseText = Viewer.Catalog.GetString("Disconnect Rear Brake Hose");
             else
                 buttonToggleRearBrakeHoseText = Viewer.Catalog.GetString("Connect Rear Brake Hose");
@@ -188,13 +189,13 @@ namespace Orts.Viewer3D.Popups
                 buttonToggleElectricTrainSupplyCable.Color = Color.Gray;
 
             // Front Brake Hose
-            if (CarPosition > 0)
+            if (carPosition > 0)
                 buttonToggleFrontBrakeHose.Click += new Action<Control, Point>(buttonToggleFrontBrakeHose_Click);
             else
                 buttonToggleFrontBrakeHose.Color = Color.Gray;
 
             // Rear Brake Hose
-            if (CarPosition < (Viewer.PlayerTrain.Cars.Count - 1))
+            if (carPosition < (Viewer.PlayerTrain.Cars.Count - 1))
                 buttonToggleRearBrakeHose.Click += new Action<Control, Point>(buttonToggleRearBrakeHose_Click);
             else
                 buttonToggleRearBrakeHose.Color = Color.Gray;
