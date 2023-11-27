@@ -3545,7 +3545,6 @@ namespace Orts.Simulation.Physics
                         firstObject.speed_passenger = thisSpeed?.speed_pass ?? -1;
                         firstObject.speed_freight = thisSpeed?.speed_freight ?? -1;
                         firstObject.speed_flag = thisSpeed?.speed_flag ?? 0;
-                        firstObject.no_speedUpdate = thisSpeed?.no_speedUpdate ?? 0;
                         firstObject.speed_reset = thisSpeed?.speed_reset ?? 0;
                         break;
 
@@ -3556,7 +3555,6 @@ namespace Orts.Simulation.Physics
                         firstObject.speed_freight = thisSpeed?.speed_freight ?? -1;
                         firstObject.speed_flag = thisSpeed?.speed_flag ?? 0;
                         firstObject.speed_reset = thisSpeed?.speed_reset ?? 0;
-                        firstObject.no_speedUpdate = thisSpeed?.no_speedUpdate ?? 0;
                         firstObject.speed_noSpeedReductionOrIsTempSpeedReduction = thisSpeed?.speed_noSpeedReductionOrIsTempSpeedReduction ?? 0;
                         firstObject.speed_isWarning = thisSpeed?.speed_isWarning ?? false;
                         break;
@@ -3586,7 +3584,6 @@ namespace Orts.Simulation.Physics
                                 nextObject.speed_passenger = -1;
                                 nextObject.speed_freight = -1;
                                 nextObject.speed_flag = 0;
-                                nextObject.no_speedUpdate = 0;
                                 nextObject.speed_reset = 0;
                             }
                             else
@@ -3594,7 +3591,6 @@ namespace Orts.Simulation.Physics
                                 nextObject.speed_passenger = thisSpeed?.speed_pass ?? -1;
                                 nextObject.speed_freight = thisSpeed?.speed_freight ?? -1;
                                 nextObject.speed_flag = thisSpeed?.speed_flag ?? 0;
-                                nextObject.no_speedUpdate = thisSpeed?.no_speedUpdate ?? 0;
                                 nextObject.speed_reset = thisSpeed?.speed_reset ?? 0;
                             }
                             break;
@@ -3605,7 +3601,6 @@ namespace Orts.Simulation.Physics
                             nextObject.speed_passenger = thisSpeed?.speed_pass ?? -1;
                             nextObject.speed_freight = thisSpeed?.speed_freight ?? -1;
                             nextObject.speed_flag = thisSpeed?.speed_flag ?? 0;
-                            nextObject.no_speedUpdate = thisSpeed?.no_speedUpdate ?? 0;
                             nextObject.speed_reset = thisSpeed?.speed_reset ?? 0;
                             nextObject.speed_noSpeedReductionOrIsTempSpeedReduction = thisSpeed?.speed_noSpeedReductionOrIsTempSpeedReduction ?? 0;
                             nextObject.speed_isWarning = thisSpeed?.speed_isWarning ?? false;
@@ -3681,7 +3676,6 @@ namespace Orts.Simulation.Physics
                                 nextObject.speed_passenger = thisSpeed?.speed_pass ?? -1;
                                 nextObject.speed_freight = thisSpeed?.speed_freight ?? -1;
                                 nextObject.speed_flag = thisSpeed?.speed_flag ?? 0;
-                                nextObject.no_speedUpdate = thisSpeed?.no_speedUpdate ?? 0;
                                 nextObject.speed_reset = thisSpeed?.speed_reset ?? 0;
                                 break;
 
@@ -3691,7 +3685,6 @@ namespace Orts.Simulation.Physics
                                 nextObject.speed_passenger = thisSpeed?.speed_pass ?? -1;
                                 nextObject.speed_freight = thisSpeed?.speed_freight ?? -1;
                                 nextObject.speed_flag = thisSpeed?.speed_flag ?? 0;
-                                nextObject.no_speedUpdate = thisSpeed?.no_speedUpdate ?? 0;
                                 nextObject.speed_reset = thisSpeed?.speed_reset ?? 0;
                                 nextObject.speed_noSpeedReductionOrIsTempSpeedReduction = thisSpeed?.speed_noSpeedReductionOrIsTempSpeedReduction ?? 0;
                                 nextObject.speed_isWarning = thisSpeed?.speed_isWarning ?? false;
@@ -3859,7 +3852,7 @@ namespace Orts.Simulation.Physics
 #endif
                         }
                     }
-                    else if (thisObject.no_speedUpdate == 1)
+                    else
                     {
                         validSpeedSignalMpS = TrainMaxSpeedMpS;
                         float newSpeedMpS = Math.Min(validSpeedSignalMpS, Math.Min(validSpeedLimitMpS, validTempSpeedLimitMpS));
