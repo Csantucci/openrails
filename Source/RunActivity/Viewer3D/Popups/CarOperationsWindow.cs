@@ -49,7 +49,11 @@ namespace Orts.Viewer3D.Popups
             Label ID, buttonHandbrake, buttonTogglePower, buttonToggleMU, buttonToggleBatterySwitch, buttonToggleElectricTrainSupplyCable, buttonToggleFrontBrakeHose, buttonToggleRearBrakeHose, buttonToggleAngleCockA, buttonToggleAngleCockB, buttonToggleBleedOffValve, buttonClose;
             var vbox = base.Layout(layout).AddLayoutVertical();
             var carPosition = CarPosition;
-            if (carPosition > Viewer.PlayerTrain.Cars.Count - 1) return vbox;
+            if (carPosition > Viewer.PlayerTrain.Cars.Count - 1)
+            {
+                Visible = false;
+                return vbox;
+            }
             TrainCar trainCar = Viewer.PlayerTrain.Cars[carPosition];
             MSTSLocomotive locomotive = trainCar as MSTSLocomotive;
             MSTSWagon wagon = trainCar as MSTSWagon;
