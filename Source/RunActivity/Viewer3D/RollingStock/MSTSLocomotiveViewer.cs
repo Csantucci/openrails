@@ -3099,7 +3099,7 @@ namespace Orts.Viewer3D.RollingStock
                 DrawText = String.Format(digital.Accuracy > 0 ? "{0:D2}:{1:D2}:{2:D2}" : "{0:D2}:{1:D2}", hour, minute, seconds);
                 DrawColor = new Color(digital.PositiveColor.R, digital.PositiveColor.G, digital.PositiveColor.B);
             }
-            else if (digital.OldValue != 0 && digital.OldValue > Num && digital.DecreaseColor.A != 0)
+            else if (digital.NumDecreaseColors > 0 && digital.OldValue != 0 && digital.OldValue > Num && digital.DecreaseColor.A != 0)
             {
                 DrawText = String.Format(Format, Math.Abs(Num));
                 DrawColor = new Color(digital.DecreaseColor.R, digital.DecreaseColor.G, digital.DecreaseColor.B, digital.DecreaseColor.A);
@@ -3176,7 +3176,7 @@ namespace Orts.Viewer3D.RollingStock
                     displayedText = String.Format(digital.Accuracy > 0 ? "{0:D2}:{1:D2}:{2:D2}" : "{0:D2}:{1:D2}", hour, minute, seconds);
                     DrawColor = new Color(digital.PositiveColor.R, digital.PositiveColor.G, digital.PositiveColor.B);
                 }
-                else if (digital.OldValue != 0 && digital.OldValue > Num && digital.DecreaseColor.A != 0)
+                else if (digital.NumDecreaseColors > 0 && digital.OldValue != 0 && digital.OldValue > Num && digital.DecreaseColor.A != 0)
                 {
                     displayedText = String.Format(Format, Math.Abs(Num));
                     DrawColor = new Color(digital.DecreaseColor.R, digital.DecreaseColor.G, digital.DecreaseColor.B, digital.DecreaseColor.A);
@@ -3258,7 +3258,7 @@ namespace Orts.Viewer3D.RollingStock
                     }
                     displayedText = String.Format(digital.Accuracy > 0 ? "{0:D2}:{1:D2}:{2:D2}" : "{0:D2}:{1:D2}", hour, minute, seconds) + displayedText;
                 }
-                else if (digital.OldValue != 0 && digital.OldValue > Num && digital.DecreaseColor.A != 0)
+                else if (digital.NumDecreaseColors > 0 && digital.OldValue != 0 && digital.OldValue > Num && digital.DecreaseColor.A != 0)
                 {
                     displayedText = String.Format(Format, Math.Abs(Num));
                 }
