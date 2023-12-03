@@ -43,9 +43,13 @@ function ApiHeadUpDisplay() {
 				var next = 0;
 				var endIndex = 0;
 				var newData = "";
+				let empty_image = "<img src='" + '/arrow_empty.png' + "' height='16' width='16'></img>";
+				let left_image = "<img src='" + '/arrow_left.png' + "' height='16' width='16'></img>";
+				let right_image = "<img src='" + '/arrow_right.png' + "' height='16' width='16'></img>";
+
 				for (var row = 0; row < obj.commonTable.nRows; ++row) {
 					Str += "<tr>";
-					for (var col=0; col < obj.commonTable.nCols; ++col) { 
+					for (var col=0; col < obj.commonTable.nCols; ++col) {
 						if (obj.commonTable.values[next] != null) {
 							endIndex = obj.commonTable.values[next].length;
 							newData = obj.commonTable.values[next].slice(0, endIndex -3);
@@ -98,68 +102,84 @@ function ApiHeadUpDisplay() {
 							colspan3 = false,
 							fixwidth = false,
 							locomotivetype = false;
-						
-						for (var col=0; col < obj.extraTable.nCols; ++col) { 
-							// Required variables for the text color management
-							if (obj.extraTable.values[next] != null) {
-								endIndex = obj.extraTable.values[next].length;
-								newData = obj.extraTable.values[next].slice(0, endIndex -3);
-								stringColor = obj.extraTable.values[next].slice(-3);
+
+						for (var col = 0; col < obj.extraTable.nCols; ++col) {
+							var newText = obj.extraTable.values[next];
+							// allows arrows aligned
+							if (newText !== null && col === 0) {
+								if (newText.startsWith("ArrowLeft")) {
+									newText = newText.replace("ArrowLeft", left_image + empty_image);
+								}
+								else if (newText.startsWith("ArrowRight")) {
+									newText = newText.replace("ArrowRight", right_image + empty_image);
+								}
+								else if (newText.startsWith("ArrowLR")) {
+									newText = newText.replace("ArrowLR", left_image + right_image);
+								}
+								else {
+									newText = newText.indexOf('INFORMATION') !== -1 ? newText : empty_image + empty_image + newText;
+								}
 							}
-							if (obj.extraTable.values[next] == null) {
+							if (newText !== null) {
+								// Required variables for the text color management
+								endIndex = newText.length;
+								newData = newText.slice(0, endIndex - 3);
+								stringColor = newText.slice(-3);
+							}
+							if (newText == null) {
 								Str += "<td></td>";
 							}
 							// Changes the first row to title format
-							else if (obj.extraTable.values[next].indexOf('INFORMATION') !== -1) {
-								Str += "<th align='left' colspan='9' >" + obj.extraTable.values[next] + "</th>";
+							else if (newText.indexOf('INFORMATION') !== -1) {
+								Str += "<th align='left' colspan='9' >" + newText + "</th>";
 							}
 							// Apply color
 							else if (codeColor.indexOf(stringColor) != -1) {
 								Str += "<td ColorCode =" + stringColor + ">" + newData + "</td>";
 							}
 							// Customized colspan
-							else if (colspanmax || (locomotivetype && obj.extraTable.values[next].length > 5) ){
+							else if (colspanmax || (locomotivetype && newText.length > 5) ){
 								locomotivetype = false;
-								Str += "<td class ='td_nowrap' colspan='15' >" + obj.extraTable.values[next] + "</td>";
+								Str += "<td class ='td_nowrap' colspan='15' >" + newText + "</td>";
 							}
-							else if (obj.extraTable.values[next].indexOf('Locomotive') !== -1){
+							else if (newText.indexOf('Locomotive') !== -1){
 								locomotivetype = true;
-								Str += "<td colspan='2' >" + obj.extraTable.values[next] + "</td>";
+								Str += "<td colspan='2' >" + newText + "</td>";
 							}
-							else if (colspan3 || BrakeColSpanTo2.indexOf(obj.extraTable.values[next]) !== -1){
-								Str += "<td colspan='3' >" + obj.extraTable.values[next] + "</td>";
+							else if (colspan3 || BrakeColSpanTo2.indexOf(newText) !== -1){
+								Str += "<td colspan='3' >" + newText + "</td>";
 							}
 							else if (colspan10){
-								Str += "<td class ='td_nowrap' colspan='10' >" + obj.extraTable.values[next] + "</td>";
+								Str += "<td class ='td_nowrap' colspan='10' >" + newText + "</td>";
 							}
 							else if (fixwidth){
-								Str += "<td class='td_nowrap' >" + obj.extraTable.values[next] + "</td>";
+								Str += "<td class='td_nowrap' >" + newText + "</td>";
 							}
 							// Force info requires colspan into first col
-							else if (obj.extraTable.values[next].includes(ForceColSpanTo15)) {
-								Str += "<td colspan='15' >" + obj.extraTable.values[next] + "</td>";
+							else if (newText.includes(ForceColSpanTo15)) {
+								Str += "<td colspan='15' >" + newText + "</td>";
 							}
-							else if (ForceColSpanTo4.indexOf(obj.extraTable.values[next]) !== -1 || obj.extraTable.values[next].indexOf('===') !== -1){ // Locomotive info
-								Str += "<td colspan='4' >" + obj.extraTable.values[next] + "</td>";
+							else if (ForceColSpanTo4.indexOf(newText) !== -1 || newText.indexOf('===') !== -1){ // Locomotive info
+								Str += "<td colspan='4' >" + newText  + "</td>";
 							}
-							else if (ForceColSpanTo3.indexOf(obj.extraTable.values[next]) !== -1 ){
-								Str += "<td colspan='3' >" + obj.extraTable.values[next] + "</td>";
+							else if (ForceColSpanTo3.indexOf(newText) !== -1 ){
+								Str += "<td colspan='3' >" + newText + "</td>";
 							}
 							else {
 								// Apply colspan if required after first col
-								if (obj.extraTable.values[next].indexOf('Memory') !== -1){
+								if (newText.indexOf('Memory') !== -1){
 									colspanmax = true;
 								}
-								if (DebugColSpanTo10.indexOf(obj.extraTable.values[next]) !== -1){
+								if (DebugColSpanTo10.indexOf(newText) !== -1){
 									colspan10 = true;
 								}
-								if (DebugColSpanTo3.indexOf(obj.extraTable.values[next]) !== -1){
+								if (DebugColSpanTo3.indexOf(newText) !== -1){
 									colspan3 = true;
 								}
-								if (DebugWidthTofix.indexOf(obj.extraTable.values[next]) !== -1){
+								if (DebugWidthTofix.indexOf(newText) !== -1){
 									fixwidth = true;
 								}
-								Str += "<td class='td_nowrap'>" + obj.extraTable.values[next].trim() + "</td>";
+								Str += "<td class='td_nowrap'>" + newText.trim() + "</td>";
 							}
 							++next;
 						}

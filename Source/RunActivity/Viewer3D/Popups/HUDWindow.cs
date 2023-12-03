@@ -18,6 +18,7 @@
 // This file is the responsibility of the 3D & Environment Team.
 #define SHOW_PHYSICS_GRAPHS     //Matej Pacha - if commented, the physics graphs are not ready for public release
 
+using Microsoft.CodeAnalysis;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Orts.Simulation.AIs;
@@ -30,25 +31,51 @@ using Orts.Simulation.RollingStocks.SubSystems.PowerSupplies;
 using Orts.Viewer3D.Processes;
 using ORTS.Common;
 using ORTS.Scripting.Api;
+using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
+using Color = Microsoft.Xna.Framework.Color;
+using DepthStencilState = Microsoft.Xna.Framework.Graphics.DepthStencilState;
+using Point = Microsoft.Xna.Framework.Point;
+using RasterizerState = Microsoft.Xna.Framework.Graphics.RasterizerState;
+using Rectangle = Microsoft.Xna.Framework.Rectangle;
+using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 
 namespace Orts.Viewer3D.Popups
 {
     public class HUDWindow : LayeredWindow
     {
+        static Texture2D SymbolArrowLeft;
+        static Texture2D SymbolArrowRight;
+        static Texture2D SymbolArrowLR;
+
+        public List<Texture2D> SymbolArrow = new List<Texture2D>()
+        {
+            SymbolArrowLeft,
+            SymbolArrowRight
+        };
+
+        public bool SymbolClicked = false;
+        public enum SymbolType
+        {
+            ArrowLeft,
+            ArrowRight,
+            ArrowLR
+        };
+
         // Set this to the width of each column in font-height units.
         readonly int ColumnWidth = 5;
 
         // Set to distance from top-left corner to place text.
         const int TextOffset = 10;
+        public int InfoTextOffset;
 
         readonly Viewer Viewer;
         readonly Action<TableData>[] TextPages;
@@ -126,6 +153,7 @@ namespace Orts.Viewer3D.Popups
             textPages.Add(TextPageWeather);
             textPages.Add(TextPageDebugInfo);
             TextPages = textPages.ToArray();
+
             TextPagesLength = TextPages.Length;
 
             TextFont = owner.TextFontMonoSpacedOutlined;
@@ -158,6 +186,13 @@ namespace Orts.Viewer3D.Popups
 #if WITH_PATH_DEBUG
             TextPage = 5;
 #endif
+        }
+        protected internal override void Initialize()
+        {
+            base.Initialize();
+            SymbolArrowLeft = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "ArrowLeft.png"));
+            SymbolArrowRight = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "ArrowRight.png"));
+            SymbolArrowLR = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "ArrowLR.png"));
         }
 
         protected internal override void Save(BinaryWriter outf)
@@ -252,8 +287,8 @@ namespace Orts.Viewer3D.Popups
                 LocomotiveGraphsThrottle.AddSample(loco.ThrottlePercent * 0.01f);
                 if (locoD != null)
                 {
-                        LocomotiveGraphsInputPower.AddSample(locoD.DieselEngines.MaxOutputPowerW / locoD.DieselEngines.MaxPowerW);
-                        LocomotiveGraphsOutputPower.AddSample(locoD.DieselEngines.PowerW / locoD.DieselEngines.MaxPowerW);
+                    LocomotiveGraphsInputPower.AddSample(locoD.DieselEngines.MaxOutputPowerW / locoD.DieselEngines.MaxPowerW);
+                    LocomotiveGraphsOutputPower.AddSample(locoD.DieselEngines.PowerW / locoD.DieselEngines.MaxPowerW);
                 }
                 if (locoE != null)
                 {
@@ -293,7 +328,7 @@ namespace Orts.Viewer3D.Popups
             {
                 var table = new TableData() { Cells = new string[TextTable.Cells.GetLength(0), TextTable.Cells.GetLength(1)] };
                 //Normal screen or full screen
-                if (!hudWindowFullScreen || (Viewer.HUDScrollWindow.Visible && TextPage == 0)) 
+                if (!hudWindowFullScreen || (Viewer.HUDScrollWindow.Visible && TextPage == 0))
                     TextPages[0](table);
 
                 if (TextPage > 0)
@@ -334,7 +369,7 @@ namespace Orts.Viewer3D.Popups
                         if (text.Contains("!!!"))
                         {//Change to red color, an example: overspeed.
                             color = Color.OrangeRed;
-                            text = text.Contains("!!!") && text.Contains("???")? text.Substring(0, text.Length - 6) :text.Substring(0, text.Length - 3);
+                            text = text.Contains("!!!") && text.Contains("???") ? text.Substring(0, text.Length - 6) : text.Substring(0, text.Length - 3);
                         }
                         else if (text.EndsWith("!!!") || text.EndsWith("???"))
                         {
@@ -351,10 +386,28 @@ namespace Orts.Viewer3D.Popups
                             color = Color.Pink;
                             text = text.Substring(0, text.Length - 3);
                         }
-                        TextFont.Draw(spriteBatch, new Rectangle(TextOffset + column * ColumnWidth, TextOffset + row * TextFont.Height, ColumnWidth, TextFont.Height), Point.Zero, text, align, color);
+                        if (!text.Contains("Arrow"))
+                        {
+                            TextFont.Draw(spriteBatch, new Rectangle(TextOffset + column * ColumnWidth, TextOffset + row * TextFont.Height, ColumnWidth, TextFont.Height), Point.Zero, text, align, color);
+                        }
+                        else
+                        {
+                            var size = TextFont.Height;
+                            InfoTextOffset = size;
+                            var symbol = Enum.GetNames(typeof(SymbolType)).First(x => x.Contains(text.Substring(0, x.Length)));
+                            var currentSymbol = SymbolType.ArrowLR.ToString();
+                            var positionX = InfoTextOffset + (column * ColumnWidth) - size;
+                            var positionY = TextOffset +(row * TextFont.Height);
+                            var Texture = SymbolSelect(symbol);
+                            spriteBatch.Draw(Texture, new Rectangle(positionX, positionY, size, size), Color.White);
+                            text = text.Replace(symbol, "");
+                            // only text
+                            TextFont.Draw(spriteBatch, new Rectangle(positionX + size, positionY, ColumnWidth, TextFont.Height), Point.Zero, text, align, color);
+                        }
                     }
                 }
             }
+
 
 #if SHOW_PHYSICS_GRAPHS
             if (Visible && TextPages[TextPage] == TextPageForceInfo)
@@ -451,7 +504,7 @@ namespace Orts.Viewer3D.Popups
             var multipleUnitsConfiguration = Viewer.PlayerLocomotive.GetMultipleUnitsConfiguration();
             var stretched = playerTrain.Cars.Count > 1 && playerTrain.NPull == playerTrain.Cars.Count - 1;
             var bunched = !stretched && playerTrain.Cars.Count > 1 && playerTrain.NPush == playerTrain.Cars.Count - 1;
-            
+
             //Disable Hudscroll.
             if(Viewer.HUDScrollWindow.Visible)
                 Viewer.HUDScrollWindow.Visible = TextPage == 0 && !WebServerEnabled ? false : true;
@@ -877,13 +930,12 @@ namespace Orts.Viewer3D.Popups
                     if (hudWindowColumnsActualPage > 0)
                     {
                         //Nav arrows. Don't use DrawScrollArrows() function with locomotive info.
-                        //? \u25C0 - ? \u25B6 - ? \u2194
                         if (stringStatus.Count > 1 && stringStatus.Count <= hudWindowColumnsActualPage)
-                            TableAddLines(table, hudWindowColumnsActualPage > 1 ? "?" + stringStatus[(stringStatus.Count < hudWindowColumnsActualPage ? stringStatus.Count - 1 : hudWindowColumnsActualPage - 1)] : stringStatus[hudWindowColumnsActualPage - 1]);
+                            TableAddLines(table, hudWindowColumnsActualPage > 1 ? $"{SymbolType.ArrowLeft}" + stringStatus[(stringStatus.Count < hudWindowColumnsActualPage ? stringStatus.Count - 1 : hudWindowColumnsActualPage - 1)] : stringStatus[hudWindowColumnsActualPage - 1]);
                         else if (stringStatus.Count > 1 && hudWindowColumnsActualPage == 1)
-                            TableAddLines(table, hudWindowColumnsActualPage > 0 ? "?" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
+                            TableAddLines(table, hudWindowColumnsActualPage > 0 ? $"{SymbolType.ArrowRight}" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
                         else if (stringStatus.Count > 1 && hudWindowColumnsActualPage > 1 && stringStatus.Count >= hudWindowColumnsActualPage)
-                            TableAddLines(table, hudWindowColumnsActualPage > 0 ? "?" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
+                            TableAddLines(table, hudWindowColumnsActualPage > 0 ? $"{SymbolType.ArrowLR}" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
                         else
                         {
                             if (stringStatus.Count > 0)
@@ -1426,11 +1478,11 @@ namespace Orts.Viewer3D.Popups
                     {
                         if (stringStatus.Count > 1 && stringStatus.Count <= hudWindowColumnsActualPage)
                         {
-                            arrow = arrow + "?";// \u25C0
+                            arrow = SymbolType.ArrowLeft.ToString();
                         }
                         else if (stringStatus.Count > 1 && hudWindowColumnsActualPage == 1)
                         {
-                            arrow = arrow + "?";// \u25B6
+                            arrow = SymbolType.ArrowRight.ToString();
                         }
 
                         if (i > 0 && i % nLinesShow == 0)
@@ -1555,7 +1607,7 @@ namespace Orts.Viewer3D.Popups
                     var status = new StringBuilder();
                     if (hudWindowColumnsActualPage > 0)
                     {
-                        status.AppendFormat("{0}\t{1:N2} mph\t{2}\t{3:N2} mph",
+                        status.AppendFormat($"{SymbolType.ArrowLeft}" + "{0}\t{1:N2} mph\t{2}\t{3:N2} mph",
                         Viewer.Catalog.GetString("ResWind:"), train.ResultantWindComponentDeg,
                         Viewer.Catalog.GetString("ResSpeed:"), Me.ToMi(pS.TopH(train.WindResultantSpeedMpS)));
                     }
@@ -1601,7 +1653,7 @@ namespace Orts.Viewer3D.Popups
             TableAddLine(table);
 
             //Pages count from number of nLinesShow.
-            TextLineNumber(train.Cars.Count, table.CurrentRow + 1, columnsCount);
+            TextLineNumber(train.Cars.Count, table.CurrentRow + 4, columnsCount);
             //Number of lines to show
             for (var i = (hudWindowLinesActualPage * nLinesShow) - nLinesShow; i < (train.Cars.Count > hudWindowLinesActualPage * nLinesShow ? hudWindowLinesActualPage * nLinesShow : train.Cars.Count); i++)
             {
@@ -1634,15 +1686,17 @@ namespace Orts.Viewer3D.Popups
 
             //Total slack
             statusForce.Add(string.Format(hudWindowColumnsActualPage == 2 ? "\t\t\t\t\t\t\t\t\t\t\t{0}\t{1}\t"
-                    : hudWindowColumnsActualPage == 0 ? "\t\t\t\t\t\t\t\t\t\t{0}\t{1}\t"
-                    : "",
-                    "Tot.Slack:",
-                    FormatStrings.FormatShortDistanceDisplay(train.TotalCouplerSlackM, mstsLocomotive.IsMetric)
+                : hudWindowColumnsActualPage == 1 ? "\t\t\t\t\t\t\t\t\t\t{0}\t{1}\t"
+                : hudWindowColumnsActualPage == 0 ? "\t\t\t\t\t\t\t\t\t\t{0}\t{1}\t"
+                : "",
+                "Tot.Slack:",
+                FormatStrings.FormatVeryShortDistanceDisplay(train.TotalCouplerSlackM, mstsLocomotive.IsMetric)
                     ));
 
             //Pages count from number of nLinesShow.
             columnsCount = statusForce[statusForce.Count - 1].Count(x => x == '\t');
             TextLineNumber(train.Cars.Count, table.CurrentRow + 4, columnsCount);//HudScroll
+
             //Display data
             DrawScrollArrows(statusForce, table, false);
         }
@@ -1804,22 +1858,22 @@ namespace Orts.Viewer3D.Popups
 
                         if (stringStatus.Count > 1 && stringStatus.Count <= hudWindowColumnsActualPage)
                         {
-                            arrow = "?";// \u25C0
+                            arrow = SymbolType.ArrowLeft.ToString();
                             TableSetCell(table, 2, hudWindowColumnsActualPage > 1 ? stringStatus[(stringStatus.Count < hudWindowColumnsActualPage ? stringStatus.Count - 1 : hudWindowColumnsActualPage - 1)] + EndText : stringStatus[hudWindowColumnsActualPage - 1] + EndText);
                         }
                         else if (stringStatus.Count > 1 && hudWindowColumnsActualPage == 1)
                         {
-                            arrow = "?";// \u25B6
+                            arrow = SymbolType.ArrowRight.ToString();
                             TableSetCell(table, 2, hudWindowColumnsActualPage > 0 ? stringStatus[hudWindowColumnsActualPage - 1] + EndText : stringStatus[hudWindowColumnsActualPage - 1] + EndText);
                         }
                         else if (stringStatus.Count > 1 && hudWindowColumnsActualPage > 1 && stringStatus.Count >= hudWindowColumnsActualPage)
                         {
-                            arrow = "?";// \u2194
+                            arrow = SymbolType.ArrowLR.ToString();
                             TableSetCell(table, 2, hudWindowColumnsActualPage > 0 ? stringStatus[hudWindowColumnsActualPage - 1] + EndText : stringStatus[hudWindowColumnsActualPage - 1] + EndText);
                         }
                         else if (stringStatus.Count == 1 && hudWindowColumnsActualPage == 1 && stringStatus.Count >= hudWindowColumnsActualPage)
                         {
-                            arrow = "?";// \u25C0
+                            arrow = SymbolType.ArrowLeft.ToString();
                             TableSetCell(table, 2, statusDispatcher[i][PathHeaderColumn]);
                         }
                         else
@@ -1836,7 +1890,7 @@ namespace Orts.Viewer3D.Popups
 
                     TableAddLine(table);
                 }
-            }           
+            }
 
 
 
@@ -1995,7 +2049,7 @@ namespace Orts.Viewer3D.Popups
         void TextLineNumber(int CarsCount, int CurrentRow, int ColumnCount)
         {
             //LinesPages
-            nLinesShow = (Viewer.DisplaySize.Y / TextFont.Height) - CurrentRow - 1;
+            nLinesShow = (Viewer.DisplaySize.Y / TextFont.Height) - CurrentRow - 2;
             if (nLinesShow < 1) nLinesShow = 1;
             hudWindowLinesPagesCount = (nLinesShow >= CarsCount) ? 1 : (int)Math.Ceiling(Convert.ToDouble(CarsCount / nLinesShow) + 0.5);
 
@@ -2043,7 +2097,7 @@ namespace Orts.Viewer3D.Popups
 
             List<string> cellTextList = new List<string>();
             int i = 0;//Counter original status with tab code
-            //87 = character fit per line with minimun 800*600 display size.
+            //87 = Characters fit per line on 800*600 minimum screen size.
             //Font Monospace.
             if (StringStatus.Contains("\t"))
             {
@@ -2309,13 +2363,13 @@ namespace Orts.Viewer3D.Popups
 
                 TextColNumber(statusConsist[i], 0, IsSteamLocomotive);
                 if (hudWindowColumnsActualPage > 0)
-                {//? \u25C0 - ? \u25B6 - ? \u2194
+                {
                     if (stringStatus.Count > 1 && stringStatus.Count <= hudWindowColumnsActualPage)
-                        TableAddLines(table, hudWindowColumnsActualPage > 1 ? "?" + stringStatus[(stringStatus.Count < hudWindowColumnsActualPage ? stringStatus.Count - 1 : hudWindowColumnsActualPage - 1)] : stringStatus[hudWindowColumnsActualPage - 1]);
+                        TableAddLines(table, hudWindowColumnsActualPage > 1 ? $"{SymbolType.ArrowLeft}" + stringStatus[(stringStatus.Count < hudWindowColumnsActualPage ? stringStatus.Count - 1 : hudWindowColumnsActualPage - 1)] : stringStatus[hudWindowColumnsActualPage - 1]);
                     else if (stringStatus.Count > 1 && hudWindowColumnsActualPage == 1)
-                        TableAddLines(table, hudWindowColumnsActualPage > 0 ? "?" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
+                        TableAddLines(table, hudWindowColumnsActualPage > 0 ? $"{SymbolType.ArrowRight}" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
                     else if (stringStatus.Count > 1 && hudWindowColumnsActualPage > 1 && stringStatus.Count >= hudWindowColumnsActualPage)
-                        TableAddLines(table, hudWindowColumnsActualPage > 0 ? "?" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
+                        TableAddLines(table, hudWindowColumnsActualPage > 0 ? $"{SymbolType.ArrowLR}" + stringStatus[hudWindowColumnsActualPage - 1] : stringStatus[hudWindowColumnsActualPage - 1]);
                     else
                     {
                         TableAddLines(table, (stringStatus.Count > 0 ? stringStatus[0] : statusConsist[i]));
@@ -2330,6 +2384,28 @@ namespace Orts.Viewer3D.Popups
         {
             TableAddLine(table);
             TableAddLine(table, name);
+        }
+        Texture2D SymbolSelect(string text)
+        {
+            SymbolType choice;
+            Texture2D texture2D = null;
+            if (Enum.TryParse(text, out choice))
+            {
+                switch (choice)
+                {
+                    case SymbolType.ArrowLeft:
+                        texture2D = SymbolArrowLeft;
+                        break;
+                    case SymbolType.ArrowRight:
+                        texture2D = SymbolArrowRight;
+                        break;
+                    case SymbolType.ArrowLR:
+                        texture2D = SymbolArrowLR;
+                        break;
+                }
+            }
+            else { }
+            return texture2D;
         }
     }
 
