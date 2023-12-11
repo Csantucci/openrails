@@ -872,7 +872,6 @@ namespace Orts.Formats.Msts
         public int NumPositiveColors { get; set; }
         public int NumNegativeColors { get; set; }
         public color DecreaseColor { get; set; }
-        public int NumDecreaseColors { get; set; }
         public float FontSize { get; set; }
         public int FontStyle { get; set; }
         public string FontFamily = "";
@@ -938,7 +937,7 @@ namespace Orts.Formats.Msts
                     }),
                 new STFReader.TokenProcessor("decreasecolour", ()=>{
                     stf.MustMatch("(");
-                    NumDecreaseColors = stf.ReadInt(0);
+                    stf.ReadInt(0);
                     if(stf.EndOfBlock() == false)
                     {
                         stf.ParseBlock(new STFReader.TokenProcessor[] {
