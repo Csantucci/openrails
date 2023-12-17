@@ -1004,18 +1004,21 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
             // Switches between Polach (high performance) adhesion model and Pacha (low performance) adhesion model depending upon the PC performance
             if(timeSpan < 0.025) // timespan 0.025 = 40 fps screen rate, low timeSpan and high FPS
             {
+                if (UsePolachAdhesion == false)
+                {
+                    var ScreenFrameRate = 1 / timeSpan;
+                    Trace.TraceInformation("Advanced adhesion model set to high performance option; frame rate {0} at ElapsedClockSeconds of {1}", ScreenFrameRate, timeSpan);
+                }
                 UsePolachAdhesion = true;
             }
             else if(timeSpan > 0.033) // timespan 0.033 = 30 fps screen rate, high timeSpan and low FPS
             {
-                UsePolachAdhesion = false;
-                if (TrainSpeedMpS > 0 )
+                if (UsePolachAdhesion == true)
                 {
                     var ScreenFrameRate = 1 / timeSpan;
-                    Trace.TraceInformation("Advanced adhesion model switched to low performance option due to low frame rate {0} at ElapsedClockSeconds of {1}", ScreenFrameRate, timeSpan);
-
+                    Trace.TraceInformation("Advanced adhesion model set to low performance option due to low frame rate {0} at ElapsedClockSeconds of {1}", ScreenFrameRate, timeSpan);
                 }
-
+                UsePolachAdhesion = false;
                 // Set values for Pacha adhesion
                 WheelSlipThresholdMpS = MpS.FromKpH(AdhesionK / AdhesionLimit);
                 WheelAdhesion = 0.99f;
