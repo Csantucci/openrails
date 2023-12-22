@@ -180,11 +180,12 @@ namespace Orts.Viewer3D.Popups
         {
             base.PrepareFrame(elapsedTime, updateFull);
 
+            var HudWindow = Owner.Viewer.HUDWindow;
             var MovingCurrentWindow = UserInput.IsMouseLeftButtonDown &&
                    UserInput.MouseX >= Location.X && UserInput.MouseX <= Location.X + Location.Width &&
                    UserInput.MouseY >= Location.Y && UserInput.MouseY <= Location.Y + Location.Height;
 
-            if (!MovingCurrentWindow && updateFull)
+            if (!MovingCurrentWindow && !HudWindow.DrawArrowBusy && updateFull )
                 Layout();
         }
     }

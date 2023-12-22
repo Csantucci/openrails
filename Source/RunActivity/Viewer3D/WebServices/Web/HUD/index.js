@@ -46,6 +46,7 @@ function ApiHeadUpDisplay() {
 				let empty_image = "<img src='" + '/arrow_empty.png' + "' height='16' width='16'></img>";
 				let left_image = "<img src='" + '/arrow_left.png' + "' height='16' width='16'></img>";
 				let right_image = "<img src='" + '/arrow_right.png' + "' height='16' width='16'></img>";
+				let fence_image = "<img src='" + '/fence_DPU.png' + "' height='16' width='16'></img>";
 
 				for (var row = 0; row < obj.commonTable.nRows; ++row) {
 					Str += "<tr>";
@@ -179,7 +180,18 @@ function ApiHeadUpDisplay() {
 								if (DebugWidthTofix.indexOf(newText) !== -1){
 									fixwidth = true;
 								}
-								Str += "<td class='td_nowrap'>" + newText.trim() + "</td>";
+								if (newText.includes("out of route")) {
+									// Avoids conflict with the < and > symbols
+									newText = newText.replace('<','<-').replace('>', '->');
+									Str += "<td class='td_nowrap' >" + newText.trim() + "</td>";
+								}
+								else if (newText.startsWith("FenceDPU")) {
+									newText = newText.replace("FenceDPU", fence_image);
+									Str += "<td class='td_nowrap'>" + newText.trim() + "</td>";
+								}
+								else {
+									Str += "<td class='td_nowrap'>" + newText.trim() + "</td>";
+								}
 							}
 							++next;
 						}
