@@ -1529,6 +1529,10 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.VolumeCurve.Controls.DistanceControlled: return SoundSource.DistanceSquared;
                 case Orts.Formats.Msts.VolumeCurve.Controls.SpeedControlled: return car.AbsSpeedMpS;
                 case Orts.Formats.Msts.VolumeCurve.Controls.Variable1Controlled: return car.Variable1;
+                case Orts.Formats.Msts.VolumeCurve.Controls.Variable2_1Controlled: return car.Variable2_1;
+                case Orts.Formats.Msts.VolumeCurve.Controls.Variable3_1Controlled: return car.Variable3_1;
+                case Orts.Formats.Msts.VolumeCurve.Controls.Variable4_1Controlled: return car.Variable4_1;
+
                 case Orts.Formats.Msts.VolumeCurve.Controls.Variable2Controlled:
                     {
                         var returnvar = car.Variable2;
@@ -1973,6 +1977,9 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.Variable_Trigger.Events.Distance_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Speed_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_1_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_1_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable4_1_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Dec_Past:
@@ -1988,6 +1995,9 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.Variable_Trigger.Events.Distance_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Speed_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Inc_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_1_Inc_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_1_Inc_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable4_1_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Inc_Past:
@@ -2055,6 +2065,15 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Inc_Past:
                     return car.Variable1;
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_1_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_1_Inc_Past:
+                    return car.Variable2_1;
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_1_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_1_Inc_Past:
+                    return car.Variable3_1;
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable4_1_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.Variable4_1_Inc_Past:
+                    return car.Variable4_1;
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Inc_Past:
                     return car.Variable2;

@@ -29,6 +29,8 @@ using Orts.Parsers.Msts;
 using Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D9;
+using Orts.Formats.OR;
+using static Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions.Axle;
 
 namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
 {
@@ -71,7 +73,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         protected readonly TrainCar Car;
 
         /// <summary>
-        /// Get total axle out force with brake force substracted
+        /// Get total axle out force with brake and friction force substracted
         /// </summary>
         public float CompensatedForceN
         {
@@ -231,12 +233,14 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                 if (Car is MSTSLocomotive locomotive)
                 {
                     if (axle.InertiaKgm2 <= 0) axle.InertiaKgm2 = locomotive.AxleInertiaKgm2 / AxleList.Count;
-                    if (axle.AxleWeightN <= 0) axle.AxleWeightN = 9.81f * locomotive.DrvWheelWeightKg / AxleList.Count;  //remains fixed for diesel/electric locomotives, but varies for steam locomotives
+                    if (axle.WheelWeightKg <= 0) axle.WheelWeightKg = locomotive.DrvWheelWeightKg / AxleList.Count;
+                    if (axle.AxleWeightN <= 0) axle.AxleWeightN = 9.81f * axle.WheelWeightKg;  //remains fixed for diesel/electric locomotives, but varies for steam locomotives
                     if (axle.NumAxles <= 0) axle.NumAxles = locomotive.LocoNumDrvAxles;
                     if (axle.WheelRadiusM <= 0) axle.WheelRadiusM = locomotive.DriverWheelRadiusM;
                     if (axle.WheelFlangeAngleRad <= 0) axle.WheelFlangeAngleRad = locomotive.MaximumWheelFlangeAngleRad;
                     if (axle.DampingNs <= 0) axle.DampingNs = locomotive.MassKG / 1000.0f / AxleList.Count;
                     if (axle.FrictionN <= 0) axle.FrictionN = locomotive.MassKG / 1000.0f / AxleList.Count;
+                    if (axle.NumberWheelAxles <= 0) axle.NumberWheelAxles = 1;
                 }
                 axle.Initialize();
             }
@@ -315,7 +319,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         public int NumOfSubstepsPS { get; set; }
 
         /// <summary>
-        /// Positive only brake force to the axle, in Newtons
+        /// Positive only brake force to the individual axle, in Newtons
         /// </summary>
         public float BrakeRetardForceN;
 
@@ -332,6 +336,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
 
         protected float frictionN;
 
+        /// <summary>
+        /// Positive only friction force to the axle, in Newtons
+        /// </summary>
         public float FrictionN { set { frictionN = Math.Abs(value); } get { return frictionN; } }
 
         /// <summary>
@@ -429,7 +436,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         /// <summary>
         /// switch between Polach and Pacha adhesion calculation
         /// </summary>
-        bool UsePolachAdhesion = false;
+        public static bool UsePolachAdhesion = false; // "static" so it's shared by all axles of the Player's loco
 
         /// <summary>
         /// Pre-calculation of slip characteristics at 0 slip speed
@@ -488,6 +495,16 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         /// Radius of wheels connected to axle
         /// </summary>
         public float WheelRadiusM;
+
+        /// <summary>
+        /// Wheel number
+        /// </summary>
+        public int NumberWheelAxles;
+
+        /// <summary>
+        /// Wheel mass parameter in kilograms
+        /// </summary>
+        public float WheelWeightKg;
 
         /// <summary>
         /// Flange angle wheels connected to axle
@@ -556,7 +573,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         public float AxleForceN { get; private set; }
 
         /// <summary>
-        /// Compensated Axle force value, this provided the motive force equivalent excluding brake force, in Newtons
+        /// Compensated Axle force value, this provided the motive force equivalent excluding brake and friction force, in Newtons
         /// </summary>
         public float CompensatedAxleForceN { get; protected set; }
 
@@ -760,7 +777,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                         InertiaKgm2 = stf.ReadFloatBlock(STFReader.UNITS.RotationalInertia, null);
                         break;
                     case "weight":
-                        AxleWeightN = 9.81f * stf.ReadFloatBlock(STFReader.UNITS.Mass, null);
+                        WheelWeightKg = stf.ReadFloatBlock(STFReader.UNITS.Mass, null);
+                        AxleWeightN = 9.81f * WheelWeightKg;
+                        break;
+                    case "numberwheelaxles":
+                        NumberWheelAxles = stf.ReadIntBlock(null);
                         break;
                     case "animatedparts":
                         foreach (var part in stf.ReadStringBlock("").ToUpper().Replace(" ", "").Split(','))
@@ -780,9 +801,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
             WheelFlangeAngleRad = other.WheelFlangeAngleRad;
             NumAxles = other.NumAxles;
             InertiaKgm2 = other.InertiaKgm2;
+            WheelWeightKg = other.WheelWeightKg;
             AxleWeightN = other.AxleWeightN;
             AnimatedParts.Clear();
             AnimatedParts.AddRange(other.AnimatedParts);
+            NumberWheelAxles = other.NumberWheelAxles;
         }
 
         /// <summary>
@@ -996,40 +1019,13 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         /// - computes axle dynamic model according to its driveType
         /// - computes wheelslip indicators
         /// </summary>
-        /// <param name="timeSpan"></param>
-        public virtual void Update(float timeSpan)
+        /// <param name="elapsedSeconds"></param>
+        public virtual void Update(float elapsedSeconds)
         {
-            // Test to determine whether to use Polach or Pacha adhesion
-                        
-            // Switches between Polach (high performance) adhesion model and Pacha (low performance) adhesion model depending upon the PC performance
-            if(timeSpan < 0.025) // timespan 0.025 = 40 fps screen rate, low timeSpan and high FPS
-            {
-                if (UsePolachAdhesion == false)
-                {
-                    var ScreenFrameRate = 1 / timeSpan;
-                    Trace.TraceInformation("Advanced adhesion model set to high performance option; frame rate {0} at ElapsedClockSeconds of {1}", ScreenFrameRate, timeSpan);
-                }
-                UsePolachAdhesion = true;
-            }
-            else if(timeSpan > 0.033) // timespan 0.033 = 30 fps screen rate, high timeSpan and low FPS
-            {
-                if (UsePolachAdhesion == true)
-                {
-                    var ScreenFrameRate = 1 / timeSpan;
-                    Trace.TraceInformation("Advanced adhesion model set to low performance option due to low frame rate {0} at ElapsedClockSeconds of {1}", ScreenFrameRate, timeSpan);
-                }
-                UsePolachAdhesion = false;
-                // Set values for Pacha adhesion
-                WheelSlipThresholdMpS = MpS.FromKpH(AdhesionK / AdhesionLimit);
-                WheelAdhesion = 0.99f;
-                MaximumPolachWheelAdhesion = 0.99f;
-
-            }
-            
-            forceToAccelerationFactor = WheelRadiusM * WheelRadiusM / totalInertiaKgm2;        
-
+            UsePolachAdhesion = AdhesionPrecision.IsPrecisionHigh(elapsedSeconds);
             if (UsePolachAdhesion)
             {
+                forceToAccelerationFactor = WheelRadiusM * WheelRadiusM / totalInertiaKgm2;
 
                 Polach.Update();
                 axleStaticForceN = AxleWeightN * SlipCharacteristicsPolach(0);
@@ -1041,6 +1037,15 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                     Polach.Update();
                     axleStaticForceN = AxleWeightN * SlipCharacteristicsPolach(0);
                 }
+            }
+            else
+            {
+                // Set values for Pacha adhesion
+                WheelSlipThresholdMpS = MpS.FromKpH(AdhesionK / AdhesionLimit);
+                WheelAdhesion = 0.99f;
+                MaximumPolachWheelAdhesion = 0.99f;
+
+                forceToAccelerationFactor = WheelRadiusM * WheelRadiusM / totalInertiaKgm2;
             }
 
 #if DEBUG_ADHESION
@@ -1066,9 +1071,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
             Console.WriteLine("");
 #endif
 
-            motor?.Update(timeSpan);
+            motor?.Update(elapsedSeconds);
 
-            Integrate(timeSpan);
+            Integrate(elapsedSeconds);
             // TODO: We should calculate brake force here
             // Adding and substracting the brake force is correct for normal operation,
             // but during wheelslip this will produce wrong results.
@@ -1076,9 +1081,18 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
             // And thus there is a duplication of the braking effect in OR. To compensate for this, after the slip characteristics have been calculated, the output of the axle
             // module has the brake force "added" back in to give the appropriate motive force output for the locomotive. Braking force is handled separately.
             // Hence CompensatedAxleForce is the actual output force on the axle. Similarly friction is also handled separately so it is also discounted from the CompensatedForce.
-            if (Math.Abs(TrainSpeedMpS) < 0.001f && AxleForceN == 0) CompensatedAxleForceN = DriveForceN;
-            else if (TrainSpeedMpS < 0) CompensatedAxleForceN = AxleForceN - BrakeRetardForceN - FrictionN;
-            else CompensatedAxleForceN = AxleForceN + BrakeRetardForceN + FrictionN;
+
+            // Make sure that compensated value never exceeds the "output" force, otherwise resulting value will be overcompensated
+            var CompensationVariation = BrakeRetardForceN + FrictionN;
+
+            if (CompensationVariation > Math.Abs(AxleForceN))
+            {
+                CompensationVariation = Math.Abs(AxleForceN); ;
+            }
+
+            if (Math.Abs(TrainSpeedMpS) < 0.001f && AxleForceN == 0) CompensatedAxleForceN = 0;
+            else if (TrainSpeedMpS < 0) CompensatedAxleForceN = AxleForceN - CompensationVariation;
+            else CompensatedAxleForceN = AxleForceN + CompensationVariation;
 
             if (Math.Abs(SlipSpeedMpS) > WheelSlipThresholdMpS)
             {
@@ -1087,14 +1101,14 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                 {
                     IsWheelSlip = IsWheelSlipWarning = true;
                 }
-                WheelSlipTimeS += timeSpan;
+                WheelSlipTimeS += elapsedSeconds;
             }
             else if (Math.Abs(SlipSpeedPercent) > SlipWarningTresholdPercent)
             {
                 // Wait some time before indicating wheelslip to avoid false triggers
                 if (WheelSlipWarningTimeS > 1) IsWheelSlipWarning = true;
                 IsWheelSlip = false;
-                WheelSlipWarningTimeS += timeSpan;
+                WheelSlipWarningTimeS += elapsedSeconds;
             }
             else
             {
@@ -1103,13 +1117,62 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                 WheelSlipWarningTimeS = WheelSlipTimeS = 0;
             }
 
-            if (timeSpan > 0.0f)
+            if (elapsedSeconds > 0.0f)
             {
-                slipDerivationMpSS = (SlipSpeedMpS - previousSlipSpeedMpS) / timeSpan;
+                slipDerivationMpSS = (SlipSpeedMpS - previousSlipSpeedMpS) / elapsedSeconds;
                 previousSlipSpeedMpS = SlipSpeedMpS;
 
-                slipDerivationPercentpS = (SlipSpeedPercent - previousSlipPercent) / timeSpan;
+                slipDerivationPercentpS = (SlipSpeedPercent - previousSlipPercent) / elapsedSeconds;
                 previousSlipPercent = SlipSpeedPercent;
+            }
+        }
+
+        static class AdhesionPrecision  // "static" so all "Axle"s share the same level of precision
+        {
+            enum AdhesionPrecisionLevel
+            {
+                /// <summary>
+                /// Initial level uses Polach algorithm
+                /// </summary>
+                High,
+                /// <summary>
+                /// Low-performance PCs use Pacha's algorithm
+                /// </summary>
+                Low
+            }
+
+            static AdhesionPrecisionLevel PrecisionLevel = AdhesionPrecisionLevel.High;
+            static double TimeOfLatestDowngrade = 0;
+
+            // Adjustable limits
+            const float UpperLimitS = 0.033f;   // timespan 0.033 = 30 fps screen rate, high timeSpan and low FPS
+
+            // Tested by varying the framerate interactively. Did this by opening and closing the HelpWindow after inserting
+            //   Threading.Thread.Sleep(40);
+            // into HelpWindow.PrepareFrame() temporarily.
+            public static bool IsPrecisionHigh(float elapsedSeconds)
+            {
+                if (elapsedSeconds > 0) // Ignore period with elapsedSeconds == 0 until user starts game.
+                {
+                    // Switches between Polach (high precision) adhesion model and Pacha (low precision) adhesion model depending upon the PC performance
+                    switch (PrecisionLevel)
+                    {
+                        case AdhesionPrecisionLevel.High:
+                            if (elapsedSeconds > UpperLimitS)
+                            {
+                                var screenFrameRate = 1 / elapsedSeconds;
+                                {
+                                    Trace.TraceInformation($"Advanced adhesion model switched to low precision permanently after low frame rate {screenFrameRate:F1} below limit {1 / UpperLimitS:F0}");
+                                    PrecisionLevel = AdhesionPrecisionLevel.Low;
+                                }
+                            }
+                            break;
+
+                        case AdhesionPrecisionLevel.Low:
+                            break;
+                    }
+                }
+                return (PrecisionLevel == AdhesionPrecisionLevel.High);
             }
         }
 
@@ -1203,6 +1266,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                 polach_Ks = (1.2 * zeroSpeedAdhesion) - 0.26;
                 if (polach_Ks < 0.1) polach_Ks = 0.1f;
             }
+
             public double SlipCharacteristics(double slipSpeedMpS)
             {
                 var polach_uadhesion = zeroSpeedAdhesion * (((1 - polach_A) * Math.Exp(-polach_B * slipSpeedMpS)) + polach_A);
