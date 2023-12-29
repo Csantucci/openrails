@@ -3748,10 +3748,13 @@ namespace Orts.Simulation.Timetables
                     // If required to wait: exit
                     if (needwait >= 0)
                     {
-                        TTTrain otherTrain = GetOtherTTTrainByNumber(needwait);
-                        DisplayMessage = Simulator.Catalog.GetString("Held for connecting train : ");
-                        DisplayMessage = String.Concat(DisplayMessage, otherTrain.Name);
-                        DisplayColor = Color.Orange;
+                        if (Autopilot)
+                        {
+                            TTTrain otherTrain = GetOtherTTTrainByNumber(needwait);
+                            DisplayMessage = Simulator.Catalog.GetString("Held for connecting train : ");
+                            DisplayMessage = String.Concat(DisplayMessage, otherTrain.Name);
+                            DisplayColor = Color.Orange;
+                        }
                         remaining = 999;
                         return;
                     }
@@ -3769,6 +3772,23 @@ namespace Orts.Simulation.Timetables
                     // Waiting for train to attach: exit
                     if (NeedAttach[thisStation.PlatformReference].Count > 0)
                     {
+                        if (Autopilot)
+                        {
+                            int waitAttach = NeedAttach[thisStation.PlatformReference][0];
+                            TTTrain otherTrain = GetOtherTTTrainByNumber(waitAttach);
+                            DisplayMessage = Simulator.Catalog.GetString("Waiting for train to attach : ");
+                            if (otherTrain != null)
+                            {
+                                DisplayMessage = String.Concat(DisplayMessage, otherTrain.Name);
+                            }
+                            else
+                            {
+                                DisplayMessage = String.Concat(DisplayMessage, "train no. ");
+                                DisplayMessage = String.Concat(DisplayMessage, waitAttach.ToString());
+                            }
+                            DisplayColor = Color.Orange;
+                        }
+                        remaining = 999;
                         return;
                     }
                 }
@@ -3778,6 +3798,23 @@ namespace Orts.Simulation.Timetables
                     // Waiting for transfer: exit
                     if (NeedStationTransfer[thisStation.PlatformReference].Count > 0)
                     {
+                        if (Autopilot)
+                        {
+                            int waitTransfer = NeedStationTransfer[thisStation.PlatformReference][0];
+                            TTTrain otherTrain = GetOtherTTTrainByNumber(waitTransfer);
+                            DisplayMessage = Simulator.Catalog.GetString("Waiting for transfer with train : ");
+                            if (otherTrain != null)
+                            {
+                                DisplayMessage = String.Concat(DisplayMessage, otherTrain.Name);
+                            }
+                            else
+                            {
+                                DisplayMessage = String.Concat(DisplayMessage, "train no. ");
+                                DisplayMessage = String.Concat(DisplayMessage, waitTransfer.ToString());
+                            }
+                            DisplayColor = Color.Orange;
+                        }
+                        remaining = 999;
                         return;
                     }
                 }
@@ -3787,6 +3824,12 @@ namespace Orts.Simulation.Timetables
                     // Waiting for transfer: exit
                     if (NeedTrainTransfer.ContainsKey(occSection.Index))
                     {
+                        if (Autopilot)
+                        {
+                            DisplayMessage = Simulator.Catalog.GetString("Waiting for transfer");
+                            DisplayColor = Color.Orange;
+                        }
+                        remaining = 999;
                         return;
                     }
                 }
