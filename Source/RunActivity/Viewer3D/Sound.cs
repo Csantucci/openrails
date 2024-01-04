@@ -1532,6 +1532,7 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.VolumeCurve.Controls.Variable2_1Controlled: return car.Variable2_1;
                 case Orts.Formats.Msts.VolumeCurve.Controls.Variable3_1Controlled: return car.Variable3_1;
                 case Orts.Formats.Msts.VolumeCurve.Controls.Variable4_1Controlled: return car.Variable4_1;
+                case Orts.Formats.Msts.VolumeCurve.Controls.Variable2BoosterControlled: return car.Variable2_Booster;
 
                 case Orts.Formats.Msts.VolumeCurve.Controls.Variable2Controlled:
                     {
