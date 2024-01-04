@@ -1065,7 +1065,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                         hdt = dt / 2;
                     }
 
-                    if (Math.Sign(AxleSpeedMpS + k1.Item1 * dt) != Math.Sign(AxleSpeedMpS) && BrakeRetardForceN + frictionN > Math.Abs(driveForceN - k1.Item3))
+                    if (Math.Sign(AxleSpeedMpS + k1.Item1 * dt) != Math.Sign(AxleSpeedMpS) && AxleSpeedMpS != 0 && BrakeRetardForceN + frictionN > Math.Abs(driveForceN - k1.Item3))
                     {
                         AxlePositionRad += AxleSpeedMpS * hdt;
                         AxlePositionRad = MathHelper.WrapAngle((float)AxlePositionRad);
