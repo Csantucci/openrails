@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.149.2
-December 27th, 2023
+﻿Open Rails, NewYear version README - Rev.149.3
+January 5th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-776, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-794, 
 plus some of the features already present in the Unstable release.
 
 
@@ -63,14 +63,13 @@ This version includes some features not (yet) available in the Open Rails testin
   *- (timetables) Allow depart early, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__296371 (PR #890) 
   *- Auto-save, by roeter, see https://www.elvastower.com/forums/index.php?/topic/35870-auto-save/page__view__findpost__p__280206 (PR #891)
   *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
-  *- Fix signal errors, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37570-debug-code/page__view__findpost__p__302315 (PR #893)
-  *- Fix decrease colour bug in cabs, by roeter, see bug report https://bugs.launchpad.net/or/+bug/2043690 (PR #894)
   *- (timetables) Many options to define power and light related features, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__293894 (PR #895)
   *- NEW: ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
   *- NEW: Duplex steam engines - Booster Engine addition by steamer_ctn (PR #899)
   *- NEW: feat: supports switching adhesion precisions by cjakeman (PR #908 )
   *- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/37651-or-151-black-track-texture-why/ (PR #907)
   *- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/37685-potential-issue-with-north-american-v-scale-latest-7-ton-locosl/ (PR #906)
+  *- NEW: Various bug fixes (partly ORNYMG only, partly shared with official OR releases) about steam locomotives
 - NEW: Improvements to display features on web clients, by mbm_OR
 
 Info about content of the various PR to the Unstable release can be found here
