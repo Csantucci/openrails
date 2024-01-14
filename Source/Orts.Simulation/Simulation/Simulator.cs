@@ -523,6 +523,7 @@ namespace Orts.Simulation
                 if (!TrainDictionary.ContainsKey(playerTTTrain.Number)) TrainDictionary.Add(playerTTTrain.Number, playerTTTrain);
                 if (!NameDictionary.ContainsKey(playerTTTrain.Name.ToLower())) NameDictionary.Add(playerTTTrain.Name.ToLower(), playerTTTrain);
             }
+            IsAutopilotMode = true;
         }
 
         public void Stop()
@@ -1931,6 +1932,13 @@ namespace Orts.Simulation
                     var playerTrain = PlayerLocomotive.Train as AITrain;
                     if (playerTrain != null)
                     {
+                        if (TimetableMode && playerTrain.ControlMode == Train.TRAIN_CONTROL.MANUAL)
+                        {
+                            Confirmer.Message(ConfirmLevel.Warning, Catalog.GetString("Train can't be switched if in manual mode"));
+                            TrainSwitcher.SuspendOldPlayer = false;
+                            TrainSwitcher.ClickedSelectedAsPlayer = false;
+                            return;
+                        }
                         if (playerTrain.ControlMode == Train.TRAIN_CONTROL.MANUAL) TrainSwitcher.SuspendOldPlayer = true; // force suspend state to avoid disappearing of train;
                         if (TrainSwitcher.SuspendOldPlayer &&
                             (playerTrain.SpeedMpS < -0.025 || playerTrain.SpeedMpS > 0.025 || playerTrain.PresentPosition[0].TCOffset != playerTrain.PreviousPosition[0].TCOffset))
@@ -1940,13 +1948,14 @@ namespace Orts.Simulation
                             TrainSwitcher.ClickedSelectedAsPlayer = false;
                             return;
                         }
-                        if (playerTrain.TrainType == Train.TRAINTYPE.AI_PLAYERDRIVEN)
+                        if (playerTrain.TrainType == Train.TRAINTYPE.AI_PLAYERDRIVEN || !playerTrain.Autopilot)
                         {
                             // it must be autopiloted first
                             playerTrain.SwitchToAutopilotControl();
                         }
                         // and now switch!
                         playerTrain.TrainType = Train.TRAINTYPE.AI;
+                        playerTrain.Autopilot = false;
                         AI.AITrains.Add(playerTrain);
                         if (TrainSwitcher.SuspendOldPlayer)
                         {
