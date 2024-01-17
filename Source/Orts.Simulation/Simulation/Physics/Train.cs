@@ -603,7 +603,7 @@ namespace Orts.Simulation.Physics
         {
             Init(simulator);
 
-            if (Simulator.IsAutopilotMode && TotalNumber == 1 && Simulator.TrainDictionary.Count == 0) TotalNumber = 0; //The autopiloted train has number 0
+            if (Simulator.IsAutopilotMode && TotalNumber == 1 && Simulator.TrainDictionary.Count == 0 && !Simulator.TimetableMode) TotalNumber = 0; //The autopiloted train has number 0
             Number = TotalNumber;
             TotalNumber++;
             SignalObjectItems = new List<ObjectItemInfo>();

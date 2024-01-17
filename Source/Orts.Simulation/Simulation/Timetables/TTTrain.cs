@@ -13459,7 +13459,8 @@ namespace Orts.Simulation.Timetables
                 }
             }
             ResetActions(true, true);
-            if (SpeedMpS != 0) MovementState = AI_MOVEMENT_STATE.BRAKING;
+            if (Math.Abs(SpeedMpS) - 0.05 > 0 && !AtStation)
+                MovementState = AI_MOVEMENT_STATE.BRAKING;
             else if (this == Simulator.OriginalPlayerTrain && Simulator.ActivityRun != null && Simulator.ActivityRun.Current is ActivityTaskPassengerStopAt && ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).IsAtStation(this) &&
                 ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).BoardingS > 0)
             {
@@ -13477,7 +13478,7 @@ namespace Orts.Simulation.Timetables
                                     ? AI_MOVEMENT_STATE.HANDLE_ACTION
                                     : AI_MOVEMENT_STATE.STOPPED;
             }
-            success = true;
+        success = true;
             return success;
         }
     }

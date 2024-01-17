@@ -1766,9 +1766,11 @@ namespace Orts.Viewer3D
             ThreeDimCabCamera.ChangeCab(Simulator.PlayerLocomotive);
             HeadOutForwardCamera.ChangeCab(Simulator.PlayerLocomotive);
             HeadOutBackCamera.ChangeCab(Simulator.PlayerLocomotive);
-            if (!Simulator.PlayerLocomotive.HasFront3DCab && !Simulator.PlayerLocomotive.HasRear3DCab)
+            if (!Simulator.PlayerLocomotive.HasFront3DCab && !Simulator.PlayerLocomotive.HasRear3DCab && 
+                (Simulator.PlayerLocomotive.HasFrontCab || Simulator.PlayerLocomotive.HasRearCab))
                 CabCamera.Activate(); // If you need anything else here the cameras should check for it.
-            else ThreeDimCabCamera.Activate();
+            else if (Simulator.PlayerLocomotive.HasFront3DCab || Simulator.PlayerLocomotive.HasRear3DCab)
+                ThreeDimCabCamera.Activate();
             SetCommandReceivers();
         }
 
