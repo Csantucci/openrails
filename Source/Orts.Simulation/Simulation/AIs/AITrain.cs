@@ -127,7 +127,7 @@ namespace Orts.Simulation.AIs
         public static float maxFollowSpeedMpS = 15.0f;         // max. speed when following
         public static float movingtableSpeedMpS = 2.5f;        // speed for moving tables (approx. max 8 kph)
         public static float hysterisMpS = 0.5f;                // speed hysteris value to avoid instability
-        public static float clearingDistanceM = 15.0f;         // clear distance to stopping point
+        public static float clearingDistanceM = 30.0f;         // clear distance to stopping point
         public static float minStopDistanceM = 3.0f;           // minimum clear distance for stopping at signal in station
         public static float signalApproachDistanceM = 20.0f;   // final approach to signal
 

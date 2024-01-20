@@ -4258,8 +4258,6 @@ namespace Orts.Simulation.Timetables
                         distanceToGoM = DistanceToEndNodeAuthorityM[0] - (Closeup ? keepDistanceCloseupM : clearingDistanceM);
                     }
 
-//                    distanceToGoM += 10.0f;
-//
                     if (distanceToGoM <= 0)
                     {
                         if (SpeedMpS > 0)
@@ -7439,7 +7437,7 @@ namespace Orts.Simulation.Timetables
                     lengthToGoM += thisSection.Length;
                 }
 
-//                lengthToGoM += 10.0f; // Keep save distance from end
+//                lengthToGoM -= 5.0f; // Keep save distance from end
 
                 // If last section does not end at signal or next section is switch, set back overlap to keep clear of switch
                 // Only do so for last subroute to avoid falling short of reversal points
@@ -10092,8 +10090,8 @@ namespace Orts.Simulation.Timetables
                     remLength += signalRef.TrackCircuitList[ValidRoute[0][Index].TCSectionIndex].Length;
                 }
 
-                //               if (remLength < 2 * standardOverlapM)
-               if (remLength < standardOverlapM)
+               if (remLength < 2 * standardOverlapM)
+//               if (remLength < standardOverlapM)
                 {
                     endOfRoute = true;
                 }
@@ -10112,8 +10110,8 @@ namespace Orts.Simulation.Timetables
                 if (nextActionInfo != null && nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.END_OF_ROUTE && !junctionFound)
                 {
                     float remDistance = nextActionInfo.ActivateDistanceM - DistanceTravelledM;
-                    //                   if (remDistance < 2 * standardOverlapM)
-                    if (remDistance < standardOverlapM)
+                    if (remDistance < 2 * standardOverlapM)
+//                    if (remDistance < standardOverlapM)
                     {
                         endOfRoute = true;
                     }
