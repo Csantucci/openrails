@@ -42,6 +42,7 @@ using Orts.Simulation.AIs;
 using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.Signalling;
+using Orts.Simulation.RollingStocks.SubSystems;
 using Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS;
 using ORTS.Common;
 using Event = Orts.Common.Event;
@@ -677,8 +678,8 @@ namespace Orts.Simulation.Timetables
             outf.Write(Efficiency);
             outf.Write(MaxVelocityA);
             outf.Write(UncondAttach);
-            outf.Write(doorCloseAdvance);
-            outf.Write(doorOpenDelay);
+            outf.Write(DoorCloseTimer);
+            outf.Write(DoorOpenTimer);
             outf.Write(ApproachTriggerSet);
             // Dummy for level crossing horn pattern
             outf.Write(-1);
@@ -1316,6 +1317,8 @@ namespace Orts.Simulation.Timetables
                         car.SpecialLights = TrainSpecialLights[(int)SpecialLightsPhase.Active];
                         car.SpecialLightSelection = TrainSpecialLightSelection[(int)SpecialLightsPhase.Active];
                     }
+                    if (Simulator.AI != null)
+                            Simulator.AI.aiListChanged = true;
                 }
                 else
                 {
@@ -3663,10 +3666,18 @@ namespace Orts.Simulation.Timetables
 
                 if (thisStation.ActualArrival < 0)
                 {
+                    RestdelayS = DelayedStartSettings.stationRestart.fixedPartS + (Simulator.Random.Next(DelayedStartSettings.stationRestart.randomPartS * 10) / 10f);
                     thisStation.ActualArrival = presentTime;
-                    thisStation.CalculateDepartTime(presentTime, this);
+                    var stopTime = thisStation.CalculateDepartTime(presentTime, this);
                     actualdepart = thisStation.ActualDepart;
-
+                    // door management
+                    DoorOpenTimer = 4.0f;
+                    DoorCloseTimer = RestdelayS > 10.0f ? stopTime - 1: stopTime + RestdelayS - 11.0f;
+                    if (DoorCloseTimer - 6 < DoorOpenTimer)
+                    {
+                        DoorOpenTimer = 0;
+                        DoorCloseTimer = MathHelper.Clamp (stopTime + RestdelayS - 3, stopTime -3, stopTime - 1);
+                    }
 #if DEBUG_REPORTS
                     DateTime baseDT = new DateTime();
                     DateTime arrTime = baseDT.AddSeconds(presentTime);
@@ -3691,6 +3702,48 @@ namespace Orts.Simulation.Timetables
 #if DEBUG_TTANALYSIS
                     TTAnalysisUpdateStationState1(presentTime, thisStation);
 #endif
+                }
+
+                if (!IsFreight && Simulator.OpenDoorsInAITrains)
+                {
+                    // door management
+                    TCRouteElement statRouteElement = ValidRoute[0][thisStation.RouteIndex];
+                    var frontIsFront = statRouteElement.Direction == 1 ^ thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
+ //                   var frontIsFront = thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
+                    if (DoorOpenTimer > 0)
+                    {
+                        DoorOpenTimer -= elapsedClockSeconds;
+                        if (DoorOpenTimer < 0)
+                        {
+                            if (thisStation.PlatformItem.PlatformSide[0])
+                            {
+                                // Open left doors
+                                SetDoors(frontIsFront ? DoorSide.Right : DoorSide.Left, true);
+                            }
+                            if (thisStation.PlatformItem.PlatformSide[1])
+                            {
+                                // Open right doors
+                                SetDoors(frontIsFront ? DoorSide.Left : DoorSide.Right, true);
+                            }
+                        }
+                    }
+                    if (DoorCloseTimer > 0)
+                    {
+                        DoorCloseTimer -= elapsedClockSeconds;
+                        if (DoorCloseTimer < 0)
+                        {
+                            if (thisStation.PlatformItem.PlatformSide[0])
+                            {
+                                // Close left doors
+                                SetDoors(frontIsFront ? DoorSide.Right : DoorSide.Left, false);
+                            }
+                            if (thisStation.PlatformItem.PlatformSide[1])
+                            {
+                                // Close right doors
+                                SetDoors(frontIsFront ? DoorSide.Left : DoorSide.Right, false);
+                            }
+                        }
+                    }
                 }
 
                 // Check for activation of other train
@@ -3748,7 +3801,10 @@ namespace Orts.Simulation.Timetables
                     // If required to wait: exit
                     if (needwait >= 0)
                     {
-                        if (Autopilot)
+                        // Stop the door close timer at the moment
+                        if (DoorCloseTimer > 0)
+                            DoorCloseTimer += elapsedClockSeconds;
+                            if (Autopilot)
                         {
                             TTTrain otherTrain = GetOtherTTTrainByNumber(needwait);
                             DisplayMessage = Simulator.Catalog.GetString("Held for connecting train : ");
@@ -3763,6 +3819,9 @@ namespace Orts.Simulation.Timetables
                     {
                         actualdepart = CompareTimes.LatestTime(actualdepart, deptime);
                         thisStation.ActualDepart = actualdepart;
+                        // Reset door close timer
+                        var stopTime = actualdepart >= presentTime ? actualdepart - presentTime : actualdepart - presentTime + 3600;
+                        DoorCloseTimer = RestdelayS > 10.0f ? stopTime : stopTime + RestdelayS - 10.0f;
                     }
                 }
 
@@ -3878,6 +3937,13 @@ namespace Orts.Simulation.Timetables
                     DisplayMessage = Simulator.Catalog.GetStringFmt("Passenger boarding completes in {0:D2}:{1:D2}",
                         remaining / 60, remaining % 60);
                     DisplayColor = remaining < 1 ? Color.LightGreen : remaining < 11 ? new Color(255, 255, 128) : Color.White;
+                    if (remaining <= 1)
+                    {
+                        if (DoorState(DoorSide.Right) == RollingStocks.SubSystems.DoorState.Open || DoorState(DoorSide.Right) == RollingStocks.SubSystems.DoorState.Opening)
+                            SetDoors(DoorSide.Right, false);
+                        if (DoorState(DoorSide.Left) == RollingStocks.SubSystems.DoorState.Open || DoorState(DoorSide.Left) == RollingStocks.SubSystems.DoorState.Opening)
+                            SetDoors(DoorSide.Left, false);
+                    }
                 }
                 return;
             }
@@ -4117,7 +4183,6 @@ namespace Orts.Simulation.Timetables
                     thisStation.Passed = true;
 
                     MovementState = AI_MOVEMENT_STATE.STOPPED; // If state is still station_stop and ready and allowed to depart - change to stop to check action
-                    RestdelayS = DelayedStartSettings.stationRestart.fixedPartS + (Simulator.Random.Next(DelayedStartSettings.stationRestart.randomPartS * 10) / 10f);
                     if (Autopilot)
                         DisplayMessage = "";
                     if (!endOfPath[0])
@@ -4667,8 +4732,11 @@ namespace Orts.Simulation.Timetables
                 else if (nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.REVERSAL)
                 {
 
-                    if (SpeedMpS < 0.05f)
+                    if (Math.Abs(SpeedMpS) < 0.05f)
+                    {
+                        SpeedMpS = 0;
                         MovementState = AI_MOVEMENT_STATE.STOPPED;
+                    }
                     RestdelayS = DelayedStartSettings.reverseAddedDelaySperM * Length;
                 }               
                 else if (nextActionInfo.RequiredSpeedMpS == 0)
@@ -9395,8 +9463,8 @@ namespace Orts.Simulation.Timetables
 
                 if (positionNow == PresentPosition[0].TCSectionIndex && directionNow != PresentPosition[0].TCDirection)
                 {
-                    ReverseFormation(TrainType == TRAINTYPE.PLAYER || Autopilot);
-                    reversed = TrainType != TRAINTYPE.PLAYER && !Autopilot; // used for setting pantographs, not done on player train
+                    ReverseFormation(TrainType == TRAINTYPE.PLAYER);
+                    reversed = TrainType != TRAINTYPE.PLAYER; // used for setting pantographs, not done on player train
 
 #if DEBUG_REPORTS
                     File.AppendAllText(@"C:\temp\printproc.txt", "Train " +
@@ -9405,8 +9473,8 @@ namespace Orts.Simulation.Timetables
                 }
                 else if (positionNow == PresentPosition[1].TCSectionIndex && directionNow != PresentPosition[1].TCDirection)
                 {
-                    ReverseFormation(TrainType == TRAINTYPE.PLAYER || Autopilot);
-                    reversed = TrainType != TRAINTYPE.PLAYER && !Autopilot; // used for setting pantographs, not done on player train
+                    ReverseFormation(TrainType == TRAINTYPE.PLAYER);
+                    reversed = TrainType != TRAINTYPE.PLAYER; // used for setting pantographs, not done on player train
 
 #if DEBUG_REPORTS
                     File.AppendAllText(@"C:\temp\printproc.txt", "Train " +
@@ -9466,7 +9534,7 @@ namespace Orts.Simulation.Timetables
                     SetRequiredPowerChange(PowerActionType.Off, poweroffdelay, null);
                     poweroffdelay += 30 + Simulator.Random.Next(10);
                     SetRequiredPowerChange(PowerActionType.On, poweroffdelay, null);
-                    if (RestdelayS < 60f) RestdelayS += 60f; // add required delay
+                    if (RestdelayS < 70f) RestdelayS += 70f; // add required delay
                 }
             }
             else
@@ -13100,6 +13168,8 @@ namespace Orts.Simulation.Timetables
             if (returnTrain == null)
             {
                 TTTrain playerTrain = Simulator.Trains.GetTrainByNumber(0) as TTTrain;
+                if (playerTrain == null)
+                    return null;
                 if (playerTrain.OrgAINumber == reqNumber)
                 {
                     returnTrain = playerTrain;
@@ -13416,6 +13486,7 @@ namespace Orts.Simulation.Timetables
             TrainType = TRAINTYPE.PLAYER;
             Autopilot = false;
             SetupStationStopHandling();
+            Simulator.AI.AITrains.Remove(this);
             success = true;
             return success;
         }
@@ -13459,24 +13530,14 @@ namespace Orts.Simulation.Timetables
             ResetActions(true, true);
             if (Math.Abs(SpeedMpS) - 0.05 > 0 && !AtStation)
                 MovementState = AI_MOVEMENT_STATE.BRAKING;
-            else if (this == Simulator.OriginalPlayerTrain && Simulator.ActivityRun != null && Simulator.ActivityRun.Current is ActivityTaskPassengerStopAt && ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).IsAtStation(this) &&
-                ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).BoardingS > 0)
-            {
-                StationStops[0].ActualDepart = (int)((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).BoardingEndS;
-                StationStops[0].ActualArrival = -(int)(new DateTime().Add(TimeSpan.FromSeconds(0.0)) - ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).ActArrive).Value.TotalSeconds;
-                MovementState = AI_MOVEMENT_STATE.STATION_STOP;
-            }
             else
             {
-                MovementState = this != Simulator.OriginalPlayerTrain && AtStation
+                MovementState = AtStation
                     ? AI_MOVEMENT_STATE.STATION_STOP
-                    : Math.Abs(SpeedMpS) <= 0.1f && ((AuxActionsContain.SpecAuxActions.Count > 0 && AuxActionsContain.SpecAuxActions[0] is AIActionWPRef && (AuxActionsContain.SpecAuxActions[0] as AIActionWPRef).keepIt != null &&
-                                            (AuxActionsContain.SpecAuxActions[0] as AIActionWPRef).keepIt.currentMvmtState == AITrain.AI_MOVEMENT_STATE.HANDLE_ACTION) || (nextActionInfo is AuxActionWPItem &&
-                                                    MovementState == AITrain.AI_MOVEMENT_STATE.HANDLE_ACTION))
-                                    ? AI_MOVEMENT_STATE.HANDLE_ACTION
-                                    : AI_MOVEMENT_STATE.STOPPED;
+                    : AI_MOVEMENT_STATE.STOPPED;
             }
-        success = true;
+            Simulator.AI.AITrains.Add(this);
+            success = true;
             return success;
         }
     }

@@ -73,8 +73,8 @@ namespace Orts.Simulation.AIs
         public Service_Definition ServiceDefinition = null; // train's service definition in .act file
         public bool UncondAttach = false;                   // if false it states that train will unconditionally attach to a train on its path
 
-        public float doorOpenDelay = -1f;
-        public float doorCloseAdvance = -1f;
+        public float DoorOpenTimer = -1f;
+        public float DoorCloseTimer = -1f;
         public AILevelCrossingHornPattern LevelCrossingHornPattern { get; set; }
         public bool ApproachTriggerSet = false;         // station approach trigger for AI trains has been set
 
@@ -246,10 +246,10 @@ namespace Orts.Simulation.AIs
             Efficiency = inf.ReadSingle();
             MaxVelocityA = inf.ReadSingle();
             UncondAttach = inf.ReadBoolean();
-            doorCloseAdvance = inf.ReadSingle();
-            doorOpenDelay = inf.ReadSingle();
+            DoorCloseTimer = inf.ReadSingle();
+            DoorOpenTimer = inf.ReadSingle();
 			ApproachTriggerSet = inf.ReadBoolean();
-            if (!Simulator.TimetableMode && doorOpenDelay <= 0 && doorCloseAdvance > 0 && Simulator.OpenDoorsInAITrains &&
+            if (!Simulator.TimetableMode && DoorOpenTimer <= 0 && DoorCloseTimer > 0 && Simulator.OpenDoorsInAITrains &&
                 MovementState == AI_MOVEMENT_STATE.STATION_STOP && StationStops.Count > 0)
             {
                 StationStop thisStation = StationStops[0];
@@ -340,8 +340,8 @@ namespace Orts.Simulation.AIs
             outf.Write(Efficiency);
             outf.Write(MaxVelocityA);
             outf.Write(UncondAttach);
-            outf.Write(doorCloseAdvance);
-            outf.Write(doorOpenDelay);
+            outf.Write(DoorCloseTimer);
+            outf.Write(DoorOpenTimer);
             outf.Write(ApproachTriggerSet);
             if (LevelCrossingHornPattern != null)
             {
@@ -1890,13 +1890,13 @@ namespace Orts.Simulation.AIs
                     thisStation.ActualArrival = presentTime;
                     var stopTime = thisStation.CalculateDepartTime(presentTime, this);
                     actualdepart = thisStation.ActualDepart;
-                    doorOpenDelay = 4.0f;
-                    doorCloseAdvance = stopTime - 10.0f;
-                    if (PreUpdate) doorCloseAdvance -= 10;
-                    if (doorCloseAdvance - 6 < doorOpenDelay)
+                    DoorOpenTimer = 4.0f;
+                    DoorCloseTimer = stopTime - 10.0f;
+                    if (PreUpdate) DoorCloseTimer -= 10;
+                    if (DoorCloseTimer - 6 < DoorOpenTimer)
                     {
-                        doorOpenDelay = 0;
-                        doorCloseAdvance = stopTime - 3;
+                        DoorOpenTimer = 0;
+                        DoorCloseTimer = stopTime - 3;
                     }
 
 #if DEBUG_REPORTS
@@ -1926,10 +1926,10 @@ namespace Orts.Simulation.AIs
                     if (!IsFreight && Simulator.OpenDoorsInAITrains)
                     {
                         var frontIsFront = thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
-                        if (doorOpenDelay > 0)
+                        if (DoorOpenTimer > 0)
                         {
-                            doorOpenDelay -= elapsedClockSeconds;
-                            if (doorOpenDelay < 0)
+                            DoorOpenTimer -= elapsedClockSeconds;
+                            if (DoorOpenTimer < 0)
                             {
                                 if (thisStation.PlatformItem.PlatformSide[0])
                                 {
@@ -1943,10 +1943,10 @@ namespace Orts.Simulation.AIs
                                 }
                             }
                         }
-                        if (doorCloseAdvance > 0)
+                        if (DoorCloseTimer > 0)
                         {
-                            doorCloseAdvance -= elapsedClockSeconds;
-                            if (doorCloseAdvance < 0)
+                            DoorCloseTimer -= elapsedClockSeconds;
+                            if (DoorCloseTimer < 0)
                             {
                                 if (thisStation.PlatformItem.PlatformSide[0])
                                 {
@@ -4413,6 +4413,7 @@ namespace Orts.Simulation.AIs
                     (attachTrain as AITrain).SwitchToPlayerControl();
                     Simulator.OnPlayerLocomotiveChanged();
                     AI.AITrains.Add(this);
+                    AI.aiListChanged = true;
                 }
                 else if (attachTrain is AITrain) RedefineAITriggers(attachTrain as AITrain);
                 if (!UncondAttach)

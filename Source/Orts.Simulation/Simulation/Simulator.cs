@@ -825,7 +825,7 @@ namespace Orts.Simulation
             // Represent conditions at the specified clock time.
             List<Train> movingTrains = new List<Train>();
 
-            if (PlayerLocomotive != null)
+            if (PlayerLocomotive != null && !PlayerLocomotive.Train.Autopilot)
             {
                 movingTrains.Add(PlayerLocomotive.Train);
                 if (PlayerLocomotive.Train.LeadLocomotive != null
@@ -1956,7 +1956,6 @@ namespace Orts.Simulation
                         // and now switch!
                         playerTrain.TrainType = Train.TRAINTYPE.AI;
                         playerTrain.Autopilot = false;
-                        AI.AITrains.Add(playerTrain);
                         if (TrainSwitcher.SuspendOldPlayer)
                         {
                             playerTrain.MovementState = AITrain.AI_MOVEMENT_STATE.SUSPENDED;
@@ -2104,6 +2103,9 @@ namespace Orts.Simulation
                     PlayerLocomotive = SetPlayerLocomotive(pathlessPlayerTrain);
                     if (oldPlayerTrain != null) oldPlayerTrain.LeadLocomotiveIndex = -1;
                 }
+                if (TimetableMode)
+                    // In timetable mode player train must have number 0
+                    (PlayerLocomotive.Train.Number, oldPlayerTrain.Number) = (oldPlayerTrain.Number, PlayerLocomotive.Train.Number);
                 playerSwitchOngoing = true;
                 if (MPManager.IsMultiPlayer())
                 {

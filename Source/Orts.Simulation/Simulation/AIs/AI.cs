@@ -169,7 +169,7 @@ namespace Orts.Simulation.AIs
                 {
                     // Timetable mode trains
                     TTTrain aiTrain = new TTTrain(Simulator, inf, this);
-                    if (aiTrain.TrainType != Train.TRAINTYPE.PLAYER && !aiTrain.Autopilot) // Add to AITrains except when it is player train
+                    if (aiTrain.TrainType != Train.TRAINTYPE.PLAYER) // Add to AITrains except when it is player train
                     {
                         AITrains.Add(aiTrain);
                     }
@@ -273,7 +273,7 @@ namespace Orts.Simulation.AIs
             AddTrains();    // Add trains waiting to be added
 
             // In timetable mode, include player train train[0]
-            if (Simulator.TimetableMode)
+            if (Simulator.TimetableMode && !Simulator.Trains[0].Autopilot)
             {
                 outf.Write(AITrains.Count + 1);
                 Simulator.Trains[0].Save(outf);
@@ -692,6 +692,7 @@ namespace Orts.Simulation.AIs
                     Simulator.StartReference.Remove(thisTrain.Number);
                     if (thisTrain.TrainType == Train.TRAINTYPE.AI_NOTSTARTED) thisTrain.TrainType = Train.TRAINTYPE.AI;
                     endPreRun = AddToWorldTT(thisTrain, newTrains);
+                    aiListChanged = true;
                     if (endPreRun) break;
                 }
             }
@@ -705,11 +706,13 @@ namespace Orts.Simulation.AIs
                     if (acttrain.MovementState != AITrain.AI_MOVEMENT_STATE.AI_STATIC && acttrain.TrainType != Train.TRAINTYPE.PLAYER)
                     {
                         activeTrains = true;
+                        aiListChanged = true;
                         break;
                     }
                     else if (acttrain.MovementState == AITrain.AI_MOVEMENT_STATE.AI_STATIC && actTTTrain.ActivateTime < clockTime)
                     {
                         activeTrains = true;
+                        aiListChanged = true;
                         break;
                     }
                 }
@@ -1323,6 +1326,7 @@ namespace Orts.Simulation.AIs
                     AITrains.Add(train);
                     Simulator.Trains.Add(train);
                 }
+                aiListChanged = true;
             }
             TrainsToAdd.Clear();
         }

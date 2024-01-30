@@ -181,9 +181,9 @@ namespace Orts.Viewer3D.Popups
             }
             if (PickedTrainFromList != null && (PickedTrainFromList == Viewer.SelectedTrain || (PickedTrainFromList.TrainType == Train.TRAINTYPE.AI_INCORPORATED && 
                 (PickedTrainFromList as AITrain).IncorporatingTrain.IsPathless && (PickedTrainFromList as AITrain).IncorporatingTrain == Viewer.SelectedTrain)) && !PickedTrainFromList.IsActualPlayerTrain &&
-                Viewer.Simulator.IsAutopilotMode && PickedTrainFromList.IsPlayable)
+                Viewer.Simulator.IsAutopilotMode && PickedTrainFromList.IsPlayable && (Viewer.PlayerTrain as AITrain).MovementState != AITrain.AI_MOVEMENT_STATE.AI_STATIC)
             {
-                if (UserInput.IsDown(UserCommand.GameSuspendOldPlayer))
+                if (UserInput.IsDown(UserCommand.GameSuspendOldPlayer) && !Viewer.Simulator.TimetableMode)
                     Viewer.Simulator.TrainSwitcher.SuspendOldPlayer = true;
                 //Ask for change of driven train
                 Viewer.Simulator.TrainSwitcher.SelectedAsPlayer = PickedTrainFromList;
