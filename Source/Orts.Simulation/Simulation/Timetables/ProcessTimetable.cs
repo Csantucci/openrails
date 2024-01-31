@@ -3352,6 +3352,7 @@ namespace Orts.Simulation.Timetables
 
                     formedTrain.Closeup = disposeDetails.RunRoundCloseup;
                     formedTrain.ForceReversal = disposeDetails.RunRoundForceReversal;
+                    formedTrain.NoPantoSwitchOnReverse = disposeDetails.RunRoundNoPantoSwitchOnReverse;
 
                     formedTrain.AttachDetails = new AttachInfo(rrtrain);
                     trainList.Add(formedTrain);
@@ -4026,6 +4027,7 @@ namespace Orts.Simulation.Timetables
             public int? RunRoundTime;
             public bool RunRoundCloseup;
             public bool RunRoundForceReversal;
+            public bool RunRoundNoPantoSwitchOnReverse;
 
             public enum RunRoundPosition
             {
@@ -4091,6 +4093,10 @@ namespace Orts.Simulation.Timetables
 
                                     case "rrforcereversal":
                                         RunRoundForceReversal = true;
+                                        break;
+
+                                    case "rrreverse_nopantoswitch":
+                                        RunRoundNoPantoSwitchOnReverse = true;
                                         break;
 
                                     case "setstop":
@@ -4319,6 +4325,10 @@ namespace Orts.Simulation.Timetables
 
                                 case "rrforcereversal":
                                     RunRoundForceReversal = true;
+                                    break;
+
+                                case "rrreverse_nopantoswitch":
+                                    RunRoundNoPantoSwitchOnReverse = true;
                                     break;
 
                                 case "callon":
