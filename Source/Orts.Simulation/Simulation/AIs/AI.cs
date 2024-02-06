@@ -169,7 +169,7 @@ namespace Orts.Simulation.AIs
                 {
                     // Timetable mode trains
                     TTTrain aiTrain = new TTTrain(Simulator, inf, this);
-                    if (aiTrain.TrainType != Train.TRAINTYPE.PLAYER) // Add to AITrains except when it is player train
+                    if (!(AITrains.Count > 0 && aiTrain.Number == AITrains[0].Number)) // Add to AITrains except when it is player train
                     {
                         AITrains.Add(aiTrain);
                     }
@@ -273,7 +273,7 @@ namespace Orts.Simulation.AIs
             AddTrains();    // Add trains waiting to be added
 
             // In timetable mode, include player train train[0]
-            if (Simulator.TimetableMode && !Simulator.Trains[0].Autopilot)
+            if (Simulator.TimetableMode)
             {
                 outf.Write(AITrains.Count + 1);
                 Simulator.Trains[0].Save(outf);
@@ -1319,6 +1319,8 @@ namespace Orts.Simulation.AIs
                 Simulator.NameDictionary.Add(train.Name.ToLower(), train);
                 if (train.TrainType == Train.TRAINTYPE.PLAYER || train.TrainType == Train.TRAINTYPE.INTENDED_PLAYER)
                 {
+                    if (AITrains[0].TrainType == Train.TRAINTYPE.PLAYER)
+                        AITrains.RemoveAt(0);
                     AITrains.Insert(0, train);
                 }
                 else

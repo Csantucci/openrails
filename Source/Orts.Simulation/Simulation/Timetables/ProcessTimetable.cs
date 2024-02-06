@@ -3141,6 +3141,7 @@ namespace Orts.Simulation.Timetables
                         outTrain.AITrainDirectionForward = true;
                         outTrain.StartTime = DisposeDetails.StableInfo.Stable_outtime;
                         outTrain.ActivateTime = DisposeDetails.StableInfo.Stable_outtime;
+                        outTrain.NoPantoSwitchOnReverse = DisposeDetails.StableInfo.Stable_outNoPantoSwitchOnReverse;
                         if (String.IsNullOrEmpty(DisposeDetails.StableInfo.Stable_name))
                         {
                             outTrain.Name = String.Concat("SO_", thisTTTrain.Number.ToString("0000"));
@@ -3194,6 +3195,7 @@ namespace Orts.Simulation.Timetables
                             inTrain.AITrainDirectionForward = true;
                             inTrain.StartTime = DisposeDetails.StableInfo.Stable_intime;
                             inTrain.ActivateTime = DisposeDetails.StableInfo.Stable_intime;
+                            inTrain.NoPantoSwitchOnReverse = DisposeDetails.StableInfo.Stable_inNoPantoSwitchOnReverse;
                             inTrain.Name = String.Concat("SI_", finalForms.ToString("0000"));
                             inTrain.FormedOf = outTrain.Number;
                             inTrain.FormedOfType = DisposeDetails.FormType; // Set forms or triggered as defined in stable
@@ -4009,8 +4011,10 @@ namespace Orts.Simulation.Timetables
             {
                 public string Stable_outpath;
                 public int? Stable_outtime;
+                public bool Stable_outNoPantoSwitchOnReverse;
                 public string Stable_inpath;
                 public int? Stable_intime;
+                public bool Stable_inNoPantoSwitchOnReverse;
                 public string Stable_name;
             }
 
@@ -4272,6 +4276,10 @@ namespace Orts.Simulation.Timetables
                                     StableInfo.Stable_outtime = Convert.ToInt32(outtime.TotalSeconds);
                                     break;
 
+                                case "out_reverse_nopantoswitch":
+                                    StableInfo.Stable_outNoPantoSwitchOnReverse = true;
+                                    break;
+
                                 case "in_path":
                                     StableInfo.Stable_inpath = String.Copy(stableQualifier.QualifierValues[0]);
                                     break;
@@ -4280,6 +4288,10 @@ namespace Orts.Simulation.Timetables
                                     TimeSpan intime;
                                     TimeSpan.TryParse(stableQualifier.QualifierValues[0], out intime);
                                     StableInfo.Stable_intime = Convert.ToInt32(intime.TotalSeconds);
+                                    break;
+
+                                case "in_reverse_nopantoswitch":
+                                    StableInfo.Stable_inNoPantoSwitchOnReverse = true;
                                     break;
 
                                 case "forms":

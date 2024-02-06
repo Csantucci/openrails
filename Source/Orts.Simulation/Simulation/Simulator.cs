@@ -1618,7 +1618,7 @@ namespace Orts.Simulation
             // find player train
             foreach (Train thisTrain in Trains)
             {
-                if (thisTrain.TrainType == Train.TRAINTYPE.PLAYER
+                if (thisTrain.TrainType == Train.TRAINTYPE.PLAYER || thisTrain is TTTrain && thisTrain == Trains[0]
                     || thisTrain.TrainType == Train.TRAINTYPE.AI_PLAYERDRIVEN || thisTrain.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING)
                 {
                     TrainDictionary.Add(thisTrain.Number, thisTrain);
@@ -1632,7 +1632,7 @@ namespace Orts.Simulation
                     {
                         thisTrain.RestoreManualMode();
                     }
-                    else if (thisTrain.TrainType == Train.TRAINTYPE.PLAYER)
+                    else if (thisTrain.TrainType == Train.TRAINTYPE.PLAYER || thisTrain is TTTrain && thisTrain == Trains[0])
                     {
                         thisTrain.InitializeSignals(true);
                     }
@@ -2104,8 +2104,14 @@ namespace Orts.Simulation
                     if (oldPlayerTrain != null) oldPlayerTrain.LeadLocomotiveIndex = -1;
                 }
                 if (TimetableMode)
+                {
                     // In timetable mode player train must have number 0
+                    (((TTTrain)(PlayerLocomotive.Train)).OrgAINumber, ((TTTrain)oldPlayerTrain).Number) = (((TTTrain)oldPlayerTrain).Number, ((TTTrain)PlayerLocomotive.Train).Number);
                     (PlayerLocomotive.Train.Number, oldPlayerTrain.Number) = (oldPlayerTrain.Number, PlayerLocomotive.Train.Number);
+                    var oldPlayerTrainIndex = Trains.IndexOf(oldPlayerTrain);
+                    var playerTrainIndex = Trains.IndexOf(PlayerLocomotive.Train);
+                    (Trains[oldPlayerTrainIndex], Trains[playerTrainIndex]) = (Trains[playerTrainIndex], Trains[oldPlayerTrainIndex]);
+                }
                 playerSwitchOngoing = true;
                 if (MPManager.IsMultiPlayer())
                 {

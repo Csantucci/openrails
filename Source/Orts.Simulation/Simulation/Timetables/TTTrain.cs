@@ -5392,7 +5392,8 @@ namespace Orts.Simulation.Timetables
                         int? transferTrainIndex = null;
 
                         // Check attach details
-                        if (AttachDetails != null && AttachDetails.Valid && AttachDetails.ReadyToAttach && AttachDetails.AttachTrain == OtherTrain.OrgAINumber)
+                        if (AttachDetails != null && AttachDetails.Valid && AttachDetails.ReadyToAttach && (AttachDetails.AttachTrain == OtherTrain.OrgAINumber ||
+                            AttachDetails.AttachTrain == -1 && AttachDetails.AttachTrainName == OtherTrain.Name))
                         {
                             attachToTrain = true;
                         }
@@ -6673,6 +6674,11 @@ namespace Orts.Simulation.Timetables
             {
                 TTTrain attachTrain = GetOtherTTTrainByNumber(AttachDetails.AttachTrain);
 
+                if (attachTrain == null)
+                {
+                    attachTrain = GetOtherTTTrainByName(AttachDetails.AttachTrainName.ToLower());
+                }
+
                 if (attachTrain != null)
                 {
                     // If in neutral, use forward position
@@ -6686,7 +6692,7 @@ namespace Orts.Simulation.Timetables
                         bool otherTrainFront = true;
                         bool readyToAttach = CheckCouplePosition(attachTrain, out thisTrainFront, out otherTrainFront);
 
-                        if (readyToAttach)
+                        if (readyToAttach && !(TCRoute.activeSubpath == 0 && Name.StartsWith("RR_")))
                         {
                             ProcessRouteEndTimetablePlayer();  // Perform end of route actions
                             AttachOnForms = AttachDetails.StationPlatformReference == -1;
@@ -9753,6 +9759,11 @@ namespace Orts.Simulation.Timetables
                 if (validFormed)
                 {
                     formedTrain.Autopilot = Autopilot;
+                    if (formedTrain.Autopilot)
+                    {
+                        Simulator.OnPlayerTrainChanged(this, formedTrain);
+                        Simulator.PlayerLocomotive.Train = formedTrain;
+                    }
                     // Start new train
                     if (!autogenStart)
                     {
@@ -9825,7 +9836,7 @@ namespace Orts.Simulation.Timetables
                         AI.TrainsToAdd.Add(formedTrain);
 
                         // switch power - set command for formed train as this train is removed
-                        if (reversed && HasDirectionalPantographs && PowerOffOnFormed != PowerActionType.Off)
+                        if (reversed && HasDirectionalPantographs && PowerOffOnFormed != PowerActionType.Off && !formedTrain.NoPantoSwitchOnReverse)
                         // reversed and if train has directional pantographs, switch power off and on unless power off is set
                         {
                             int poweroffdelay = 10 + Simulator.Random.Next(20);
@@ -10588,6 +10599,7 @@ namespace Orts.Simulation.Timetables
 
             // Check if at station
             CheckStationTask();
+            if (AtStation && !MayDepart) return true;
             if (DetachPending) return true; // Do not check for further actions if player train detach is pending
 
             bool[] nextRoute = UpdateRouteActions(elapsedClockSeconds);
@@ -12093,7 +12105,7 @@ namespace Orts.Simulation.Timetables
                 int poweroffdelay = 0;
 
                 // if reversed and train as directional pantographs, power must be switched off and on
-                if (reversed && HasDirectionalPantographs)
+                if (reversed && HasDirectionalPantographs && !NoPantoSwitchOnReverse)
                 {
                     powerOff = true;
                     pantoup = false;
@@ -12344,6 +12356,11 @@ namespace Orts.Simulation.Timetables
                         trainList.Remove(OrgAINumber);
                         needAttachFound = true;
                     }
+                    else if (trainList.Contains(-1))
+                    {
+                        trainList.Remove(-1);
+                        needAttachFound = true;
+                    }
 
                     if (trainList.Count < 1)
                     {
@@ -12451,6 +12468,11 @@ namespace Orts.Simulation.Timetables
             // Set anti-slip for all engines in AI train
             else
             {
+                if (Autopilot)
+                {
+                    attachTrain.Simulator.OnPlayerTrainChanged(this, attachTrain);
+                    attachTrain.Simulator.PlayerLocomotive.Train = attachTrain;
+                }
                 foreach (TrainCar car in attachTrain.Cars)
                 {
                     if (car.WagonType == TrainCar.WagonTypes.Engine)
@@ -12460,7 +12482,7 @@ namespace Orts.Simulation.Timetables
                     }
                 }
             }
-
+            attachTrain.Autopilot = Autopilot;
             // Remove original train
             RemoveTrain();
 
@@ -13536,7 +13558,7 @@ namespace Orts.Simulation.Timetables
                     ? AI_MOVEMENT_STATE.STATION_STOP
                     : AI_MOVEMENT_STATE.STOPPED;
             }
-            Simulator.AI.AITrains.Add(this);
+ //           Simulator.AI.AITrains.Add(this);
             success = true;
             return success;
         }
@@ -14403,6 +14425,13 @@ namespace Orts.Simulation.Timetables
                     else
                     {
                         // Handle AI train
+                        if (train.Autopilot || newTrain.Autopilot)
+                        {
+                            // Inform viewer about player train switch
+                            train.Simulator.OnPlayerTrainChanged(train, newTrain);
+                            train.Simulator.PlayerLocomotive.Train = newTrain;
+                        }
+
                         if (train.AI.Simulator.AutoGenDictionary != null && train.AI.Simulator.AutoGenDictionary.ContainsKey(newTrain.Number))
                             train.AI.Simulator.AutoGenDictionary.Remove(newTrain.Number);
 
@@ -14413,6 +14442,7 @@ namespace Orts.Simulation.Timetables
 
                         bool newIsPlayer = newTrain.TrainType == Train.TRAINTYPE.INTENDED_PLAYER;
                         newTrain.LeadLocomotiveIndex = train.TTUncoupleBehind(newTrain, ReverseDetachedTrain.Value, -1, newIsPlayer);
+                        train.Autopilot = false;
 
                         if (DetachPowerOff != TTTrain.PowerActionType.On) newTrain.SetRequiredPowerChange(DetachPowerOff, DetachPowerOffDelay, null);
 
@@ -14457,7 +14487,7 @@ namespace Orts.Simulation.Timetables
                     newTrain.ControlMode = Train.TRAIN_CONTROL.INACTIVE;
                     newTrain.MovementState = AITrain.AI_MOVEMENT_STATE.AI_STATIC;
                     if (!newTrain.StartTime.HasValue) newTrain.StartTime = 0;
-
+                    // Wasn't newTrain already added into TrainsToAdd?
                     newTrain.AI.TrainsToAdd.Add(newTrain);
 
                     if (newTrain.LeadLocomotiveIndex >= 0)
