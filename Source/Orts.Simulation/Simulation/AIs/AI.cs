@@ -138,6 +138,8 @@ namespace Orts.Simulation.AIs
 
             // Prerun trains
             PrerunAI(playerTrainOriginalTrain, playerTrainFormedOfType, playerTrain, cancellation);
+            if (playerTrain != null && (AITrains.Count == 0 || AITrains[0] != playerTrain))
+                AITrains.Insert(0, playerTrain);
 
             ClockTime = clockTime;
             localTime = false;

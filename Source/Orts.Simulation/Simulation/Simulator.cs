@@ -2106,11 +2106,15 @@ namespace Orts.Simulation
                 if (TimetableMode)
                 {
                     // In timetable mode player train must have number 0
-                    (((TTTrain)(PlayerLocomotive.Train)).OrgAINumber, ((TTTrain)oldPlayerTrain).Number) = (((TTTrain)oldPlayerTrain).Number, ((TTTrain)PlayerLocomotive.Train).Number);
+//                    (((TTTrain)(PlayerLocomotive.Train)).OrgAINumber, ((TTTrain)oldPlayerTrain).Number) = (((TTTrain)oldPlayerTrain).Number, ((TTTrain)PlayerLocomotive.Train).Number);
                     (PlayerLocomotive.Train.Number, oldPlayerTrain.Number) = (oldPlayerTrain.Number, PlayerLocomotive.Train.Number);
                     var oldPlayerTrainIndex = Trains.IndexOf(oldPlayerTrain);
                     var playerTrainIndex = Trains.IndexOf(PlayerLocomotive.Train);
                     (Trains[oldPlayerTrainIndex], Trains[playerTrainIndex]) = (Trains[playerTrainIndex], Trains[oldPlayerTrainIndex]);
+                    var index = AI.AITrains.IndexOf(PlayerLocomotive.Train as AITrain);
+                    (AI.AITrains[0], AI.AITrains[index]) = (AI.AITrains[index], AI.AITrains[0]);
+                    AI.aiListChanged = true;
+                    PlayerLocomotive.Train.Autopilot = true;
                 }
                 playerSwitchOngoing = true;
                 if (MPManager.IsMultiPlayer())
@@ -2130,14 +2134,16 @@ namespace Orts.Simulation
         {
             if (PlayerLocomotive.Train.TrainType != Train.TRAINTYPE.STATIC)
             {
-                AI.AITrains.Remove(PlayerLocomotive.Train as AITrain);
+                if (!TimetableMode)
+                    AI.AITrains.Remove(PlayerLocomotive.Train as AITrain);
                 if ((PlayerLocomotive.Train as AITrain).MovementState == AITrain.AI_MOVEMENT_STATE.SUSPENDED)
                 {
                     PlayerLocomotive.Train.Reinitialize();
                     (PlayerLocomotive.Train as AITrain).MovementState = Math.Abs(PlayerLocomotive.Train.SpeedMpS) <= MaxStoppedMpS ?
                         AITrain.AI_MOVEMENT_STATE.INIT : AITrain.AI_MOVEMENT_STATE.BRAKING;
                 }
-                (PlayerLocomotive.Train as AITrain).SwitchToPlayerControl();
+                if (!TimetableMode)
+                    (PlayerLocomotive.Train as AITrain).SwitchToPlayerControl();
             }
             else
             {

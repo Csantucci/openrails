@@ -13508,7 +13508,7 @@ namespace Orts.Simulation.Timetables
             TrainType = TRAINTYPE.PLAYER;
             Autopilot = false;
             SetupStationStopHandling();
-            Simulator.AI.AITrains.Remove(this);
+ //           Simulator.AI.AITrains.Remove(this);
             success = true;
             return success;
         }
