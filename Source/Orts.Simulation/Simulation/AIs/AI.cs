@@ -1325,6 +1325,11 @@ namespace Orts.Simulation.AIs
                         AITrains.RemoveAt(0);
                     AITrains.Insert(0, train);
                 }
+                else if (train.Number == 0)
+                {
+                    AITrains.Insert(0, train);
+                    Simulator.Trains.Add(train);
+                }
                 else
                 {
                     AITrains.Add(train);

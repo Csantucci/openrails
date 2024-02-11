@@ -12482,7 +12482,8 @@ namespace Orts.Simulation.Timetables
                     }
                 }
             }
-            attachTrain.Autopilot = Autopilot;
+            if (!attachTrain.Autopilot)
+                attachTrain.Autopilot = Autopilot;
             // Remove original train
             RemoveTrain();
 
@@ -14282,7 +14283,7 @@ namespace Orts.Simulation.Timetables
                 Trace.TraceInformation("Train {0} : detach to train {1} : cannot find new train \n", train.Name, DetachFormedTrainName);
             }
 
-            newTrain.Autopilot = train.Autopilot;
+//            newTrain.Autopilot = train.Autopilot;
             train.DetachUnits = iunits;
             train.DetachPosition = frontpos;
 
@@ -14424,26 +14425,92 @@ namespace Orts.Simulation.Timetables
                     }
                     else
                     {
-                        // Handle AI train
-                        if (train.Autopilot || newTrain.Autopilot)
+                        // Handle AI train, but first manage the case of autopilot train
+                        if (train.Autopilot)
                         {
-                            // Inform viewer about player train switch
-                            train.Simulator.OnPlayerTrainChanged(train, newTrain);
-                            train.Simulator.PlayerLocomotive.Train = newTrain;
-                        }
+                            bool detachablePower = CheckDetachedDriveablePower(train);
+                            bool keepPower = CheckKeepDriveablePower(train);
 
+                            // Detachable portion has no power, so detach immediately
+                            // If neither portion has power, keep remaining portion as autopilot train
+
+                            bool playerEngineInRemainingPortion = CheckPlayerLocomotivePortion(train);
+
+                            // Player engine is in remaining portion
+                            if (playerEngineInRemainingPortion || (!detachablePower && !keepPower))
+                            {
+                                if (!ReverseDetachedTrain.HasValue)
+                                {
+                                    ReverseDetachedTrain = GetDetachReversalInfo(train, newTrain);
+                                }
+                                int newLocoIndex = train.TTUncoupleBehind(newTrain, ReverseDetachedTrain.Value, train.LeadLocomotiveIndex, false);
+                                train.Simulator.Confirmer.Information(train.DetachUnits.ToString() + " units detached as train : " + newTrain.Name);
+                                Trace.TraceInformation("Detach : " + train.DetachUnits.ToString() + " units detached as train : " + newTrain.Name + "\n");
+                                train.DetachActive[1] = -1;
+
+                                // Set proper details for new train
+                                newTrain.SetFormedOccupied();
+                                newTrain.ControlMode = Train.TRAIN_CONTROL.INACTIVE;
+                                newTrain.MovementState = AITrain.AI_MOVEMENT_STATE.AI_STATIC;
+                                newTrain.SetupStationStopHandling();
+                            }
+                            // Keep portion has no power, so detach immediately and switch to new train
+                            else
+                            {
+                                if (!ReverseDetachedTrain.HasValue)
+                                {
+                                    ReverseDetachedTrain = GetDetachReversalInfo(train, newTrain);
+                                }
+                                int newLocoIndex = train.TTUncoupleBehind(newTrain, ReverseDetachedTrain.Value, -1, false);
+                                train.Simulator.Confirmer.Information(train.DetachUnits.ToString() + " units detached as train : " + newTrain.Name);
+                                Trace.TraceInformation("Detach : " + train.DetachUnits.ToString() + " units detached as train : " + newTrain.Name + "\n");
+                                train.DetachActive[1] = -1;
+
+                                // Set proper details for existing train
+                                train.TrainType = Train.TRAINTYPE.AI;
+                                train.LeadLocomotiveIndex = -1;
+                                var oldPlayer = train.AI.AITrains.Find(item => item.Number == 0);
+                                if (oldPlayer != null)
+                                    (oldPlayer.Number, newTrain.Number) = (newTrain.Number, oldPlayer.Number);
+                                else
+                                    newTrain.Number = 0;
+                                train.Simulator.Trains.Remove(train);
+                                train.AI.TrainsToRemoveFromAI.Add(train);
+                                train.AI.TrainsToAdd.Add(train);
+
+                                // Set proper details for new formed train
+                                newTrain.AI.aiListChanged = true;
+                                newTrain.SetFormedOccupied();
+                                newTrain.Autopilot = train.Autopilot;
+                                train.Autopilot = false;
+
+                                // Inform viewer about player train switch
+                                train.Simulator.OnPlayerTrainChanged(train, newTrain);
+                                train.Simulator.PlayerLocomotive.Train = newTrain;
+                                newTrain.SetupStationStopHandling();
+
+
+                                // Clear replay commands
+                                train.Simulator.Log.CommandList.Clear();
+
+                                // Display messages
+                                train.Simulator.Confirmer?.Information("Player switched to train : " + newTrain.Name);
+                            }
+                        }
+                        else
+                        {
+                            if (!ReverseDetachedTrain.HasValue)
+                            {
+                                ReverseDetachedTrain = GetDetachReversalInfo(train, newTrain);
+                            }
+
+                            bool newIsPlayer = newTrain.TrainType == Train.TRAINTYPE.INTENDED_PLAYER;
+                            newTrain.LeadLocomotiveIndex = train.TTUncoupleBehind(newTrain, ReverseDetachedTrain.Value, -1, newIsPlayer);
+
+ 
+                        }
                         if (train.AI.Simulator.AutoGenDictionary != null && train.AI.Simulator.AutoGenDictionary.ContainsKey(newTrain.Number))
                             train.AI.Simulator.AutoGenDictionary.Remove(newTrain.Number);
-
-                        if (!ReverseDetachedTrain.HasValue)
-                        {
-                            ReverseDetachedTrain = GetDetachReversalInfo(train, newTrain);
-                        }
-
-                        bool newIsPlayer = newTrain.TrainType == Train.TRAINTYPE.INTENDED_PLAYER;
-                        newTrain.LeadLocomotiveIndex = train.TTUncoupleBehind(newTrain, ReverseDetachedTrain.Value, -1, newIsPlayer);
-                        train.Autopilot = false;
-
                         if (DetachPowerOff != TTTrain.PowerActionType.On) newTrain.SetRequiredPowerChange(DetachPowerOff, DetachPowerOffDelay, null);
 
                         train.DetachActive[1] = -1;
@@ -14765,6 +14832,42 @@ namespace Orts.Simulation.Timetables
                 for (int iCar = 0; iCar < (train.Cars.Count - train.DetachUnits) && !PlayerInRemainingPortion; iCar++)
                 {
                     if (iCar == train.LeadLocomotiveIndex)
+                    {
+                        PlayerInRemainingPortion = true;
+                    }
+                }
+            }
+            return PlayerInRemainingPortion;
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// Check if PlayerLocomotive is in remaining or detached portion
+        /// </summary>
+        /// <param name="train"></param>
+        /// <returns></returns>
+        public bool CheckPlayerLocomotivePortion(TTTrain train)
+        {
+            bool PlayerInRemainingPortion = false;
+
+            // Detach at front - so check rear portion
+            if (train.DetachPosition)
+            {
+                for (int iCar = 0; iCar < (train.Cars.Count - train.DetachUnits) && !PlayerInRemainingPortion; iCar++)
+                {
+                    int actCar = train.Cars.Count - 1 - iCar;
+                    if (train.Cars[actCar] == train.Simulator.PlayerLocomotive)
+                    {
+                        PlayerInRemainingPortion = true;
+                    }
+                }
+            }
+            // Detach at rear - so check front portion
+            else
+            {
+                for (int iCar = 0; iCar < (train.Cars.Count - train.DetachUnits) && !PlayerInRemainingPortion; iCar++)
+                {
+                    if (train.Cars[iCar] == train.Simulator.PlayerLocomotive)
                     {
                         PlayerInRemainingPortion = true;
                     }
