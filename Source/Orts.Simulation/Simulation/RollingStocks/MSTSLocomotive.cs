@@ -5582,6 +5582,32 @@ namespace Orts.Simulation.RollingStocks
                             }
                             break;
                         }
+                case CABViewControlTypes.ORTS_TRAIN_AIR_FLOW_METER:
+                    {
+                        switch (cvc.Units)
+                        {
+                            case CABViewControlUnits.CUBIC_FT_MIN:
+                                data = this.Train.TotalBrakePipeFlowM3pS * 35.3147f * 60.0f;
+                                break;
+
+                            case CABViewControlUnits.LITRES_S:
+                            case CABViewControlUnits.LITERS_S:
+                                data = this.Train.TotalBrakePipeFlowM3pS * 1000.0f;
+                                break;
+
+                            case CABViewControlUnits.LITRES_MIN:
+                            case CABViewControlUnits.LITERS_MIN:
+                                data = this.Train.TotalBrakePipeFlowM3pS * 1000.0f * 60.0f;
+                                break;
+
+                            case CABViewControlUnits.CUBIC_M_S:
+                            default:
+                                data = this.Train.TotalBrakePipeFlowM3pS;
+                                break;
+
+                        }
+                        break;
+                    }
                     case CABViewControlTypes.FRICTION_BRAKING:
                         {
                             data = (BrakeSystem == null) ? 0.0f : BrakeSystem.GetCylPressurePSI();
