@@ -2895,6 +2895,8 @@ namespace Orts.Simulation.RollingStocks
                 WheelSlip = LocomotiveAxles.IsWheelSlip;
                 WheelSlipWarning = LocomotiveAxles.IsWheelSlipWarning;
             }
+
+            WheelSpeedMpS = (float)LocomotiveAxles[0].AxleSpeedMpS;
         }
 
         public void SimpleAdhesion()
