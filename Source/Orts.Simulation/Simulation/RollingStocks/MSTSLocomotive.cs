@@ -2577,17 +2577,18 @@ namespace Orts.Simulation.RollingStocks
                 if (AdvancedAdhesionModel)
                 {
                     // Wheelslip
-                    if (WheelSlip)
+                    if (HuDIsWheelSlip)
                     {
                         if (WheelslipState != Wheelslip.Occurring)
                         {
                             WheelslipState = Wheelslip.Occurring;
                             Simulator.Confirmer.Warning(CabControl.Wheelslip, CabSetting.On);
+                            Trace.TraceInformation("Display Wheelslip#1 - CarID {0} WheelSlip {1}", CarID, HuDIsWheelSlip);
                         }
                     }
                     else
                     {
-                        if (WheelSlipWarning)
+                        if (HuDIsWheelSlipWarninq)
                         {
                             if (WheelslipState != Wheelslip.Warning)
                             {
@@ -2611,6 +2612,7 @@ namespace Orts.Simulation.RollingStocks
                     {
                         WheelslipState = Wheelslip.Occurring;
                         Simulator.Confirmer.Warning(CabControl.Wheelslip, CabSetting.On);
+                        Trace.TraceInformation("Display Wheelslip#2");
                     }
                     if ((!WheelSlip) && (WheelslipState != Wheelslip.None))
                     {
@@ -2894,6 +2896,8 @@ namespace Orts.Simulation.RollingStocks
             {
                 WheelSlip = LocomotiveAxles.IsWheelSlip;
                 WheelSlipWarning = LocomotiveAxles.IsWheelSlipWarning;
+                HuDIsWheelSlip = LocomotiveAxles.HuDIsWheelSlip;
+                HuDIsWheelSlipWarninq = LocomotiveAxles.HuDIsWheelSlipWarning;
             }
 
             WheelSpeedMpS = (float)LocomotiveAxles[0].AxleSpeedMpS;
@@ -5753,9 +5757,9 @@ namespace Orts.Simulation.RollingStocks
                                     if (activeloco.DieselEngines[0] != null)
                                     {
                                         if (activeloco.AdvancedAdhesionModel && Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
-                                            data = activeloco.WheelSlipWarning ? 1 : 0;
+                                            data = activeloco.HuDIsWheelSlipWarninq ? 1 : 0;
                                         else
-                                            data = activeloco.WheelSlip ? 1 : 0;
+                                            data = activeloco.HuDIsWheelSlip ? 1 : 0;
 
                                     }
                                 }
@@ -5763,9 +5767,9 @@ namespace Orts.Simulation.RollingStocks
                             else
                             {
                                 if (AdvancedAdhesionModel && Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
-                                    data = WheelSlipWarning ? 1 : 0;
+                                    data = HuDIsWheelSlipWarninq ? 1 : 0;
                                 else
-                                    data = WheelSlip ? 1 : 0;
+                                    data = HuDIsWheelSlip ? 1 : 0;
                             }
                             break;
                         }

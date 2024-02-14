@@ -592,9 +592,9 @@ namespace Orts.Viewer3D.Popups
             if (Viewer.PlayerLocomotive.Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING)
                 TableAddLine(table, Viewer.Catalog.GetString("Autopilot") + "???");
 
-            if (Viewer.PlayerTrain.IsWheelSlip)
+            if (Viewer.PlayerTrain.HuDIsWheelSlip)
                 TableAddLine(table, Viewer.Catalog.GetString("Wheel slip") + "!!!");
-            else if (Viewer.PlayerTrain.IsWheelSlipWarninq)
+            else if (Viewer.PlayerTrain.HuDIsWheelSlipWarninq)
                 TableAddLine(table, Viewer.Catalog.GetString("Wheel slip warning") + "???");
 
             if (Viewer.PlayerTrain.IsBrakeSkid)
@@ -760,7 +760,7 @@ namespace Orts.Viewer3D.Popups
                             currentCount += 2;
                             axlesCount += 1;
 
-                            if (axlesCount >= steamloco.SteamEngines[i].AttachedAxle.NumberWheelAxles && currentCount != 0)
+                            if (axlesCount >= steamloco.SteamEngines[i].AttachedAxle.NumWheelsetAxles && currentCount != 0)
                             {
                                 whyte.Add(currentCount.ToString());
                                 currentBogie = axle.BogieIndex;

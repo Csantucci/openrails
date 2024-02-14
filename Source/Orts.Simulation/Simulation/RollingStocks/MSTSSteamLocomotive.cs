@@ -6348,10 +6348,10 @@ namespace Orts.Simulation.RollingStocks
                     float AxleMomentInertia = (linkedEngine.AttachedAxle.WheelWeightKg * AxleRadiusM * AxleRadiusM) / 2.0f;
                     float TotalWheelMomentofInertia = WheelMomentInertia + AxleMomentInertia; // Total MoI for generic wheelset
 
-                    SteamDrvWheelWeightLbs = Kg.ToLb(linkedEngine.AttachedAxle.WheelWeightKg / linkedEngine.AttachedAxle.NumAxles); // Calculate the weight per axle (used in MSTSLocomotive for friction calculatons)
+                    SteamDrvWheelWeightLbs = Kg.ToLb(linkedEngine.AttachedAxle.WheelWeightKg / linkedEngine.AttachedAxle.NumWheelsetAxles); // Calculate the weight per axle (used in MSTSLocomotive for friction calculatons)
 
                     // The moment of inertia needs to be increased by the number of wheel sets
-                    TotalWheelMomentofInertia *= linkedEngine.AttachedAxle.NumAxles;
+                    TotalWheelMomentofInertia *= linkedEngine.AttachedAxle.NumWheelsetAxles;
 
                     // the inertia of the coupling rods can also be added
                     // Assume rods weigh approx 1500 lbs
@@ -6395,6 +6395,8 @@ namespace Orts.Simulation.RollingStocks
             {
                 WheelSlip = LocomotiveAxles.IsWheelSlip;
                 WheelSlipWarning = LocomotiveAxles.IsWheelSlipWarning;
+                HuDIsWheelSlip = LocomotiveAxles.HuDIsWheelSlip;
+                HuDIsWheelSlipWarninq = LocomotiveAxles.HuDIsWheelSlipWarning;
             }
 
             // This enables steam locomotives to have different speeds for driven and non-driven wheels.
@@ -7923,7 +7925,7 @@ namespace Orts.Simulation.RollingStocks
                         Simulator.Catalog.GetString("Coeff"),
                         Train.LocomotiveCoefficientFriction,
                         Simulator.Catalog.GetString("Slip"),
-                        SteamEngines[i].AttachedAxle.IsWheelSlip ? Simulator.Catalog.GetString("Yes") : Simulator.Catalog.GetString("No"),
+                        SteamEngines[i].AttachedAxle.HuDIsWheelSlip ? Simulator.Catalog.GetString("Yes") : Simulator.Catalog.GetString("No"),
                         Simulator.Catalog.GetString("WheelM"),
                         FormatStrings.FormatMass(Kg.FromLb(SteamDrvWheelWeightLbs), IsMetric),
                         Simulator.Catalog.GetString("FoA"),

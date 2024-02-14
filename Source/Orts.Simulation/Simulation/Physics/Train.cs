@@ -159,6 +159,8 @@ namespace Orts.Simulation.Physics
 
         public bool IsWheelSlipWarninq;
         public bool IsWheelSlip;
+        public bool HuDIsWheelSlipWarninq;
+        public bool HuDIsWheelSlip;
         public bool IsBrakeSkid;
 
         public bool HotBoxSetOnTrain = false;
@@ -2058,6 +2060,8 @@ namespace Orts.Simulation.Physics
 
             bool whlslp = false;
             bool whlslpwrn = false;
+            bool hudwhlslp = false;
+            bool hudwhlslpwrn = false;
             bool whlskd = false;
 
             TrainCar uncoupleBehindCar = null;
@@ -2084,6 +2088,12 @@ namespace Orts.Simulation.Physics
                     whlslp = true;
                 if (car.WheelSlipWarning)
                     whlslpwrn = true;
+
+                if (car.HuDIsWheelSlip)
+                    hudwhlslp = true;
+                if (car.HuDIsWheelSlipWarninq)
+                    hudwhlslpwrn = true;
+
                 if (car.BrakeSkid)
                 {
                     whlskd = true;
@@ -2116,6 +2126,10 @@ namespace Orts.Simulation.Physics
 
             IsWheelSlip = whlslp;
             IsWheelSlipWarninq = whlslpwrn;
+
+            HuDIsWheelSlip = hudwhlslp;
+            HuDIsWheelSlipWarninq = hudwhlslpwrn;
+
             IsBrakeSkid = whlskd;
 
             // Coupler breaker

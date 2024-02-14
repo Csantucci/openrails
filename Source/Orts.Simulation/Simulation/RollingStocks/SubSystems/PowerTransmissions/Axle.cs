@@ -124,6 +124,33 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                 return false;
             }
         }
+
+        /// <summary>
+        /// Get wheel slip status for the whole engine, ie whenever one axle is in slip 
+        /// </summary>
+        public bool HuDIsWheelSlip
+        {
+            get
+            {
+                foreach (var axle in AxleList)
+                {
+                    if (axle.HuDIsWheelSlip) return true;
+                }
+                return false;
+            }
+        }
+        public bool HuDIsWheelSlipWarning
+        {
+            get
+            {
+                foreach (var axle in AxleList)
+                {
+                    if (axle.HuDIsWheelSlipWarning) return true;
+                }
+                return false;
+            }
+        }
+
         public int NumOfSubstepsPS
         {
             get
@@ -235,12 +262,24 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                     if (axle.InertiaKgm2 <= 0) axle.InertiaKgm2 = locomotive.AxleInertiaKgm2 / AxleList.Count;
                     if (axle.WheelWeightKg <= 0) axle.WheelWeightKg = locomotive.DrvWheelWeightKg / AxleList.Count;
                     if (axle.AxleWeightN <= 0) axle.AxleWeightN = 9.81f * axle.WheelWeightKg;  //remains fixed for diesel/electric locomotives, but varies for steam locomotives
-                    if (axle.NumAxles <= 0) axle.NumAxles = locomotive.LocoNumDrvAxles;
+                    if (axle.NumWheelsetAxles <= 0) axle.NumWheelsetAxles = locomotive.LocoNumDrvAxles;
                     if (axle.WheelRadiusM <= 0) axle.WheelRadiusM = locomotive.DriverWheelRadiusM;
                     if (axle.WheelFlangeAngleRad <= 0) axle.WheelFlangeAngleRad = locomotive.MaximumWheelFlangeAngleRad;
                     if (axle.DampingNs <= 0) axle.DampingNs = locomotive.MassKG / 1000.0f / AxleList.Count;
                     if (axle.FrictionN <= 0) axle.FrictionN = locomotive.MassKG / 1000.0f / AxleList.Count;
-                    if (axle.NumberWheelAxles <= 0) axle.NumberWheelAxles = 1;
+                    
+                    // set the wheel slip threshold times for different types of locomotives
+                    // Because of the irregular force around the wheel for a steam engine during a revolution, "response" time for warnings needs to be lower
+                    if (locomotive.EngineType == TrainCar.EngineTypes.Steam)
+                    {
+                        axle.WheelSlipThresholdTimeS = 1;
+                        axle.WheelSlipWarningThresholdTimeS = axle.WheelSlipThresholdTimeS * 0.75f;
+                    }
+                    else // diesel and electric locomotives
+                    {
+                        axle.WheelSlipThresholdTimeS = 1;
+                        axle.WheelSlipWarningThresholdTimeS = 1;
+                    }
                 }
                 axle.Initialize();
             }
@@ -488,6 +527,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
             {
                 if (value <= 0.0)
                     throw new NotSupportedException("Inertia must be greater than zero");
+                
                 inertiaKgm2 = value;
                 switch (DriveType)
                 {
@@ -576,13 +616,18 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         /// <summary>
         /// Wheel number
         /// </summary>
-        public int NumberWheelAxles;
+  //      public int NumberWheelAxles;
 
         /// <summary>
         /// Wheel mass parameter in kilograms
         /// </summary>
         public float WheelWeightKg;
 
+        /// <summary>
+        /// Initial Wheel mass parameter in kilograms, is the reference against which the dynamic wheel weight is calculated.
+        /// </summary>
+        public float InitialDrvWheelWeightKg;
+        
         /// <summary>
         /// Flange angle wheels connected to axle
         /// </summary>
@@ -604,9 +649,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         public float BogieRigidWheelBaseM;
 
         /// <summary>
-        /// Number of drive axles in group of wheels
+        /// Number of axles in group of wheels, in some instance this might be a mix of drive and non-drive axles
         /// </summary>
-        public float NumAxles;
+        public float NumWheelsetAxles;
 
         /// <summary>
         /// Static adhesion coefficient, as given by Curtius-Kniffler formula
@@ -668,8 +713,10 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         /// Wheel slip indicator
         /// - is true when absolute value of SlipSpeedMpS is greater than WheelSlipThresholdMpS, otherwise is false
         /// </summary>
+        public bool HuDIsWheelSlip { get; private set; }
         public bool IsWheelSlip { get; private set; }
         float WheelSlipTimeS;
+        public float WheelSlipThresholdTimeS = 1;
 
         /// <summary>
         /// Wheelslip threshold value used to indicate maximal effective slip
@@ -729,8 +776,10 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         ///   SlipSpeedPercent is greater than SlipWarningThresholdPercent in both directions,
         ///   otherwise is false
         /// </summary>
+        public bool HuDIsWheelSlipWarning { get; private set; }
         public bool IsWheelSlipWarning { get; private set; }
         float WheelSlipWarningTimeS;
+        public float WheelSlipWarningThresholdTimeS = 1;
 
         /// <summary>
         /// Read only slip speed value in metric meters per second
@@ -847,8 +896,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                     case "ortsflangeangle":
                         WheelFlangeAngleRad = stf.ReadFloatBlock(STFReader.UNITS.Angle, null);
                         break;
-                    case "ortsnumberwheelaxles":
-                        NumAxles = stf.ReadFloatBlock(STFReader.UNITS.Distance, null);
+                    case "numberwheelsetaxles":
+                        NumWheelsetAxles = stf.ReadFloatBlock(STFReader.UNITS.Distance, null);
                         break;
                     case "ortsinertia":
                         InertiaKgm2 = stf.ReadFloatBlock(STFReader.UNITS.RotationalInertia, null);
@@ -856,9 +905,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                     case "weight":
                         WheelWeightKg = stf.ReadFloatBlock(STFReader.UNITS.Mass, null);
                         AxleWeightN = 9.81f * WheelWeightKg;
-                        break;
-                    case "numberwheelaxles":
-                        NumberWheelAxles = stf.ReadIntBlock(null);
                         break;
                     case "animatedparts":
                         foreach (var part in stf.ReadStringBlock("").ToUpper().Replace(" ", "").Split(','))
@@ -876,13 +922,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         {
             WheelRadiusM = other.WheelRadiusM;
             WheelFlangeAngleRad = other.WheelFlangeAngleRad;
-            NumAxles = other.NumAxles;
+            NumWheelsetAxles = other.NumWheelsetAxles;
             InertiaKgm2 = other.InertiaKgm2;
             WheelWeightKg = other.WheelWeightKg;
             AxleWeightN = other.AxleWeightN;
             AnimatedParts.Clear();
             AnimatedParts.AddRange(other.AnimatedParts);
-            NumberWheelAxles = other.NumberWheelAxles;
         }
 
         /// <summary>
@@ -1065,7 +1110,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                         hdt = dt / 2;
                     }
 
-                    if (Math.Sign(AxleSpeedMpS + k1.Item1 * dt) != Math.Sign(AxleSpeedMpS) && AxleSpeedMpS != 0 && BrakeRetardForceN + frictionN > Math.Abs(driveForceN - k1.Item3))
+                    if (Math.Sign(AxleSpeedMpS + k1.Item1 * dt) != Math.Sign(AxleSpeedMpS) && BrakeRetardForceN + frictionN > Math.Abs(driveForceN - k1.Item3))
                     {
                         AxlePositionRad += AxleSpeedMpS * hdt;
                         AxlePositionRad = MathHelper.WrapAngle((float)AxlePositionRad);
@@ -1172,22 +1217,31 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
 
             if (Math.Abs(SlipSpeedMpS) > WheelSlipThresholdMpS)
             {
-                // Wait some time before indicating wheelslip to avoid false triggers
-                if (WheelSlipTimeS > 1)
+                // Wheel slip internally happens instantaneously, but may correct itself in a short period, so HuD indication has a small time delay to eliminate "false" indications
+                IsWheelSlip = IsWheelSlipWarning = true;
+
+                // Wait some time before indicating the HuD wheelslip to avoid false triggers
+                if (WheelSlipTimeS > WheelSlipThresholdTimeS)
                 {
-                    IsWheelSlip = IsWheelSlipWarning = true;
+                    HuDIsWheelSlip = HuDIsWheelSlipWarning = true;
                 }
                 WheelSlipTimeS += elapsedSeconds;
             }
             else if (Math.Abs(SlipSpeedPercent) > SlipWarningTresholdPercent)
             {
-                // Wait some time before indicating wheelslip to avoid false triggers
-                if (WheelSlipWarningTimeS > 1) IsWheelSlipWarning = true;
+                // Wheel slip internally happens instantaneously, but may correct itself in a short period, so HuD indication has a small time delay to eliminate "false" indications
+                IsWheelSlipWarning = true;
                 IsWheelSlip = false;
+
+                // Wait some time before indicating wheelslip to avoid false triggers
+                if (WheelSlipWarningTimeS > WheelSlipWarningThresholdTimeS) HuDIsWheelSlipWarning = true;
+                HuDIsWheelSlip = false;
                 WheelSlipWarningTimeS += elapsedSeconds;
             }
             else
             {
+                HuDIsWheelSlipWarning = false;
+                HuDIsWheelSlip = false;
                 IsWheelSlipWarning = false;
                 IsWheelSlip = false;
                 WheelSlipWarningTimeS = WheelSlipTimeS = 0;
@@ -1238,8 +1292,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                 var wheelRadiusMM = Axle.WheelRadiusM * 1000;
                 var wheelDistanceGaugeMM = Axle.WheelDistanceGaugeM * 1000;
                 var GNm2 = 8.40E+10;
-                wheelLoadN = Axle.AxleWeightN / (Axle.NumAxles * 2); // Assume two wheels per axle, and thus wheel weight will be have the value - multiple axles????
-                var wheelLoadkN = Axle.AxleWeightN / (Axle.NumAxles * 2 * 1000); // Assume two wheels per axle, and thus wheel weight will be have the value - multiple axles????
+                wheelLoadN = Axle.AxleWeightN / (Axle.NumWheelsetAxles * 2); // Assume two wheels per axle, and thus wheel weight will be have the value - multiple axles????
+                var wheelLoadkN = Axle.AxleWeightN / (Axle.NumWheelsetAxles * 2 * 1000); // Assume two wheels per axle, and thus wheel weight will be have the value - multiple axles????
                 var Young_ModulusMPa = 207000;
 
                 // Calculate Hertzian values - assume 2b = 12mm.
