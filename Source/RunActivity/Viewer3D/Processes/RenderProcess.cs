@@ -68,6 +68,7 @@ namespace Orts.Viewer3D.Processes
         public static int[] ShadowMapDistance; // distance of shadow map center from camera
         public static int[] ShadowMapDiameter; // diameter of shadow map
         public static float[] ShadowMapLimit; // diameter of shadow map far edge from camera
+        public bool isFullScreen { get; set; }
 
         internal RenderProcess(Game game)
         {
@@ -160,6 +161,18 @@ namespace Orts.Viewer3D.Processes
                     break;
             }
 
+            isFullScreen = pp.IsFullScreen;
+/*            if (pp.IsFullScreen)
+            {
+                var screen = Screen.FromControl(GameForm);
+                pp.BackBufferWidth = screen.Bounds.Width;
+                pp.BackBufferHeight = screen.Bounds.Height;
+            }
+            else
+            {
+                pp.BackBufferWidth = GameWindowSize.X;
+                pp.BackBufferHeight = GameWindowSize.Y;
+            }*/
             // This stops ResolveBackBuffer() clearing the back buffer.
             e.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
             e.GraphicsDeviceInformation.PresentationParameters.DepthStencilFormat = DepthFormat.Depth24Stencil8;

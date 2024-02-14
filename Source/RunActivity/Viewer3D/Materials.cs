@@ -1359,6 +1359,7 @@ namespace Orts.Viewer3D
     {
         public readonly Texture2D Texture;
         public readonly WindowTextFont Font;
+        public readonly WindowTextFont BigFont;
 
         readonly List<Rectangle> TextBoxes = new List<Rectangle>();
 
@@ -1368,6 +1369,7 @@ namespace Orts.Viewer3D
             Texture = new Texture2D(SpriteBatch.GraphicsDevice, 1, 1, false, SurfaceFormat.Color);
             Texture.SetData(new[] { Color.White });
             Font = Viewer.WindowManager.TextManager.GetScaled("Arial", 12, System.Drawing.FontStyle.Bold, 1);
+            BigFont = Viewer.WindowManager.TextManager.GetScaled("Arial", 24, System.Drawing.FontStyle.Bold, 2);
         }
 
         public override void SetState(GraphicsDevice graphicsDevice, Material previousMaterial)

@@ -393,6 +393,8 @@ namespace Orts.Viewer3D.Processes
                 // Save multiplayer parameters
                 if (MPManager.IsMultiPlayer() && MPManager.IsServer())
                     MPManager.OnlineTrains.Save (outf);
+				
+                Viewer.TrainCarOperationsWebpage.Save(outf);
 
                 // Write out position within file so we can check when restoring.
                 outf.Write(outf.BaseStream.Position);
@@ -469,6 +471,7 @@ namespace Orts.Viewer3D.Processes
                     if (MPManager.IsMultiPlayer() && MPManager.IsServer())
                         MPManager.OnlineTrains.Restore(inf);
 
+                    WebServices.TrainCarOperationsWebpage.Restore(inf);
 
                     var restorePosition = inf.BaseStream.Position;
                     var savePosition = inf.ReadInt64();

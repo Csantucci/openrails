@@ -154,7 +154,7 @@ namespace Orts.Viewer3D.Popups
         {
             base.Initialize(windowManager);
             Font = windowManager.TextFontDefault;
-            if (TrainDrivingWindow.FontToBold || MultiPlayerWindow.FontToBold || TrainDpuWindow.FontToBold)
+            if (TrainDrivingWindow.FontToBold || MultiPlayerWindow.FontToBold || TrainDpuWindow.FontToBold || TrainCarOperationsWindow.FontToBold)
             {
                 Font = windowManager.TextFontDefaultBold;
             }
@@ -720,6 +720,11 @@ namespace Orts.Viewer3D.Popups
 
     public class ControlLayoutScrollboxVertical : ControlLayoutScrollbox
     {
+        public static ControlLayout NewClient
+        {
+            get;
+            set;
+        }
         internal ControlLayoutScrollboxVertical(int width, int height)
             : base(width, height)
         {
@@ -731,6 +736,7 @@ namespace Orts.Viewer3D.Popups
         internal override void Initialize()
         {
             Client = InternalAdd(new ControlLayoutVertical(RemainingWidth, RemainingHeight));
+            NewClient = Client;
         }
 
         internal override void Draw(SpriteBatch spriteBatch, Point offset)

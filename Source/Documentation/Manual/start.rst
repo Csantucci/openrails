@@ -40,7 +40,7 @@ When a new release of OR is available and your computer is online, a link
 the release number of the newest release that matches your selected level 
 of update. Various level of updates called Update Channels are available. 
 You may choose the desired level in the ``Options-Update`` window, described 
-:ref:`below <options-updater>`.
+:ref:`below <options-updater-options>`.
 
 When you click on the update link OR will download and install the new 
 release. In this way your version of Open Rails is always up to date. 
@@ -99,7 +99,13 @@ Activity, Explore and Explore with activity modes
 As a default you will find the radio button ``Activity`` selected in the 
 start window, as :ref:`above <start-picture>`.
 
-This will allow you to run an activity or run on of two types of explore mode.
+At runtime you can 
+switch :ref:`Autopilot mode <driving-autopilot>` on or off, which allows you
+to watch OR driving your 
+train, as if you were a trainspotter or a visitor in the cab. 
+Autopilot mode is not operating in Explore mode.
+
+You may run an activity or run one of two types of explore mode.
 
 If you select ``- Explore Route -`` (first entry under ``Activity:``), you will 
 also have to select the consist, the path, the starting time, the season 
@@ -122,18 +128,14 @@ by that locomotive will appear.
 If you instead select a specific activity, you won't have to perform any 
 further selections.
 
-If you have selected an activity, the "Debrief evaluation" checkbox becomes 
-checkable. If it is checked, during the activity run 
-data about the activity run are stored and may be displayed in real time, and at 
-the end of the activity a report file provides a complete compendium of information about 
-the player skills as a train driver.
-Debrief evaluation is described :ref:`here <debriefeval>`.
+Activity Evaluation
+'''''''''''''''''''
 
-If you have selected the related Experimental Option, at runtime you can 
-switch :ref:`Autopilot mode <driving-autopilot>` on or off, which allows you
-to watch OR driving your 
-train, as if you were a trainspotter or a visitor in the cab. 
-Autopilot mode is not operating in Explore mode.
+During the activity session, data about performance is stored and may be viewed as the activity progresses.
+At the end of the activity a report file is generated which provides a summary of 
+the player's skills as a train driver.
+
+Activity evaluation is described :ref:`here <debriefeval>`.
 
 .. _start-timetable:
 

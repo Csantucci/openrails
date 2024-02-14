@@ -43,32 +43,45 @@ namespace Orts.Viewer3D.Popups
         {
             Viewer = owner.Viewer;
         }
-
-        protected override ControlLayout Layout(ControlLayout layout)
+        public bool CarOperationChanged
+        {
+            set;
+            get;
+        } = false;
+        public bool FrontBrakeHoseChanged
+        {
+            set;
+            get;
+        }
+        public bool RearBrakeHoseChanged
+        {
+            set;
+            get;
+        }
+protected override ControlLayout Layout(ControlLayout layout)
         {
             Label ID, buttonHandbrake, buttonTogglePower, buttonToggleMU, buttonToggleBatterySwitch, buttonToggleElectricTrainSupplyCable, buttonToggleFrontBrakeHose, buttonToggleRearBrakeHose, buttonToggleAngleCockA, buttonToggleAngleCockB, buttonToggleBleedOffValve, buttonClose;
-            var vbox = base.Layout(layout).AddLayoutVertical();
-            var carPosition = CarPosition;
-            if (carPosition > Viewer.PlayerTrain.Cars.Count - 1)
-            {
-                Visible = false;
-                return vbox;
-            }
-            TrainCar trainCar = Viewer.PlayerTrain.Cars[carPosition];
+
+            // update carposition from traincaroperations
+            if (Viewer.TrainCarOperationsWindow.Visible && Viewer.TrainCarOperationsViewerWindow.Visible)
+                CarPosition = Viewer.TrainCarOperationsWindow.SelectedCarPosition;
+
+            TrainCar trainCar = Viewer.PlayerTrain.Cars[CarPosition];
+            BrakeSystem brakeSystem = (trainCar as MSTSWagon).BrakeSystem;
             MSTSLocomotive locomotive = trainCar as MSTSLocomotive;
             MSTSWagon wagon = trainCar as MSTSWagon;
-            BrakeSystem brakeSystem = wagon.BrakeSystem;
 
             BrakeSystem rearBrakeSystem = null;
-            if (carPosition + 1 < Viewer.PlayerTrain.Cars.Count)
+            if (CarPosition + 1 < Viewer.PlayerTrain.Cars.Count)
             {
-                TrainCar rearTrainCar = Viewer.PlayerTrain.Cars[carPosition + 1];
+                TrainCar rearTrainCar = Viewer.PlayerTrain.Cars[CarPosition + 1];
                 rearBrakeSystem = (rearTrainCar as MSTSWagon).BrakeSystem;
             }
 
-            bool isElectricDieselLocomotive = (locomotive is MSTSElectricLocomotive || locomotive is MSTSDieselLocomotive);
- 
-            vbox.Add(ID = new Label(vbox.RemainingWidth, Owner.TextFontDefault.Height, Viewer.Catalog.GetString("Car ID") + "  " + (carPosition >= Viewer.PlayerTrain.Cars.Count ? " " : trainCar.CarID), LabelAlignment.Center));
+            bool isElectricDieselLocomotive = (Viewer.PlayerTrain.Cars[CarPosition] is MSTSElectricLocomotive) || (Viewer.PlayerTrain.Cars[CarPosition] is MSTSDieselLocomotive);
+
+            var vbox = base.Layout(layout).AddLayoutVertical(); 
+            vbox.Add(ID = new Label(vbox.RemainingWidth, Owner.TextFontDefault.Height, Viewer.Catalog.GetString("Car ID") + "  " + (CarPosition >= Viewer.PlayerTrain.Cars.Count ? " " : trainCar.CarID), LabelAlignment.Center));
             ID.Color = Color.Red;
             vbox.AddHorizontalSeparator();
 
@@ -123,7 +136,7 @@ namespace Orts.Viewer3D.Popups
 
             // Rear Brake Hose
             string buttonToggleRearBrakeHoseText = "";
-            if (((carPosition + 1) < Viewer.PlayerTrain.Cars.Count) && (rearBrakeSystem.FrontBrakeHoseConnected))
+            if (((CarPosition + 1) < Viewer.PlayerTrain.Cars.Count) && (rearBrakeSystem.FrontBrakeHoseConnected))
                 buttonToggleRearBrakeHoseText = Viewer.Catalog.GetString("Disconnect Rear Brake Hose");
             else
                 buttonToggleRearBrakeHoseText = Viewer.Catalog.GetString("Connect Rear Brake Hose");
@@ -193,13 +206,13 @@ namespace Orts.Viewer3D.Popups
                 buttonToggleElectricTrainSupplyCable.Color = Color.Gray;
 
             // Front Brake Hose
-            if (carPosition > 0)
+            if (CarPosition > 0)
                 buttonToggleFrontBrakeHose.Click += new Action<Control, Point>(buttonToggleFrontBrakeHose_Click);
             else
                 buttonToggleFrontBrakeHose.Color = Color.Gray;
 
             // Rear Brake Hose
-            if (carPosition < (Viewer.PlayerTrain.Cars.Count - 1))
+            if (CarPosition < (Viewer.PlayerTrain.Cars.Count - 1))
                 buttonToggleRearBrakeHose.Click += new Action<Control, Point>(buttonToggleRearBrakeHose_Click);
             else
                 buttonToggleRearBrakeHose.Color = Color.Gray;
@@ -233,7 +246,14 @@ namespace Orts.Viewer3D.Popups
 
             if (!MovingCurrentWindow && updateFull)
             {
-                Layout();
+                var trainOperationsChanged = Viewer.TrainOperationsWindow.TrainOperationsChanged;
+                var trainCarViewerChanged = Viewer.TrainCarOperationsViewerWindow.TrainCarOperationsChanged;
+                if (CarOperationChanged || trainOperationsChanged || trainCarViewerChanged)
+                {
+                    Layout();
+                    Viewer.TrainOperationsWindow.TrainOperationsChanged = false;
+                    CarOperationChanged = false;
+                }
             }
             base.PrepareFrame(elapsedTime, updateFull);
         }
@@ -245,6 +265,7 @@ namespace Orts.Viewer3D.Popups
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Handbrake set"));
             else
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Handbrake off"));
+            CarOperationChanged = true;
         }
 
         void buttonTogglePower_Click(Control arg1, Point arg2)
@@ -262,6 +283,7 @@ namespace Orts.Viewer3D.Popups
             }
             else
                 Viewer.Simulator.Confirmer.Warning(Viewer.Catalog.GetString("No power command for this type of car!"));
+            CarOperationChanged = true;
         }
 
         void buttonToggleMU_Click(Control arg1, Point arg2)
@@ -280,6 +302,7 @@ namespace Orts.Viewer3D.Popups
             }
             else
                 Viewer.Simulator.Confirmer.Warning(Viewer.Catalog.GetString("No MU command for this type of car!"));
+            CarOperationChanged = true;
         }
 
         void buttonToggleBatterySwitch_Click(Control arg1, Point arg2)
@@ -293,6 +316,7 @@ namespace Orts.Viewer3D.Popups
                 else
                     Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Switch on battery command sent"));
             }
+            CarOperationChanged = true;
         }
 
         void buttonToggleElectricTrainSupplyCable_Click(Control arg1, Point arg2)
@@ -311,6 +335,7 @@ namespace Orts.Viewer3D.Popups
             {
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("This car doesn't have an ETS system"));
             }
+            CarOperationChanged = true;
         }
 
         void buttonToggleFrontBrakeHose_Click(Control arg1, Point arg2)
@@ -320,6 +345,9 @@ namespace Orts.Viewer3D.Popups
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Front brake hose connected"));
             else
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Front brake hose disconnected"));
+            FrontBrakeHoseChanged = true;
+            RearBrakeHoseChanged = !FrontBrakeHoseChanged;
+            CarOperationChanged = true;
         }
 
         void buttonToggleRearBrakeHose_Click(Control arg1, Point arg2)
@@ -329,6 +357,9 @@ namespace Orts.Viewer3D.Popups
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Rear brake hose connected"));
             else
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Rear brake hose disconnected"));
+            RearBrakeHoseChanged = true;
+            FrontBrakeHoseChanged = !RearBrakeHoseChanged;
+            CarOperationChanged = true;
         }
 
         void buttonToggleAngleCockA_Click(Control arg1, Point arg2)
@@ -338,6 +369,7 @@ namespace Orts.Viewer3D.Popups
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Front angle cock opened"));
             else
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Front angle cock closed"));
+            CarOperationChanged = true;
         }
 
         void buttonToggleAngleCockB_Click(Control arg1, Point arg2)
@@ -347,6 +379,7 @@ namespace Orts.Viewer3D.Popups
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Rear angle cock opened"));
             else
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Rear angle cock closed"));
+            CarOperationChanged = true;
         }
 
         void buttonToggleBleedOffValve_Click(Control arg1, Point arg2)
@@ -359,6 +392,7 @@ namespace Orts.Viewer3D.Popups
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Bleed off valve opened"));
             else
                 Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Bleed off valve closed"));
+            CarOperationChanged = true;
         }
     }
 }
