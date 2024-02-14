@@ -1609,7 +1609,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                 MSTSLocomotive leadLoco = train.DPLeadUnits[i] as MSTSLocomotive;
                 BrakeSystem locoBrakeSystem = train.DPLeadUnits[i].BrakeSystem;
 
-                bool syncIndependent = leadLoco == lead ? true : leadLoco.DPSyncIndependent && lead.DPSyncIndependent;
+                bool syncIndependent = leadLoco == lead ? true : leadLoco.DPSyncIndependent && lead != null && lead.DPSyncIndependent;
 
                 // Set loco brake pressure on all units with brakes cut in
                 // Only set loco brake pressure on DP units if lead loco AND DP loco are equipped to synchronize braking
