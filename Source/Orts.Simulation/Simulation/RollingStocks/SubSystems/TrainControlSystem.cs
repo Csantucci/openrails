@@ -825,6 +825,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 case Train.TRAINTYPE.AI_AUTOGENERATE:
                 case Train.TRAINTYPE.REMOTE:
                 case Train.TRAINTYPE.AI_INCORPORATED:
+                    if (Locomotive.Train.Autopilot && Locomotive == Simulator.PlayerLocomotive)
+                        Locomotive.Train.UpdatePlayerTrainData();
                     DisableRestrictions();
                     break;
 

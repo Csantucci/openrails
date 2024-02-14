@@ -1326,9 +1326,6 @@ namespace Orts.Simulation.Physics
             // negative numbers used if rear cab selected
             // because '0' has no negative, all indices are shifted by 1!!!!
 
-            int presentIndex = LeadLocomotiveIndex + 1;
-            if (((MSTSLocomotive)LeadLocomotive).UsingRearCab) presentIndex = -presentIndex;
-
             List<int> cabList = new List<int>();
 
             for (int i = 0; i < Cars.Count; i++)
@@ -1347,7 +1344,12 @@ namespace Orts.Simulation.Physics
                     if (hasFrontCab) cabList.Add(i + 1);
                     if (hasRearCab) cabList.Add(-(i + 1));
                 }
+                if (LeadLocomotiveIndex == -1 && Simulator.PlayerLocomotive == Cars[i])
+                    LeadLocomotiveIndex = i;
             }
+
+            int presentIndex = LeadLocomotiveIndex + 1;
+            if (((MSTSLocomotive)LeadLocomotive).UsingRearCab) presentIndex = -presentIndex;
 
             int lastIndex = cabList.IndexOf(presentIndex);
             if (lastIndex >= cabList.Count - 1) lastIndex = -1;
@@ -1374,6 +1376,8 @@ namespace Orts.Simulation.Physics
             if (Simulator.PlayerLocomotive != null && Simulator.PlayerLocomotive.Train == this)
 
                 Simulator.PlayerLocomotive = newLead;
+            if (Autopilot || TrainType == TRAINTYPE.AI_PLAYERHOSTING)
+                LeadLocomotiveIndex = -1;
 
             return newLead;
         }

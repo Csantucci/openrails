@@ -2517,7 +2517,7 @@ namespace Orts.Simulation.Timetables
                 HasDirectionalPantographs = otherTrain.HasDirectionalPantographs;
 
                 // Copy other train speed if not restricted for either train
-                if (!otherTrain.SpeedSettings.restrictedSet && !SpeedSettings.restrictedSet)
+                if (!otherTrain.SpeedSettings.restrictedSet && !SpeedSettings.restrictedSet || TrainMaxSpeedMpS == 0)
                 {
                     TrainMaxSpeedMpS = otherTrain.TrainMaxSpeedMpS;
                 }
@@ -3874,8 +3874,11 @@ namespace Orts.Simulation.Timetables
                     thisStation.HoldSignal = false;
                 }
                 if (Autopilot)
+                {
                     DisplayMessage = Simulator.Catalog.GetStringFmt("Passenger boarding completes in {0:D2}:{1:D2}",
                         remaining / 60, remaining % 60);
+                    DisplayColor = remaining < 1 ? Color.LightGreen : remaining < 11 ? new Color(255, 255, 128) : Color.White;
+                }
                 return;
             }
 
@@ -4062,12 +4065,12 @@ namespace Orts.Simulation.Timetables
                 if (CheckEndOfRoutePositionTT())
                 {
                     DisplayMessage = Simulator.Catalog.GetString("Passenger detraining completed. Train terminated.");
-                    return;
+ //                   return;
                 }
             }
 
             // First, check state of signal
-            else if (thisStation.ExitSignal >= 0 && thisStation.HoldSignal)
+            if (thisStation.ExitSignal >= 0 && thisStation.HoldSignal)
             {
                 HoldingSignals.Remove(thisStation.ExitSignal);
                 var nextSignal = signalRef.SignalObjects[thisStation.ExitSignal];
@@ -4255,6 +4258,8 @@ namespace Orts.Simulation.Timetables
                         distanceToGoM = DistanceToEndNodeAuthorityM[0] - (Closeup ? keepDistanceCloseupM : clearingDistanceM);
                     }
 
+//                    distanceToGoM += 10.0f;
+//
                     if (distanceToGoM <= 0)
                     {
                         if (SpeedMpS > 0)
@@ -4664,7 +4669,8 @@ namespace Orts.Simulation.Timetables
                 else if (nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.REVERSAL)
                 {
 
-                    if (SpeedMpS < 0.05f) MovementState = AI_MOVEMENT_STATE.STOPPED;
+                    if (SpeedMpS < 0.05f)
+                        MovementState = AI_MOVEMENT_STATE.STOPPED;
                     RestdelayS = DelayedStartSettings.reverseAddedDelaySperM * Length;
                 }               
                 else if (nextActionInfo.RequiredSpeedMpS == 0)
@@ -7433,7 +7439,7 @@ namespace Orts.Simulation.Timetables
                     lengthToGoM += thisSection.Length;
                 }
 
-                lengthToGoM -= 5.0f; // Keep save distance from end
+//                lengthToGoM += 10.0f; // Keep save distance from end
 
                 // If last section does not end at signal or next section is switch, set back overlap to keep clear of switch
                 // Only do so for last subroute to avoid falling short of reversal points
@@ -9391,8 +9397,8 @@ namespace Orts.Simulation.Timetables
 
                 if (positionNow == PresentPosition[0].TCSectionIndex && directionNow != PresentPosition[0].TCDirection)
                 {
-                    ReverseFormation(TrainType == TRAINTYPE.PLAYER);
-                    reversed = TrainType != TRAINTYPE.PLAYER; // used for setting pantographs, not done on player train
+                    ReverseFormation(TrainType == TRAINTYPE.PLAYER || Autopilot);
+                    reversed = TrainType != TRAINTYPE.PLAYER && !Autopilot; // used for setting pantographs, not done on player train
 
 #if DEBUG_REPORTS
                     File.AppendAllText(@"C:\temp\printproc.txt", "Train " +
@@ -9401,8 +9407,8 @@ namespace Orts.Simulation.Timetables
                 }
                 else if (positionNow == PresentPosition[1].TCSectionIndex && directionNow != PresentPosition[1].TCDirection)
                 {
-                    ReverseFormation(TrainType == TRAINTYPE.PLAYER);
-                    reversed = TrainType != TRAINTYPE.PLAYER; // used for setting pantographs, not done on player train
+                    ReverseFormation(TrainType == TRAINTYPE.PLAYER || Autopilot);
+                    reversed = TrainType != TRAINTYPE.PLAYER && !Autopilot; // used for setting pantographs, not done on player train
 
 #if DEBUG_REPORTS
                     File.AppendAllText(@"C:\temp\printproc.txt", "Train " +
@@ -9617,7 +9623,7 @@ namespace Orts.Simulation.Timetables
                          Number.ToString() + " waiting to attach to " + AttachDetails.AttachTrainName + "\n");
                 }
             }
-            else
+            else if (!Autopilot)
             {
 #if DEBUG_REPORTS
                 File.AppendAllText(@"C:\temp\printproc.txt", "Train " +
@@ -9680,6 +9686,7 @@ namespace Orts.Simulation.Timetables
 
                 if (validFormed)
                 {
+                    formedTrain.Autopilot = Autopilot;
                     // Start new train
                     if (!autogenStart)
                     {
@@ -9850,7 +9857,7 @@ namespace Orts.Simulation.Timetables
                         {
                             return false;
                         }
-                        else if (AttachDetails != null && AttachDetails.Valid && AttachDetails.AttachTrain == otherTTTrain.OrgAINumber)
+                        else if (AttachDetails != null && AttachDetails.Valid && AttachDetails.AttachTrain == otherTTTrain.OrgAINumber && AttachDetails.AttachTrain != -1)
                         {
                             return false;
                         }
@@ -9951,7 +9958,8 @@ namespace Orts.Simulation.Timetables
                 (EndAuthorityType[0] == END_AUTHORITY.END_OF_TRACK || EndAuthorityType[0] == END_AUTHORITY.END_OF_PATH || EndAuthorityType[0] == END_AUTHORITY.END_OF_AUTHORITY))
             {
                 // Front is in last route section
-                if (PresentPosition[0].RouteListIndex == lastValidRouteIndex)
+                if (PresentPosition[0].RouteListIndex == lastValidRouteIndex &&
+                    (!TCRoute.ReversalInfo[TCRoute.activeSubpath].Valid && TCRoute.activeSubpath < TCRoute.TCRouteSubpaths.Count - 1))
                 {
                     endOfRoute = true;
                 }
@@ -10084,7 +10092,8 @@ namespace Orts.Simulation.Timetables
                     remLength += signalRef.TrackCircuitList[ValidRoute[0][Index].TCSectionIndex].Length;
                 }
 
-                if (remLength < 2 * standardOverlapM)
+                //               if (remLength < 2 * standardOverlapM)
+               if (remLength < standardOverlapM)
                 {
                     endOfRoute = true;
                 }
@@ -10103,7 +10112,8 @@ namespace Orts.Simulation.Timetables
                 if (nextActionInfo != null && nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.END_OF_ROUTE && !junctionFound)
                 {
                     float remDistance = nextActionInfo.ActivateDistanceM - DistanceTravelledM;
-                    if (remDistance < 2 * standardOverlapM)
+                    //                   if (remDistance < 2 * standardOverlapM)
+                    if (remDistance < standardOverlapM)
                     {
                         endOfRoute = true;
                     }
@@ -13407,6 +13417,7 @@ namespace Orts.Simulation.Timetables
             Simulator.PlayerLocomotive.SwitchToPlayerControl();
             TrainType = TRAINTYPE.PLAYER;
             Autopilot = false;
+            SetupStationStopHandling();
             success = true;
             return success;
         }
@@ -14189,6 +14200,7 @@ namespace Orts.Simulation.Timetables
                 Trace.TraceInformation("Train {0} : detach to train {1} : cannot find new train \n", train.Name, DetachFormedTrainName);
             }
 
+            newTrain.Autopilot = train.Autopilot;
             train.DetachUnits = iunits;
             train.DetachPosition = frontpos;
 

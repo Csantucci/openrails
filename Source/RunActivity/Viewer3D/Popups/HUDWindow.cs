@@ -1952,7 +1952,7 @@ namespace Orts.Viewer3D.Popups
             foreach (var thisTrain in Viewer.Simulator.AI.AITrains)
             {
                 if (thisTrain.MovementState != AITrain.AI_MOVEMENT_STATE.AI_STATIC && thisTrain.TrainType != Train.TRAINTYPE.PLAYER
-                    && thisTrain.TrainType != Train.TRAINTYPE.AI_INCORPORATED)
+                    && thisTrain.TrainType != Train.TRAINTYPE.AI_INCORPORATED && !thisTrain.Autopilot)
                 {
                     if (!thisTrain.Delay.HasValue || thisTrain.Delay.Value.TotalMinutes < 1)
                     {

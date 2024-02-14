@@ -169,7 +169,7 @@ namespace Orts.Simulation.AIs
                 {
                     // Timetable mode trains
                     TTTrain aiTrain = new TTTrain(Simulator, inf, this);
-                    if (aiTrain.TrainType != Train.TRAINTYPE.PLAYER) // Add to AITrains except when it is player train
+                    if (aiTrain.TrainType != Train.TRAINTYPE.PLAYER && !aiTrain.Autopilot) // Add to AITrains except when it is player train
                     {
                         AITrains.Add(aiTrain);
                     }

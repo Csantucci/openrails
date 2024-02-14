@@ -3350,6 +3350,9 @@ namespace Orts.Simulation.Timetables
                         formedTrain.ProcessSpeedSettings();
                     }
 
+                    formedTrain.Closeup = disposeDetails.RunRoundCloseup;
+                    formedTrain.ForceReversal = disposeDetails.RunRoundForceReversal;
+
                     formedTrain.AttachDetails = new AttachInfo(rrtrain);
                     trainList.Add(formedTrain);
 
@@ -4021,6 +4024,8 @@ namespace Orts.Simulation.Timetables
             public bool RunRound;
             public string RunRoundPath;
             public int? RunRoundTime;
+            public bool RunRoundCloseup;
+            public bool RunRoundForceReversal;
 
             public enum RunRoundPosition
             {
@@ -4078,6 +4083,14 @@ namespace Orts.Simulation.Timetables
                                         TimeSpan RRSpan;
                                         TimeSpan.TryParse(formedTrainQualifiers.QualifierValues[0], out RRSpan);
                                         RunRoundTime = Convert.ToInt32(RRSpan.TotalSeconds);
+                                        break;
+
+                                    case "rrcloseup":
+                                        RunRoundCloseup = true;
+                                        break;
+
+                                    case "rrforcereversal":
+                                        RunRoundForceReversal = true;
                                         break;
 
                                     case "setstop":
@@ -4298,6 +4311,14 @@ namespace Orts.Simulation.Timetables
                                     TimeSpan RRSpan;
                                     TimeSpan.TryParse(stableQualifier.QualifierValues[0], out RRSpan);
                                     RunRoundTime = Convert.ToInt32(RRSpan.TotalSeconds);
+                                    break;
+
+                                case "rrcloseup":
+                                    RunRoundCloseup = true;
+                                    break;
+
+                                case "rrforcereversal":
+                                    RunRoundForceReversal = true;
                                     break;
 
                                 case "callon":
