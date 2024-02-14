@@ -2141,7 +2141,7 @@ namespace Orts.Viewer3D.RollingStock
                     break;
                 case CABViewControlTypes.DYNAMIC_BRAKE:
                 case CABViewControlTypes.DYNAMIC_BRAKE_DISPLAY:
-                    var dynBrakePercent = Locomotive.Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING ?
+                    var dynBrakePercent = (Locomotive.Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING || Locomotive.Train.Autopilot) ?
                         Locomotive.DynamicBrakePercent : Locomotive.LocalDynamicBrakePercent;
                     if (Locomotive.DynamicBrakeController != null)
                     {

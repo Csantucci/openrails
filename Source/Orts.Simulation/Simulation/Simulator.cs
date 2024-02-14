@@ -828,7 +828,7 @@ namespace Orts.Simulation
             {
                 movingTrains.Add(PlayerLocomotive.Train);
                 if (PlayerLocomotive.Train.LeadLocomotive != null
-                    && PlayerLocomotive.Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING
+                    && PlayerLocomotive.Train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING && !PlayerLocomotive.Train.Autopilot
                     && String.Compare(PlayerLocomotive.Train.LeadLocomotive.CarID, PlayerLocomotive.CarID) != 0
                     && !MPManager.IsMultiPlayer())
                 {
@@ -852,13 +852,13 @@ namespace Orts.Simulation
                 {
                     try
                     {
-                        if (train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
+                        if (train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING && !train.Autopilot)
                             train.Update(elapsedClockSeconds, false);
                         else ((AITrain)train).AIUpdate(elapsedClockSeconds, ClockTime, false);
                     }
                     catch (Exception e) { Trace.TraceWarning(e.Message); }
                 }
-                else if (train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING)
+                else if (train.TrainType != Train.TRAINTYPE.AI_PLAYERHOSTING && !train.Autopilot)
                 {
                     train.Update(elapsedClockSeconds, false);
                 }

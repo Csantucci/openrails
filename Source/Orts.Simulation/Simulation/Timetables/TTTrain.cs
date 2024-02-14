@@ -42,6 +42,7 @@ using Orts.Simulation.AIs;
 using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.Signalling;
+using Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS;
 using ORTS.Common;
 using Event = Orts.Common.Event;
 
@@ -3629,6 +3630,8 @@ namespace Orts.Simulation.Timetables
             int sixteenHundredHours = 16 * 3600;
             int actualdepart = thisStation.ActualDepart;
 
+            int remaining = 999;
+
             // No arrival / departure time set: update times
             if (thisStation.ActualStopType == StationStop.STOPTYPE.STATION_STOP)
             {
@@ -3734,6 +3737,7 @@ namespace Orts.Simulation.Timetables
                     DetachDetails.Remove(thisStation.PlatformReference);
                 }
 
+ 
                 // Check for connections
                 if (thisStation.ConnectionsAwaited.Count > 0)
                 {
@@ -3744,6 +3748,11 @@ namespace Orts.Simulation.Timetables
                     // If required to wait: exit
                     if (needwait >= 0)
                     {
+                        TTTrain otherTrain = GetOtherTTTrainByNumber(needwait);
+                        DisplayMessage = Simulator.Catalog.GetString("Held for connecting train : ");
+                        DisplayMessage = String.Concat(DisplayMessage, otherTrain.Name);
+                        DisplayColor = Color.Orange;
+                        remaining = 999;
                         return;
                     }
 
@@ -3797,6 +3806,8 @@ namespace Orts.Simulation.Timetables
                 correctedTime = presentTime - (24 * 3600);
             }
 
+            remaining = actualdepart - correctedTime;
+
             if (actualdepart > correctedTime)
             {
                 if (thisStation.ActualStopType == StationStop.STOPTYPE.STATION_STOP &&
@@ -3819,6 +3830,9 @@ namespace Orts.Simulation.Timetables
                     }
                     thisStation.HoldSignal = false;
                 }
+                if (Autopilot)
+                    DisplayMessage = Simulator.Catalog.GetStringFmt("Passenger boarding completes in {0:D2}:{1:D2}",
+                        remaining / 60, remaining % 60);
                 return;
             }
 
@@ -3998,8 +4012,19 @@ namespace Orts.Simulation.Timetables
                 }
             }
 
+            remaining = actualdepart - correctedTime;
+            if (Autopilot)
+            {
+                DisplayColor = remaining < 1 ? Color.LightGreen : remaining < 11 ? new Color(255, 255, 128) : Color.White;
+                if (CheckEndOfRoutePositionTT())
+                {
+                    DisplayMessage = Simulator.Catalog.GetString("Passenger detraining completed. Train terminated.");
+                    return;
+                }
+            }
+
             // First, check state of signal
-            if (thisStation.ExitSignal >= 0 && thisStation.HoldSignal)
+            else if (thisStation.ExitSignal >= 0 && thisStation.HoldSignal)
             {
                 HoldingSignals.Remove(thisStation.ExitSignal);
                 var nextSignal = signalRef.SignalObjects[thisStation.ExitSignal];
@@ -4019,7 +4044,7 @@ namespace Orts.Simulation.Timetables
             if (thisStation.ExitSignal >= 0 && NextSignalObject[0] != null && NextSignalObject[0].thisRef == thisStation.ExitSignal)
             {
                 MstsSignalAspect nextAspect = GetNextSignalAspect(0);
-                exitSignalStop = nextAspect == MstsSignalAspect.STOP && !thisStation.NoWaitSignal;
+                exitSignalStop = nextAspect == MstsSignalAspect.STOP && !thisStation.NoWaitSignal && NextSignalObject[0].hasPermission != SignalObject.Permission.Granted;
             }
 
             // If not end of path, check if departure allowed
@@ -4029,7 +4054,8 @@ namespace Orts.Simulation.Timetables
 #if DEBUG_TTANALYSIS
                     TTAnalysisUpdateStationState2();
 #endif
-
+                if (Autopilot) 
+                    DisplayMessage = Simulator.Catalog.GetString("Passenger boarding completed. Waiting for signal ahead to clear.");
                 return;  // Do not depart if exit signal at danger and waiting is required
             }
 
@@ -4046,6 +4072,8 @@ namespace Orts.Simulation.Timetables
 
                     MovementState = AI_MOVEMENT_STATE.STOPPED; // If state is still station_stop and ready and allowed to depart - change to stop to check action
                     RestdelayS = DelayedStartSettings.stationRestart.fixedPartS + (Simulator.Random.Next(DelayedStartSettings.stationRestart.randomPartS * 10) / 10f);
+                    if (Autopilot)
+                        DisplayMessage = "";
                     if (!endOfPath[0])
                     {
                         removeStation = true; // Set next station if not at end of path
@@ -4128,13 +4156,29 @@ namespace Orts.Simulation.Timetables
                 }
             }
 
+            if (Autopilot)
+            {
+//                PopulateNextStationWindow();
+            }
+
             if (removeStation)
             {
+                PreviousStop = StationStops[0].CreateCopy();
                 StationStops.RemoveAt(0);
             }
 
             ResetActions(true);
         }
+
+        //================================================================================================//
+        /// <summary>
+        /// If autopiloted, generate strings for NextStationWindow
+        /// Override for AITrain class
+        /// <\summary>
+        public void PopulateNextStationWindow()
+        {
+        }
+
 
         //================================================================================================//
         /// <summary>
@@ -13284,6 +13328,103 @@ namespace Orts.Simulation.Timetables
                 Number, moveTimeA.ToString("HH:mm:ss"), Name, Delay, "", "", "", "", "", moveTimeA.ToString("HH:mm:ss"), "", "", info);
             File.AppendAllText(@"C:\temp\TTAnalysis.csv", sob.ToString() + "\n");
             ttanalysisreport = String.Empty;
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// When in autopilot mode, switches to player control
+        /// </summary>
+        /// 
+        public override bool SwitchToPlayerControl()
+        {
+            bool success = false;
+            int leadLocomotiveIndex = -1;
+            var j = 0;
+            foreach (TrainCar car in Cars)
+            {
+                if (car is MSTSLocomotive)
+                {
+                    var loco = car as MSTSLocomotive;
+                    loco.LocomotiveAxles.InitializeMoving();
+                    loco.AntiSlip = false; // <CSComment> TODO Temporary patch until AntiSlip is re-implemented
+                }
+                if (car == Simulator.PlayerLocomotive) { leadLocomotiveIndex = j; }
+                j++;
+            }
+            MSTSLocomotive lead = (MSTSLocomotive)Simulator.PlayerLocomotive;
+            EqualReservoirPressurePSIorInHg = Math.Min(EqualReservoirPressurePSIorInHg, lead.TrainBrakeController.MaxPressurePSI);
+            foreach (TrainCar car in Cars)
+            {
+                if (car.BrakeSystem is AirSinglePipe)
+                {
+                    ((AirSinglePipe)car.BrakeSystem).NormalizePressures(lead.TrainBrakeController.MaxPressurePSI);
+                }
+            }
+            LeadLocomotiveIndex = leadLocomotiveIndex;
+            Simulator.PlayerLocomotive.SwitchToPlayerControl();
+            TrainType = TRAINTYPE.PLAYER;
+            Autopilot = false;
+            success = true;
+            return success;
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// When in autopilot mode, switches to autopilot control
+        /// </summary>
+        /// 
+        public override bool SwitchToAutopilotControl()
+        {
+            bool success = false;
+            // MUDirection set within following method call
+            Simulator.PlayerLocomotive.SwitchToAutopilotControl();
+            LeadLocomotive = null;
+            LeadLocomotiveIndex = -1;
+            TrainType = TRAINTYPE.AI;
+            Autopilot = true;
+            InitializeBrakes();
+            foreach (TrainCar car in Cars)
+            {
+                if (car is MSTSLocomotive)
+                {
+                    var loco = car as MSTSLocomotive;
+                    if (loco.EngineBrakeController != null) loco.SetEngineBrakePercent(0);
+                    if (loco.DynamicBrakeController != null) loco.DynamicBrakePercent = -1;
+                }
+            }
+
+            if (FirstCar != null)
+            {
+                FirstCar.BrakeSystem.AISetPercent(AITrainBrakePercent);
+                if (FirstCar is MSTSLocomotive)
+                    ((MSTSLocomotive)FirstCar).SetTrainBrakePercent(AITrainBrakePercent);
+                if (Simulator.PlayerLocomotive != null && FirstCar != Simulator.PlayerLocomotive)
+                {
+                    Simulator.PlayerLocomotive.BrakeSystem.AISetPercent(AITrainBrakePercent);
+                    ((MSTSLocomotive)Simulator.PlayerLocomotive).SetTrainBrakePercent(AITrainBrakePercent);
+                }
+            }
+            ResetActions(true, true);
+            if (SpeedMpS != 0) MovementState = AI_MOVEMENT_STATE.BRAKING;
+            else if (this == Simulator.OriginalPlayerTrain && Simulator.ActivityRun != null && Simulator.ActivityRun.Current is ActivityTaskPassengerStopAt && ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).IsAtStation(this) &&
+                ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).BoardingS > 0)
+            {
+                StationStops[0].ActualDepart = (int)((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).BoardingEndS;
+                StationStops[0].ActualArrival = -(int)(new DateTime().Add(TimeSpan.FromSeconds(0.0)) - ((ActivityTaskPassengerStopAt)Simulator.ActivityRun.Current).ActArrive).Value.TotalSeconds;
+                MovementState = AI_MOVEMENT_STATE.STATION_STOP;
+            }
+            else
+            {
+                MovementState = this != Simulator.OriginalPlayerTrain && AtStation
+                    ? AI_MOVEMENT_STATE.STATION_STOP
+                    : Math.Abs(SpeedMpS) <= 0.1f && ((AuxActionsContain.SpecAuxActions.Count > 0 && AuxActionsContain.SpecAuxActions[0] is AIActionWPRef && (AuxActionsContain.SpecAuxActions[0] as AIActionWPRef).keepIt != null &&
+                                            (AuxActionsContain.SpecAuxActions[0] as AIActionWPRef).keepIt.currentMvmtState == AITrain.AI_MOVEMENT_STATE.HANDLE_ACTION) || (nextActionInfo is AuxActionWPItem &&
+                                                    MovementState == AITrain.AI_MOVEMENT_STATE.HANDLE_ACTION))
+                                    ? AI_MOVEMENT_STATE.HANDLE_ACTION
+                                    : AI_MOVEMENT_STATE.STOPPED;
+            }
+            success = true;
+            return success;
         }
     }
 

@@ -705,7 +705,7 @@ namespace Orts.Simulation.AIs
                 SetReversalAction();
 
                 // Check if out of control - if so, remove
-                if (ControlMode == TRAIN_CONTROL.OUT_OF_CONTROL && TrainType != TRAINTYPE.AI_PLAYERHOSTING)
+                if (ControlMode == TRAIN_CONTROL.OUT_OF_CONTROL && !(TrainType == TRAINTYPE.AI_PLAYERHOSTING || Autopilot))
                 {
                     Trace.TraceInformation("Train {0} ({1}) is removed for out of control, reason : {2}", Name, Number, OutOfControlReason.ToString());
                     RemoveTrain();
@@ -3636,7 +3636,7 @@ namespace Orts.Simulation.AIs
             if (FirstCar != null)
             {
                 FirstCar.BrakeSystem.AISetPercent(AITrainBrakePercent);
-                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING)
+                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING || Autopilot)
                 {
                     if (FirstCar is MSTSLocomotive)
                         ((MSTSLocomotive)FirstCar).SetTrainBrakePercent(AITrainBrakePercent);
@@ -3657,7 +3657,7 @@ namespace Orts.Simulation.AIs
             if (FirstCar != null)
             {
                 FirstCar.BrakeSystem.AISetPercent(AITrainBrakePercent);
-                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING)
+                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING || Autopilot)
                 {
                     if (FirstCar is MSTSLocomotive)
                         ((MSTSLocomotive)FirstCar).SetTrainBrakePercent(AITrainBrakePercent);
@@ -3677,7 +3677,7 @@ namespace Orts.Simulation.AIs
             if (FirstCar != null)
             {
                 FirstCar.ThrottlePercent = AITrainThrottlePercent;
-                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING)
+                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING || Autopilot)
                 {
                     if (FirstCar is MSTSLocomotive)
                     {
@@ -3778,7 +3778,7 @@ namespace Orts.Simulation.AIs
             {
                 FirstCar.ThrottlePercent = AITrainThrottlePercent;
                 FirstCar.BrakeSystem.AISetPercent(AITrainBrakePercent);
-                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING)
+                if (TrainType == TRAINTYPE.AI_PLAYERHOSTING || Autopilot)
                 {
                     if (FirstCar is MSTSLocomotive)
                     {
@@ -6229,7 +6229,7 @@ namespace Orts.Simulation.AIs
         /// When in autopilot mode, switches to player control
         /// </summary>
         /// 
-        public bool SwitchToPlayerControl()
+        public virtual bool SwitchToPlayerControl()
         {
             bool success = false;
             int leadLocomotiveIndex = -1;
@@ -6271,7 +6271,7 @@ namespace Orts.Simulation.AIs
         /// When in autopilot mode, switches to autopilot control
         /// </summary>
         /// 
-        public bool SwitchToAutopilotControl()
+        public virtual bool SwitchToAutopilotControl()
         {
             bool success = false;
             // MUDirection set within following method call

@@ -589,7 +589,7 @@ namespace Orts.Viewer3D.Popups
             TableAddLabelValue(table, Viewer.Catalog.GetString("FPS"), "{0:F0}", Viewer.RenderProcess.FrameRate.SmoothedValue);
             TableAddLine(table);
 
-            if (Viewer.PlayerLocomotive.Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING)
+            if (Viewer.PlayerLocomotive.Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING || Viewer.PlayerLocomotive.Train.Autopilot)
                 TableAddLine(table, Viewer.Catalog.GetString("Autopilot") + "???");
 
             if (Viewer.PlayerTrain.HuDIsWheelSlip)
@@ -1916,7 +1916,7 @@ namespace Orts.Viewer3D.Popups
                     || thisTrain.IsActualPlayerTrain)
                 {
                     var status = thisTrain.GetStatus(Viewer.MilepostUnitsMetric);
-                    if (thisTrain.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING) status = ((AITrain)thisTrain).AddMovementState(status, Viewer.MilepostUnitsMetric);
+                    if (thisTrain.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING || thisTrain.Autopilot) status = ((AITrain)thisTrain).AddMovementState(status, Viewer.MilepostUnitsMetric);
                     else if (thisTrain == Program.Simulator.OriginalPlayerTrain && Program.Simulator.Activity != null) status = thisTrain.AddRestartTime(status);
                     else if (thisTrain.IsActualPlayerTrain && Program.Simulator.Activity != null && thisTrain.ControlMode != Train.TRAIN_CONTROL.EXPLORER && !thisTrain.IsPathless)
                         status = thisTrain.AddRestartTime(status);

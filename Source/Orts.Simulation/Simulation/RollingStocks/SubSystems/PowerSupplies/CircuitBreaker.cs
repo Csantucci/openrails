@@ -185,7 +185,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     }
                 }
             }
-            else if (Locomotive.Train.TrainType == Train.TRAINTYPE.AI || Locomotive.Train.TrainType == Train.TRAINTYPE.AI_AUTOGENERATE
+            else if ((Locomotive.Train.TrainType == Train.TRAINTYPE.AI && !Locomotive.Train.Autopilot) || Locomotive.Train.TrainType == Train.TRAINTYPE.AI_AUTOGENERATE
                 || Locomotive.Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING)
             {
                 State = CircuitBreakerState.Closed;
