@@ -870,6 +870,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="PostBuildActions_NoEffectCompile.bat" />
+    <Exec Command="PostBuildActions.bat" />
   </Target>
 </Project>
