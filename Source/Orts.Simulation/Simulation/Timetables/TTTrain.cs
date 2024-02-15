@@ -13551,15 +13551,18 @@ namespace Orts.Simulation.Timetables
                 }
             }
             ResetActions(true, true);
-            if (Math.Abs(SpeedMpS) - 0.05 > 0 && !AtStation)
-                MovementState = AI_MOVEMENT_STATE.BRAKING;
-            else
+            if (MovementState != AI_MOVEMENT_STATE.AI_STATIC)
             {
-                MovementState = AtStation
-                    ? AI_MOVEMENT_STATE.STATION_STOP
-                    : AI_MOVEMENT_STATE.STOPPED;
+                if (Math.Abs(SpeedMpS) - 0.05 > 0 && !AtStation)
+                    MovementState = AI_MOVEMENT_STATE.BRAKING;
+                else
+                {
+                    MovementState = AtStation
+                        ? AI_MOVEMENT_STATE.STATION_STOP
+                        : AI_MOVEMENT_STATE.STOPPED;
+                }
             }
- //           Simulator.AI.AITrains.Add(this);
+            //           Simulator.AI.AITrains.Add(this);
             success = true;
             return success;
         }
