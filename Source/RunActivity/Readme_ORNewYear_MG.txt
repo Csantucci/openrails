@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.149.3
-January 5th, 2024
+﻿Open Rails, NewYear version README - Rev.150
+February 15th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-794, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-870, 
 plus some of the features already present in the Unstable release.
 
 
@@ -55,22 +55,26 @@ This version includes some features not (yet) available in the Open Rails testin
 - Re-instate and extend Precision and UpdateTime for SPEEDOMETER in cabvies, see http://www.elvastower.com/forums/index.php?/topic/37448-ammeter-configuration-steeringcarriages-emudmu/page__view__findpost__p__300651 
 -  (ORNYMG only?) bug https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__302120
 - Tentative (ORNYMG only?) bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__302440
+- (signalling) No speed update parameter, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37573-proposed-new-signal-aspect-parameter-or-nospeedupdate/page__view__findpost__p__302320
+- (timetables) Many options to define power and light related features, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__293894
+- Improvements to display features on web clients, by mbm_OR 
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
   *- Additional parameters for Cruise Control, see https://blueprints.launchpad.net/or/+spec/additional-cruise-control-parameters (PR #839)
-  *- (signalling) No speed update parameter, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37573-proposed-new-signal-aspect-parameter-or-nospeedupdate/page__view__findpost__p__302320 (PR #889)
-  *- (timetables) Allow depart early, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__296371 (PR #890) 
   *- Auto-save, by roeter, see https://www.elvastower.com/forums/index.php?/topic/35870-auto-save/page__view__findpost__p__280206 (PR #891)
   *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
-  *- (timetables) Many options to define power and light related features, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__293894 (PR #895)
-  *- NEW: ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
-  *- NEW: Duplex steam engines - Booster Engine addition by steamer_ctn (PR #899)
-  *- NEW: feat: supports switching adhesion precisions by cjakeman (PR #908 )
-  *- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/37651-or-151-black-track-texture-why/ (PR #907)
-  *- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/37685-potential-issue-with-north-american-v-scale-latest-7-ton-locosl/ (PR #906)
-  *- NEW: Various bug fixes (partly ORNYMG only, partly shared with official OR releases) about steam locomotives
-- NEW: Improvements to display features on web clients, by mbm_OR
+  *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
+  *- Bug fix for https://www.elvastower.com/forums/index.php?/topic/37651-or-151-black-track-texture-why/ (PR #907)
+  *- NEW: New triple valve features vol.2 by SteelFill, see https://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__st__600__p__305027#entry305027 (PR #912)
+  *- NEW: Correct calculation error with curve friction, by steamer_ctn, (PR #915)
+  *- NEW: Distributed power air brake synchronization, by SteelFill, see https://www.elvastower.com/forums/index.php?/topic/26249-remote-control-dpu-units/page__st__190__p__305271#entry305271 (PR #915)
+  *- NEW: Train car operations UI window, by mbm-OR, see http://www.elvastower.com/forums/index.php?/topic/37062-proposal-f9-train-operations/page__view__findpost__p__301151 (PR #882)
+  *- NEW: Avoid too many wheelslip warnings, by steamer_ctn
+- NEW: Temporary bug fix for https://www.elvastower.com/forums/index.php?/topic/37808-crash-with-u20240212-0808/
+- NEW: Timetable: autopilot, player train switching, open/close doors on AI trains and some minor extra features, see https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/
+
+
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
