@@ -335,7 +335,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         /// <param name="elapsedSeconds">Time span within the simulation cycle</param>
         public void Update(float elapsedSeconds)
         {
-            UsePolachAdhesion = AdhesionPrecision.IsPrecisionHigh(this, elapsedSeconds, Car.Simulator.GameTime);
+ //           UsePolachAdhesion = AdhesionPrecision.IsPrecisionHigh(this, elapsedSeconds, Car.Simulator.GameTime);
             foreach (var axle in AxleList)
             {
                 if (UsePolachAdhesion != PreviousUsePolachAdhesion) // There's been a transition
