@@ -968,7 +968,15 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
 
             if (Axles.UsePolachAdhesion)
             {
-                axleOutForceN = Math.Sign(slipSpeedMpS) * AxleWeightN * SlipCharacteristicsPolach(slipSpeedMpS);
+                try
+                {
+                    axleOutForceN = Math.Sign(slipSpeedMpS) * AxleWeightN * SlipCharacteristicsPolach(slipSpeedMpS);
+                }
+                catch
+                // In case of NaN
+                {
+                    axleOutForceN = AxleWeightN * SlipCharacteristicsPacha((float)axleSpeedMpS - TrainSpeedMpS, TrainSpeedMpS, AdhesionK, AdhesionLimit);
+                }
             }
             else
             {
