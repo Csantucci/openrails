@@ -3535,7 +3535,7 @@ namespace Orts.Viewer3D.RollingStock
                         {
                             doShow = false;
                         }
-                        else if (cabRenderer is CabViewDiscreteRenderer)
+                        else if (cabRenderer is CabViewDiscreteRenderer || cabRenderer is CabViewDialRenderer)
                         {
                             var control = cabRenderer.Control;
                             if (control.Screens != null && control.Screens[0] != "all")
