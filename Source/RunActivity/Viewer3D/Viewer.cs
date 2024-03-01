@@ -778,7 +778,7 @@ namespace Orts.Viewer3D
                 (Camera as TrackingCamera).SwapCameras();
             }
             Simulator.Update(elapsedTime.ClockSeconds);
-            if (PlayerLocomotive.Train.BrakingTime == -2) // We just had a wagon with stuck brakes
+            if (PlayerLocomotive?.Train?.BrakingTime == -2) // We just had a wagon with stuck brakes
             {
                 LoadDefectCarSound(PlayerLocomotive.Train.Cars[-(int)PlayerLocomotive.Train.ContinuousBrakingTime], "BrakesStuck.sms");
             }
