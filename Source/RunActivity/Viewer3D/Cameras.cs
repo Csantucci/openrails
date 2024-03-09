@@ -1079,7 +1079,7 @@ namespace Orts.Viewer3D
                 isVisibleTrainCarViewerOrWebpage = Viewer.TrainCarOperationsViewerWindow.Visible || (Viewer.TrainCarOperationsWebpage.Connections > 0 && Viewer.TrainCarOperationsWebpage.TrainCarSelected);
             }
 
-            if (attachedCar == null || attachedCar.Train != Viewer.SelectedTrain && !cameraFollowCutCar || carPosition != oldCarPosition || isDownCameraOutsideFront || isDownCameraOutsideRear)
+            if (attachedCar == null || attachedCar.Train != Viewer.SelectedTrain && !cameraFollowCutCar || carPosition != oldCarPosition)
             {
                 if (Front)
                 {
