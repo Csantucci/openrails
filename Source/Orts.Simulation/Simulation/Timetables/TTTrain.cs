@@ -237,10 +237,6 @@ namespace Orts.Simulation.Timetables
         public List<TriggerActivation> activatedTrainTriggers = new List<TriggerActivation>();
         public string Briefing { get; set; } = "";
 
-        public SpecialLightsCondition[] TrainSpecialLights = new SpecialLightsCondition[(int)SpecialLightsPhase.LastEntry];  // special light selection
-        public List<string>[] TrainSpecialLightSelection = new List<string>[(int)SpecialLightsPhase.LastEntry];              // special lights set through timetable commands
-                                                                                                                             // [0] = prestart, [1] = active, [2] = postform (using SpecialLightsPhase enum)
-
         //================================================================================================//
         /// <summary>
         /// Constructor
@@ -286,12 +282,6 @@ namespace Orts.Simulation.Timetables
             SpeedSettings.detachSpeedMpS = null;
             SpeedSettings.movingtableSpeedMpS = null;
             SpeedSettings.restrictedSet = false;
-
-            for (int i = 0; i <= (int)SpecialLightsPhase.PostForms; i++)
-            {
-                TrainSpecialLights[i] = SpecialLightsCondition.Normal;
-                TrainSpecialLightSelection[i] = new List<string>();
-            }
         }
 
         //================================================================================================//
@@ -318,13 +308,6 @@ namespace Orts.Simulation.Timetables
 
             // Copy speed values
             SpeedSettings = TTrain.SpeedSettings;
-
-            // preset light conditions
-            for (int i = 0; i <= (int)SpecialLightsPhase.PostForms; i++)
-            {
-                TrainSpecialLights[i] = SpecialLightsCondition.Normal;
-                TrainSpecialLightSelection[i] = new List<string>();
-            }
         }
 
         //================================================================================================//
@@ -595,18 +578,6 @@ namespace Orts.Simulation.Timetables
 
             Briefing = inf.ReadString();
 
-            for (int il = 0; il <= (int)SpecialLightsPhase.PostForms; il++)
-            {
-                TrainSpecialLights[il] = (SpecialLightsCondition)inf.ReadInt32();
-                TrainSpecialLightSelection[il] = new List<string>();
-
-                int SpecialLightLength = inf.ReadInt32();
-                for (int i = 0; i < SpecialLightLength; i++)
-                {
-                    TrainSpecialLightSelection[il].Add(inf.ReadString());
-                }
-            }
-
             // reset actions if train is active
             bool activeTrain = true;
 
@@ -620,31 +591,7 @@ namespace Orts.Simulation.Timetables
 
             if (activeTrain)
             {
-                SpecialLightsPhase runphase = SpecialLightsPhase.Active;
-
-                // copy light conditions to all cars
-                foreach (var car in Cars)
-                {
-                    car.SpecialLights = TrainSpecialLights[(int)runphase];
-                    car.SpecialLightSelection = TrainSpecialLightSelection[(int)runphase];
-                }
-
                 ResetActions(true);
-            }
-            else
-            {
-                // copy light information to all cars
-                SpecialLightsPhase runphase = SpecialLightsPhase.Active;
-                if (MovementState == AI_MOVEMENT_STATE.AI_STATIC)
-                {
-                    runphase = (StartTime.HasValue && StartTime.Value > AI.clockTime) ? SpecialLightsPhase.PreStart : SpecialLightsPhase.PostForms;
-                }
-
-                foreach (var car in Cars)
-                {
-                    car.SpecialLights = TrainSpecialLights[(int)runphase];
-                    car.SpecialLightSelection = TrainSpecialLightSelection[(int)runphase];
-                }
             }
         }
 
@@ -954,16 +901,6 @@ namespace Orts.Simulation.Timetables
             outf.Write(DriverOnlyOperation);
             outf.Write(ForceReversal);
             outf.Write(Briefing);
-
-            for (int il = 0; il <= (int)SpecialLightsPhase.PostForms; il++)
-            {
-                outf.Write((int)TrainSpecialLights[il]);
-                outf.Write(TrainSpecialLightSelection[il].Count);
-                foreach (var i in TrainSpecialLightSelection[il])
-                {
-                    outf.Write(i);
-                }
-            }
         }
 
         //================================================================================================//
@@ -1312,11 +1249,6 @@ namespace Orts.Simulation.Timetables
 #endif
                     }
 
-                    foreach (var car in Cars)
-                    {
-                        car.SpecialLights = TrainSpecialLights[(int)SpecialLightsPhase.Active];
-                        car.SpecialLightSelection = TrainSpecialLightSelection[(int)SpecialLightsPhase.Active];
-                    }
                     if (Simulator.AI != null)
                             Simulator.AI.aiListChanged = true;
                 }
@@ -1324,13 +1256,6 @@ namespace Orts.Simulation.Timetables
                 {
                     // start in STATIC mode until required activate time
                     MovementState = AI_MOVEMENT_STATE.AI_STATIC;
-
-                    // set correct light states
-                    foreach (var car in Cars)
-                    {
-                        car.SpecialLights = TrainSpecialLights[(int)SpecialLightsPhase.PreStart];
-                        car.SpecialLightSelection = TrainSpecialLightSelection[(int)SpecialLightsPhase.PreStart];
-                    }
                 }
             }
 
@@ -9678,13 +9603,6 @@ namespace Orts.Simulation.Timetables
                         int powerOffDelay = FormedPowerOffDelay + Simulator.Random.Next(30);
                         SetRequiredPowerChange(PowerOffOnFormed, powerOffDelay, null);
                     }
-
-                    // set lights for postform phase
-                    foreach (var car in Cars)
-                    {
-                        car.SpecialLights = TrainSpecialLights[(int)SpecialLightsPhase.PostForms];
-                        car.SpecialLightSelection = TrainSpecialLightSelection[(int)SpecialLightsPhase.PostForms];
-                    }
                 }
             }
             else if (AttachDetails != null && AttachDetails.Valid)
@@ -9866,14 +9784,6 @@ namespace Orts.Simulation.Timetables
                             formedTrain.StationStops[0].CalculateDepartTime(presentTime, this);
                         }
                     }
-
-                    // copy light conditions to all cars
-                    foreach (var car in formedTrain.Cars)
-                    {
-                        car.SpecialLights = formedTrain.TrainSpecialLights[(int)SpecialLightsPhase.PreStart];
-                        car.SpecialLightSelection = formedTrain.TrainSpecialLightSelection[(int)SpecialLightsPhase.PreStart];
-                    }
-
                 }
                 else if (!autogenStart)
                 {
@@ -12127,11 +12037,6 @@ namespace Orts.Simulation.Timetables
                 }
             }
 
-            // get existing light settings so these can be copied to attached cars
-            var attachSpecialLights = attachTrain.Cars[0].SpecialLights;
-            var attachSpecialLightSelection = attachTrain.Cars[0].SpecialLightSelection;
-
-
             int playerLocomotiveIndex = -1;
             if (TrainType == TRAINTYPE.PLAYER || TrainType == TRAINTYPE.INTENDED_PLAYER)
             {
@@ -12248,12 +12153,6 @@ namespace Orts.Simulation.Timetables
             attachCar.SignalEvent(Event.Couple);
             attachTrain.ProcessSpeedSettings();
             attachTrain.HasDirectionalPantographs = attachTrain.CheckDirectionalPantographs();
-
-            foreach (var car in attachTrain.Cars)
-            {
-                car.SpecialLights = attachSpecialLights;
-                car.SpecialLightSelection = attachSpecialLightSelection;
-            }
 
             // Adjust set actions for updated distance travelled value
             if (distanceTravelledCorrection > 0)

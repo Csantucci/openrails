@@ -1312,8 +1312,6 @@ namespace Orts.Simulation.Timetables
             public int Index;
             public List<TTTrainCommands> TrainCommands = new List<TTTrainCommands>();
             public DisposeInfo DisposeDetails = null;
-            public SpecialLightsCondition[] SpecialLights = new SpecialLightsCondition[3];
-            public List<string>[] SpecialLightSelection = new List<string>[3];
 
             public readonly TimetableInfo parentInfo;
 
@@ -1338,13 +1336,7 @@ namespace Orts.Simulation.Timetables
                 columnIndex = icolumn;
                 Index = index;
 
-                // presets
-                for (int i = 0; i <= (int)SpecialLightsPhase.PostForms; i++)
-                {
-                    SpecialLights[i] = SpecialLightsCondition.Normal;
-                    SpecialLightSelection[i] = new List<string>();
-                }
-            }
+             }
 
             //================================================================================================//
             /// <summary>
@@ -1596,10 +1588,6 @@ namespace Orts.Simulation.Timetables
 
                         case rowType.speedInfo:
                             ProcessSpeedInfo(fileStrings[iRow][columnIndex].ToLower().Trim(), actSpeedConv);
-                            break;
-
-                        case rowType.lightInfo:
-                            ProcessLightInfo(fileStrings[iRow][columnIndex].ToLower().Trim());
                             break;
 
                         case rowType.trainNotesInfo:
@@ -2320,197 +2308,6 @@ namespace Orts.Simulation.Timetables
                 }
             }
 
-            //================================================================================================//
-            /// <summary>
-            /// Extract light info from train details
-            /// </summary>
-            /// <param name="LightInfo"></param>
-            public void ProcessLightInfo(string LightInfo)
-            {
-                bool useRunningforPrestart = false;
-                bool usePostFormforRUnning = false;
-                bool useFulltime = false;
-
-                bool[] validLights = new bool[3] { false, false, false };
-
-                // build list of commands
-                List<TTTrainCommands> LightCommands = new List<TTTrainCommands>();
-
-                if (!String.IsNullOrEmpty(LightInfo))
-                {
-                    string[] commandStrings = LightInfo.Split('$');
-                    foreach (string thisCommand in commandStrings)
-                    {
-                        if (!String.IsNullOrEmpty(thisCommand))
-                        {
-                            LightCommands.Add(new TTTrainCommands(thisCommand));
-                        }
-                    }
-
-                    foreach (var LightCommand in LightCommands)
-                    {
-                        bool validLight = true;
-                        SpecialLightsPhase thisPhase = SpecialLightsPhase.PreStart;
-                        bool setphase = false;
-
-                        // string contains special light settings, separated by '+'
-                        if (!String.IsNullOrEmpty(LightInfo))
-                        {
-                            switch (LightCommand.CommandToken.Trim())
-                            {
-                                case "prestart":
-                                    thisPhase = SpecialLightsPhase.PreStart;
-                                    setphase = true;
-                                    break;
-
-                                case "active":
-                                    thisPhase = SpecialLightsPhase.Active;
-                                    setphase = true;
-                                    break;
-
-                                case "postform":
-                                    thisPhase = SpecialLightsPhase.PostForms;
-                                    setphase = true;
-                                    break;
-
-                                case "fulltime":
-                                    thisPhase = SpecialLightsPhase.PreStart;
-                                    useFulltime = true;
-                                    break;
-
-                                default:
-                                    Trace.TraceInformation("Train {0} : invalid phase for light definition : {1} \n", thisTTTrain.Name, LightCommand.CommandToken);
-                                    validLight = false;
-                                    break;
-                            }
-
-                            if (useFulltime && setphase)
-                            {
-                                setphase = false;
-                                Trace.TraceInformation("Train {0} : both phase ${1} and $Fulltime defined, phase definition is ignored \n", thisTTTrain.Name, LightCommand.CommandToken);
-                            }
-                        }
-                        else
-                        {
-                            validLight = false;
-                            Trace.TraceInformation("Train {0} : missing phase in light definition \n", thisTTTrain);
-                        }
-
-                        if (validLight)
-                        {
-                            if ((LightCommand.CommandValues == null || LightCommand.CommandValues.Count < 0) && (LightCommand.CommandQualifiers == null || LightCommand.CommandQualifiers.Count < 0))
-                            {
-                                if (thisPhase == SpecialLightsPhase.PreStart)
-                                {
-                                    useRunningforPrestart = true;
-                                }
-                                else if (thisPhase == SpecialLightsPhase.Active)
-                                {
-                                    usePostFormforRUnning = true;
-                                }
-                                else
-                                {
-                                    validLight = false;
-                                    Trace.TraceInformation("Train {0} : no light conditions defined for phase {1} \n", thisTTTrain.Name, thisPhase.ToString());
-                                }
-                            }
-                        }
-
-                        bool reqProcessing = true;
-                        if (thisPhase == SpecialLightsPhase.PreStart && useRunningforPrestart) reqProcessing = false;
-                        if (thisPhase == SpecialLightsPhase.Active && usePostFormforRUnning) reqProcessing = false;
-
-                        if (validLight && reqProcessing)
-                        {
-                            if (LightCommand.CommandQualifiers == null || LightCommand.CommandQualifiers.Count < 0)
-                            {
-                                validLight = false;
-                                Trace.TraceInformation("Train {0} : no light conditions defined for phase {1} \n", thisTTTrain.Name, thisPhase.ToString());
-                            }
-                            else if (LightCommand.CommandQualifiers.Count > 1)
-                            {
-                                validLight = false;
-                                Trace.TraceInformation("Train {0} : multiple light conditions defined for phase {1} \n", thisTTTrain.Name, thisPhase.ToString());
-                            }
-                            else
-                            {
-                                switch (LightCommand.CommandQualifiers[0].QualifierName.Trim())
-                                {
-                                    case "normal":
-                                        SpecialLights[(int)thisPhase] = SpecialLightsCondition.Normal;
-                                        break;
-
-                                    case "off":
-                                        SpecialLights[(int)thisPhase] = SpecialLightsCondition.Off;
-                                        break;
-
-                                    case "special_additional":
-                                        SpecialLights[(int)thisPhase] = SpecialLightsCondition.Special_additional;
-                                        break;
-
-                                    case "special_only":
-                                        SpecialLights[(int)thisPhase] = SpecialLightsCondition.Special_only;
-                                        break;
-
-                                    default:
-                                        Trace.TraceInformation("Train {0} : invalid light conditions defined for phase {1} : {2} \n",
-                                                                 thisTTTrain.Name, thisPhase.ToString(), LightCommand.CommandQualifiers[0].QualifierName);
-                                        validLight = false;
-                                        break;
-                                }
-                            }
-                        }
-
-                        if (validLight && reqProcessing &&
-                                (SpecialLights[(int)thisPhase] == SpecialLightsCondition.Special_additional || SpecialLights[(int)thisPhase] == SpecialLightsCondition.Special_only))
-                        {
-                            if (LightCommand.CommandValues == null || LightCommand.CommandValues.Count < 0)
-                            {
-                                Trace.TraceInformation("Train {0} : missing special light definition for phase {1} \n", thisTTTrain.Name, thisPhase.ToString());
-                                validLight = false;
-                            }
-                            else
-                            {
-                                foreach (string thisString in LightCommand.CommandValues)
-                                {
-                                    SpecialLightSelection[(int)thisPhase].Add(string.Copy(thisString));
-                                }
-                            }
-                        }
-
-                        if (validLight) validLights[(int)thisPhase] = true;
-                    }
-                }
-
-                if (useRunningforPrestart && validLights[(int)SpecialLightsPhase.Active])
-                {
-                    SpecialLights[(int)SpecialLightsPhase.PreStart] = SpecialLights[(int)SpecialLightsPhase.Active];
-                    SpecialLightSelection[(int)SpecialLightsPhase.PreStart] = SpecialLightSelection[(int)SpecialLightsPhase.Active];
-                }
-                if (usePostFormforRUnning && validLights[(int)SpecialLightsPhase.PostForms])
-                {
-                    SpecialLights[(int)SpecialLightsPhase.Active] = SpecialLights[(int)SpecialLightsPhase.PostForms];
-                    SpecialLightSelection[(int)SpecialLightsPhase.Active] = SpecialLightSelection[(int)SpecialLightsPhase.PostForms];
-                }
-                if (useFulltime && validLights[(int)SpecialLightsPhase.PreStart])
-                {
-                    SpecialLights[(int)SpecialLightsPhase.Active] = SpecialLights[(int)SpecialLightsPhase.PreStart];
-                    SpecialLightSelection[(int)SpecialLightsPhase.Active] = SpecialLightSelection[(int)SpecialLightsPhase.PreStart];
-                    SpecialLights[(int)SpecialLightsPhase.PostForms] = SpecialLights[(int)SpecialLightsPhase.PreStart];
-                    SpecialLightSelection[(int)SpecialLightsPhase.PostForms] = SpecialLightSelection[(int)SpecialLightsPhase.PreStart];
-                }
-
-                // set light conditions to train and to each car in consist, assume prestart
-
-                thisTTTrain.TrainSpecialLights = SpecialLights;
-                thisTTTrain.TrainSpecialLightSelection = SpecialLightSelection;
-
-                foreach (var car in thisTTTrain.Cars)
-                {
-                    car.SpecialLights = SpecialLights[(int)SpecialLightsPhase.PreStart];
-                    car.SpecialLightSelection = SpecialLightSelection[(int)SpecialLightsPhase.PreStart];
-                }
-            }
 
             //================================================================================================//
             /// <summary>
