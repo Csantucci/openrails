@@ -752,7 +752,6 @@ namespace Orts.Viewer3D
             foreach (LOD lod in LODs)
                 lod.Mark();
         }
-
     }
 
     public class LOD
