@@ -1485,18 +1485,20 @@ namespace Orts.Viewer3D.Popups
                     //7
                     Viewer.Catalog.GetString("CtrlRes"),
                     //8
-                    Viewer.Catalog.GetString("RetValve"),
+                    Viewer.Catalog.GetString("SuppRes"),
                     //9
-                    Viewer.Catalog.GetString("TripleValve"),
+                    Viewer.Catalog.GetString("RetValve"),
                     //10
-                    Viewer.Catalog.GetString(""),
+                    Viewer.Catalog.GetString("TripleValve"),
                     //11
-                    Viewer.Catalog.GetString("Handbrk"),
+                    Viewer.Catalog.GetString(""),
                     //12
-                    Viewer.Catalog.GetString("Conn"),
+                    Viewer.Catalog.GetString("Handbrk"),
                     //13
-                    Viewer.Catalog.GetString("AnglCock"),
+                    Viewer.Catalog.GetString("Conn"),
                     //14
+                    Viewer.Catalog.GetString("AnglCock"),
+                    //15
                     Viewer.Catalog.GetString("BleedOff")
                     //Add new header data here, if adding additional column.
                     ));
@@ -1521,18 +1523,20 @@ namespace Orts.Viewer3D.Popups
                     //7
                     Viewer.Catalog.GetString("CtrlRes"),
                     //8
-                    Viewer.Catalog.GetString("RetValve"),
+                    Viewer.Catalog.GetString("SuppRes"),
                     //9
-                    Viewer.Catalog.GetString("TripleValve"),
+                    Viewer.Catalog.GetString("RetValve"),
                     //10
-                    Viewer.Catalog.GetString(""),
+                    Viewer.Catalog.GetString("TripleValve"),
                     //11
-                    Viewer.Catalog.GetString("Handbrk"),
+                    Viewer.Catalog.GetString(""),
                     //12
-                    Viewer.Catalog.GetString("Conn"),
+                    Viewer.Catalog.GetString("Handbrk"),
                     //13
-                    Viewer.Catalog.GetString("AnglCock"),
+                    Viewer.Catalog.GetString("Conn"),
                     //14
+                    Viewer.Catalog.GetString("AnglCock"),
+                    //15
                     Viewer.Catalog.GetString("BleedOff")
                     //Add new header data here, if adding additional column.
                     ));
