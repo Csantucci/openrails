@@ -1729,7 +1729,8 @@ namespace Orts.Simulation.RollingStocks
                 // for airtwinpipe system, make sure that a value is set for it
                 if (MaximumMainReservoirPipePressurePSI == 0)
                 {
-                    MaximumMainReservoirPipePressurePSI = MaxMainResPressurePSI;
+                    // Add 5 psi to account for main res overcharging that might happen
+                    MaximumMainReservoirPipePressurePSI = MaxMainResPressurePSI + 5.0f;
                     if (Simulator.Settings.VerboseConfigurationMessages)
                     {
                         Trace.TraceInformation("AirBrakeMaxMainResPipePressure not set in ENG file, set to default pressure of {0}.", FormatStrings.FormatPressure(MaximumMainReservoirPipePressurePSI, PressureUnit.PSI, MainPressureUnit, true));
@@ -2791,7 +2792,6 @@ namespace Orts.Simulation.RollingStocks
         /// </summary>
         protected virtual void UpdateCompressor(float elapsedClockSeconds)
         {
-            bool powerstate = LocomotivePowerSupply.AuxiliaryPowerSupplyState == PowerSupplyState.PowerOn;
 
             var reservoirChargingRate = MainResChargingRatePSIpS;
 
@@ -2830,44 +2830,39 @@ namespace Orts.Simulation.RollingStocks
                 }
             }
 
-            // for electrical engines controlled by control car, check power state of engine and not of control car
-            else if (!powerstate && EngineType == EngineTypes.Control)
+            // Determine compressor synchronization
+            bool syncCompressor = false;
+
+            // Compressor synchronization is ignored if 5 psi above the high setpoint
+            // Only accept synchronization if MU cable is connected and locomotive power supply is on
+            if (RemoteControlGroup != -1 && MainResPressurePSI < MaxMainResPressurePSI + 5.0f
+                && LocomotivePowerSupply.AuxiliaryPowerSupplyState == PowerSupplyState.PowerOn)
             {
-                foreach (var loco in Train.Cars.OfType<MSTSLocomotive>())
+                foreach (List<TrainCar> locoGroup in Train.LocoGroups)
                 {
-                    if (loco.LocomotivePowerSupply.AuxiliaryPowerSupplyState == PowerSupplyState.PowerOn)
+                    // Only synchronize in a group of locomotives directly connected
+                    // or synchronize between any two locomotives with MU controlled mode
+                    foreach (TrainCar locoCar in locoGroup)
                     {
-                        powerstate = true;
-                        break;
+                        if (locoCar is MSTSLocomotive loco)
+                            syncCompressor |= loco.RemoteControlGroup != -1 && (locoGroup.Contains(this as TrainCar) || (CompressorIsMUControlled && loco.CompressorIsMUControlled))
+                                && loco.CompressorIsOn && loco.MainResPressurePSI < loco.MaxMainResPressurePSI;
+
+                        // No need to check repeatedly if we already know to sync compressors
+                        if (syncCompressor)
+                            break;
                     }
+                    if (syncCompressor)
+                        break;
                 }
             }
 
-            // Turn compressor on and off
-            if (MainResPressurePSI < CompressorRestartPressurePSI && powerstate && !CompressorIsOn)
-            {
+            if ((MainResPressurePSI < CompressorRestartPressurePSI || (syncCompressor && MainResPressurePSI < MaxMainResPressurePSI))
+                && LocomotivePowerSupply.AuxiliaryPowerSupplyState == PowerSupplyState.PowerOn && !CompressorIsOn)
                 SignalEvent(Event.CompressorOn);
-                foreach (List<TrainCar> locoGroup in Train.LocoGroups)
-                {
-                    // Synchronize compressor between coupled locomotives
-                    if (locoGroup.Contains(this as TrainCar))
-                    {
-                        foreach (TrainCar locoCar in locoGroup)
-                            if (locoCar is MSTSLocomotive loco && loco.LocomotivePowerSupply.AuxiliaryPowerSupplyOn && !loco.CompressorIsOn)
-                                loco.SignalEvent(Event.CompressorOn);
-                    }
-                    else if (CompressorIsMUControlled) // Synchronize compressor between remote groups if configured to do so
-                    {
-                        foreach (TrainCar remoteLocoCar in locoGroup)
-                            if (remoteLocoCar is MSTSLocomotive remoteLoco && remoteLoco.LocomotivePowerSupply.AuxiliaryPowerSupplyOn && !remoteLoco.CompressorIsOn && remoteLoco.CompressorIsMUControlled)
-                                remoteLoco.SignalEvent(Event.CompressorOn);
-                    }
-                }
-            }
-            else if ((MainResPressurePSI >= MaxMainResPressurePSI || !powerstate) && CompressorIsOn)
-            {
+            else if (((MainResPressurePSI >= MaxMainResPressurePSI && !syncCompressor)
+                || LocomotivePowerSupply.AuxiliaryPowerSupplyState != PowerSupplyState.PowerOn) && CompressorIsOn)
                 SignalEvent(Event.CompressorOff);
-            }
 
             if (CompressorIsOn)
                 MainResPressurePSI += elapsedClockSeconds * reservoirChargingRate;
