@@ -6319,6 +6319,11 @@ namespace Orts.Simulation.Physics
             float offset = PresentPosition[1].TCOffset;
             float remLength = Length;
 
+            if (rearIndex == -1)
+            {
+                Trace.TraceInformation("Fixing rear position of train {0}, was out of route: rearIndex = {1}, frontIndex = {2}, ValidRoute[0].Count = {3}", Name, rearIndex, frontIndex, ValidRoute[0].Count);
+                rearIndex = 0;
+            }
             for (int iRouteIndex = rearIndex; iRouteIndex <= frontIndex; iRouteIndex++)
             {
                 TrackCircuitSection thisSection = signalRef.TrackCircuitList[ValidRoute[0][iRouteIndex].TCSectionIndex];
