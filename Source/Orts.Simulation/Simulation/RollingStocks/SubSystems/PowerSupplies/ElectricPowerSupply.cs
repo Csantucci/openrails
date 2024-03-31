@@ -205,7 +205,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                             if (QuickPowerOn)
                             {
                                 QuickPowerOn = false;
-                                SignalEventToCircuitBreaker(PowerSupplyEvent.CloseCircuitBreaker);
+                                SignalEventToCircuitBreaker(PowerSupplyEvent.QuickPowerOn);
                             }
 
                             if (PowerOnTimer.Started)
@@ -289,7 +289,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 case PowerSupplyEvent.ForcedPowerOff:
                     QuickPowerOn = false;
                     SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.SwitchOffElectricTrainSupply);
-                    SignalEventToCircuitBreaker(PowerSupplyEvent.OpenCircuitBreaker);
+                    SignalEventToCircuitBreaker(PowerSupplyEvent.QuickPowerOff);
                     SignalEventToPantographs(PowerSupplyEvent.LowerPantograph);
                     SignalEventToOtherTrainVehicles(PowerSupplyEvent.LowerPantograph);
                     SignalEventToMasterKey(PowerSupplyEvent.TurnOffMasterKey);
