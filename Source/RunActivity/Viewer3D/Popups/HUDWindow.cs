@@ -1785,7 +1785,7 @@ namespace Orts.Viewer3D.Popups
             }
 
             //Normal view
-            statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}\t{16}\t{17}\t{18}\t{19}\t",
+            statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}\t{16}\t{17}\t{18}\t{19}\t{20}\t",
             Viewer.Catalog.GetString("Car"),
             Viewer.Catalog.GetString("Total"),
             Viewer.Catalog.GetString("Motive"),
@@ -1805,7 +1805,8 @@ namespace Orts.Viewer3D.Popups
             Viewer.Catalog.GetString("Brk Slide"),
             Viewer.Catalog.GetString("Bear Temp"),
             Viewer.Catalog.GetString(" "),
-            Viewer.Catalog.GetString("DerailCoeff")
+            Viewer.Catalog.GetString("DrailCof"),
+            Viewer.Catalog.GetString("AoA")
             ));
 
             TableAddLine(table);
@@ -1841,7 +1842,8 @@ namespace Orts.Viewer3D.Popups
                     (car.HUDBrakeSkid ? Viewer.Catalog.GetString("Yes") : Viewer.Catalog.GetString("No")),
                     FormatStrings.FormatTemperature(car.WheelBearingTemperatureDegC, car.IsMetric, false) + " " + car.DisplayWheelBearingTemperatureStatus,
                     car.Flipped ? Viewer.Catalog.GetString("Flipped") : "",
-                    car.DerailmentCoefficient.ToString("0.00") + (car.DerailExpected ? "!!!" : car.DerailPossible ? "???" : "")
+                    car.DerailmentCoefficient.ToString("0.00") + (car.DerailExpected ? "!!!" : car.DerailPossible ? "???" : ""),
+                    car.AngleOfAttackmRad.ToString("0.00")
                     ));
             }
             TableAddLine(table);
