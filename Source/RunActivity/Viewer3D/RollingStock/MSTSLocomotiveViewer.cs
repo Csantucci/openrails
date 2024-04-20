@@ -3937,7 +3937,7 @@ namespace Orts.Viewer3D.RollingStock
                     leadingBlankCount = MaxDigits - speed.Length;
                     break;
                 case CabViewDigitalRenderer.CVDigitalAlignment.Cab3DCenter:
-                    leadingBlankCount = (MaxDigits - speed.Length + 1) / 2;
+                    leadingBlankCount = (MaxDigits - speed.Length) / 2;
                     break;
                 default:
                     break;
