@@ -2051,9 +2051,6 @@ namespace Orts.Simulation.RollingStocks
 
             // Pass Gearbox commands
 
-
-
-
             // Note - at the moment there is only one GearBox Controller created, but a gearbox for each diesel engine is created. 
             // This code keeps all gearboxes in the locomotive aligned with the first engine and gearbox.
             if (gearloco != null && gearloco.DieselTransmissionType == MSTSDieselLocomotive.DieselTransmissionTypes.Mechanic && GearBoxController.CurrentNotch != previousChangedGearBoxNotch)
@@ -2211,8 +2208,13 @@ namespace Orts.Simulation.RollingStocks
                                     if (de.State != DieselEngineState.Running)
                                         de.Initialize();
                                 }
+
+                                // if train is a geared locomotive then set it to automatic operation as AI driver can't operate manual gearboxes
                                 if (de.GearBox != null)
                                     de.GearBox.GearBoxOperation = GearBoxOperation.Automatic;
+
+                                // Set gear to "low gear" at start.
+                                de.GearBox.currentGearIndex = de.GearBox.NumOfGears - 1;
                             }
                         }
                     }
