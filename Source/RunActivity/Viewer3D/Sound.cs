@@ -1566,6 +1566,7 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.VolumeCurve.Controls.CurveForceControlled: return car.CurveForceNFiltered;
                 case Orts.Formats.Msts.VolumeCurve.Controls.AngleofAttackControlled: return car.CurveSquealAoAmRadFiltered;
                 case Orts.Formats.Msts.VolumeCurve.Controls.CarFrictionControlled: return car.Train.WagonCoefficientFriction;
+                case Orts.Formats.Msts.VolumeCurve.Controls.WheelRpMControlled: var wheelRpM = pS.TopM((float)(car.AbsSpeedMpS / (2 * Math.PI * car.WheelRadiusM))); return wheelRpM;
                 default: return 0;
             }
         }
@@ -2001,6 +2002,7 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.CurveForce_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRpM_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Power_Off:
                     if (newValue < SMS.Threshold)
                     {
@@ -2020,6 +2022,7 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.CurveForce_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Inc_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRPM_Inc_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Power_On:
                     if (newValue > SMS.Threshold)
                     {
@@ -2107,6 +2110,11 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Dec_Past:
                 case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Inc_Past:
                     return car.CurveSquealAoAmRadFiltered;
+                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRpM_Dec_Past:
+                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRPM_Inc_Past:
+                    var wheelRpM = pS.TopM((float)(car.AbsSpeedMpS / (2 * Math.PI * car.WheelRadiusM)));
+                    return wheelRpM;
+
                 case Orts.Formats.Msts.Variable_Trigger.Events.Power_On:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Power_Off:
                     return car.GetPowerEventValue();
