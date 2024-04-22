@@ -1762,25 +1762,14 @@ namespace Orts.Viewer3D.Popups
 
                 if (train.TrainWindResistanceDependent) // Only show this information if wind resistance is selected
                 {
-                    var status = new StringBuilder();
-                    if (hudWindowColumnsActualPage > 0)
-                    {
-                        status.AppendFormat($"{SymbolType.ArrowLeft}" + "{0}\t{1:N2} mph\t{2}\t{3:N2} mph",
-                        Viewer.Catalog.GetString("ResWind:"), train.ResultantWindComponentDeg,
-                        Viewer.Catalog.GetString("ResSpeed:"), Me.ToMi(pS.TopH(train.WindResultantSpeedMpS)));
-                    }
-                    else
-                    {
-                        status.AppendFormat("{0} {1:N2} mph\t\t\t{2} {3:N2} Deg\t\t\t{4} {5:N2} Deg\t\t\t{6} {7:N2} mph\t\t\t{8} {9:N2} mph",
-                        Viewer.Catalog.GetString("Wind Speed:"), Me.ToMi(pS.TopH(train.PhysicsWindSpeedMpS)).ToString("000.00"),
-                        Viewer.Catalog.GetString("Wind Direction:"), train.PhysicsWindDirectionDeg.ToString("000.00"),
-                        Viewer.Catalog.GetString("Train Direction:"), train.PhysicsTrainLocoDirectionDeg.ToString("000.00"),
-                        Viewer.Catalog.GetString("ResWind:"), train.ResultantWindComponentDeg.ToString("000.00"),
-                        Viewer.Catalog.GetString("ResSpeed:"), Me.ToMi(pS.TopH(train.WindResultantSpeedMpS)).ToString("000.00")
-                        //Add new header + data here, if required.
-                        );
-                    }
-                    TableAddLines(table, status.ToString());
+
+                    TableAddLine(table);
+
+                    TableSetCells(table, 0, Viewer.Catalog.GetString("Wind"), string.Empty, FormatStrings.FormatSpeedDisplay(train.PhysicsWindSpeedMpS, mstsLocomotive.IsMetric), FormatStrings.FormatAngleDeg(train.PhysicsWindDirectionDeg));
+                    TableSetCells(table, 4, Viewer.Catalog.GetString("Train"), FormatStrings.FormatAngleDeg(train.PhysicsTrainLocoDirectionDeg));
+                    TableSetCells(table, 6, Viewer.Catalog.GetString("Result"), FormatStrings.FormatSpeedDisplay(train.WindResultantSpeedMpS, mstsLocomotive.IsMetric), FormatStrings.FormatAngleDeg(train.ResultantWindComponentDeg));
+                    TableAddLine(table);
+                    TableAddLine(table);
                 }
             }
 
@@ -2132,11 +2121,12 @@ namespace Orts.Viewer3D.Popups
             if (hudWindowFullScreen || WebServerEnabled)
                 TableSetLabelValueColumns(table, 0, 2);
 
-            TableAddLabelValue(table, Viewer.Catalog.GetString("Visibility"), Viewer.Catalog.GetStringFmt("{0:N0} m", Viewer.Simulator.Weather.FogDistance));
-            TableAddLabelValue(table, Viewer.Catalog.GetString("Cloud cover"), Viewer.Catalog.GetStringFmt("{0:F0} %", Viewer.Simulator.Weather.OvercastFactor * 100));
-            TableAddLabelValue(table, Viewer.Catalog.GetString("Intensity"), Viewer.Catalog.GetStringFmt("{0:F4} p/s/m^2", Viewer.Simulator.Weather.PricipitationIntensityPPSPM2));
+            TableAddLabelValue(table, Viewer.Catalog.GetString("Visibility"), Viewer.Catalog.GetStringFmt("{0:N0} m", Viewer.Simulator.Weather.VisibilityM));
+            TableAddLabelValue(table, Viewer.Catalog.GetString("Cloud cover"), Viewer.Catalog.GetStringFmt("{0:F0} %", Viewer.Simulator.Weather.CloudCoverFactor * 100));
+            TableAddLabelValue(table, Viewer.Catalog.GetString("Intensity"), Viewer.Catalog.GetStringFmt("{0:F4} p/s/m^2", Viewer.Simulator.Weather.PrecipitationIntensityPPSPM2));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Liquidity"), Viewer.Catalog.GetStringFmt("{0:F0} %", Viewer.Simulator.Weather.PrecipitationLiquidity * 100));
-            TableAddLabelValue(table, Viewer.Catalog.GetString("Wind"), Viewer.Catalog.GetStringFmt("{0:F1},{1:F1} m/s", Viewer.Simulator.Weather.WindSpeedMpS.X, Viewer.Simulator.Weather.WindSpeedMpS.Y));
+            TableAddLabelValue(table, Viewer.Catalog.GetString("Wind"), Viewer.Catalog.GetStringFmt("{0:F0} ° / {1:F1} m/s ({2:F0} ° / {3:F1} m/s gusts)", MathHelper.ToDegrees(Viewer.Simulator.Weather.WindAverageDirectionRad), Viewer.Simulator.Weather.WindAverageSpeedMpS, MathHelper.ToDegrees(Viewer.Simulator.Weather.WindInstantaneousDirectionRad), Viewer.Simulator.Weather.WindInstantaneousSpeedMpS));
+            // TODO: Move ambient temperature into Orts.Simulation.Weather
             TableAddLabelValue(table, Viewer.Catalog.GetString("Amb Temp"), FormatStrings.FormatTemperature(Viewer.PlayerLocomotive.CarOutsideTempC, Viewer.PlayerLocomotive.IsMetric, false));
 
             TextLineNumber(6, table.CurrentRow + 6, 2);//HudScroll

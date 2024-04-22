@@ -169,13 +169,13 @@
             this.tabPageKeyboard = new System.Windows.Forms.TabPage();
             this.panelKeys = new System.Windows.Forms.Panel();
             this.tabPageSimulation = new System.Windows.Forms.TabPage();
-            this.checkElectricPowerConnected = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.checkDieselEnginesStarted = new System.Windows.Forms.CheckBox();
-            this.labelLocoStartActivity = new System.Windows.Forms.Label();
             this.checkBoilerPreheated = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkElectricPowerConnected = new System.Windows.Forms.CheckBox();
+            this.labelLocoStartActivity = new System.Windows.Forms.Label();
             this.checkUseLocationPassingPaths = new System.Windows.Forms.CheckBox();
+            this.checkDieselEnginesStarted = new System.Windows.Forms.CheckBox();
             this.checkDoorsAITrains = new System.Windows.Forms.CheckBox();
             this.checkForcedRedAtStationStops = new System.Windows.Forms.CheckBox();
             this.checkSimpleControlsPhysics = new System.Windows.Forms.CheckBox();
@@ -2091,7 +2091,7 @@
             this.checkBoilerPreheated.UseVisualStyleBackColor = true;
             // 
             // groupBox1
-            //
+            // 
             this.groupBox1.Controls.Add(this.checkElectricPowerConnected);
             this.groupBox1.Controls.Add(this.labelLocoStartActivity);
             this.groupBox1.Controls.Add(this.checkUseLocationPassingPaths);
@@ -2126,7 +2126,6 @@
             this.labelLocoStartActivity.Size = new System.Drawing.Size(161, 13);
             this.labelLocoStartActivity.TabIndex = 47;
             this.labelLocoStartActivity.Text = "At game start, locomotives have:";
-            // 
             // 
             // checkUseLocationPassingPaths
             // 
@@ -3032,7 +3031,7 @@
             0,
             0});
             this.precipitationBoxHeight.Minimum = new decimal(new int[] {
-            100,
+            25,
             0,
             0,
             0});
@@ -3040,7 +3039,7 @@
             this.precipitationBoxHeight.Size = new System.Drawing.Size(54, 20);
             this.precipitationBoxHeight.TabIndex = 43;
             this.precipitationBoxHeight.Value = new decimal(new int[] {
-            100,
+            50,
             0,
             0,
             0});
