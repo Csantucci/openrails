@@ -12669,7 +12669,14 @@ namespace Orts.Simulation.Timetables
             if (newTrain.ValidRoute[0] == null)
             {
                 newTrain.ValidRoute[0] = new Train.TCSubpathRoute(tempRouteNewTrain);
-                newTrain.TCRoute.TCRouteSubpaths.Add(new Train.TCSubpathRoute(tempRouteNewTrain));
+                if (newTrain.TCRoute == null)
+                {
+                    newTrain.TCRoute = new TCRoutePath(newTrain.ValidRoute[0]);
+                }
+                else
+                {
+                    newTrain.TCRoute.TCRouteSubpaths.Add(newTrain.ValidRoute[0]);
+                }
                 newTrain.PresentPosition[0].RouteListIndex = newTrain.ValidRoute[0].GetRouteIndex(newTrain.PresentPosition[0].TCSectionIndex, 0);
                 newTrain.PresentPosition[0].CopyTo(ref newTrain.PreviousPosition[0]);
                 newTrain.PresentPosition[1].RouteListIndex = newTrain.ValidRoute[0].GetRouteIndex(newTrain.PresentPosition[1].TCSectionIndex, 0);
