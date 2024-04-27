@@ -593,8 +593,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
 
             if (AuxCylVolumeRatio == 0 && RelayValveFitted)
                 AuxCylVolumeRatio = 2.5f;
-            else if (AuxCylVolumeRatio == 0)
+            else if (AuxCylVolumeRatio == 0 && TotalCylVolumeM3 != 0)
                 AuxCylVolumeRatio = AuxResVolumeM3 / TotalCylVolumeM3;
+            // AuxCylVolumeRatio == 0 generates crashes and has no physical sense
+            if (Car.Simulator.Settings.CorrectQuestionableBrakingParams && (Car as MSTSWagon).BrakeValve == MSTSWagon.BrakeValveType.TripleValve && AuxCylVolumeRatio == 0)
+                AuxCylVolumeRatio = 2.5f;
 
             // If user specified only one two stage speed, set the other to be equal
             if (TwoStageSpeedDownMpS == 0 && TwoStageSpeedUpMpS > 0)
