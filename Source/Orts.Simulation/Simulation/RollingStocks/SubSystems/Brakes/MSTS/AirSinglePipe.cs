@@ -628,7 +628,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             }
             if (CylVolumeM3 <= 0 && AuxCylVolumeRatio > 0)
                 CylVolumeM3 = AuxResVolumeM3 / AuxCylVolumeRatio / CylCount;
-            else if (CylVolumeM3 <= 0 && AuxCylVolumeRatio == 0)
+            else if (CylVolumeM3 <= 0 && AuxCylVolumeRatio == 0 && Car.Simulator.Settings.CorrectQuestionableBrakingParams)
             {
                 CylVolumeM3 = AuxResVolumeM3 / 2.5f / CylCount;
             }
