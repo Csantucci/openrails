@@ -1731,22 +1731,9 @@ namespace Orts.Simulation.Signalling
                 {
                     foreach (SignalHead sigHead in SignalHeads)
                     {
-                        switch (holdState)
-                        {
-                            case HoldState.ManualLock:
-                            case HoldState.StationStop:
-                                sigHead.RequestMostRestrictiveAspect();
-                                break;
-
-                            case HoldState.ManualApproach:
-                                sigHead.RequestApproachAspect();
-                                break;
-
-                            case HoldState.ManualPass:
-                                sigHead.RequestLeastRestrictiveAspect();
-                                break;
-                        }
+                        if (holdState == HoldState.ManualLock || holdState == HoldState.StationStop) sigHead.RequestMostRestrictiveAspect();
                     }
+                    return;
                 }
 
                 // if enabled - perform full update and propagate if not yet done
