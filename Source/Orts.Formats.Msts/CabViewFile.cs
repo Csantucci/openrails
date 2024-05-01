@@ -326,6 +326,8 @@ namespace Orts.Formats.Msts
         METRES_SEC_SEC,
         KMµHOURµHOUR,
         KM_HOUR_HOUR,
+        KMµHOURµMIN,
+        KM_HOUR_MIN,
         KMµHOURµSEC,
         KM_HOUR_SEC,
         METRESµSECµHOUR,
@@ -476,6 +478,9 @@ namespace Orts.Formats.Msts
         public CabViewControlType ControlType;
         public CABViewControlStyles ControlStyle = CABViewControlStyles.NONE;
         public CABViewControlUnits Units = CABViewControlUnits.NONE;
+
+        public float UnitsScale = 1.0f;
+        public float UnitsOffset;
 
         public bool DisabledIfLowVoltagePowerSupplyOff { get; private set; } = false;
         public bool DisabledIfCabPowerSupplyOff { get; private set; } = false;
@@ -721,6 +726,8 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
     }
@@ -822,6 +829,8 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
     }
@@ -976,6 +985,8 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
 
@@ -1237,6 +1248,8 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsnewscreenpage", () => {ParseNewScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
                 new STFReader.TokenProcessor("ortsparameter1", ()=>{ Parameter1 = stf.ReadFloatBlock(STFReader.UNITS.Any, 0); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 });
 
                 // If no ACE, just don't need any fixup
@@ -1483,6 +1496,8 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
         protected int ParseNumStyle(STFReader stf)
@@ -1531,6 +1546,8 @@ namespace Orts.Formats.Msts
                         Values.Add(-10000);
                 }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
         protected int ParseNumStyle(STFReader stf)
@@ -1577,6 +1594,8 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
         protected void ParseCustomParameters(STFReader stf)

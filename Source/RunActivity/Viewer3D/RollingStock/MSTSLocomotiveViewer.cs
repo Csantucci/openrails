@@ -2247,7 +2247,8 @@ namespace Orts.Viewer3D.RollingStock
                         {
                             if (Locomotive.CruiseControl != null)
                             {
-                                if ((Locomotive.CruiseControl.SpeedRegMode == Simulation.RollingStocks.SubSystems.CruiseControl.SpeedRegulatorMode.Auto && !Locomotive.CruiseControl.DynamicBrakePriority) || Locomotive.DynamicBrakeIntervention > 0)
+                                if (Locomotive.CruiseControl.SpeedRegMode == Simulation.RollingStocks.SubSystems.CruiseControl.SpeedRegulatorMode.Auto && !Locomotive.CruiseControl.DynamicBrakePriority ||
+                                    Locomotive.DynamicBrakeIntervention > 0 && ControlDiscrete.ControlType.Type == CABViewControlTypes.DYNAMIC_BRAKE)
                                 {
                                     index = 0;
                                 }
