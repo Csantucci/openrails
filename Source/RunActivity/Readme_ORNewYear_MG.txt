@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.151
-March 14th, 2024
+﻿Open Rails, NewYear version README - Rev.151.2
+May 2nd, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-905, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-944, 
 plus some of the features already present in the Unstable release.
 
 
@@ -59,6 +59,8 @@ This version includes some features not (yet) available in the Open Rails testin
 - Improvements to display features on web clients, by mbm_OR 
 - Timetable: autopilot, player train switching, open/close doors on AI trains and some minor extra features, see https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/
 - Disable Polach adhesion, see here https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__305613 and following posts
+- Fix for https://bugs.launchpad.net/or/+bug/2057708 ORTSScreenPage parameter doesn't work for Dials
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/37911-timetable-crashing-for-no-reason/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
@@ -68,13 +70,15 @@ This version includes some features not (yet) available in the Open Rails testin
   *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
   *- Triple valve features vol.2 by SteelFill, see https://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__st__600__p__305027#entry305027 (PR #912)
   *- Train car operations UI window, by mbm-OR, see http://www.elvastower.com/forums/index.php?/topic/37062-proposal-f9-train-operations/page__view__findpost__p__301151 (PR #882)
-  *- NEW: Fix https://www.elvastower.com/forums/index.php?/topic/37765-or-forgets-target-car-u20240124-2007/ , by mbm-OR (included in PR #882)
-  *- NEW: Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
-  *- NEW: Improvements in default weather textures, see https://www.elvastower.com/forums/index.php?/topic/37832-sky-dome-and-cloud-layer-testing/page__view__findpost__p__306340 , by SteelFill (PR #924)
-  *- NEW: Fix brakeshoe force bug, see https://bugs.launchpad.net/or/+bug/2056722 , by steamer_ctn (PR #925)
-- NEW: Fix for ORNYMG only bug  https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/page__view__findpost__p__305866
-- NEW: fix for https://bugs.launchpad.net/or/+bug/2057708 ORTSScreenPage parameter doesn't work for Dials
-- NEW: fix for ORNYMG only bug causing crash when switching player train, introduced with Timetable extensions
+  *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
+  *- NEW: Add support for common circuit breaker variants, by cesarBLG (PR #929)
+  *- NEW: Add curve squeal to route, by steamer_CTN (PR #923)
+  *- NEW: Consolidated wind simulation, by James Ross (PR #799)
+  *- NEW: Add KM/HOUR/MIN to Cabview Units, by SteelFill (PR #939)
+- NEW: Fix ORNYMG only bug preventing player to command light state when in autopilot
+- NEW: Fix 3Dcab digits alignment, see https://www.elvastower.com/forums/index.php?/topic/24040-3d-cabs/page__view__findpost__p__307374
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/37948-or-timetable-error/page__view__findpost__p__307975
+- NEW: Fix bug of impossibility to clear signals in dispatcher window
 
  
 
