@@ -1,4 +1,4 @@
-﻿Open Rails, NewYear version README - Rev.151.2
+﻿Open Rails, NewYear version README - Rev.152
 May 2nd, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
