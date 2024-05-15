@@ -2254,6 +2254,13 @@ namespace Orts.Simulation.RollingStocks
                     if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && EngineType != EngineTypes.Control) 
                     {
                         AdvancedAdhesion(elapsedClockSeconds); // Use advanced adhesion model
+                        if (LocomotiveAxles.AxleList[0].RecoverToSimpleAdhesion)
+                        {
+                            WheelSlip = false;
+                            WheelSpeedMpS = SpeedMpS;
+                            WheelSpeedSlipMpS = SpeedMpS;
+                            SimpleAdhesion();  // Use simple adhesion model
+                        }
                         AdvancedAdhesionModel = true;  // Set flag to advise advanced adhesion model is in use
                     }
                     else
@@ -3001,6 +3008,10 @@ namespace Orts.Simulation.RollingStocks
             }
 
             LocomotiveAxles.Update(elapsedClockSeconds);
+            if (LocomotiveAxles.AxleList[0].RecoverToSimpleAdhesion)
+            {
+                return;
+            }
 
             MotiveForceN = LocomotiveAxles.CompensatedForceN;
 
