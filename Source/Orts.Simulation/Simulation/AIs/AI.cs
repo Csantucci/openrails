@@ -940,6 +940,7 @@ namespace Orts.Simulation.AIs
                     {
                         if (car is MSTSLocomotive loco)
                             loco.SetPower(true);
+
                         car.CarID = "AI" + train.Number.ToString() + " - " + (train.Cars.Count - 1).ToString();
                     }
 
