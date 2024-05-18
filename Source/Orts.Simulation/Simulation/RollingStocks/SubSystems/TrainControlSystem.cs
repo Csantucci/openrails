@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Orts.Common;
 using Orts.Formats.Msts;
 using Orts.Parsers.Msts;
@@ -672,36 +673,25 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         aspect = (Aspect)Locomotive.Train.signalRef.TranslateToTCSAspect(trainSignal.SignalObject.this_sig_lr(function));
                     }
 
-                    var functionHead = default(SignalHead);
-                    foreach (var head in trainSignal.SignalObject.SignalHeads)
-                        if (head.Function == function)
-                            functionHead = head;
+                    var functionHead = trainSignal.SignalObject.SignalHeads.Find(head => head.Function == function);
                     signalTypeName = functionHead.SignalTypeName;
-                    foreach (var key in functionHead.signalType.DrawStates.Keys)
+                    if (functionHead.signalType.DrawStates.Any(d => d.Value.Index == functionHead.draw_state))
                     {
-                        if (functionHead.signalType.DrawStates[key].Index == functionHead.draw_state)
-                            drawStateName = functionHead.signalType.DrawStates[key].Name;
-                        break;
+                        drawStateName = functionHead.signalType.DrawStates.First(d => d.Value.Index == functionHead.draw_state).Value.Name;
                     }
                     textAspect = functionHead?.TextSignalAspect ?? "";
                     break;
                 case Train.TrainObjectItem.TRAINOBJECTTYPE.SPEEDPOST:
-                    var j = 0;
-                    for (var i = 0; i < Locomotive.Train.PlayerTrainSpeedposts[dir].Count; i++)
-                    {
-                        if (Locomotive.Train.PlayerTrainSpeedposts[dir][i].IsWarning)
-                            continue;
-                        if (itemSequenceIndex == j++)
-                        {
-                            var trainSpeedpost = Locomotive.Train.PlayerTrainSpeedposts[dir][i];
-                            if (trainSpeedpost.DistanceToTrainM <= maxDistanceM)
-                            {
-                                distanceM = trainSpeedpost.DistanceToTrainM;
-                                speedLimitMpS = trainSpeedpost.AllowedSpeedMpS;
-                            }
-                            break;
-                        }
-                    }
+                    var playerTrainSpeedpostList = Locomotive.Train.PlayerTrainSpeedposts[dir].Where(x => !x.IsWarning).ToList();
+                    if (itemSequenceIndex > playerTrainSpeedpostList.Count - 1)
+                        goto Exit; // no n-th speedpost available
+                    var trainSpeedpost = playerTrainSpeedpostList[itemSequenceIndex];
+                    if (trainSpeedpost.DistanceToTrainM > maxDistanceM)
+                        goto Exit; // the requested speedpost is too distant
+
+                    // All OK, we can retrieve the data for the required speedpost;
+                    distanceM = trainSpeedpost.DistanceToTrainM;
+                    speedLimitMpS = trainSpeedpost.AllowedSpeedMpS;
                     break;
             }
 
