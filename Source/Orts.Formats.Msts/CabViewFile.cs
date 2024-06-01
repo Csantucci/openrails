@@ -479,6 +479,7 @@ namespace Orts.Formats.Msts
         public CABViewControlStyles ControlStyle = CABViewControlStyles.NONE;
         public CABViewControlUnits Units = CABViewControlUnits.NONE;
 
+        public double UnitsExponent = 1.0f;
         public float UnitsScale = 1.0f;
         public float UnitsOffset;
 
@@ -726,6 +727,7 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
@@ -829,6 +831,7 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
@@ -985,6 +988,7 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
@@ -1248,6 +1252,7 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsnewscreenpage", () => {ParseNewScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
                 new STFReader.TokenProcessor("ortsparameter1", ()=>{ Parameter1 = stf.ReadFloatBlock(STFReader.UNITS.Any, 0); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 });
@@ -1496,6 +1501,7 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
@@ -1546,6 +1552,7 @@ namespace Orts.Formats.Msts
                         Values.Add(-10000);
                 }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
@@ -1594,6 +1601,7 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
