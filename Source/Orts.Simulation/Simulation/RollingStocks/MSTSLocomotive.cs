@@ -1944,7 +1944,7 @@ namespace Orts.Simulation.RollingStocks
         {
             if (Simulator.Settings.CorrectQuestionableBrakingParams || Simulator.Settings.SimpleControlPhysics)
             {
-                if (!(BrakeSystem is EPBrakeSystem) && !(BrakeSystem is VacuumSinglePipe) && !(BrakeSystem is AirTwinPipe))
+                if (!(BrakeSystem is EPBrakeSystem) && !(BrakeSystem is VacuumSinglePipe) && !(BrakeSystem is StraightVacuumSinglePipe) && !(BrakeSystem is AirTwinPipe))
                 {
                     if (CompressorRestartPressurePSI - TrainBrakeController.MaxPressurePSI < DefaultCompressorRestartToMaxSysPressureDiff - 10)
                     {
@@ -1960,6 +1960,11 @@ namespace Orts.Simulation.RollingStocks
                 if (MainResChargingRatePSIpS <= 0)
                 {
                     MainResChargingRatePSIpS = Math.Max(0.5f, (CompressorChargingRateM3pS * Bar.ToPSI(1)) / MainResVolumeM3);
+                }
+                if (!(BrakeSystem is VacuumSinglePipe) && !(BrakeSystem is StraightVacuumSinglePipe))
+                {
+                    if (TrainBrakePipeLeakPSIorInHgpS > 1)
+                        TrainBrakePipeLeakPSIorInHgpS = 0.0725f;
                 }
             }
             else if (MainResChargingRatePSIpS <= 0) MainResChargingRatePSIpS = 0.4f;
