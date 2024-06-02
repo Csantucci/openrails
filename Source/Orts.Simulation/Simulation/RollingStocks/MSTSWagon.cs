@@ -405,6 +405,8 @@ namespace Orts.Simulation.RollingStocks
         float LoadEmptyMaxBrakeForceN;
         float LoadEmptyMaxHandbrakeForceN;
         float LoadEmptyCentreOfGravityM_Y;
+        float LoadEmptyRelayValveRatio;
+        float LoadEmptyInshotPSI;
 
         float LoadFullMassKg;
         float LoadFullORTSDavis_A;
@@ -415,6 +417,8 @@ namespace Orts.Simulation.RollingStocks
         float LoadFullMaxBrakeForceN;
         float LoadFullMaxHandbrakeForceN;
         float LoadFullCentreOfGravityM_Y;
+        float LoadFullRelayValveRatio;
+        float LoadFullInshotPSI;
 
 
         /// <summary>
@@ -781,6 +785,24 @@ namespace Orts.Simulation.RollingStocks
                     LoadEmptyCentreOfGravityM_Y = CentreOfGravityM.Y;
                 }
 
+                if (FreightAnimations.EmptyRelayValveRatio > 0)
+                {
+                    LoadEmptyRelayValveRatio = FreightAnimations.EmptyRelayValveRatio;
+                }
+                else if (BrakeSystem is AirSinglePipe brakes)
+                {
+                    LoadEmptyRelayValveRatio = brakes.RelayValveRatio;
+                }
+
+                if (FreightAnimations.EmptyInshotPSI != 0)
+                {
+                    LoadEmptyInshotPSI = FreightAnimations.EmptyInshotPSI;
+                }
+                else if (BrakeSystem is AirSinglePipe brakes)
+                {
+                    LoadEmptyInshotPSI = brakes.RelayValveInshotPSI;
+                }
+
                 // Read (initialise) Static load ones if a static load
                 // Test each value to make sure that it has been defined in the WAG file, if not default to Root WAG file value
                 if (FreightAnimations.FullPhysicsStaticOne != null)
@@ -859,6 +881,24 @@ namespace Orts.Simulation.RollingStocks
                     else
                     {
                         LoadFullCentreOfGravityM_Y = CentreOfGravityM.Y;
+                    }
+
+                    if (FreightAnimations.FullPhysicsStaticOne.FullStaticRelayValveRatio > 0)
+                    {
+                        LoadFullRelayValveRatio = FreightAnimations.FullPhysicsStaticOne.FullStaticRelayValveRatio;
+                    }
+                    else if (BrakeSystem is AirSinglePipe brakes)
+                    {
+                        LoadFullRelayValveRatio = brakes.RelayValveRatio;
+                    }
+
+                    if (FreightAnimations.FullPhysicsStaticOne.FullStaticInshotPSI > 0)
+                    {
+                        LoadFullInshotPSI = FreightAnimations.FullPhysicsStaticOne.FullStaticInshotPSI;
+                    }
+                    else if (BrakeSystem is AirSinglePipe brakes)
+                    {
+                        LoadFullInshotPSI = brakes.RelayValveInshotPSI;
                     }
                 }
 
@@ -950,6 +990,24 @@ namespace Orts.Simulation.RollingStocks
                     {
                         LoadFullCentreOfGravityM_Y = CentreOfGravityM.Y;
                     }
+
+                    if (FreightAnimations.FullPhysicsContinuousOne.FullRelayValveRatio > 0)
+                    {
+                        LoadFullRelayValveRatio = FreightAnimations.FullPhysicsContinuousOne.FullRelayValveRatio;
+                    }
+                    else if (BrakeSystem is AirSinglePipe brakes)
+                    {
+                        LoadFullRelayValveRatio = brakes.RelayValveRatio;
+                    }
+
+                    if (FreightAnimations.FullPhysicsContinuousOne.FullInshotPSI != 0)
+                    {
+                        LoadFullInshotPSI = FreightAnimations.FullPhysicsContinuousOne.FullInshotPSI;
+                    }
+                    else if (BrakeSystem is AirSinglePipe brakes)
+                    {
+                        LoadFullInshotPSI = brakes.RelayValveInshotPSI;
+                    }
                 }
 
                 if (!FreightAnimations.MSTSFreightAnimEnabled) FreightShapeFileName = null;
@@ -972,6 +1030,11 @@ namespace Orts.Simulation.RollingStocks
                         // Update brake parameters   
                         MaxBrakeForceN = LoadFullMaxBrakeForceN;
                         MaxHandbrakeForceN = LoadFullMaxHandbrakeForceN;
+                        if (BrakeSystem is AirSinglePipe brakes)
+                        {
+                            brakes.RelayValveRatio = LoadFullRelayValveRatio;
+                            brakes.RelayValveInshotPSI = LoadFullInshotPSI;
+                        }
 
                         // Update friction related parameters
                         DavisAN = LoadFullORTSDavis_A;
@@ -996,6 +1059,12 @@ namespace Orts.Simulation.RollingStocks
                     // Update brake parameters
                     MaxBrakeForceN = ((LoadFullMaxBrakeForceN - LoadEmptyMaxBrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxBrakeForceN;
                     MaxHandbrakeForceN = ((LoadFullMaxHandbrakeForceN - LoadEmptyMaxHandbrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxHandbrakeForceN;
+                    // Not sensible to vary the relay valve ratio continouously; instead, it changes to loaded if more than 25% cargo is present
+                    if (BrakeSystem is AirSinglePipe brakes)
+                    {
+                        brakes.RelayValveRatio = TempMassDiffRatio > 0.25f ? LoadFullRelayValveRatio : LoadEmptyRelayValveRatio;
+                        brakes.RelayValveInshotPSI = TempMassDiffRatio > 0.25f ? LoadFullInshotPSI : LoadEmptyInshotPSI;
+                    }
 
                     // Update friction related parameters
                     DavisAN = ((LoadFullORTSDavis_A - LoadEmptyORTSDavis_A) * TempMassDiffRatio) + LoadEmptyORTSDavis_A;
@@ -1024,6 +1093,11 @@ namespace Orts.Simulation.RollingStocks
                         // Update brake physics
                         MaxBrakeForceN = LoadEmptyMaxBrakeForceN;
                         MaxHandbrakeForceN = LoadEmptyMaxHandbrakeForceN;
+                        if (BrakeSystem is AirSinglePipe brakes)
+                        {
+                            brakes.RelayValveRatio = LoadEmptyRelayValveRatio;
+                            brakes.RelayValveInshotPSI = LoadEmptyInshotPSI;
+                        }
 
                         // Update friction related parameters
                         DavisAN = LoadEmptyORTSDavis_A;
@@ -1709,6 +1783,8 @@ namespace Orts.Simulation.RollingStocks
             LoadEmptyORTSDavis_C = copy.LoadEmptyORTSDavis_C;
             LoadEmptyDavisDragConstant = copy.LoadEmptyDavisDragConstant;
             LoadEmptyWagonFrontalAreaM2 = copy.LoadEmptyWagonFrontalAreaM2;
+            LoadEmptyRelayValveRatio = copy.LoadEmptyRelayValveRatio;
+            LoadEmptyInshotPSI = copy.LoadEmptyInshotPSI;
             LoadFullMassKg = copy.LoadFullMassKg;
             LoadFullCentreOfGravityM_Y = copy.LoadFullCentreOfGravityM_Y;
             LoadFullMaxBrakeForceN = copy.LoadFullMaxBrakeForceN;
@@ -1718,6 +1794,8 @@ namespace Orts.Simulation.RollingStocks
             LoadFullORTSDavis_C = copy.LoadFullORTSDavis_C;
             LoadFullDavisDragConstant = copy.LoadFullDavisDragConstant;
             LoadFullWagonFrontalAreaM2 = copy.LoadFullWagonFrontalAreaM2;
+            LoadFullRelayValveRatio = copy.LoadFullRelayValveRatio;
+            LoadFullInshotPSI = copy.LoadFullInshotPSI;
 
             if (copy.IntakePointList != null)
             {
@@ -2109,6 +2187,12 @@ namespace Orts.Simulation.RollingStocks
                         // Update brake parameters
                         MaxBrakeForceN = ((LoadFullMaxBrakeForceN - LoadEmptyMaxBrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxBrakeForceN;
                         MaxHandbrakeForceN = ((LoadFullMaxHandbrakeForceN - LoadEmptyMaxHandbrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxHandbrakeForceN;
+                        // Not sensible to vary the relay valve ratio continouously; instead, it changes to loaded if more than 25% cargo is present
+                        if (BrakeSystem is AirSinglePipe brakes)
+                        {
+                            brakes.RelayValveRatio = TempMassDiffRatio > 0.25f ? LoadFullRelayValveRatio : LoadEmptyRelayValveRatio;
+                            brakes.RelayValveInshotPSI = TempMassDiffRatio > 0.25f ? LoadFullInshotPSI : LoadEmptyInshotPSI;
+                        }
                         // Update friction related parameters
                         DavisAN = ((LoadFullORTSDavis_A - LoadEmptyORTSDavis_A) * TempMassDiffRatio) + LoadEmptyORTSDavis_A;
                         DavisBNSpM = ((LoadFullORTSDavis_B - LoadEmptyORTSDavis_B) * TempMassDiffRatio) + LoadEmptyORTSDavis_B;
@@ -2216,6 +2300,12 @@ namespace Orts.Simulation.RollingStocks
                         // Update brake parameters
                         MaxBrakeForceN = ((LoadFullMaxBrakeForceN - LoadEmptyMaxBrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxBrakeForceN;
                         MaxHandbrakeForceN = ((LoadFullMaxHandbrakeForceN - LoadEmptyMaxHandbrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxHandbrakeForceN;
+                        // Not sensible to vary the relay valve ratio continouously; instead, it changes to loaded if more than 25% cargo is present
+                        if (BrakeSystem is AirSinglePipe brakes)
+                        {
+                            brakes.RelayValveRatio = TempMassDiffRatio > 0.25f ? LoadFullRelayValveRatio : LoadEmptyRelayValveRatio;
+                            brakes.RelayValveInshotPSI = TempMassDiffRatio > 0.25f ? LoadFullInshotPSI : LoadEmptyInshotPSI;
+                        }
                         // Update friction related parameters
                         DavisAN = ((LoadFullORTSDavis_A - LoadEmptyORTSDavis_A) * TempMassDiffRatio) + LoadEmptyORTSDavis_A;
                         DavisBNSpM = ((LoadFullORTSDavis_B - LoadEmptyORTSDavis_B) * TempMassDiffRatio) + LoadEmptyORTSDavis_B;
@@ -2262,6 +2352,12 @@ namespace Orts.Simulation.RollingStocks
                         // Update brake parameters
                         MaxBrakeForceN = ((LoadFullMaxBrakeForceN - LoadEmptyMaxBrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxBrakeForceN;
                         MaxHandbrakeForceN = ((LoadFullMaxHandbrakeForceN - LoadEmptyMaxHandbrakeForceN) * TempMassDiffRatio) + LoadEmptyMaxHandbrakeForceN;
+                        // Not sensible to vary the relay valve ratio continouously; instead, it changes to loaded if more than 25% cargo is present
+                        if (BrakeSystem is AirSinglePipe brakes)
+                        {
+                            brakes.RelayValveRatio = TempMassDiffRatio > 0.25f ? LoadFullRelayValveRatio : LoadEmptyRelayValveRatio;
+                            brakes.RelayValveInshotPSI = TempMassDiffRatio > 0.25f ? LoadFullInshotPSI : LoadEmptyInshotPSI;
+                        }
                         // Update friction related parameters
                         DavisAN = ((LoadFullORTSDavis_A - LoadEmptyORTSDavis_A) * TempMassDiffRatio) + LoadEmptyORTSDavis_A;
                         DavisBNSpM = ((LoadFullORTSDavis_B - LoadEmptyORTSDavis_B) * TempMassDiffRatio) + LoadEmptyORTSDavis_B;
@@ -3202,6 +3298,12 @@ namespace Orts.Simulation.RollingStocks
                     // Update brake parameters
                     MaxBrakeForceN = ((LoadFullMaxBrakeForceN - LoadEmptyMaxBrakeForceN) * TempTenderMassDiffRatio) + LoadEmptyMaxBrakeForceN;
                     MaxHandbrakeForceN = ((LoadFullMaxHandbrakeForceN - LoadEmptyMaxHandbrakeForceN) * TempTenderMassDiffRatio) + LoadEmptyMaxHandbrakeForceN;
+                    // Not sensible to vary the relay valve ratio continouously; instead, it changes to loaded if more than 25% cargo is present
+                    if (BrakeSystem is AirSinglePipe brakes)
+                    {
+                        brakes.RelayValveRatio = TempTenderMassDiffRatio > 0.25f ? LoadFullRelayValveRatio : LoadEmptyRelayValveRatio;
+                        brakes.RelayValveInshotPSI = TempTenderMassDiffRatio > 0.25f ? LoadFullInshotPSI : LoadEmptyInshotPSI;
+                    }
                     // Update friction related parameters
                     DavisAN = ((LoadFullORTSDavis_A - LoadEmptyORTSDavis_A) * TempTenderMassDiffRatio) + LoadEmptyORTSDavis_A;
                     DavisBNSpM = ((LoadFullORTSDavis_B - LoadEmptyORTSDavis_B) * TempTenderMassDiffRatio) + LoadEmptyORTSDavis_B;
@@ -3235,6 +3337,12 @@ namespace Orts.Simulation.RollingStocks
                     // Update brake parameters
                     MaxBrakeForceN = ((LoadFullMaxBrakeForceN - LoadEmptyMaxBrakeForceN) * TempTenderMassDiffRatio) + LoadEmptyMaxBrakeForceN;
                     MaxHandbrakeForceN = ((LoadFullMaxHandbrakeForceN - LoadEmptyMaxHandbrakeForceN) * TempTenderMassDiffRatio) + LoadEmptyMaxHandbrakeForceN;
+                    // Not sensible to vary the relay valve ratio continouously; instead, it changes to loaded if more than 25% cargo is present
+                    if (BrakeSystem is AirSinglePipe brakes)
+                    {
+                        brakes.RelayValveRatio = TempTenderMassDiffRatio > 0.25f ? LoadFullRelayValveRatio : LoadEmptyRelayValveRatio;
+                        brakes.RelayValveInshotPSI = TempTenderMassDiffRatio > 0.25f ? LoadFullInshotPSI : LoadEmptyInshotPSI;
+                    }
                     // Update friction related parameters
                     DavisAN = ((LoadFullORTSDavis_A - LoadEmptyORTSDavis_A) * TempTenderMassDiffRatio) + LoadEmptyORTSDavis_A;
                     DavisBNSpM = ((LoadFullORTSDavis_B - LoadEmptyORTSDavis_B) * TempTenderMassDiffRatio) + LoadEmptyORTSDavis_B;
