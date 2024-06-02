@@ -58,6 +58,7 @@ namespace Orts.Viewer3D.Popups
         internal static Texture2D ETSdisconnected32;
         internal static Texture2D FrontAngleCockOpened;
         internal static Texture2D FrontAngleCockClosed;
+        internal static Texture2D FrontAngleCockPartial;
         internal static Texture2D HandBrakeSet;
         internal static Texture2D HandBrakeNotSet;
         internal static Texture2D HandBrakeNotAvailable;
@@ -71,9 +72,12 @@ namespace Orts.Viewer3D.Popups
         internal static Texture2D PowerChanging;
         internal static Texture2D RearAngleCockOpened;
         internal static Texture2D RearAngleCockClosed;
+        internal static Texture2D RearAngleCockPartial;
         internal static Texture2D ResetBrakesOff;
         internal static Texture2D ResetBrakesOn;
 
+        public List<bool> AngleCockAPartiallyOpened = new List<bool>();
+        public List<bool> AngleCockBPartiallyOpened = new List<bool>();
         public string BatteryStatus;
         string CircuitBreakerState;
         public int LocoRowCount;
@@ -180,55 +184,107 @@ namespace Orts.Viewer3D.Popups
 
             if (Coupler == null)
             {
+                // texture rectangles :                    X, Y, width, height
+                Rectangle BattAlwaysOnRect = new Rectangle(0, 0, 32, 32);
+                Rectangle BattOffRect = new Rectangle(32, 0, 32, 32);
+                Rectangle BattOnRect = new Rectangle(64, 0, 32, 32);
+
+                Rectangle EmptyRect = new Rectangle(96, 0, 32, 32);
+
+                Rectangle BleedOffValveNotAvailableRect = new Rectangle(0, 32, 32, 32);
+                Rectangle BleedOffValveClosedRect = new Rectangle(32, 32, 32, 32);
+                Rectangle BleedOffValveOpenedRect = new Rectangle(64, 32, 32, 32);
+
+                Rectangle BrakeHoseConRect = new Rectangle(0, 64, 32, 32);
+                Rectangle BrakeHoseDisRect = new Rectangle(32, 64, 32, 32);
+                Rectangle BrakeHoseFirstDisRect = new Rectangle(64, 64, 32, 32);
+                Rectangle BrakeHoseLastDisRect = new Rectangle(96, 64, 32, 32);
+
+                Rectangle CouplerNotAvailableRect = new Rectangle(0, 96, 32, 32);
+                Rectangle CouplerFrontRect = new Rectangle(32, 96, 32, 32);
+                Rectangle CouplerRect = new Rectangle(64, 96, 32, 32);
+                Rectangle CouplerRearRect = new Rectangle(96, 96, 32, 32);
+
+                Rectangle LocoSymbolRect = new Rectangle(0, 128, 64, 32);
+                Rectangle LocoSymbolGreenRect = new Rectangle(64, 128, 64, 32);
+                Rectangle LocoSymbolRedRect = new Rectangle(0, 256, 64, 32);
+
+                Rectangle HandBrakeNotAvailableRect = new Rectangle(0, 160, 32, 32);
+                Rectangle HandBrakeSetRect = new Rectangle(32, 160, 32, 32);
+                Rectangle HandBrakeNotSetRect = new Rectangle(64, 160, 32, 32);
+
+                Rectangle ETSconnected32Rect = new Rectangle(0, 192, 32, 32);
+                Rectangle ETSdisconnected32Rect = new Rectangle(32, 192, 32, 32);
+                Rectangle MUconnectedRect = new Rectangle(64, 192, 32, 32);
+                Rectangle MUdisconnectedRect = new Rectangle(96, 192, 32, 32);
+
+                Rectangle FrontAngleCockClosedRect = new Rectangle(0, 224, 32, 32);
+                Rectangle RearAngleCockClosedRect = new Rectangle(32, 224, 32, 32);
+                Rectangle FrontAngleCockOpenedRect = new Rectangle(64, 224, 32, 32);
+                Rectangle RearAngleCockOpenedRect = new Rectangle(96, 224, 32, 32);
+                Rectangle FrontAngleCockPartialRect = new Rectangle(96, 160, 32, 32);
+                Rectangle RearAngleCockPartialRect = new Rectangle(96, 288, 32, 32);
+
+                Rectangle PowerOnRect = new Rectangle(0, 288, 32, 32);
+                Rectangle PowerOffRect = new Rectangle(32, 288, 32, 32);
+                Rectangle PowerChangingRect = new Rectangle(64, 288, 32, 32);
+
+                Rectangle ResetBrakesOffRect = new Rectangle(64, 256, 32, 32);
+                Rectangle ResetBrakesOnRect = new Rectangle(96, 256, 32, 32);
+
+                var GraphicsDeviceRender = Owner.Viewer.RenderProcess.GraphicsDevice;
+                var TrainOperationsPath = System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperations\\TrainOperationsMap32.png");
+
                 // TODO: This should happen on the loader thread.
-                BattAlwaysOn32 = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBattAlwaysOn32.png"));
-                BattOn32 = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBattOn32.png"));
-                BattOff32 = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBattOff32.png"));
+                BattAlwaysOn32 = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BattAlwaysOnRect);
+                BattOn32 = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BattOnRect);
+                BattOff32 = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BattOffRect);
 
-                BleedOffValveClosed = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBleedOffValveClosed32.png"));
-                BleedOffValveOpened = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBleedOffValveOpened32.png"));
-                BleedOffValveNotAvailable = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBleedOffValveNotAvailable32.png"));
+                BleedOffValveClosed = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BleedOffValveClosedRect);
+                BleedOffValveOpened = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BleedOffValveOpenedRect);
+                BleedOffValveNotAvailable = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BleedOffValveNotAvailableRect);
 
-                BrakeHoseCon = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBrakeHoseCon32.png"));
-                BrakeHoseDis = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBrakeHoseDis32.png"));
-                BrakeHoseFirstDis = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBrakeHoseFirstDis32.png"));
-                BrakeHoseLastDis = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsBrakeHoseLastDis32.png"));
+                BrakeHoseCon = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BrakeHoseConRect);
+                BrakeHoseDis = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BrakeHoseDisRect);
+                BrakeHoseFirstDis = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BrakeHoseFirstDisRect);
+                BrakeHoseLastDis = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, BrakeHoseLastDisRect);
 
-                Coupler = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsCoupler32.png"));
-                CouplerFront = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsCouplerFront32.png"));
-                CouplerRear = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsCouplerRear32.png"));
-                CouplerNotAvailable = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsCouplerNotAvailable32.png"));
+                Coupler = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, CouplerRect);
+                CouplerFront = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, CouplerFrontRect);
+                CouplerRear = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, CouplerRearRect);
+                CouplerNotAvailable = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, CouplerNotAvailableRect);
 
-                Empty = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsEmpty32.png"));
+                Empty = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, EmptyRect);
 
-                FrontAngleCockClosed = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsFrontAngleCockClosed32.png"));
-                FrontAngleCockOpened = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsFrontAngleCockOpened32.png"));
+                FrontAngleCockClosed = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, FrontAngleCockClosedRect);
+                FrontAngleCockOpened = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, FrontAngleCockOpenedRect);
+                FrontAngleCockPartial = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, FrontAngleCockPartialRect);
 
-                HandBrakeNotAvailable = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsHandBrakeNotAvailable32.png"));
-                HandBrakeNotSet = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsHandBrakeNoSet32.png"));
-                HandBrakeSet = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsHandBrakeSet32.png"));
+                HandBrakeNotAvailable = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, HandBrakeNotAvailableRect);
+                HandBrakeNotSet = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, HandBrakeNotSetRect);
+                HandBrakeSet = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, HandBrakeSetRect);
 
-                LocoSymbol = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsLoco32.png"));
-                LocoSymbolGreen = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsLocoGreen32.png"));
-                LocoSymbolRed = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsLocoRed32.png"));
+                LocoSymbol = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, LocoSymbolRect);
+                LocoSymbolGreen = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, LocoSymbolGreenRect);
+                LocoSymbolRed = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, LocoSymbolRedRect);
 
-                MUconnected = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsMUconnected32.png"));
-                MUdisconnected = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsMUdisconnected32.png"));
+                MUconnected = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, MUconnectedRect);
+                MUdisconnected = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, MUdisconnectedRect);
 
-                ETSconnected32 = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsETSconnected32.png"));
-                ETSdisconnected32 = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsETSdisconnected32.png"));
+                ETSconnected32 = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, ETSconnected32Rect);
+                ETSdisconnected32 = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, ETSdisconnected32Rect);
 
-                PowerOn = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsPowerOn32.png"));
-                PowerOff = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsPowerOff32.png"));
-                PowerChanging = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsPowerChanging32.png"));
+                RearAngleCockClosed = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, RearAngleCockClosedRect);
+                RearAngleCockOpened = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, RearAngleCockOpenedRect);
+                RearAngleCockPartial = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, RearAngleCockPartialRect);
 
-                RearAngleCockClosed = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsRearAngleCockClosed32.png"));
-                RearAngleCockOpened = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsRearAngleCockOpened32.png"));
+                ResetBrakesOff = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, ResetBrakesOffRect);
+                ResetBrakesOn = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, ResetBrakesOnRect);
 
-                ResetBrakesOff = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsResetBrakesOff32.png"));
-                ResetBrakesOn = SharedTextureManager.Get(Owner.Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Owner.Viewer.ContentPath, "TrainOperationsResetBrakesOn32.png"));
+                PowerOn = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, PowerOnRect);
+                PowerOff = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, PowerOffRect);
+                PowerChanging = SharedTextureManager.Get(GraphicsDeviceRender, TrainOperationsPath, PowerChangingRect);
             }
-
             UpdateWindowSize();
         }
         private void UpdateWindowSize()
@@ -272,6 +328,11 @@ namespace Orts.Viewer3D.Popups
                 BrakeSystem brakeSystem = (trainCar as MSTSWagon).BrakeSystem;
                 MSTSLocomotive locomotive = trainCar as MSTSLocomotive;
                 MSTSWagon wagon = trainCar as MSTSWagon;
+
+                // reset AngleCockAPartiallyOpened
+                AngleCockAPartiallyOpened = Enumerable.Repeat(false, PlayerTrain.Cars.Count).ToList();
+                // reset AngleCockBPartiallyOpened
+                AngleCockBPartiallyOpened = Enumerable.Repeat(false, PlayerTrain.Cars.Count).ToList();
 
                 bool isElectricDieselLocomotive = (trainCar is MSTSElectricLocomotive) || (trainCar is MSTSDieselLocomotive);
 
@@ -434,6 +495,30 @@ namespace Orts.Viewer3D.Popups
                     UpdateWindowSize();
                     TrainCarOperationsChanged = true;
                 }
+
+                for (var position = 0 ; position < Owner.Viewer.PlayerTrain.Cars.Count; position++)
+                {
+                    if (trainCarOperations.WarningCarPosition[position])
+                    {
+                        var carAngleCockAOpenAmount = Owner.Viewer.PlayerTrain.Cars[position].BrakeSystem.AngleCockAOpenAmount;
+                        var carAngleCockBOpenAmount = Owner.Viewer.PlayerTrain.Cars[position].BrakeSystem.AngleCockBOpenAmount;
+                        if (carAngleCockAOpenAmount >= 1 && AngleCockAPartiallyOpened[position])
+                        {
+                            AngleCockAPartiallyOpened[position] = false;
+                            Layout();
+                            TrainCarOperationsChanged = true;
+                        }
+                        if (carAngleCockBOpenAmount >= 1 && AngleCockBPartiallyOpened[position])
+                        {
+                            AngleCockBPartiallyOpened[position] = false;
+                            Layout();
+                            TrainCarOperationsChanged = true;
+                        }
+                        AngleCockAPartiallyOpened[position] = carAngleCockAOpenAmount < 1 && carAngleCockAOpenAmount > 0;
+                        AngleCockBPartiallyOpened[position] = carAngleCockBOpenAmount < 1 && carAngleCockBOpenAmount > 0;
+                    }
+                }
+
                 //required by traincarwindow to ModifyWindowSize()
                 windowHeight = Vbox != null ? Vbox.Position.Height : 0;
             }
@@ -730,7 +815,7 @@ namespace Orts.Viewer3D.Popups
             readonly TrainCarOperationsViewerWindow TrainCarViewer;
             readonly int CarPosition;
             readonly bool First;
-
+            readonly float carAngleCockAOpenAmount;
             public buttonFrontAngleCock(int x, int y, int size, Viewer viewer, TrainCar car, int carPosition)
                 : base(x, y, size, size)
             {
@@ -738,7 +823,12 @@ namespace Orts.Viewer3D.Popups
                 TrainCarViewer = Viewer.TrainCarOperationsViewerWindow;
                 CarPosition = carPosition;
                 First = car == Viewer.PlayerTrain.Cars.First();
-                Texture = First ? FrontAngleCockClosed : (viewer.PlayerTrain.Cars[carPosition] as MSTSWagon).BrakeSystem.AngleCockAOpen ? FrontAngleCockOpened : FrontAngleCockClosed;
+                var carAngleCockAOpenAmount = Viewer.PlayerTrain.Cars[CarPosition].BrakeSystem.AngleCockAOpenAmount;
+
+                Texture = First ? FrontAngleCockClosed
+                    : carAngleCockAOpenAmount >= 1 ? FrontAngleCockOpened
+                    : carAngleCockAOpenAmount <= 0 ? FrontAngleCockClosed
+                    : FrontAngleCockPartial;
                 Source = new Rectangle(0, 0, size, size);
                 Click += new Action<Control, Point>(buttonFrontAngleCock_Click);
             }
@@ -748,7 +838,9 @@ namespace Orts.Viewer3D.Popups
                 if (First) return;
 
                 new ToggleAngleCockACommand(Viewer.Log, (Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon), !(Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon).BrakeSystem.AngleCockAOpen);
-                if ((Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon).BrakeSystem.AngleCockAOpen)
+                var carAngleCockAOpenAmount = Viewer.PlayerTrain.Cars[CarPosition].BrakeSystem.AngleCockAOpenAmount;
+
+                if ((Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon).BrakeSystem.AngleCockAOpen && carAngleCockAOpenAmount >= 1)
                 {
                     Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Front angle cock opened"));
                     Texture = FrontAngleCockOpened;
@@ -767,7 +859,6 @@ namespace Orts.Viewer3D.Popups
             readonly TrainCarOperationsViewerWindow TrainCarViewer;
             readonly int CarPosition;
             readonly bool Last;
-
             public buttonRearAngleCock(int x, int y, int size, Viewer viewer, TrainCar car, int carPosition)
                 : base(x, y, size, size)
             {
@@ -775,8 +866,15 @@ namespace Orts.Viewer3D.Popups
                 TrainCarViewer = Viewer.TrainCarOperationsViewerWindow;
                 CarPosition = carPosition;
                 Last = car == Viewer.PlayerTrain.Cars.Last();
-                Texture = Last ? RearAngleCockClosed : (viewer.PlayerTrain.Cars[carPosition] as MSTSWagon).BrakeSystem.AngleCockBOpen ? RearAngleCockOpened : RearAngleCockClosed;
+                var carAngleCockBOpenAmount = (viewer.PlayerTrain.Cars[carPosition] as MSTSWagon).BrakeSystem.AngleCockBOpenAmount;
+
+                Texture = Last ? RearAngleCockClosed
+                    : carAngleCockBOpenAmount >= 1 ? RearAngleCockOpened
+                    : carAngleCockBOpenAmount <= 0 ? RearAngleCockClosed
+                    : RearAngleCockPartial;
+
                 Source = new Rectangle(0, 0, size, size);
+
                 Click += new Action<Control, Point>(buttonRearAngleCock_Click);
             }
 
@@ -785,7 +883,9 @@ namespace Orts.Viewer3D.Popups
                 if (Last) return;
 
                 new ToggleAngleCockBCommand(Viewer.Log, (Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon), !(Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon).BrakeSystem.AngleCockBOpen);
-                if ((Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon).BrakeSystem.AngleCockBOpen)
+                var carAngleCockBOpenAmount = (Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon).BrakeSystem.AngleCockBOpenAmount; 
+                
+                if ((Viewer.PlayerTrain.Cars[CarPosition] as MSTSWagon).BrakeSystem.AngleCockBOpen && carAngleCockBOpenAmount >= 1)
                 {
                     Viewer.Simulator.Confirmer.Information(Viewer.Catalog.GetString("Rear angle cock opened"));
                     Texture = RearAngleCockOpened;
