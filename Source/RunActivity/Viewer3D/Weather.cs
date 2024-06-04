@@ -233,8 +233,8 @@ namespace Orts.Viewer3D
             {
                 // Adjust instantaneous wind speed and direction
                 var noisePos = (float)Viewer.Simulator.ClockTime / WindNoiseScale;
-                Weather.WindInstantaneousDirectionRad = Weather.WindAverageDirectionRad + WindInstantaneousDirectionLimitRad * Noise.Generate(WindInstantaneousDirectionNoiseStart + noisePos);
-                Weather.WindInstantaneousSpeedMpS = Math.Max(0, Weather.WindAverageSpeedMpS + WindInstantaneousSpeedLimit * Noise.Generate(WindInstantaneousSpeedNoiseStart + noisePos));
+                Weather.WindInstantaneousDirectionRad = Weather.WindAverageDirectionRad + WindInstantaneousDirectionLimitRad * Noise.Generate(WindInstantaneousDirectionNoiseStart + noisePos) * Program.Simulator.Settings.WindVariability / 100;
+                Weather.WindInstantaneousSpeedMpS = Math.Max(0, Weather.WindAverageSpeedMpS + WindInstantaneousSpeedLimit * Noise.Generate(WindInstantaneousSpeedNoiseStart + noisePos) * Program.Simulator.Settings.WindVariability / 100);
 
                 // Reset wind gust timer
                 WindUpdateTimer -= WindGustUpdateTimeS;

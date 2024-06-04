@@ -135,6 +135,7 @@ namespace ORTS
                 trackAdhesionFactorChange.BackColor = BackColor;
                 trackDayAmbientLight.BackColor = BackColor;
                 trackLODBias.BackColor = BackColor;
+                trackWindVariability.BackColor = BackColor;
             }
 
             // General tab
@@ -357,6 +358,7 @@ namespace ORTS
             precipitationBoxHeight.Value = Settings.PrecipitationBoxHeight;
             precipitationBoxWidth.Value = Settings.PrecipitationBoxWidth;
             precipitationBoxLength.Value = Settings.PrecipitationBoxLength;
+            trackWindVariability.Value = Settings.WindVariability;
         }
 
 /*
@@ -574,6 +576,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             Settings.PrecipitationBoxHeight = (int)precipitationBoxHeight.Value;
             Settings.PrecipitationBoxWidth = (int)precipitationBoxWidth.Value;
             Settings.PrecipitationBoxLength = (int)precipitationBoxLength.Value;
+            Settings.WindVariability = (int)trackWindVariability.Value;
 
             Settings.Save();
         }
@@ -705,6 +708,11 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                 labelDefaultDetail.Text = catalog.GetStringFmt("More detail (+{0}%)", trackLODBias.Value);
             else
                 labelDefaultDetail.Text = catalog.GetStringFmt("All detail (+{0}%)", trackLODBias.Value);
+        }
+
+        private void trackWindVariability_ValueChanged(object sender, EventArgs e)
+        {
+            windVariabilityValueLabel.Text = trackWindVariability.Value.ToString() + "%";
         }
 
         private void dataGridViewContent_SelectionChanged(object sender, EventArgs e)

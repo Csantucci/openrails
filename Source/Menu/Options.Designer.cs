@@ -251,6 +251,9 @@
             this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
             this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
+            this.trackWindVariability = new System.Windows.Forms.TrackBar();
+            this.windVariabilityValueLabel = new System.Windows.Forms.Label();
+            this.label29 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceContent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
@@ -331,6 +334,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOK
@@ -1922,6 +1926,40 @@
             this.checkVerboseConfigurationMessages.Text = "Verbose ENG/WAG configuration messages";
             this.checkVerboseConfigurationMessages.UseVisualStyleBackColor = true;
             // 
+            // WindVariabilityValueLabel
+            // 
+            this.windVariabilityValueLabel.Location = new System.Drawing.Point(301, 309);
+            this.windVariabilityValueLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.windVariabilityValueLabel.Name = "WindVariabilityValueLabel";
+            this.windVariabilityValueLabel.Size = new System.Drawing.Size(292, 13);
+            this.windVariabilityValueLabel.TabIndex = 31;
+            this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // trackWindVariability
+            // 
+            this.trackWindVariability.AutoSize = false;
+            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
+            this.trackWindVariability.LargeChange = 10;
+            this.trackWindVariability.Location = new System.Drawing.Point(301, 328);
+            this.trackWindVariability.Maximum = 100;
+            this.trackWindVariability.Name = "trackWindVariability";
+            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
+            this.trackWindVariability.TabIndex = 32;
+            this.trackWindVariability.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
+            this.trackWindVariability.Value = 10;
+            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(301, 309);
+            this.label29.Margin = new System.Windows.Forms.Padding(3);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(161, 13);
+            this.label29.TabIndex = 30;
+            this.label29.Text = "Wind variability:";
+            // 
             // tabPageRailDriver
             // 
             this.tabPageRailDriver.Controls.Add(this.btnRDSettingsExport);
@@ -2925,6 +2963,9 @@
             this.tabPageORNYMG.Controls.Add(this.checkRunAt32bit);
             this.tabPageORNYMG.Controls.Add(this.checkEnableWatchdog);
             this.tabPageORNYMG.Controls.Add(this.checkFastFullScreenAltTab);
+            this.tabPageORNYMG.Controls.Add(this.trackWindVariability);
+            this.tabPageORNYMG.Controls.Add(this.label29);
+            this.tabPageORNYMG.Controls.Add(this.windVariabilityValueLabel);
             this.tabPageORNYMG.Location = new System.Drawing.Point(4, 22);
             this.tabPageORNYMG.Name = "tabPageORNYMG";
             this.tabPageORNYMG.Padding = new System.Windows.Forms.Padding(3);
@@ -3217,6 +3258,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).EndInit();
             this.tabPageContent.ResumeLayout(false);
             this.tabPageContent.PerformLayout();
             this.groupBoxContent.ResumeLayout(false);
@@ -3494,5 +3536,8 @@
         private System.Windows.Forms.PictureBox pbControlConfirmations;
         private System.Windows.Forms.ComboBox comboControlConfirmations;
         private System.Windows.Forms.Label labelControlConfirmations;
+        private System.Windows.Forms.TrackBar trackWindVariability;
+        private System.Windows.Forms.Label windVariabilityValueLabel;
+        private System.Windows.Forms.Label label29;
     }
 }

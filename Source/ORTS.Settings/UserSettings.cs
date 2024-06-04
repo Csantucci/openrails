@@ -353,6 +353,10 @@ namespace ORTS.Settings
         [Default(0)]
         public int ActWeatherRandomizationLevel { get; set; }
 
+        //ORNYMG only settings
+        [Default(100)]
+        public int WindVariability { get; set; }
+
         // Hidden settings:
         [Default(0)]
         public int CarVibratingLevel { get; set; }
