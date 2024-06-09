@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.152
-May 2nd, 2024
+﻿Open Rails, NewYear version README - Rev.153
+June 9th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-944, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-992, 
 plus some of the features already present in the Unstable release.
 
 
@@ -61,6 +61,10 @@ This version includes some features not (yet) available in the Open Rails testin
 - Disable Polach adhesion, see here https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__305613 and following posts
 - Fix for https://bugs.launchpad.net/or/+bug/2057708 ORTSScreenPage parameter doesn't work for Dials
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/37911-timetable-crashing-for-no-reason/
+- Fix 3Dcab digits alignment, see https://www.elvastower.com/forums/index.php?/topic/24040-3d-cabs/page__view__findpost__p__307374
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/37948-or-timetable-error/page__view__findpost__p__307975
+- Fix bug of impossibility to clear signals in dispatcher window
+- Workaround for https://www.elvastower.com/forums/index.php?/topic/38038-crash-on-attaching-to-an-ai-train/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
@@ -71,24 +75,16 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Triple valve features vol.2 by SteelFill, see https://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__st__600__p__305027#entry305027 (PR #912)
   *- Train car operations UI window, by mbm-OR, see http://www.elvastower.com/forums/index.php?/topic/37062-proposal-f9-train-operations/page__view__findpost__p__301151 (PR #882)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
-  *- NEW: Add support for common circuit breaker variants, by cesarBLG (PR #929)
-  *- NEW: Add curve squeal to route, by steamer_CTN (PR #923)
-  *- NEW: Consolidated wind simulation, by James Ross (PR #799)
-  *- NEW: Add KM/HOUR/MIN to Cabview Units, by SteelFill (PR #939)
-- NEW: Fix ORNYMG only bug preventing player to command light state when in autopilot
-- NEW: Fix 3Dcab digits alignment, see https://www.elvastower.com/forums/index.php?/topic/24040-3d-cabs/page__view__findpost__p__307374
-- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/37948-or-timetable-error/page__view__findpost__p__307975
-- NEW: Fix bug of impossibility to clear signals in dispatcher window
-
- 
-
-
-
-
+  *- Add curve squeal to route, by steamer_CTN (PR #923)
+  *- Consolidated wind simulation, by James Ross (PR #799)
+  *- NEW: Fix .ace Textures Not Being Used as Fallback for Missing .dds, by SteelFill (PR #947)
+  *- NEW: Fix Cycling Lights, by SteelFill (PR #948)
+  *- NEW: Avoid pulsing graphics part 1, by James Ross, see https://www.elvastower.com/forums/index.php?/topic/37592-lags-by-mg-with-route-24-gb/ (PR #952)
+- NEW: Conditionally correct invalid values of TrainPipeLeakRate and Auxiliary Reservoir Volume
+- NEW: Add slider to set wind variability in ORNYMG only options
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
-
 
 The Monogame related code intentionally coincides only partly with the code of the OR official testing version.
 
