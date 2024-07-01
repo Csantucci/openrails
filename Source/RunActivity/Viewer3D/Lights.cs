@@ -279,16 +279,16 @@ namespace Orts.Viewer3D
 			Debug.Assert(Viewer.PlayerTrain.LeadLocomotive == Viewer.PlayerLocomotive ||Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING ||
 				Viewer.PlayerTrain.Autopilot ||
                 Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.REMOTE || Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.STATIC, "PlayerTrain.LeadLocomotive must be PlayerLocomotive.");
-			var leadLocomotiveCar = Car.Train?.LeadLocomotive;
-            if (leadLocomotiveCar == null && Car.Train?.Cars[0] is MSTSLocomotive) // AI trains have no lead locomotive
-                leadLocomotiveCar = Car.Train.Cars[0];
+			var leadLocomotiveCar = Car.Train != null && Car.Train.IsActualPlayerTrain ? Viewer.PlayerLocomotive : null;
+            if (leadLocomotiveCar == null && Car.Train != null && Car.Train.TrainType == Train.TRAINTYPE.REMOTE && Car is MSTSLocomotive && (Car as MSTSLocomotive) == Car.Train.LeadLocomotive)
+                leadLocomotiveCar = Car.Train.LeadLocomotive;
 			var leadLocomotive = leadLocomotiveCar as MSTSLocomotive;
 
             // There are a lot of conditions now! IgnoredConditions[] stores which conditions are ignored, allowing shortcutting of many of these calculations
             // Should prevent some unneeded computation, but is a little messy. May revise in the future
             
             // Headlight
-			int newTrainHeadlight = !Car.Lights.IgnoredConditions[0] ? (Car.Train?.TrainType != Train.TRAINTYPE.STATIC ? (leadLocomotiveCar != null ? leadLocomotiveCar.Headlight : 2) : 0) : 0;
+			int newTrainHeadlight = leadLocomotiveCar != null ? leadLocomotiveCar.Headlight : Car.Train != null && Car.Train.TrainType != Train.TRAINTYPE.STATIC ? 2 : 0;
             // Unit
             bool locomotiveFlipped = leadLocomotiveCar != null && leadLocomotiveCar.Flipped;
             bool locomotiveReverseCab = leadLocomotive != null && leadLocomotive.UsingRearCab;
