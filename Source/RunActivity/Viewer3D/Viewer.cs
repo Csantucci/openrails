@@ -111,7 +111,6 @@ namespace Orts.Viewer3D
         public TTDetachWindow TTDetachWindow { get; private set; } // for detaching player train in timetable mode
         public EOTListWindow EOTListWindow { get; private set; } // to select EOT
         public ControlRectangle ControlRectangle { get; private set; } // to display the control rectangles
-
         private OutOfFocusWindow OutOfFocusWindow; // to show colored rectangle around the main window when not in focus
 
         // Route Information

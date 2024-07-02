@@ -776,6 +776,15 @@ namespace Orts.Viewer3D.RollingStock.Subsystems.ETCS
             CabShaderControlView.SpriteBatch.End();
             CabShaderControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
         }
+
+        public Rectangle DestinationRectangleGet()
+        {
+            return DrawPosition;
+        }
+        public bool isMouseControl()
+        {
+            return true;
+        }
     }
     public class DriverMachineInterfaceRenderer : CabViewControlRenderer, ICabViewMouseControlRenderer
     {
@@ -887,6 +896,14 @@ namespace Orts.Viewer3D.RollingStock.Subsystems.ETCS
             Viewer = viewer;
             TrainCarShape = trainCarShape;
             XNAMatrix = TrainCarShape.SharedShape.Matrices[iMatrix];
+        }
+        public Rectangle DestinationRectangleGet()
+        {
+            return DrawPosition;
+        }
+        public bool isMouseControl()
+        {
+            return true;
         }
     }
 }
