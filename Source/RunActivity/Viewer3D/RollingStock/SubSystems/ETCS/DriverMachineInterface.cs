@@ -897,13 +897,5 @@ namespace Orts.Viewer3D.RollingStock.Subsystems.ETCS
             TrainCarShape = trainCarShape;
             XNAMatrix = TrainCarShape.SharedShape.Matrices[iMatrix];
         }
-        public Rectangle DestinationRectangleGet()
-        {
-            return DrawPosition;
-        }
-        public bool isMouseControl()
-        {
-            return true;
-        }
     }
 }
