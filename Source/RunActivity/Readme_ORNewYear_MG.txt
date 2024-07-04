@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.153
-June 9th, 2024
+﻿Open Rails, NewYear version README - Rev.154
+July 3rd, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-992, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1004, 
 plus some of the features already present in the Unstable release.
 
 
@@ -56,7 +56,6 @@ This version includes some features not (yet) available in the Open Rails testin
 - Tentative (ORNYMG only?) bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__302440
 - (signalling) No speed update parameter, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37573-proposed-new-signal-aspect-parameter-or-nospeedupdate/page__view__findpost__p__302320
 - (timetables) Many options to define power related features, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__293894
-- Improvements to display features on web clients, by mbm_OR 
 - Timetable: autopilot, player train switching, open/close doors on AI trains and some minor extra features, see https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/
 - Disable Polach adhesion, see here https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__305613 and following posts
 - Fix for https://bugs.launchpad.net/or/+bug/2057708 ORTSScreenPage parameter doesn't work for Dials
@@ -65,6 +64,8 @@ This version includes some features not (yet) available in the Open Rails testin
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/37948-or-timetable-error/page__view__findpost__p__307975
 - Fix bug of impossibility to clear signals in dispatcher window
 - Workaround for https://www.elvastower.com/forums/index.php?/topic/38038-crash-on-attaching-to-an-ai-train/
+- Conditionally correct invalid values of TrainPipeLeakRate and Auxiliary Reservoir Volume
+- Add slider to set wind variability in ORNYMG only options
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
@@ -77,11 +78,13 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
   *- Add curve squeal to route, by steamer_CTN (PR #923)
   *- Consolidated wind simulation, by James Ross (PR #799)
-  *- NEW: Fix .ace Textures Not Being Used as Fallback for Missing .dds, by SteelFill (PR #947)
-  *- NEW: Fix Cycling Lights, by SteelFill (PR #948)
-  *- NEW: Avoid pulsing graphics part 1, by James Ross, see https://www.elvastower.com/forums/index.php?/topic/37592-lags-by-mg-with-route-24-gb/ (PR #952)
-- NEW: Conditionally correct invalid values of TrainPipeLeakRate and Auxiliary Reservoir Volume
-- NEW: Add slider to set wind variability in ORNYMG only options
+  *- NEW: Avoid pulsing graphics part 2, by James Ross, see https://www.elvastower.com/forums/index.php?/topic/37592-lags-by-mg-with-route-24-gb/ (PR #952)
+  *- NEW: fix for French TCS scripts no more working, see https://www.elvastower.com/forums/index.php?/topic/38055-seranas-tcs-scripts-not-working-in-ornymg-after-rev-140/
+  *- NEW: dispatcher map settings saved, by sweiland (PR #956)
+  *- NEW: fix pantographs on unpowered cars, by cesarBLG (PR #962)
+- NEW: fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__309405
+- NEW: fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/
+- NEW: fix for https://www.elvastower.com/forums/index.php?/topic/38120-ai-train-lights-dont-commute-from-front-to-rear-and-vice-versa-at-reversal-points/
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
