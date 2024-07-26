@@ -1890,13 +1890,12 @@ namespace Orts.Simulation.AIs
                     thisStation.ActualArrival = presentTime;
                     var stopTime = thisStation.CalculateDepartTime(presentTime, this);
                     actualdepart = thisStation.ActualDepart;
-                    DoorOpenTimer = 4.0f;
-                    DoorCloseTimer = stopTime - 10.0f;
-                    if (PreUpdate) DoorCloseTimer -= 10;
+                    DoorOpenTimer = PreUpdate ? 0 : 4;
+                    DoorCloseTimer = PreUpdate ? stopTime - 20 : stopTime - 10.0f;
                     if (DoorCloseTimer - 6 < DoorOpenTimer)
                     {
                         DoorOpenTimer = 0;
-                        DoorCloseTimer = stopTime - 3;
+                        DoorCloseTimer = Math.Max (stopTime - 3, 0);
                     }
 
 #if DEBUG_REPORTS
@@ -1926,7 +1925,7 @@ namespace Orts.Simulation.AIs
                     if (!IsFreight && Simulator.OpenDoorsInAITrains)
                     {
                         var frontIsFront = thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
-                        if (DoorOpenTimer > 0)
+                        if (DoorOpenTimer >= 0)
                         {
                             DoorOpenTimer -= elapsedClockSeconds;
                             if (DoorOpenTimer < 0)
@@ -1943,19 +1942,19 @@ namespace Orts.Simulation.AIs
                                 }
                             }
                         }
-                        if (DoorCloseTimer > 0)
+                        if (DoorCloseTimer >= 0)
                         {
                             DoorCloseTimer -= elapsedClockSeconds;
                             if (DoorCloseTimer < 0)
                             {
                                 if (thisStation.PlatformItem.PlatformSide[0])
                                 {
-                                    // Open left doors
+                                    // Close left doors
                                     SetDoors(frontIsFront ? DoorSide.Right : DoorSide.Left, false);
                                 }
                                 if (thisStation.PlatformItem.PlatformSide[1])
                                 {
-                                    // Open right doors
+                                    // Close right doors
                                     SetDoors(frontIsFront ? DoorSide.Left : DoorSide.Right, false);
                                 }
                             }

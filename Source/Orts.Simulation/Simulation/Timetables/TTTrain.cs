@@ -3635,7 +3635,7 @@ namespace Orts.Simulation.Timetables
                     TCRouteElement statRouteElement = ValidRoute[0][thisStation.RouteIndex];
                     var frontIsFront = statRouteElement.Direction == 1 ^ thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
  //                   var frontIsFront = thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
-                    if (DoorOpenTimer > 0)
+                    if (DoorOpenTimer >= 0)
                     {
                         DoorOpenTimer -= elapsedClockSeconds;
                         if (DoorOpenTimer < 0)
@@ -3652,7 +3652,7 @@ namespace Orts.Simulation.Timetables
                             }
                         }
                     }
-                    if (DoorCloseTimer > 0)
+                    if (DoorCloseTimer >= 0)
                     {
                         DoorCloseTimer -= elapsedClockSeconds;
                         if (DoorCloseTimer < 0)
