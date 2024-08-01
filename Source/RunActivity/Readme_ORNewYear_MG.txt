@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.154
-July 3rd, 2024
+﻿Open Rails, NewYear version README - Rev.155
+August 1st, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1004, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1083, 
 plus some of the features already present in the Unstable release.
 
 
@@ -66,6 +66,8 @@ This version includes some features not (yet) available in the Open Rails testin
 - Workaround for https://www.elvastower.com/forums/index.php?/topic/38038-crash-on-attaching-to-an-ai-train/
 - Conditionally correct invalid values of TrainPipeLeakRate and Auxiliary Reservoir Volume
 - Add slider to set wind variability in ORNYMG only options
+- fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__309405
+- fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
@@ -73,18 +75,16 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Auto-save, by roeter, see https://www.elvastower.com/forums/index.php?/topic/35870-auto-save/page__view__findpost__p__280206 (PR #891)
   *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
   *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
-  *- Triple valve features vol.2 by SteelFill, see https://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__st__600__p__305027#entry305027 (PR #912)
   *- Train car operations UI window, by mbm-OR, see http://www.elvastower.com/forums/index.php?/topic/37062-proposal-f9-train-operations/page__view__findpost__p__301151 (PR #882)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
   *- Add curve squeal to route, by steamer_CTN (PR #923)
   *- Consolidated wind simulation, by James Ross (PR #799)
-  *- NEW: Avoid pulsing graphics part 2, by James Ross, see https://www.elvastower.com/forums/index.php?/topic/37592-lags-by-mg-with-route-24-gb/ (PR #952)
-  *- NEW: fix for French TCS scripts no more working, see https://www.elvastower.com/forums/index.php?/topic/38055-seranas-tcs-scripts-not-working-in-ornymg-after-rev-140/
-  *- NEW: dispatcher map settings saved, by sweiland (PR #956)
-  *- NEW: fix pantographs on unpowered cars, by cesarBLG (PR #962)
-- NEW: fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__309405
-- NEW: fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/
-- NEW: fix for https://www.elvastower.com/forums/index.php?/topic/38120-ai-train-lights-dont-commute-from-front-to-rear-and-vice-versa-at-reversal-points/
+  *- Avoid pulsing graphics part 2, by James Ross, see https://www.elvastower.com/forums/index.php?/topic/37592-lags-by-mg-with-route-24-gb/ (PR #952)
+  *- fix pantographs on unpowered cars, by cesarBLG (PR #962)
+  *- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/29798-openclose-doors-in-ai-trains/page__view__findpost__p__310272 AI train starts with open doors
+  *- NEW: Fix Trackviewer crash on big zoom value  (master PR  #959 by Fred-si)
+  *- NEW: Fix Lights Crash on Corrupt Shapes (PR #953 by steelfill)  
+
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
