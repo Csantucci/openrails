@@ -3629,7 +3629,7 @@ namespace Orts.Simulation.Timetables
 #endif
                 }
 
-                if (!IsFreight && Simulator.OpenDoorsInAITrains)
+                if (!IsFreight && Simulator.OpenDoorsInAITrains && thisStation.RouteIndex >= 0 && ValidRoute[0].Count >  thisStation.RouteIndex)
                 {
                     // door management
                     TCRouteElement statRouteElement = ValidRoute[0][thisStation.RouteIndex];
