@@ -75,6 +75,9 @@
             this.btnRDReset = new System.Windows.Forms.Button();
             this.btnCheck = new System.Windows.Forms.Button();
             this.btnRDSettingsExport = new System.Windows.Forms.Button();
+            this.buttonCheckKeys = new System.Windows.Forms.Button();
+            this.buttonDefaultKeys = new System.Windows.Forms.Button();
+            this.buttonExport = new System.Windows.Forms.Button();
             this.numericDistantMountainsViewingDistance = new System.Windows.Forms.NumericUpDown();
             this.trackDayAmbientLight = new System.Windows.Forms.TrackBar();
             this.trackAntiAliasing = new System.Windows.Forms.TrackBar();
