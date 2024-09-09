@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1083, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1192, 
 plus some of the features already present in the Unstable release.
 
 
