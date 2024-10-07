@@ -27,6 +27,7 @@ using System.Windows.Forms;
 using GNU.Gettext;
 using GNU.Gettext.WinForms;
 using MSTS;
+using ORTS.Common;
 using ORTS.Common.Input;
 using ORTS.Settings;
 using ORTS.Updater;
@@ -88,7 +89,7 @@ namespace ORTS
             // Collect all the available language codes by searching for
             // localisation files, but always include English (base language).
             var languageCodes = new List<string> { "en" };
-            foreach (var path in Directory.GetDirectories(Path.GetDirectoryName(Application.ExecutablePath)))
+            foreach (var path in Directory.GetDirectories(ApplicationInfo.ProcessDirectory))
                 if (Directory.GetFiles(path, "*.Messages.resources.dll").Length > 0)
                     languageCodes.Add(Path.GetFileName(path));
 
@@ -754,6 +755,11 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
 
         private void buttonContentDelete_Click(object sender, EventArgs e)
         {
+            DeleteContent();
+        }
+
+        private void DeleteContent()
+        {
             bindingSourceContent.RemoveCurrent();
             // ResetBindings() is to work around a bug in the binding and/or data grid where by deleting the bottom item doesn't show the selection moving to the new bottom item.
             bindingSourceContent.ResetBindings(false);
@@ -792,7 +798,19 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             var current = bindingSourceContent.Current as ContentFolder;
             if (current != null && current.Name != textBoxContentName.Text)
             {
-                // Duplicate names lead to an exception, so append " copy" if not unique
+                if (current.Path.ToLower().Contains(ApplicationInfo.ProcessDirectory.ToLower()))
+                {
+                    // Block added because a succesful Update operation will empty the Open Rails folder and lose any content stored within it.
+                    MessageBox.Show(catalog.GetString
+                        ($"Cannot use content from any folder which lies inside the Open Rails folder {ApplicationInfo.ProcessDirectory}\n\n")
+                        , "Invalid content location"
+                        , MessageBoxButtons.OK
+                        , MessageBoxIcon.Error);
+                    DeleteContent();
+                    return;
+                }
+
+                // Duplicate names lead to an exception, so append " copy" repeatedly until no longer unique
                 var suffix = "";
                 var isNameUnique = true;
                 while (isNameUnique)

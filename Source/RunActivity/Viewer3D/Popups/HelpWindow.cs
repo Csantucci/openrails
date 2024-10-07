@@ -659,7 +659,7 @@ namespace Orts.Viewer3D.Popups
                             if (logFileName.Length > 0)
                                 consolewltext("Debrief file = " + logFileName);
 
-                            consolewltext("Executable   = " + Path.GetFileName(Application.ExecutablePath));
+                            consolewltext("Executable   = " + Path.GetFileName(ApplicationInfo.ProcessFile));
                             LogSeparator(80);
                             line.AddHorizontalSeparator();
 

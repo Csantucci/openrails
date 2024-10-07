@@ -78,8 +78,8 @@ namespace ORTS
         {
             get
             {
-                var programNormal = System.IO.Path.Combine(Application.StartupPath, "RunActivity.exe");
-                var program32 = System.IO.Path.Combine(Application.StartupPath, "RunActivity32.exe");
+                var programNormal = System.IO.Path.Combine(ApplicationInfo.ProcessDirectory, "RunActivity.exe");
+                var program32 = System.IO.Path.Combine(ApplicationInfo.ProcessDirectory, "RunActivity32.exe");
                 if (Settings.RunAt32bit && File.Exists(program32))
                     return program32;
                 return programNormal;
@@ -132,7 +132,7 @@ namespace ORTS
             panelModeTimetable.Location = panelModeActivity.Location;
             ShowDetails();
             UpdateEnabled();
-            UpdateManager = new UpdateManager(System.IO.Path.GetDirectoryName(Application.ExecutablePath), Application.ProductName, VersionInfo.VersionOrBuild);
+            UpdateManager = new UpdateManager(ApplicationInfo.ProcessDirectory, Application.ProductName, VersionInfo.VersionOrBuild);
             ElevationIcon = new Icon(SystemIcons.Shield, SystemInformation.SmallIconSize).ToBitmap();
         }
 
@@ -192,7 +192,7 @@ namespace ORTS
                     "Updater.exe",
                 };
                 var tools = new List<ToolStripItem>();
-                foreach (var executable in Directory.GetFiles(System.IO.Path.GetDirectoryName(Application.ExecutablePath), "*.exe"))
+                foreach (var executable in Directory.GetFiles(ApplicationInfo.ProcessDirectory, "*.exe"))
                 {
                     // Don't show any of the core parts of the application.
                     if (coreExecutables.Contains(System.IO.Path.GetFileName(executable)))
@@ -353,7 +353,7 @@ namespace ORTS
 
         void RestartMenu()
         {
-            Process.Start(Application.ExecutablePath);
+            Process.Start(ApplicationInfo.ProcessFile);
             Close();
         }
         #endregion
