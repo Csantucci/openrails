@@ -197,11 +197,11 @@ namespace Orts.Viewer3D
         }
 
         // IndexBuffer for 32bit process.
-        static IndexBuffer InitIndexBuffer(GraphicsDevice graphicsDevice, int numIndicies)
+        static IndexBuffer InitIndexBuffer(GraphicsDevice graphicsDevice, int numIndices)
         {
-            var indices = new uint[numIndicies];
+            var indices = new uint[numIndices];
             var index = 0;
-            for (var i = 0; i < numIndicies; i += IndicesPerParticle)
+            for (var i = 0; i < numIndices; i += IndicesPerParticle)
             {
                 indices[i] = (uint)index;
                 indices[i + 1] = (uint)(index + 1);
@@ -213,16 +213,16 @@ namespace Orts.Viewer3D
 
                 index += VerticiesPerParticle;
             }
-            var indexBuffer = new IndexBuffer(graphicsDevice, typeof(uint), numIndicies, BufferUsage.WriteOnly);
+            var indexBuffer = new IndexBuffer(graphicsDevice, typeof(uint), numIndices, BufferUsage.WriteOnly);
             indexBuffer.SetData(indices);
             return indexBuffer;
         }
         // IndexBuffer for computers that still use 16bit graphics.
-        static IndexBuffer InitIndexBuffer16(GraphicsDevice graphicsDevice, int numIndicies)
+        static IndexBuffer InitIndexBuffer16(GraphicsDevice graphicsDevice, int numIndices)
         {
-            var indices = new ushort[numIndicies];
+            var indices = new ushort[numIndices];
             var index = 0;
-            for (var i = 0; i < numIndicies; i += IndicesPerParticle)
+            for (var i = 0; i < numIndices; i += IndicesPerParticle)
             {
                 indices[i] = (ushort)index;
                 indices[i + 1] = (ushort)(index + 1);
@@ -234,7 +234,7 @@ namespace Orts.Viewer3D
 
                 index += VerticiesPerParticle;
             }
-            var indexBuffer = new IndexBuffer(graphicsDevice, typeof(ushort), numIndicies, BufferUsage.WriteOnly);
+            var indexBuffer = new IndexBuffer(graphicsDevice, typeof(ushort), numIndices, BufferUsage.WriteOnly);
             indexBuffer.SetData(indices);
             return indexBuffer;
         }
