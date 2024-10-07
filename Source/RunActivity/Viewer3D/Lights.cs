@@ -105,6 +105,8 @@ namespace Orts.Viewer3D
                             LightPrimitives.Add(new LightGlowPrimitive(this, Viewer.RenderProcess, light));
                             if (light.Graphic != null)
                                 (LightPrimitives.Last() as LightGlowPrimitive).SpecificGlowMaterial = viewer.MaterialManager.Load("LightGlow", DefineFullTexturePath(light.Graphic));
+                            else
+                                (LightPrimitives.Last() as LightGlowPrimitive).SpecificGlowMaterial = LightGlowMaterial;
                             break;
                         case LightType.Cone:
                             LightPrimitives.Add(new LightConePrimitive(this, Viewer.RenderProcess, light));
@@ -232,9 +234,9 @@ namespace Orts.Viewer3D
                     if ((lightPrimitive.Enabled || lightPrimitive.FadeOut) && lightPrimitive is LightGlowPrimitive)
                     {
                         if (ShapeXNATranslations.TryGetValue(lightPrimitive.Light.ShapeIndex, out Matrix lightMatrix))
-                            frame.AddPrimitive(lightPrimitive.Light.Graphic != null ? (lightPrimitive as LightGlowPrimitive).SpecificGlowMaterial : LightGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref lightMatrix);
+                            frame.AddPrimitive((lightPrimitive as LightGlowPrimitive).SpecificGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref lightMatrix);
                         else
-                            frame.AddPrimitive(lightPrimitive.Light.Graphic != null ? (lightPrimitive as LightGlowPrimitive).SpecificGlowMaterial : LightGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref xnaDTileTranslation);
+                            frame.AddPrimitive((lightPrimitive as LightGlowPrimitive).SpecificGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref xnaDTileTranslation);
                     }
 
 #if DEBUG_LIGHT_CONE
