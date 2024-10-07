@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.156
-September 9th, 2024
+﻿Open Rails, NewYear version README - Rev.157
+October 8th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1192, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1294, 
 plus some of the features already present in the Unstable release.
 
 
@@ -55,18 +55,17 @@ This version includes some features not (yet) available in the Open Rails testin
 - Tentative (ORNYMG only?) bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__302440
 - (signalling) No speed update parameter, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37573-proposed-new-signal-aspect-parameter-or-nospeedupdate/page__view__findpost__p__302320
 - (timetables) Many options to define power related features, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__293894
-- Timetable: player train switching, open/close doors on AI trains and some minor extra features, see https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/
+- Timetable: open/close doors on AI trains and some minor extra features, see https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/
 - Disable Polach adhesion, see here https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__305613 and following posts
 - Fix for https://bugs.launchpad.net/or/+bug/2057708 ORTSScreenPage parameter doesn't work for Dials
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/37911-timetable-crashing-for-no-reason/
 - Fix 3Dcab digits alignment, see https://www.elvastower.com/forums/index.php?/topic/24040-3d-cabs/page__view__findpost__p__307374
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/37948-or-timetable-error/page__view__findpost__p__307975
-- Fix bug of impossibility to clear signals in dispatcher window
 - Workaround for https://www.elvastower.com/forums/index.php?/topic/38038-crash-on-attaching-to-an-ai-train/
 - Conditionally correct invalid values of TrainPipeLeakRate and Auxiliary Reservoir Volume
 - Add slider to set wind variability in ORNYMG only options
 - fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__309405
-- fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/
+- fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/ (ORNYMG only?)
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
@@ -75,14 +74,15 @@ This version includes some features not (yet) available in the Open Rails testin
   *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Consolidated wind simulation, by James Ross (PR #799)
   *- Avoid pulsing graphics part 2, by James Ross, see https://www.elvastower.com/forums/index.php?/topic/37592-lags-by-mg-with-route-24-gb/ (PR #952)
-  *- fix pantographs on unpowered cars, by cesarBLG (PR #962)
-  *- Bug fix for https://www.elvastower.com/forums/index.php?/topic/29798-openclose-doors-in-ai-trains/page__view__findpost__p__310272 AI train starts with open doors (PR #974)
-  *- Fix Trackviewer crash on big zoom value  (master PR  #959 by Fred-si)
   *- Fix Lights Crash on Corrupt Shapes (PR #953 by steelfill)
-  *- NEW: merge Downloading route content (Github, zip) second part branch, by sweiland (PR #980)
-- NEW: multiple lightglow types, see https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/   
+  *- Downloading route content (Github, zip) second part branch (only partial), by sweiland (PR #980)
+  *- Multiple lightglow types, see https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/  (PR #981) 
+  *- Player train switching for timetable mode (PR #984)
+  *- NEW: Web based Switch Panel enhancement: Alerter, by sweiland (PR #982)
+  *- NEW: Fix: The TrainCarOperations window does not resize correctly, by mbm_OR (PR #986)
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
+- NEW: Conditional sound, see https://www.elvastower.com/forums/index.php?/topic/37217-suggestion-sound-modifiers/page__view__findpost__p__311686
 
 
 Info about content of the various PR to the Unstable release can be found here
