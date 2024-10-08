@@ -320,7 +320,7 @@ namespace ORTS
             // Uses a custom Task class which pre-dates the System.Threading.Task but provides much the same features.
             new Task<UpdateManager>(this, () =>
             {
-                UpdateManager.Check();
+ //               UpdateManager.Check();
                 return null;
             }, _ =>
             {
