@@ -83,6 +83,8 @@ This version includes some features not (yet) available in the Open Rails testin
   *- NEW: Fix: The TrainCarOperations window does not resize correctly, by mbm_OR (PR #986)
 - NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
 - NEW: Conditional sound, see https://www.elvastower.com/forums/index.php?/topic/37217-suggestion-sound-modifiers/page__view__findpost__p__311686
+- NEW: ORNYMG download site now using https protocol
+- NEW: In the main window info about newer ORNYMG version may be found (derived from cjakeman's official OR code)
 
 
 Info about content of the various PR to the Unstable release can be found here
