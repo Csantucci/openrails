@@ -161,7 +161,7 @@ namespace ORTS
         }
 
         /// <summary>
-        /// Fetch the Notifications from http://www.interazioni-educative.it/public/ORNYMGmenu.json 
+        /// Fetch the Notifications from http://www.interazioni-educative.it/Downloads/ORNYMGmenu.json 
         /// This file is copied hourly from Github openrails/notifications/
         /// </summary>
         private string GetRemoteJson()
@@ -174,7 +174,7 @@ namespace ORTS
             // Helpful to supply server with data for its log file.
             client.Headers[HttpRequestHeader.UserAgent] = $"{System.Windows.Forms.Application.ProductName}/{VersionInfo.VersionOrBuild}";
 
-            return client.DownloadString(new Uri("http://www.interazioni-educative.it/public/ORNYMGmenu.json"));
+            return client.DownloadString(new Uri("http://www.interazioni-educative.it/Downloads/ORNYMGmenu.json"));
         }
 
         /// <summary>
