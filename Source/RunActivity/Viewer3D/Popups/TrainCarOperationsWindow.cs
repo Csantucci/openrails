@@ -570,6 +570,13 @@ namespace Orts.Viewer3D.Popups
                 var trainCarViewer = Owner.Viewer.TrainCarOperationsViewerWindow;
                 var carOperations = Owner.Viewer.CarOperationsWindow;
                 var trainCarWebpage = Owner.Viewer.TrainCarOperationsWebpage;
+                var currentCameraCarID = Owner.Viewer.FrontCamera.AttachedCar.CarID;
+                if (PlayerTrain != null && currentCameraCarID != trainCarViewer.CurrentCarID)
+                {
+                    trainCarViewer.CurrentCarID = currentCameraCarID;
+                    trainCarViewer.CarPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != currentCameraCarID).Count();
+                    CarPositionChanged = true;
+                }
 
                 trainCarViewer.TrainCarOperationsChanged = !trainCarViewer.Visible && trainCarViewer.TrainCarOperationsChanged ? false : trainCarViewer.TrainCarOperationsChanged;
 
