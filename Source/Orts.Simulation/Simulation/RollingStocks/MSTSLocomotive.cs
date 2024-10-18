@@ -5554,10 +5554,15 @@ namespace Orts.Simulation.RollingStocks
                             data = 0.0f;
                             if (Math.Abs(SpeedMpS) == 0.0f)
                                 data = 0.0f;
-                            else if (Math.Abs(FilteredTractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) > 0)
-                                data = Math.Abs(this.FilteredTractiveForceN);
-                            else if (Math.Abs(FilteredTractiveForceN) - Math.Abs(BrakeForceN + DynamicBrakeForceN) < 0)
+                            else if (DynamicBrakeForceN != 0)
                                 data = -Math.Abs(BrakeForceN + DynamicBrakeForceN);
+                            else if (Math.Abs(BrakeForceN) == 0)
+//                               data = FilteredTractiveForceN == 0 ? Math.Abs(TractiveForceN) : Math.Abs(FilteredTractiveForceN);
+                                data = Math.Abs(FilteredTractiveForceN);
+                            else if (Math.Abs(FilteredTractiveForceN) - Math.Abs(BrakeForceN) > 0)
+                                data = Math.Abs(FilteredTractiveForceN) - Math.Abs(BrakeForceN);
+                            else
+                                data = -Math.Abs(BrakeForceN) + Math.Abs(FilteredTractiveForceN);
                             switch (cvc.Units)
                             {
                                 case CABViewControlUnits.NEWTONS:
