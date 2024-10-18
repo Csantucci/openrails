@@ -570,12 +570,17 @@ namespace Orts.Viewer3D.Popups
                 var trainCarViewer = Owner.Viewer.TrainCarOperationsViewerWindow;
                 var carOperations = Owner.Viewer.CarOperationsWindow;
                 var trainCarWebpage = Owner.Viewer.TrainCarOperationsWebpage;
-                var currentCameraCarID = Owner.Viewer.FrontCamera.AttachedCar.CarID;
-                if (PlayerTrain != null && currentCameraCarID != trainCarViewer.CurrentCarID)
+
+                // Allows interaction with <Alt>+<PageDown> and <Alt>+<PageUP>.
+                if (Owner.Viewer.Camera.AttachedCar != null && !(Owner.Viewer.Camera is CabCamera) && (Owner.Viewer.Camera != Owner.Viewer.ThreeDimCabCamera) && (trainCarViewer.Visible || Visible))
                 {
-                    trainCarViewer.CurrentCarID = currentCameraCarID;
-                    trainCarViewer.CarPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != currentCameraCarID).Count();
-                    CarPositionChanged = true;
+                    var currentCameraCarID = Owner.Viewer.Camera.AttachedCar.CarID;
+                    if (PlayerTrain != null && (currentCameraCarID != trainCarViewer.CurrentCarID || CarPosition != trainCarViewer.CarPosition))
+                    {
+                        trainCarViewer.CurrentCarID = currentCameraCarID;
+                        trainCarViewer.CarPosition = CarPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != currentCameraCarID).Count();
+                        CarPositionChanged = true;
+                    }
                 }
 
                 trainCarViewer.TrainCarOperationsChanged = !trainCarViewer.Visible && trainCarViewer.TrainCarOperationsChanged ? false : trainCarViewer.TrainCarOperationsChanged;

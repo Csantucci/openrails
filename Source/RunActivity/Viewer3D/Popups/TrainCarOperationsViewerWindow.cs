@@ -92,6 +92,7 @@ namespace Orts.Viewer3D.Popups
         public int WindowHeightMax;
         public int WindowWidthMin;
         public int WindowWidthMax;
+        public bool SavedCabCamera;
         public int windowHeight { get; set; } //required by TrainCarWindow
         public int CarPosition
         {
@@ -159,6 +160,9 @@ namespace Orts.Viewer3D.Popups
 
             outf.Write(CarPosition);
             outf.Write(ResetAllSymbols);
+
+            var saveCabCamera = Owner.Viewer.Camera is CabCamera || Owner.Viewer.Camera == Owner.Viewer.ThreeDimCabCamera;
+            outf.Write(saveCabCamera);
         }
         protected internal override void Restore(BinaryReader inf)
         {
@@ -171,6 +175,7 @@ namespace Orts.Viewer3D.Popups
 
             CarPosition = inf.ReadInt32();
             ResetAllSymbols = inf.ReadBoolean();
+            SavedCabCamera = inf.ReadBoolean();
 
             // Display window
             SizeTo(LocationRestore.Width, LocationRestore.Height);
@@ -472,8 +477,12 @@ namespace Orts.Viewer3D.Popups
                 {
                     // Updates CarPosition
                     CarPosition = CouplerChanged ? NewCarPosition : CarPosition;
-                    
-                    if (OldCarPosition != CarPosition || (trainCarOperations.CarIdClicked && CarPosition == 0))
+
+                    if (SavedCabCamera)
+                    {
+                        SavedCabCamera = false;
+                    }
+                    else if (OldCarPosition != CarPosition || (trainCarOperations.CarIdClicked && CarPosition == 0))
                     {
                         Owner.Viewer.FrontCamera.Activate();
                     }
@@ -498,7 +507,7 @@ namespace Orts.Viewer3D.Popups
 
                 for (var position = 0 ; position < Owner.Viewer.PlayerTrain.Cars.Count; position++)
                 {
-                    if (trainCarOperations.WarningCarPosition[position])
+                    if (trainCarOperations.WarningCarPosition.Count > position && trainCarOperations.WarningCarPosition[position])
                     {
                         var carAngleCockAOpenAmount = Owner.Viewer.PlayerTrain.Cars[position].BrakeSystem.AngleCockAOpenAmount;
                         var carAngleCockBOpenAmount = Owner.Viewer.PlayerTrain.Cars[position].BrakeSystem.AngleCockBOpenAmount;
