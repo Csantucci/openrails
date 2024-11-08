@@ -1648,7 +1648,6 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("engine", ()=>{ WagonList.Add(new Wagon(stf)); }),
                 new STFReader.TokenProcessor("ortseot", ()=>{ WagonList.Add(new Wagon(stf)); }),
                 new STFReader.TokenProcessor("ortstraincontrolsystemparameters", () => TcsParametersFileName = stf.ReadStringBlock(null)),
-                new STFReader.TokenProcessor("ortseot", ()=>{ WagonList.Add(new Wagon(stf)); }),
             });
         }
     }
