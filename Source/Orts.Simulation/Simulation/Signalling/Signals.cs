@@ -567,8 +567,10 @@ namespace Orts.Simulation.Signalling
 
             if (foundSignals > 0)
             {
-                // loop through all signals
-                // update required part
+                // loop through all the signals, but only one batch of signals with every call to this method.
+                // update one batch of signals. Batch ends when time taken exceeds 1/20th of time for all signals.
+                // Processing 1/20th of signals in each batch gave a jerky result as processing time varies greatly.
+                // Smoother results now that equal time is given to each batch and let the batch size vary.
                 var updates = 0;
                 var updateStep = 0;
                 var targetTicks = Stopwatch.GetTimestamp() + UpdateTickTarget;
