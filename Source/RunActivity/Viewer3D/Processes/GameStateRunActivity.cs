@@ -438,9 +438,24 @@ namespace Orts.Viewer3D.Processes
                     outf.Write(Simulator.PlayerLocomotive.DistanceM + Popups.HelpWindow.DbfEvalDistanceTravelled);
                 }
             }
+            LogLocation();
         }
 
+
         /// <summary>
+        /// Append time and location to the log for potential use in an ACT file. E.g.:
+        /// "Location ( -6112 15146 78.15 -672.81 10 )"
+        /// </summary>
+        private static void LogLocation()
+        {
+            var t = Simulator.Trains[0].FrontTDBTraveller;
+            var location = $"Location ( {t.TileX} {t.TileZ} {t.X:F2} {t.Z:F2}";
+            location += $" 10 )"; // Matches location if within this 10 meter radius
+            var clockTime = FormatStrings.FormatTime(Simulator.ClockTime);
+            Console.WriteLine($"\nSave after {(int)Simulator.GameTime} secs at {clockTime}, EventCategoryLocation = {location}");
+        }        
+
+         /// <summary>
         /// Resume a saved game.
         /// </summary>
         void Resume(UserSettings settings, string[] args)
