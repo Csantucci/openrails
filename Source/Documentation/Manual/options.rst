@@ -562,7 +562,7 @@ The default setting is checked.
 
 
 At game start, Electric - power connected
------------------------------------
+-----------------------------------------
 
 When this option is checked, stationary electric locos start the simulation with power available.
 Uncheck this option for a more detailed behaviour in which the player has to switch on electrical equipment.
@@ -785,7 +785,7 @@ itself!) select the entry in the window, and click *Delete*, then *OK*
 to close the window. To modify an entry, use the *Change...* button to
 access the location and make the necessary changes.
 
-.. _options-updater:
+.. _options-system:
 
 Updater Options
 ===============

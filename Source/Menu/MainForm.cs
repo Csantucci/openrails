@@ -114,6 +114,8 @@ namespace ORTS
 
         GettextResourceManager catalog = new GettextResourceManager("Menu");
 
+        public string BaseDocumentationUrl;
+
         #region Main Form
         public MainForm()
         {
@@ -134,6 +136,16 @@ namespace ORTS
             UpdateEnabled();
             UpdateManager = new UpdateManager(ApplicationInfo.ProcessDirectory, Application.ProductName, VersionInfo.VersionOrBuild);
             ElevationIcon = new Icon(SystemIcons.Shield, SystemInformation.SmallIconSize).ToBitmap();
+
+            BaseDocumentationUrl = "https://open-rails.readthedocs.io/en/latest";
+            if (VersionInfo.Version.Length > 0)
+            {
+                if (VersionInfo.Version.StartsWith("T") || VersionInfo.Version.StartsWith("U"))
+                {
+                    BaseDocumentationUrl = "https://open-rails.readthedocs.io/en/unstable";
+                }
+            }
+ 
         }
 
         void MainForm_Shown(object sender, EventArgs e)
@@ -546,7 +558,7 @@ namespace ORTS
         {
             SaveOptions();
 
-            using (var form = new OptionsForm(Settings, UpdateManager, false))
+            using (var form = new OptionsForm(Settings, UpdateManager, BaseDocumentationUrl))
             {
                 switch (form.ShowDialog(this))
                 {
@@ -564,7 +576,7 @@ namespace ORTS
         
         void buttonDownloadContent_Click(object sender, EventArgs e)
         {
-            using (var form = new DownloadContentForm(Settings))
+            using (var form = new ContentForm(Settings, BaseDocumentationUrl))
             {
                 form.ShowDialog(this);
             }
@@ -753,7 +765,7 @@ namespace ORTS
 
                 if (!initialized && Folders.Count == 0)
                 {
-                    using (var form = new DownloadContentForm(Settings))
+                    using (var form = new ContentForm(Settings, BaseDocumentationUrl))
                     {
                         switch (form.ShowDialog(this))
                         {
