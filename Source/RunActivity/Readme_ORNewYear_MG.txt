@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.157
-October 8th, 2024
+﻿Open Rails, NewYear version README - Rev.158
+November 10th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1294, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1349, 
 plus some of the features already present in the Unstable release.
 
 
@@ -66,6 +66,8 @@ This version includes some features not (yet) available in the Open Rails testin
 - Add slider to set wind variability in ORNYMG only options
 - fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__309405
 - fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/ (ORNYMG only?)
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
+- In the main window info about newer ORNYMG version may be found (derived from cjakeman's official OR code)
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
@@ -74,17 +76,14 @@ This version includes some features not (yet) available in the Open Rails testin
   *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Avoid pulsing graphics part 2, by James Ross, see https://www.elvastower.com/forums/index.php?/topic/37592-lags-by-mg-with-route-24-gb/ (PR #952)
   *- Fix Lights Crash on Corrupt Shapes (PR #953 by steelfill)
-  *- Downloading route content (Github, zip) second part branch (only partial), by sweiland (PR #980)
   *- Multiple lightglow types, see https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/  (PR #981) 
-  *- Player train switching for timetable mode (PR #984)
-  *- NEW: Web based Switch Panel enhancement: Alerter, by sweiland (PR #982)
-  *- NEW: Fix: The TrainCarOperations window does not resize correctly, by mbm_OR (PR #986)
-- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
-- NEW: Conditional sound, see https://www.elvastower.com/forums/index.php?/topic/37217-suggestion-sound-modifiers/page__view__findpost__p__311686
-- NEW: ORNYMG download site now using https protocol
-- NEW: In the main window info about newer ORNYMG version may be found (derived from cjakeman's official OR code)
+  *- Player train switching for timetable mode (PR #984) (available in official testing release on November 15th)
+  *- NEW: Fix some bugs about camera management with F9 window, by mbm_OR (PR #991)
+  *- NEW: Replace dynamic brakes by engine brakes at low speeds, by cesar (PR #996)
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__312069
+- NEW: Fix for ORNYMG only bug (presence of EOT devices crashes program) https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__312069
+- NEW: Bug fix for chuffing in multiplayer, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/
 
 
 Info about content of the various PR to the Unstable release can be found here
