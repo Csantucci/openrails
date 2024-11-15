@@ -55,6 +55,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Launcher64", "Launcher64\La
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimulatorTester", "Contrib\SimulatorTester\SimulatorTester.csproj", "{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MultiPlayerServer", "MultiPlayerServer\MultiPlayerServer.csproj", "{A86A52C2-07B9-47A6-BCF4-622440E1A64E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -265,6 +267,14 @@ Global
 		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|Any CPU.Build.0 = Release|Any CPU
 		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|x64.ActiveCfg = Release|x64
 		{792B01A1-5C43-4FFA-A4C0-BBDC95A4A178}.Release|x64.Build.0 = Release|x64
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Debug|x64.Build.0 = Debug|Any CPU
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Release|x64.ActiveCfg = Release|Any CPU
+		{A86A52C2-07B9-47A6-BCF4-622440E1A64E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>net6-windows</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<Description>Open Rails Multiplayer Server</Description>
+		<AssemblyTitle>Open Rails MultiPlayer Server (forked)</AssemblyTitle>
+    <Product>Open Rails NewYear MG</Product>
+		<OutputPath>..\..\Program</OutputPath>
+		<ApplicationIcon>..\ORTS.ico</ApplicationIcon>
+		<RootNamespace>Orts.MultiPlayerServer</RootNamespace>
+		<LangVersion>10.0</LangVersion>
+</PropertyGroup>
+	<ItemGroup>
+		<PackageReference Include="System.IO.Pipelines" Version="6.0.522.21309" />
+		<PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+	</ItemGroup>
+</Project>
