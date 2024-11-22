@@ -1113,7 +1113,7 @@ namespace Orts.Viewer3D
                         SetCameraCar(GetCameraCars().Last());
                         oldCarPosition = 0;
                     }
-                    else if (isVisibleTrainCarViewerOrWebpage && carPosition >= 0)
+                    else if (carPosition < trainCars.Count && isVisibleTrainCarViewerOrWebpage && carPosition >= 0)
                     {
                         SetCameraCar(trainCars[carPosition]);
                         oldCarPosition = carPosition;
