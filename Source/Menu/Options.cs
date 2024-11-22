@@ -301,8 +301,7 @@ namespace ORTS
             }
 
             // Experimental tab
-            numericUseSuperElevation.Value = Settings.UseSuperElevation;
-            numericSuperElevationMinLen.Value = Settings.SuperElevationMinLen;
+            checkUseSuperElevation.Checked = Settings.UseSuperElevation;
             numericSuperElevationGauge.Value = Settings.SuperElevationGauge;
             checkPerformanceTuner.Checked = Settings.PerformanceTuner;
             labelPerformanceTunerTarget.Enabled = checkPerformanceTuner.Checked;
@@ -518,8 +517,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                     UpdateManager.SetChannel((string)control.Tag);
 
             // Experimental tab
-            Settings.UseSuperElevation = (int)numericUseSuperElevation.Value;
-            Settings.SuperElevationMinLen = (int)numericSuperElevationMinLen.Value;
+            Settings.UseSuperElevation = checkUseSuperElevation.Checked;
             Settings.SuperElevationGauge = (int)numericSuperElevationGauge.Value;
             Settings.PerformanceTuner = checkPerformanceTuner.Checked;
             Settings.PerformanceTunerTarget = (int)numericPerformanceTunerTarget.Value;
@@ -859,6 +857,9 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                 (pbControlConfirmations, new Control[] { labelControlConfirmations, comboControlConfirmations }),
                 (pbWebServerPort, new Control[] { labelWebServerPort }),
                 (pbPerformanceTuner, new Control[] { checkPerformanceTuner, labelPerformanceTunerTarget }),
+
+                // Experimental tab
+                (pbSuperElevation, new[] { ElevationText }),
             };
             foreach ((PictureBox pb, Control[] controls) in helpIconControls)
             {
@@ -1015,6 +1016,12 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                 {
                     pbPerformanceTuner,
                     BaseDocumentationUrl + "/options.html#performance-tuner"
+                },
+
+                // Experimental tab
+                {
+                    pbSuperElevation,
+                    BaseDocumentationUrl + "/options.html#super-elevation"
                 },
             };
             if (urls.TryGetValue(sender, out var url))

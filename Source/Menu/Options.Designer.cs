@@ -60,9 +60,8 @@
             this.pbDistantMountains = new System.Windows.Forms.PictureBox();
             this.pbViewingDistance = new System.Windows.Forms.PictureBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.numericUseSuperElevation = new System.Windows.Forms.NumericUpDown();
+            this.checkUseSuperElevation = new System.Windows.Forms.CheckBox();
             this.trackLODBias = new System.Windows.Forms.TrackBar();
-            this.numericSuperElevationMinLen = new System.Windows.Forms.NumericUpDown();
             this.numericPerformanceTunerTarget = new System.Windows.Forms.NumericUpDown();
             this.trackAdhesionFactor = new System.Windows.Forms.TrackBar();
             this.trackAdhesionFactorChange = new System.Windows.Forms.TrackBar();
@@ -103,9 +102,8 @@
             this.AdhesionLevelLabel = new System.Windows.Forms.Label();
             this.checkUseMSTSEnv = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.pbSuperElevation = new System.Windows.Forms.PictureBox();
             this.numericSuperElevationGauge = new System.Windows.Forms.NumericUpDown();
-            this.label7 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.ElevationText = new System.Windows.Forms.Label();
             this.labelLODBias = new System.Windows.Forms.Label();
@@ -259,12 +257,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbLODViewingExtension)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbDistantMountains)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingDistance)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUseSuperElevation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackLODBias)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationMinLen)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPerformanceTunerTarget)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactorChange)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactor)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSuperElevation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericActRandomizationLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericActWeatherRandomizationLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericDistantMountainsViewingDistance)).BeginInit();
@@ -641,19 +638,17 @@
             this.pbViewingDistance.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
             this.pbViewingDistance.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
-            // numericUseSuperElevation
+            // checkUseSuperElevation
             // 
-            this.numericUseSuperElevation.Location = new System.Drawing.Point(26, 42);
-            this.numericUseSuperElevation.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericUseSuperElevation.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericUseSuperElevation.Name = "numericUseSuperElevation";
-            this.numericUseSuperElevation.Size = new System.Drawing.Size(54, 20);
-            this.numericUseSuperElevation.TabIndex = 2;
-            this.toolTip1.SetToolTip(this.numericUseSuperElevation, "0: no elevation, 1: 9cm max; 10: 18cm max");
+            this.checkUseSuperElevation.AutoSize = true;
+            this.checkUseSuperElevation.Location = new System.Drawing.Point(26, 42);
+            this.checkUseSuperElevation.Name = "checkUseSuperElevation";
+            this.checkUseSuperElevation.Size = new System.Drawing.Size(122, 17);
+            this.checkUseSuperElevation.TabIndex = 2;
+            this.checkUseSuperElevation.Text = "Legacy Superelevation";
+            this.toolTip1.SetToolTip(this.checkUseSuperElevation, "Enables visual elements of superelevation on legacy routes. " +
+            "May lead to suboptimal track rendering.");
+            this.checkUseSuperElevation.UseVisualStyleBackColor = true;
             // 
             // trackLODBias
             // 
@@ -669,35 +664,6 @@
             this.trackLODBias.TickFrequency = 10;
             this.toolTip1.SetToolTip(this.trackLODBias, "Default is 0%");
             this.trackLODBias.ValueChanged += new System.EventHandler(this.trackLODBias_ValueChanged);
-            // 
-            // numericSuperElevationMinLen
-            // 
-            this.numericSuperElevationMinLen.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericSuperElevationMinLen.Location = new System.Drawing.Point(26, 68);
-            this.numericSuperElevationMinLen.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericSuperElevationMinLen.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericSuperElevationMinLen.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericSuperElevationMinLen.Name = "numericSuperElevationMinLen";
-            this.numericSuperElevationMinLen.Size = new System.Drawing.Size(54, 20);
-            this.numericSuperElevationMinLen.TabIndex = 4;
-            this.toolTip1.SetToolTip(this.numericSuperElevationMinLen, "Shortest curve to have elevation");
-            this.numericSuperElevationMinLen.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
             // 
             // numericPerformanceTunerTarget
             // 
@@ -1075,12 +1041,10 @@
             this.tabPageExperimental.Controls.Add(this.trackAdhesionFactor);
             this.tabPageExperimental.Controls.Add(this.checkUseMSTSEnv);
             this.tabPageExperimental.Controls.Add(this.label8);
+            this.tabPageExperimental.Controls.Add(this.pbSuperElevation);
             this.tabPageExperimental.Controls.Add(this.numericSuperElevationGauge);
-            this.tabPageExperimental.Controls.Add(this.label7);
-            this.tabPageExperimental.Controls.Add(this.numericSuperElevationMinLen);
-            this.tabPageExperimental.Controls.Add(this.label6);
             this.tabPageExperimental.Controls.Add(this.label5);
-            this.tabPageExperimental.Controls.Add(this.numericUseSuperElevation);
+            this.tabPageExperimental.Controls.Add(this.checkUseSuperElevation);
             this.tabPageExperimental.Controls.Add(this.ElevationText);
             this.tabPageExperimental.Location = new System.Drawing.Point(4, 22);
             this.tabPageExperimental.Name = "tabPageExperimental";
@@ -1218,12 +1182,12 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(86, 96);
+            this.label8.Location = new System.Drawing.Point(86, 70);
             this.label8.Margin = new System.Windows.Forms.Padding(3);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(64, 13);
             this.label8.TabIndex = 7;
-            this.label8.Text = "Gauge (mm)";
+            this.label8.Text = "Default Gauge (mm)";
             // 
             // numericSuperElevationGauge
             // 
@@ -1232,7 +1196,7 @@
             0,
             0,
             0});
-            this.numericSuperElevationGauge.Location = new System.Drawing.Point(26, 94);
+            this.numericSuperElevationGauge.Location = new System.Drawing.Point(26, 68);
             this.numericSuperElevationGauge.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
             this.numericSuperElevationGauge.Maximum = new decimal(new int[] {
             1800,
@@ -1245,6 +1209,8 @@
             0,
             0});
             this.numericSuperElevationGauge.Name = "numericSuperElevationGauge";
+            this.toolTip1.SetToolTip(this.numericSuperElevationGauge, "The gauge (distance between rails) in millimeters used by the superelevation system " +
+            "when gauge data is missing from the route. Set to the most common track gauge used on your route.");
             this.numericSuperElevationGauge.Size = new System.Drawing.Size(54, 20);
             this.numericSuperElevationGauge.TabIndex = 6;
             this.numericSuperElevationGauge.Value = new decimal(new int[] {
@@ -1252,26 +1218,6 @@
             0,
             0,
             0});
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(86, 70);
-            this.label7.Margin = new System.Windows.Forms.Padding(3);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(97, 13);
-            this.label7.TabIndex = 5;
-            this.label7.Text = "Minimum length (m)";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(86, 44);
-            this.label6.Margin = new System.Windows.Forms.Padding(3);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(33, 13);
-            this.label6.TabIndex = 3;
-            this.label6.Text = "Level";
             // 
             // label5
             // 
@@ -1288,12 +1234,24 @@
             // ElevationText
             // 
             this.ElevationText.AutoSize = true;
-            this.ElevationText.Location = new System.Drawing.Point(6, 23);
+            this.ElevationText.Location = new System.Drawing.Point(24, 23);
             this.ElevationText.Margin = new System.Windows.Forms.Padding(3);
             this.ElevationText.Name = "ElevationText";
             this.ElevationText.Size = new System.Drawing.Size(81, 13);
             this.ElevationText.TabIndex = 1;
-            this.ElevationText.Text = "Super-elevation";
+            this.ElevationText.Text = "Superelevation";
+            // 
+            // pbSuperElevation
+            // 
+            this.pbSuperElevation.Image = global::ORTS.Properties.Resources.info_18;
+            this.pbSuperElevation.Location = new System.Drawing.Point(6, 23);
+            this.pbSuperElevation.Name = "pbSuperElevation";
+            this.pbSuperElevation.Size = new System.Drawing.Size(18, 18);
+            this.pbSuperElevation.TabIndex = 28;
+            this.pbSuperElevation.TabStop = false;
+            this.pbSuperElevation.Click += new System.EventHandler(this.HelpIcon_Click);
+            this.pbSuperElevation.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
+            this.pbSuperElevation.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // labelLODBias
             // 
@@ -3030,9 +2988,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbLODViewingExtension)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbDistantMountains)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingDistance)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUseSuperElevation)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackLODBias)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationMinLen)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPerformanceTunerTarget)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactorChange)).EndInit();
@@ -3131,11 +3087,10 @@
         private System.Windows.Forms.CheckBox checkPerformanceTuner;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown numericSuperElevationGauge;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.NumericUpDown numericSuperElevationMinLen;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.NumericUpDown numericUseSuperElevation;
+        private System.Windows.Forms.PictureBox pbSuperElevation;
+        private System.Windows.Forms.CheckBox checkUseSuperElevation;
         private System.Windows.Forms.Label ElevationText;
         private System.Windows.Forms.TabPage tabPageSystem;
         private System.Windows.Forms.TabPage tabPageEvaluate;

@@ -662,8 +662,8 @@ that is, that there is no key that is used for more than one command.
 By clicking on *Defaults* all changes that were made are reset, and the
 default values are reloaded.
 
-By clicking on *Export* a printable text file ``Open Rails
-Keyboard.txt`` is generated on the desktop, showing all links between
+By clicking on *Export* a printable text file ``Open Rails Keyboard.txt``
+is generated on the desktop, showing all links between
 commands and keys.
 
 
@@ -729,8 +729,8 @@ that is, that no button is used for more than one command.
 
 Click on *Defaults* to reset all the assignments.
 
-Click on *Export* to generate a report file ``Open Rails
-RailDriver.txt`` on the desktop, listing all links between
+Click on *Export* to generate a report file ``Open Rails RailDriver.txt``
+ on the desktop, listing all links between
 commands and switches.
 
 
@@ -738,7 +738,7 @@ Using your RailDriver from within Open Rails
 --------------------------------------------
 
 To engage the RailDriver, use the Open Rails function named “Game External Controller (Raildriver)”.
-By default this is assigned to the backtick key (` )
+By default this is assigned to the backtick key (` )`. 
 
 You can look up this function’s keybinding in-game by using the F1 help screen.
 
@@ -806,16 +806,44 @@ Some experimental features being introduced in Open Rails may be turned on
 and off through the *Experimental* tab of the Options window, as
 described below.
 
-Super-elevation
+.. _options-superelevation:
+
+Superelevation
 ---------------
 
-If the value set for *Level* is greater than zero, OR supports super-elevation 
-for long curved tracks. The value *Minimum Length* determines
-the length of the shortest curve to have super-elevation. You need to
-choose the correct gauge for your route, otherwise some tracks may not be
-properly shown.
+ORTS implements graphical superelevation (tilting) of tracks using Dynamic Tracks.
+For superelevation to appear, the route must have one (or more) ``<route folder>/TrackProfiles/TrProfile.stf``
+files. A document describing the creation of track profiles, ``How toProvide Track Profiles for Open Rails Dynamic Track.pdf``, can be found in the
+*Menu > Documents* drop-down or the Open Rails ``/Source/Documentation/`` folder. Forum
+discussions about track profiles can also be found on 
+`Elvas Tower<http://www.elvastower.com/forums/index.php?/topic/21119-superelevation/page__view__findpost__p__115247>`_.
 
-When super-elevation is selected, two viewing effects occur at runtime:
+However, superelevation will also appear if the route has a superelevation standard
+``ORTSSuperElevation`` :ref:`defined within the route's .trk file <features-route-curve-superelevation>`
+regardless of the use of track profiles. *It is recommended to combine* **both** *track profiles
+and ``ORTSSuperElevation`` for best results*, as dynamic track (ie: superelevation) is rendered
+as Kuju track without any track profiles installed, which may not appear correct.
+
+.. note::
+    
+    This behavior can be overwritten if ``ORTSForceSuperElevation ( 0/1 )`` is present in the .trk file.
+    A setting of 0 will always disable superelevation graphics, while 1 always enables it, regardless
+    of the criteria described here.
+
+To support routes without Track Profiles and without ``ORTSSuperElevation``, the
+"Legacy Superelevation" option can be enabled. This will activate superelevation visuals
+on routes regardless of missing data, which may be appropriate for original MSTS routes but
+will not be aesthetically pleasing for routes using more modern track shapes. Experimentation
+may be required to determine the correct setting, and *editing of routes* (to add data to the
+.trk file and/or to add track profiles) will be required for best results.
+
+.. note::
+    
+    The configuration described here only affects the visual depiction of superelevation.
+    Superelevation is still considered by train physics regardless of the state of the visual system.
+
+When visual superelevation is enabled (either through correct configuration of a route,
+or enabled with the "Legacy Superelevation" option), two viewing effects occur at runtime:
 
 1. If an external camera view is selected, the tracks and the running
    train will be shown inclined towards the inside of the curve.
@@ -825,15 +853,16 @@ When super-elevation is selected, two viewing effects occur at runtime:
 .. image:: images/options-superelevation_1.png
 .. image:: images/options-superelevation_2.png
 
-OR implements super-elevated tracks using Dynamic Tracks. You can change
-the appearance of tracks by creating a ``<route folder>/TrackProfiles/
-TrProfile.stf`` file. The document ``How to Provide Track Profiles for
-Open Rails Dynamic Track.pdf`` describing the creation of track profiles
-can be found in the *Menu > Documents* drop-down or the 
-Open Rails ``/Source/Documentation/`` folder. Forum
-discussions about track profiles can also be found on `Elvas Tower
-<http://www.elvastower.com/forums/index.php?/topic/21119-superelevation/
-page__view__findpost__p__115247>`_.
+Note that superelevation usually won't be this distinct. The amount of superelevation
+depends on the track speed limit and curve radius, where higher speeds and tighter curves
+lead to more intense superelevation.
+
+Additionally, the superelevation physics system requires knoweldge of the gauge of track used on
+the route. Normally, this should be defined with ``TrackGauge``
+:ref:`in the .trk file <features-route-curve-superelevation>`, but many routes have the gauge value
+set to 0, which is not useful. In such a case, the program must use the gauge (in millimeters)
+specified by the "Default Gauge" option. Note this assumes the entire route has the same gauge of track.
+Multi-gauge routes are not fully supported at the moment.
 
 Automatically tune settings to keep performance level
 -----------------------------------------------------
