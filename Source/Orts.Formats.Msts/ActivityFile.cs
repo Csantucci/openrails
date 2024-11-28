@@ -872,20 +872,6 @@ namespace Orts.Formats.Msts
                     Trace.Write("\nActivity Weather Randomization   =   " + setting.ActWeatherRandomizationLevel.ToString());
                 }
 
-                if (ORTSOptionsSuperElevationLevel > 0)
-                {
-                    setting.UseSuperElevation = ORTSOptionsSuperElevationLevel;
-                    setting.UseSuperElevation = (int) MathHelper.Clamp(setting.UseSuperElevation, 0, 10);
-                    Trace.Write("\nSuper elevation - level          =   " + setting.UseSuperElevation.ToString());
-                }
-
-                if (ORTSOptionsSuperElevationMinimumLength > 0)
-                {
-                    setting.SuperElevationMinLen = ORTSOptionsSuperElevationMinimumLength;
-                    setting.SuperElevationMinLen = (int) MathHelper.Clamp(setting.SuperElevationMinLen, 50, 1000000);
-                    Trace.Write("\nSuper elevation - minimum length =   " + setting.SuperElevationMinLen.ToString());
-                }
-
                 if (ORTSOptionsSuperElevationGauge > 0)
                 {
                     setting.SuperElevationGauge = ORTSOptionsSuperElevationGauge;

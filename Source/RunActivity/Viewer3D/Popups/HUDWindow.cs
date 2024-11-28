@@ -1,4 +1,4 @@
-// COPYRIGHT 2011, 2012, 2013 by the Open Rails project.
+﻿// COPYRIGHT 2011, 2012, 2013 by the Open Rails project.
 //
 // This file is part of Open Rails.
 //
@@ -746,7 +746,7 @@ namespace Orts.Viewer3D.Popups
 
                 foreach (var axle in car.WheelAxles)
                 {
-                    if (!axle.Part.bogie) // if not a bogie then check for the number of axles.
+                    if (!axle.Part.Bogie) // if not a bogie then check for the number of axles.
                     {
                         if (currentBogie != axle.BogieIndex && currentCount != 0)
                         {
@@ -770,7 +770,7 @@ namespace Orts.Viewer3D.Popups
                             }
                         }
                     }
-                    else if (axle.Part.bogie) // this is a bogie
+                    else if (axle.Part.Bogie) // this is a bogie
                     {
                         if ( PreviousAxlePart)
                         {
@@ -786,7 +786,7 @@ namespace Orts.Viewer3D.Popups
                         currentCount += 2;
                     }
 
-                    if (axle.Part.bogie)
+                    if (axle.Part.Bogie)
                     {
                         PreviousAxlePart = true;
                     }
@@ -1774,7 +1774,7 @@ namespace Orts.Viewer3D.Popups
             }
 
             //Normal view
-            statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}\t{16}\t{17}\t{18}\t{19}\t{20}\t",
+            statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}\t{16}\t{17}\t{18}\t{19}\t{20}\t{21}\t{22}\t",
             Viewer.Catalog.GetString("Car"),
             Viewer.Catalog.GetString("Total"),
             Viewer.Catalog.GetString("Motive"),
@@ -1790,11 +1790,13 @@ namespace Orts.Viewer3D.Popups
             Viewer.Catalog.GetString("Mass"),
             Viewer.Catalog.GetString("Gradient"),
             Viewer.Catalog.GetString("Curve"),
+            Viewer.Catalog.GetString("Superelev"),
             Viewer.Catalog.GetString("Brk Frict."),
             Viewer.Catalog.GetString("Brk Slide"),
             Viewer.Catalog.GetString("Bear Temp"),
             Viewer.Catalog.GetString(" "),
-            Viewer.Catalog.GetString("DrailCof"),
+            Viewer.Catalog.GetString("DerailCoeff"),
+            Viewer.Catalog.GetString(" "),
             Viewer.Catalog.GetString("AoA")
             ));
 
@@ -1811,7 +1813,7 @@ namespace Orts.Viewer3D.Popups
             {
                 var j = (i == 0) ? 0 : i;
                 var car = train.Cars[j];
-                statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13:F2} %\t{14}\t{15:F0} %\t{16}\t{17}\t{18}\t{19:F2}\t",
+                    statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13:F2} %\t{14}\t{15}\t{16:F0} %\t{17}\t{18}\t{19}\t{20}\t{21}\t{22:F2}\t",
                     car.CarID,
                     FormatStrings.FormatForce(car.TotalForceN, car.IsMetric),
                     FormatStrings.FormatForce(car.MotiveForceN, car.IsMetric) + (car.WheelSlip ? "!!!" : car.WheelSlipWarning ? "???" : ""),
@@ -1827,11 +1829,13 @@ namespace Orts.Viewer3D.Popups
                     FormatStrings.FormatLargeMass(car.MassKG, car.IsMetric, car.IsUK),
                     -car.CurrentElevationPercent,
                     FormatStrings.FormatDistance(car.CurrentCurveRadiusM, car.IsMetric),
+                    FormatStrings.FormatMillimeterDistanceDisplay(car.SuperElevationM, car.IsMetric),
                     car.HuDBrakeShoeFriction * 100.0f,//15
                     (car.HUDBrakeSkid ? Viewer.Catalog.GetString("Yes") : Viewer.Catalog.GetString("No")),
                     FormatStrings.FormatTemperature(car.WheelBearingTemperatureDegC, car.IsMetric, false) + " " + car.DisplayWheelBearingTemperatureStatus,
-                    car.Flipped ? Viewer.Catalog.GetString("Flipped") : "",
+                    " ",
                     car.DerailmentCoefficient.ToString("0.00") + (car.DerailExpected ? "!!!" : car.DerailPossible ? "???" : ""),
+                    car.Flipped ? Viewer.Catalog.GetString("Flipped") : "",
                     car.AngleOfAttackmRad.ToString("0.00")
                     ));
             }
