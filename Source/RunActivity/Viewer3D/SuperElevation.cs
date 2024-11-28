@@ -84,8 +84,7 @@ namespace Orts.Viewer3D
             float rollOffsetM = 0.0f;
 
             // Determine the track profile to use for this section based on the shape file
-            int trpIndex = DynamicTrackViewer.GetBestTrackProfile(viewer, shapeFilePath);
-
+            int trpIndex = DynamicTrackViewer.GetBestTrackProfile(viewer, shapeFilePath, shape.TunnelShape);
             TrProfile trProfile = null;
             // If a track profile is found (index exists), continue processing
             if (trpIndex >= 0 && trpIndex < viewer.TRPs.Count)
@@ -151,7 +150,8 @@ namespace Orts.Viewer3D
                 foreach (uint sid in id.TrackSections)
                 {
                     TrackSection section = viewer.Simulator.TSectionDat.TrackSections.Get(sid);
-                    if (Math.Abs(section.SectionSize.Width - viewer.Simulator.RouteTrackGaugeM) > 0.2 && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge) continue;//the main route has a gauge different than mine
+                    if (Math.Abs(section.SectionSize.Width - viewer.Simulator.RouteTrackGaugeM) > 0.2 && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+                        continue;//the main route has a gauge different than mine
                     if (section.SectionCurve == null && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
                     {
                         continue;
@@ -182,7 +182,7 @@ namespace Orts.Viewer3D
                             tempViewers.Add(new SuperElevationViewer(viewer, root, nextRoot, radius, length, trProfile, tmp.VisElevTable, tmp.ElevOffsetM, reversed));
                         }
                     }
-                    else if (!dontRender) // Section doesn't have superelevation, prepare to generate it without superelevation
+                    else if (!dontRender && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge) // Section doesn't have superelevation, prepare to generate it without superelevation
                         tempViewers.Add(new SuperElevationViewer(viewer, root, nextRoot, radius, length, trProfile));
                 }
             }

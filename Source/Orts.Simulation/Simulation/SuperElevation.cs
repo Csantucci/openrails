@@ -94,6 +94,11 @@ namespace Orts.Simulation
                     TrackSection sec = simulator.TSectionDat.TrackSections.Get(node.TrVectorNode.TrVectorSections[i].SectionIndex);
                     if (sec == null)
                         continue;
+                    TrackShape sha;
+                    if (simulator.TRK.Tr_RouteFile.ChangeTrackGauge && sectionList.Count == 0 && simulator.TSectionDat.TrackShapes.TryGetValue(node.TrVectorNode.TrVectorSections[i].ShapeIndex, out sha) && sha.MainRoute != int.MaxValue)
+                        continue;
+                    if (simulator.TRK.Tr_RouteFile.ChangeTrackGauge && (i == 0 && simulator.TDB.TrackDB.TrackNodes[node.TrPins[0].Link].TrEndNode == true || i == count - 1 && simulator.TDB.TrackDB.TrackNodes[node.TrPins[1].Link].TrEndNode == true))
+                        continue;
                     SectionCurve theCurve = sec.SectionCurve;
                     SectionSize theStraight = sec.SectionSize.Length != 0 ? sec.SectionSize : null;
 
@@ -139,6 +144,11 @@ namespace Orts.Simulation
                             sectionLengths.Add(sectionLength);
                             sectionList.Add(node.TrVectorNode.TrVectorSections[i]);
                         }
+                        else if (simulator.TRK.Tr_RouteFile.ChangeTrackGauge && sectionLengths.Count > 0 && curveLen - sectionLengths.Last() < 0.001)
+                        {
+                            curveLen = 0;
+                            startCurve = false;
+                        }
                     }
                     else // This section is straight
                     {
@@ -147,10 +157,10 @@ namespace Orts.Simulation
 
                         // First and last sections in a node are connected to junctions or buffers
                         // Don't add superelevation too close to the beginning or end
-                        if (!(nodeCumLength + sectionLength < 20f || nodeTotLength - nodeCumLength < 20f))
+                        if (!(nodeCumLength + sectionLength < 20f || nodeTotLength - nodeCumLength < 20f) || simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
                         {
                             // Previous section was in a curve, may need to end curve
-                            if (startCurve == true)
+                            if (startCurve == true && !(simulator.TRK.Tr_RouteFile.ChangeTrackGauge && (nodeCumLength + sectionLength < 20f || nodeTotLength - nodeCumLength < 20f)))
                             {
                                 // Include this straight section in the curve so long as the next section
                                 // doesn't curve in the opposite direction (or is straight)
@@ -160,8 +170,13 @@ namespace Orts.Simulation
                                     sectionLengths.Add(sectionLength);
                                     sectionList.Add(node.TrVectorNode.TrVectorSections[i]);
                                 }
+                                else if (nextSec == null && simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+                                {
+                                    sectionLengths.Add(sectionLength);
+                                    sectionList.Add(node.TrVectorNode.TrVectorSections[i]);
+                                }
                                 // End curve if the next section isn't a continuation of this curve
-                                if (!(nextCurve != null && curveDir == Math.Sign(nextCurve.Angle)) && !simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+                                if (!(nextCurve != null && curveDir == Math.Sign(nextCurve.Angle)))
                                 {
                                     MarkSections(simulator, sectionList, curveLen, sectionLengths, curveDir);
                                     curveLen = 0f;
@@ -172,11 +187,21 @@ namespace Orts.Simulation
                             }
                             else if (nextSec != null && nextCurve != null) // Not in a curve, but next section is a curve, start superelevation on this section
                             {
+                                MarkSections(simulator, sectionList, curveLen, sectionLengths, curveDir);
+                                curveLen = 0f;
+                                sectionList.Clear();
+                                sectionLengths.Clear();
+
                                 startCurve = true;
                                 curveDir = Math.Sign(nextCurve.Angle);
                                 curveLen = 0;
 
                                 curveLen += sectionLength;
+                                sectionLengths.Add(sectionLength);
+                                sectionList.Add(node.TrVectorNode.TrVectorSections[i]);
+                            }
+                            else if (simulator.TRK.Tr_RouteFile.ChangeTrackGauge && !(simulator.TSectionDat.TrackShapes.TryGetValue(node.TrVectorNode.TrVectorSections[i].ShapeIndex, out sha) && sha.MainRoute != int.MaxValue))
+                            {
                                 sectionLengths.Add(sectionLength);
                                 sectionList.Add(node.TrVectorNode.TrVectorSections[i]);
                             }
@@ -194,7 +219,7 @@ namespace Orts.Simulation
                         node.TrVectorNode.TrVectorSections[i].PassSpeedMpS = Math.Min(speeds[1], routeMaxSpeed);
                     }
                 }
-                if (startCurve == true) // we are in a curve after looking at every section
+                if (startCurve == true || simulator.TRK.Tr_RouteFile.ChangeTrackGauge) // we are in a curve after looking at every section
                 {
                     MarkSections(simulator, sectionList, curveLen, sectionLengths, curveDir);
                 }
@@ -237,19 +262,27 @@ namespace Orts.Simulation
                 }
             }
 
-            if ((standard == null || maxElev < standard.MinCantM) && !SectionList.Any(s => s.NomElevM > 0.0f))
+            if ((standard == null || maxElev < standard.MinCantM) && !SectionList.Any(s => s.NomElevM > 0.0f) || simulator.TRK.Tr_RouteFile.ChangeTrackGauge && totLen == 0)
             {
                 foreach (TrVectorSection s in SectionList)
                 {
                     s.NomElevM = 0; // No superelevation needed, or curve is so short that no meaningful superelevation can be applied
+                }
+                if (!simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+                    return;
+                else
+                {
+                    MapWFiles2Sections(SectionList);
                     return;
                 }
             }
             else
             {
                 // Superelevation can be applied, run calculations
+                int i = -1; 
                 foreach (TrVectorSection s in SectionList)
                 {
+                    i++;
                     // Superelevation has not been calculated for this section yet
                     // FUTURE: Superelevation NomElevM may be specified externally, eg: by a route editor
                     if (s.NomElevM < 0.0f)
@@ -294,9 +327,9 @@ namespace Orts.Simulation
                         }
                     }
                 }
+                Curves.Add(new List<TrVectorSection>(SectionList)); // Add this curve to the global list of superelevation curves
             }
 
-            Curves.Add(new List<TrVectorSection>(SectionList)); // Add this curve to the global list of superelevation curves
             MapWFiles2Sections(SectionList); // Add all superelevation sections to the tile dictionary for checking later
 
             // Calculate the amount of superelevation as a function of curve length for all curve segments

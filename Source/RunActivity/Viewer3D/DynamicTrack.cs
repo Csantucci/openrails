@@ -140,42 +140,16 @@ namespace Orts.Viewer3D
                 lod.Mark();
         }
 
-        /// <summary>
-        /// Returns the index of the track profile that best suits the given Viewer and TrVectorSection object,
-        /// with an optional shape file path to use as reference.
-        /// The result is cached in the vector section object for future use
-        /// </summary>
-        /// <returns>Integer index of a track profile in viewer.TRPs</returns>
-        public static int GetBestTrackProfile(Viewer viewer, TrVectorSection trSection, string shapePath = "")
-        {
-            int trpIndex;
-            if (shapePath == "" && viewer.Simulator.TSectionDat.TrackShapes.ContainsKey(trSection.ShapeIndex))
-                shapePath = String.Concat(viewer.Simulator.BasePath, @"\Global\Shapes\", viewer.Simulator.TSectionDat.TrackShapes.Get(trSection.ShapeIndex).FileName);
-
-            if (viewer.TrackProfileIndicies.ContainsKey(shapePath))
-                viewer.TrackProfileIndicies.TryGetValue(shapePath, out trpIndex);
-            else if (shapePath != "") // Haven't checked this track shape yet
-            {
-                // Need to load the shape file if not already loaded
-                SharedShape trackShape = viewer.ShapeManager.Get(shapePath);
-                trpIndex = GetBestTrackProfile(viewer, trackShape);
-                viewer.TrackProfileIndicies.Add(shapePath, trpIndex);
-            }
-            else // Not enough info-use default track profile
-                trpIndex = 0;
-
-            return trpIndex;
-        }
         // Note: Dynamic track objects will ALWAYS use TRPIndex = 0
         // This is because dynamic tracks don't have shapes, and as such lack the information needed
-        // to select a specific track profile.
+        // to select a specific track profile.*/
 
         /// <summary>
         /// Returns the index of the track profile that best suits a track shape
         /// given a reference to the viewer and the shape file path.
         /// </summary>
         /// <returns>Integer index of a track profile in viewer.TRPs</returns>
-        public static int GetBestTrackProfile(Viewer viewer, string shapePath)
+        public static int GetBestTrackProfile(Viewer viewer, string shapePath, bool inTunnel)
         {
             int trpIndex;
 
@@ -185,12 +159,11 @@ namespace Orts.Viewer3D
             {
                 // Need to load the shape file if not already loaded
                 SharedShape trackShape = viewer.ShapeManager.Get(shapePath);
-                trpIndex = GetBestTrackProfile(viewer, trackShape);
+                trpIndex = GetBestTrackProfile(viewer, trackShape, inTunnel);
                 viewer.TrackProfileIndicies.Add(shapePath, trpIndex);
             }
             else // Not enough info-use default track profile
                 trpIndex = 0;
-
             return trpIndex;
         }
 
@@ -198,7 +171,7 @@ namespace Orts.Viewer3D
         /// Determines the index of the track profile that would be the most suitable replacement
         /// for the given shared shape object.
         /// </summary>
-        public static int GetBestTrackProfile(Viewer viewer, SharedShape shape)
+        public static int GetBestTrackProfile(Viewer viewer, SharedShape shape, bool inTunnel)
         {
             float score = 0.0f;
             int bestIndex = -1; // If best index -1 is returned, that means none of the track profiles are a good fit
@@ -207,6 +180,10 @@ namespace Orts.Viewer3D
             {
                 float bestScore = score;
                 score = 0;
+                if (viewer.TRPs[i].TrackProfile.ForTunnels && !inTunnel)
+                    continue;
+                else if (viewer.TRPs[i].TrackProfile.ForTunnels && inTunnel && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+                    continue;
                 if (viewer.TRPs[i].TrackProfile.IncludeImages == null && viewer.TRPs[i].TrackProfile.ExcludeImages == null
                     && viewer.TRPs[i].TrackProfile.IncludeShapes == null && viewer.TRPs[i].TrackProfile.ExcludeShapes == null)
                 {
@@ -320,7 +297,8 @@ namespace Orts.Viewer3D
                 else
                     score = bestScore;
             }
-
+            if (bestIndex < 0 && viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+                bestIndex = 0;
             return bestIndex;
         }
     }
@@ -388,9 +366,10 @@ namespace Orts.Viewer3D
                     string xmlName = Path.GetFileNameWithoutExtension(xmlProfile);
                     // Don't try to add the default track profile twice
                     // First check if there is a track profile for tunnels
-                    if (xmlName == "trprofiletun")
+                    if (xmlName.ToLower().Contains("trprofiletun"))
                     {
-                        var trpFileTun = new TRPFile(viewer, xmlProfile, true);
+                        trpFiles.Add(new TRPFile(viewer, xmlProfile, true));
+                        profileNames.Add(xmlName);
                     }
                    else if (!profileNames.Contains(xmlName))
                     {
@@ -402,9 +381,10 @@ namespace Orts.Viewer3D
                 {
                     string stfName = Path.GetFileNameWithoutExtension(stfProfile);
                     // First check if there is a track profile for tunnels
-                    if (stfName == "trprofiletun")
+                    if (stfName.ToLower().Contains("trprofiletun"))
                     {
-                        var trpFileTun = new TRPFile(viewer, stfProfile, true);
+                        trpFiles.Add(new TRPFile(viewer, stfProfile, true));
+                        profileNames.Add(stfName);
                     }
                     // If an .stf profile and .xml profile have the same name, prefer the xml profile
                     else if (!profileNames.Contains(stfName))
@@ -434,15 +414,12 @@ namespace Orts.Viewer3D
         /// </summary>
         /// <param name="viewer">Viewer 3D.</param>
         /// <param name="filespec">Complete filepath string to track profile file.</param>
-        public TRPFile(Viewer viewer, string filespec, bool isTunnel = false)
+        public TRPFile(Viewer viewer, string filespec, bool forTunnels = false)
         {
             TrProfile trackProfile = null;
             if (filespec == "")
             {
                 // No track profile provided, use default
-                if (isTunnel)
-                    TrackProfileTun = new TrProfile(viewer);
-                else
                     TrackProfile = new TrProfile(viewer);
                 Trace.Write("(default)");
                 return;
@@ -472,7 +449,7 @@ namespace Orts.Viewer3D
                                 try
                                 {
                                     stf.ParseBlock(new STFReader.TokenProcessor[] {
-                                        new STFReader.TokenProcessor("trprofile", ()=>{ trackProfile = new TrProfile(viewer, stf); }),
+                                        new STFReader.TokenProcessor("trprofile", ()=>{ trackProfile = new TrProfile(viewer, stf, forTunnels); }),
                                     });
                                 }
                                 catch (Exception e)
@@ -520,7 +497,7 @@ namespace Orts.Viewer3D
                         // Create an XML reader for the .xml file
                         using (XmlReader reader = XmlReader.Create(filespec, settings))
                         {
-                            trackProfile = new TrProfile(viewer, reader);
+                            trackProfile = new TrProfile(viewer, reader, forTunnels);
                         }
                         Trace.Write("(.XML)");
                         break;
@@ -532,10 +509,7 @@ namespace Orts.Viewer3D
                         break;
                 }
             }
-            if (isTunnel)
-                TrackProfileTun = trackProfile;
-            else
-                TrackProfile = trackProfile;
+            TrackProfile = trackProfile;
         }
 
         // ValidationEventHandler callback function
@@ -645,6 +619,7 @@ namespace Orts.Viewer3D
             /// </summary>
             ChordDisplacement
         }
+        public bool ForTunnels;
 
         /// <summary>
         /// Empty TrProfile constructor
@@ -788,9 +763,10 @@ namespace Orts.Viewer3D
         /// <summary>
         /// TrProfile constructor from STFReader-style profile file
         /// </summary>
-        public TrProfile(Viewer viewer, STFReader stf)
+        public TrProfile(Viewer viewer, STFReader stf, bool forTunnels = false)
         {
             Name = "Default Dynatrack profile";
+            ForTunnels = forTunnels;
 
             stf.MustMatch("(");
             stf.ParseBlock(new STFReader.TokenProcessor[] {
@@ -830,8 +806,9 @@ namespace Orts.Viewer3D
         /// <summary>
         /// TrProfile constructor from XML profile file
         /// </summary>
-        public TrProfile(Viewer viewer, XmlReader reader)
+        public TrProfile(Viewer viewer, XmlReader reader,  bool forTunnels = false)
         {
+            ForTunnels = forTunnels;
             if (reader.IsStartElement())
             {
                 if (reader.Name == "TrProfile")
