@@ -1,4 +1,7 @@
-﻿using System;
+﻿//
+// Code forked from Open Rails Ultimate (now FreeTrainSimulator)
+//
+using System;
 using System.Threading.Tasks;
 
 namespace Orts.MultiPlayerServer

@@ -1,4 +1,4 @@
-﻿Open Rails, NewYear version README - Rev.159
+﻿Open Rails, NewYear version with addition of Multiplayer Server README - Rev.159
 November 29th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
@@ -79,8 +79,9 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Fix Lights Crash on Corrupt Shapes (PR #953 by steelfill)
   *- Multiple lightglow types, see https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/  (PR #981) 
   *- Replace dynamic brakes by engine brakes at low speeds, by cesar (PR #996)
-  *- (NEW) Merge master PR #1004 from  'mbm-OR/bugfix/Fix-TrainCarOperations-brakehoses-not-sync-coupling-cars'
-  *- (NEW) Merge master PR #1006 by rwf-rr: bugfix for content form crash
+  *- NEW: Merge master PR #1004 from  'mbm-OR/bugfix/Fix-TrainCarOperations-brakehoses-not-sync-coupling-cars'
+  *- NEW: Merge master PR #1006 by rwf-rr: bugfix for content form crash
+- NEW: Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls

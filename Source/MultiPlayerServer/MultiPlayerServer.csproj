@@ -3,7 +3,7 @@
 		<TargetFramework>net6-windows</TargetFramework>
 		<OutputType>Exe</OutputType>
 		<Description>Open Rails Multiplayer Server</Description>
-		<AssemblyTitle>Open Rails MultiPlayer Server (forked)</AssemblyTitle>
+		<AssemblyTitle>Open Rails MultiPlayer Server (Forked)</AssemblyTitle>
     <Product>Open Rails NewYear MG</Product>
 		<OutputPath>..\..\Program</OutputPath>
 		<ApplicationIcon>..\ORTS.ico</ApplicationIcon>
