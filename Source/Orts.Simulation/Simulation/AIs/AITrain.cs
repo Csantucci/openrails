@@ -1875,6 +1875,12 @@ namespace Orts.Simulation.AIs
         /// </summary>
         public virtual void UpdateStationState(float elapsedClockSeconds, int presentTime)
         {
+            if (StationStops.Count == 0)
+            {
+                AtStation = false;
+                MovementState = AI_MOVEMENT_STATE.STOPPED;
+                return;
+            }
             StationStop thisStation = StationStops[0];
             bool removeStation = true;
 
