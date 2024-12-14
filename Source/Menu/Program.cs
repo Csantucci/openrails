@@ -86,6 +86,9 @@ namespace ORTS
                         case MainForm.UserAction.MultiplayerServerResumeSave:
                             parameters.Add("-multiplayerserver");
                             break;
+                        case MainForm.UserAction.SinglePlayerWatchModeTimetableGame:
+                            parameters.Add("-start");
+                            break;
                     }
                     switch (MainForm.SelectedAction)
                     {
@@ -150,6 +153,32 @@ namespace ORTS
                         case MainForm.UserAction.SinglePlayerResumeTimetableGame:
                             parameters.Add("\"" + MainForm.SelectedSaveFile + "\"");
                             break;
+                        case MainForm.UserAction.SinglePlayerWatchModeTimetableGame:
+                            if (String.IsNullOrEmpty(MainForm.SelectedTimetableSet.WeatherFile))
+                            {
+                                parameters.Add(String.Format("-watchtimetable \"{0}\" \"{1}\" \"{2}\" {3} {4} {5} {6}",
+                                    MainForm.SelectedTimetableSet.fileName,
+                                    MainForm.SelectedTimetable,
+                                    MainForm.SelectedTimetableStartLocation,
+                                    MainForm.SelectedStartTimeTimetable,
+                                    MainForm.SelectedTimetableSet.Day,
+                                    MainForm.SelectedTimetableSet.Season,
+                                    MainForm.SelectedTimetableSet.Weather));
+                            }
+                            else
+                            {
+                                parameters.Add(String.Format("-watchtimetable \"{0}\" \"{1}\" \"{2}\" {3} {4} {5} {6} \"{7}\" ",
+                                    MainForm.SelectedTimetableSet.fileName,
+                                    MainForm.SelectedTimetable,
+                                    MainForm.SelectedTimetableStartLocation,
+                                    MainForm.SelectedStartTimeTimetable,
+                                    MainForm.SelectedTimetableSet.Day,
+                                    MainForm.SelectedTimetableSet.Season,
+                                    MainForm.SelectedTimetableSet.Weather,
+                                    MainForm.SelectedTimetableSet.WeatherFile));
+                            }
+                            break;
+
                     }
                     
                     var joinedParameters = string.Join(" ", parameters);

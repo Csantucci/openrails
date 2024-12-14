@@ -152,6 +152,8 @@ namespace ORTS.Settings
         public int Multiplayer_Port { get; set; }
         [Default(true)]
         public bool IsModeActivity { get; set; } // false indicates Timetable mode
+        [Default(false)]
+        public bool TTWatchMode { get; set; } 
 
         // General settings:
 
