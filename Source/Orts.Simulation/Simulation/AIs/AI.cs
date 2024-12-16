@@ -351,6 +351,7 @@ namespace Orts.Simulation.AIs
         private void PrerunAI(int playerTrainOriginalTrain, TTTrain.FormCommand playerTrainFormedOfType, TTTrain playerTrain, CancellationToken cancellation)
         {
             bool endPreRun = false;
+            bool activeTrains = false;
 
             float firstAITime = StartList.GetNextTime();
             if (firstAITime > 0 && firstAITime < Simulator.ClockTime)
@@ -361,10 +362,9 @@ namespace Orts.Simulation.AIs
                 clockTime = firstAITime - 1.0f;
                 localTime = true;
                 Simulator.PreUpdate = true;
-                bool activeTrains = false;
                 for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
                 {
-                    var loaderSpan = (float)TimetableInfo.PlayerTrainOriginalStartTime - firstAITime;
+                    var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.WatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
                     Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
 
                     int fullsec = Convert.ToInt32(runTime);
@@ -613,6 +613,36 @@ namespace Orts.Simulation.AIs
 
                 clockTime = Simulator.ClockTime = playerTTTrain.StartTime.Value;
             }
+
+            if (Simulator.Settings.TTWatchMode)
+            {
+                if (Simulator.OriginalPlayerTrain != null) 
+                    ((TTTrain)Simulator.OriginalPlayerTrain).SwitchToAutopilotControl();
+                if (Simulator.ClockTime < Simulator.WatchStartTime)
+                {
+                    clockTime = Simulator.ClockTime = Simulator.WatchStartTime;
+                    for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
+                    {
+                        var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.WatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
+                        Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
+
+                        int fullsec = Convert.ToInt32(runTime);
+                        if (fullsec % 3600 < 5) Trace.Write(" " + (fullsec / 3600).ToString("00") + ":00 ");
+
+                        endPreRun = AITTUpdate((float)(runTime - clockTime), Simulator.PreUpdate, ref activeTrains);
+
+                        if (activeTrains)
+                        {
+                            Simulator.Signals.Update(true);
+                        }
+
+                        clockTime = runTime;
+                        if (cancellation.IsCancellationRequested) return; // Ping watchdog process
+                    }
+                }
+            }
+
+
 
             Trace.Write("\n");
             Simulator.PreUpdate = false;

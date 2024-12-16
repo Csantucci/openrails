@@ -133,9 +133,15 @@ namespace Orts.Simulation.Timetables
             Trace.Write(" TTROUTES:" + Paths.Count.ToString() + " ");
             loadPathNoFailure = PreProcessRoutes(cancellation);
             Trace.Write(" TTTRAINS:" + trainInfoList.Count.ToString() + " ");
-
-            // Get startinfo for player train
-            playerTrain = GetPlayerTrain(ref trainInfoList, arguments);
+            if (simulator.Settings.TTWatchMode)
+            {
+                // Select as player train the one with a starting time preceding the starting time of the Watch Mode
+                // and with the latest arrival to the final station
+                playerTrain = SelectPlayerTrain(ref trainInfoList, arguments);
+            }
+            else
+                // Get startinfo for player train
+                playerTrain = GetPlayerTrain(ref trainInfoList, arguments);
 
             // pre-init player train to abstract alternative paths if set
             if (playerTrain != null)
@@ -758,11 +764,64 @@ namespace Orts.Simulation.Timetables
 
         //================================================================================================//
         /// <summary>
-        /// Build AI trains
+        /// SelectPlayerTrain : select player train from list of all available trains
         /// </summary>
         /// <param name="allTrains"></param>
-        /// <param name="playerTrain"></param>
         /// <param name="arguments"></param>
+        /// <returns></returns>
+        private TTTrainInfo SelectPlayerTrain(ref List<TTTrainInfo> allTrains, string[] arguments)
+        {
+            TTTrainInfo reqTrain = null;
+
+            // loop through all trains to find player train
+            int playerIndex = -1;
+            int stopTime = -1;
+
+            for (int iTrain = 0; iTrain <= allTrains.Count - 1; iTrain++)
+            {
+                if (allTrains[iTrain].StartTime > simulator.WatchStartTime) continue;
+                if (allTrains[iTrain].Stops.Count > 0 && allTrains[iTrain].Stops?.Last().Value.arrivalTime > stopTime)
+                {
+                    playerIndex = iTrain;
+                    stopTime = allTrains[iTrain].Stops.Last().Value.arrivalTime;
+                }
+            }
+
+
+            if (playerIndex < 0)
+            {
+                // if no suitable train with stations, select a train with start time near but before watch start time
+                int startTime = -1;
+                for (int iTrain = 0; iTrain <= allTrains.Count - 1; iTrain++)
+                {
+                    if (allTrains[iTrain].StartTime > simulator.WatchStartTime) continue;
+                    if (allTrains[iTrain].StartTime > startTime)
+                    {
+                        playerIndex = iTrain;
+                        startTime = allTrains[iTrain].StartTime;
+                    }
+                }
+            }
+            if (playerIndex >= 0)
+            {
+                reqTrain = allTrains[playerIndex];
+                allTrains.RemoveAt(playerIndex);
+            }
+            else
+            {
+                throw new InvalidDataException("Suitable player train not found in timetables");
+            }
+
+            return reqTrain;
+        }
+
+        //================================================================================================//
+            /// <summary>
+            /// Build AI trains
+            /// </summary>
+            /// <param name="allTrains"></param>
+            /// <param name="playerTrain"></param>
+            /// <param name="arguments"></param>
         private List<TTTrain> BuildAITrains(CancellationToken cancellation, List<TTTrainInfo> allTrains, TTTrainInfo playerTrain, string[] arguments, out bool allPathsLoaded)
         {
             allPathsLoaded = true;

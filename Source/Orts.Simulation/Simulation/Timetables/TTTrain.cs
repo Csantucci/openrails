@@ -14436,7 +14436,7 @@ namespace Orts.Simulation.Timetables
                 // If train is player or intended player, determine new loco lead index
                 if (train.TrainType == Train.TRAINTYPE.PLAYER || train.TrainType == Train.TRAINTYPE.INTENDED_PLAYER)
                 {
-                    if (train.LeadLocomotiveIndex >= 0)
+                    if (train.LeadLocomotiveIndex >= 0 && train.Cars.Count > train.LeadLocomotiveIndex)
                     {
                         train.LeadLocomotive = train.Simulator.PlayerLocomotive = train.Cars[train.LeadLocomotiveIndex];
                     }
