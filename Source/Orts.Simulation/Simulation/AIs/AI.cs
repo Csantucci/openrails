@@ -616,10 +616,14 @@ namespace Orts.Simulation.AIs
 
             if (Simulator.Settings.TTWatchMode)
             {
-                if (Simulator.OriginalPlayerTrain != null) 
-                    ((TTTrain)Simulator.OriginalPlayerTrain).SwitchToAutopilotControl();
                 if (Simulator.ClockTime < Simulator.WatchStartTime)
                 {
+                    if (Simulator.Trains.Count > 0 && Simulator.Trains[0].TrainType == Train.TRAINTYPE.PLAYER)
+                    {
+                        ((TTTrain)Simulator.Trains[0]).CalculatePositionOfCars(); // calculate position of player train cars
+                        ((TTTrain)Simulator.Trains[0]).PostInit();               // place player train after pre-running of AI trains
+                        ((TTTrain)Simulator.Trains[0]).SwitchToAutopilotControl();
+                    }
                     clockTime = Simulator.ClockTime = Simulator.WatchStartTime;
                     for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
                     {

@@ -107,6 +107,7 @@ namespace Orts.Simulation
         public List<int> StartReference = new List<int>();
         public Weather Weather = new Weather();
         public int WatchStartTime;
+        public string TTWatchStation;
 
         public float CurveDurability;  // Sets the durability due to curve speeds in TrainCars - read from consist file.
 
@@ -516,6 +517,7 @@ namespace Orts.Simulation
                 TimeSpan StartTime = new TimeSpan(int.Parse(time[0]), time.Length > 1 ? int.Parse(time[1]) : 0, time.Length > 2 ? int.Parse(time[2]) : 0);
                 WatchStartTime = StartTime.Hours * 3600 + StartTime.Minutes * 60 +
                     StartTime.Seconds;
+                TTWatchStation = arguments[2];
             }
 
             TimetableInfo TTinfo = new TimetableInfo(this);
