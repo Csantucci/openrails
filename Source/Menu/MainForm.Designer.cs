@@ -98,10 +98,10 @@ namespace ORTS
             this.pbNotificationsNone = new System.Windows.Forms.PictureBox();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.ttNotifications = new System.Windows.Forms.ToolTip(this.components);
-            this.labelStartLocation = new System.Windows.Forms.Label();
-            this.comboBoxStartLocation = new System.Windows.Forms.ComboBox();
-            this.labelTimetableTime = new System.Windows.Forms.Label();
-            this.comboBoxStartTimeTimetable = new System.Windows.Forms.ComboBox();
+            this.labelTTStartLocation = new System.Windows.Forms.Label();
+            this.comboBoxTTStartLocation = new System.Windows.Forms.ComboBox();
+            this.labelTTStartTime = new System.Windows.Forms.Label();
+            this.comboBoxTTStartTime = new System.Windows.Forms.ComboBox();
             this.labelTimetableWeatherFile = new System.Windows.Forms.Label();
             this.comboBoxTimetableWeatherFile = new System.Windows.Forms.ComboBox();
             this.comboBoxTimetableDay = new System.Windows.Forms.ComboBox();
@@ -629,7 +629,7 @@ namespace ORTS
             this.comboBoxStartTime.Name = "comboBoxStartTime";
             this.comboBoxStartTime.Size = new System.Drawing.Size(73, 21);
             this.comboBoxStartTime.TabIndex = 11;
-            this.comboBoxStartTime.TextChanged += new System.EventHandler(this.comboBoxStartTimeTimetable_TextChanged);
+            this.comboBoxStartTime.TextChanged += new System.EventHandler(this.comboBoxTTStartTime_TextChanged);
             // 
             // comboBoxDuration
             // 
@@ -722,10 +722,10 @@ namespace ORTS
             this.panelModeTimetable.Controls.Add(this.label20);
             this.panelModeTimetable.Controls.Add(this.comboBoxTimetableSeason);
             this.panelModeTimetable.Controls.Add(this.label21);
-            this.panelModeTimetable.Controls.Add(this.labelStartLocation);
-            this.panelModeTimetable.Controls.Add(this.comboBoxStartLocation);
-            this.panelModeTimetable.Controls.Add(this.labelTimetableTime);
-            this.panelModeTimetable.Controls.Add(this.comboBoxStartTimeTimetable);
+            this.panelModeTimetable.Controls.Add(this.labelTTStartLocation);
+            this.panelModeTimetable.Controls.Add(this.comboBoxTTStartLocation);
+            this.panelModeTimetable.Controls.Add(this.labelTTStartTime);
+            this.panelModeTimetable.Controls.Add(this.comboBoxTTStartTime);
             this.panelModeTimetable.Controls.Add(this.label24);
             this.panelModeTimetable.Controls.Add(this.comboBoxTimetableTrain);
             this.panelModeTimetable.Controls.Add(this.label23);
@@ -873,45 +873,45 @@ namespace ORTS
             this.pictureBoxLogo.TabIndex = 5;
             this.pictureBoxLogo.TabStop = false;
             // 
-            // labelStartLocation
+            // labelTTStartLocation
             // 
-            this.labelStartLocation.AutoSize = true;
-            this.labelStartLocation.Location = new System.Drawing.Point(3, 145);
-            this.labelStartLocation.Margin = new System.Windows.Forms.Padding(3);
-            this.labelStartLocation.Name = "labelStartLocation";
-            this.labelStartLocation.Size = new System.Drawing.Size(51, 13);
-            this.labelStartLocation.TabIndex = 21;
-            this.labelStartLocation.Text = "Location:";
-            this.labelStartLocation.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelTTStartLocation.AutoSize = true;
+            this.labelTTStartLocation.Location = new System.Drawing.Point(3, 145);
+            this.labelTTStartLocation.Margin = new System.Windows.Forms.Padding(3);
+            this.labelTTStartLocation.Name = "labelTTStartLocation";
+            this.labelTTStartLocation.Size = new System.Drawing.Size(51, 13);
+            this.labelTTStartLocation.TabIndex = 21;
+            this.labelTTStartLocation.Text = "Location:";
+            this.labelTTStartLocation.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // comboBoxStartLocation
+            // comboBoxTTStartLocation
             // 
-            this.comboBoxStartLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxStartLocation.FormattingEnabled = true;
-            this.comboBoxStartLocation.Location = new System.Drawing.Point(91, 142);
-            this.comboBoxStartLocation.Name = "comboBoxStartLocation";
-            this.comboBoxStartLocation.Size = new System.Drawing.Size(193, 21);
-            this.comboBoxStartLocation.TabIndex = 22;
+            this.comboBoxTTStartLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTTStartLocation.FormattingEnabled = true;
+            this.comboBoxTTStartLocation.Location = new System.Drawing.Point(91, 142);
+            this.comboBoxTTStartLocation.Name = "comboBoxTTStartLocation";
+            this.comboBoxTTStartLocation.Size = new System.Drawing.Size(193, 21);
+            this.comboBoxTTStartLocation.TabIndex = 22;
             // 
-            // labelTimetableTime
+            // labelTTStartTime
             // 
-            this.labelTimetableTime.Location = new System.Drawing.Point(5, 120);
-            this.labelTimetableTime.Margin = new System.Windows.Forms.Padding(2);
-            this.labelTimetableTime.Name = "labelTimetableTime";
-            this.labelTimetableTime.Size = new System.Drawing.Size(56, 14);
-            this.labelTimetableTime.TabIndex = 19;
-            this.labelTimetableTime.Text = "Time:";
-            this.labelTimetableTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelTTStartTime.Location = new System.Drawing.Point(5, 120);
+            this.labelTTStartTime.Margin = new System.Windows.Forms.Padding(2);
+            this.labelTTStartTime.Name = "labelTTStartTime";
+            this.labelTTStartTime.Size = new System.Drawing.Size(56, 14);
+            this.labelTTStartTime.TabIndex = 19;
+            this.labelTTStartTime.Text = "Time:";
+            this.labelTTStartTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // comboBoxStartTimeTimetable
+            // comboBoxTTStartTime
             // 
-            this.comboBoxStartTimeTimetable.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.comboBoxStartTimeTimetable.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.comboBoxStartTimeTimetable.FormattingEnabled = true;
-            this.comboBoxStartTimeTimetable.Location = new System.Drawing.Point(93, 113);
-            this.comboBoxStartTimeTimetable.Name = "comboBoxStartTimeTimetable";
-            this.comboBoxStartTimeTimetable.Size = new System.Drawing.Size(73, 21);
-            this.comboBoxStartTimeTimetable.TabIndex = 20;
+            this.comboBoxTTStartTime.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.comboBoxTTStartTime.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.comboBoxTTStartTime.FormattingEnabled = true;
+            this.comboBoxTTStartTime.Location = new System.Drawing.Point(93, 113);
+            this.comboBoxTTStartTime.Name = "comboBoxTTStartTime";
+            this.comboBoxTTStartTime.Size = new System.Drawing.Size(73, 21);
+            this.comboBoxTTStartTime.TabIndex = 20;
             // 
             // labelTimetableWeatherFile
             // 
@@ -1137,9 +1137,9 @@ namespace ORTS
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.ComboBox comboBoxTimetableSeason;
         private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Label labelStartLocation;
-        private System.Windows.Forms.ComboBox comboBoxStartLocation;
-        private System.Windows.Forms.Label labelTimetableTime;
-        public System.Windows.Forms.ComboBox comboBoxStartTimeTimetable;
+        private System.Windows.Forms.Label labelTTStartLocation;
+        private System.Windows.Forms.ComboBox comboBoxTTStartLocation;
+        private System.Windows.Forms.Label labelTTStartTime;
+        public System.Windows.Forms.ComboBox comboBoxTTStartTime;
     }
 }

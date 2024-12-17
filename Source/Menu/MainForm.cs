@@ -105,8 +105,8 @@ namespace ORTS
         public WeatherFileInfo SelectedWeatherFile { get { return (WeatherFileInfo)comboBoxTimetableWeatherFile.SelectedItem; } }
         public Consist SelectedTimetableConsist;
         public Path SelectedTimetablePath;
-        public string SelectedStartTimeTimetable { get { return comboBoxStartTimeTimetable.Text; } }
-        public string SelectedTimetableStartLocation { get { return comboBoxStartLocation.Text; } }
+        public string SelectedTTStartTime { get { return comboBoxTTStartTime.Text; } }
+        public string SelectedTTStartLocation { get { return comboBoxTTStartLocation.Text; } }
 
         // Shared items
         public int SelectedStartSeason { get { return radioButtonModeActivity.Checked ? (comboBoxStartSeason.SelectedItem as KeyedComboBoxItem).Key : (comboBoxTimetableSeason.SelectedItem as KeyedComboBoxItem).Key; } }
@@ -394,7 +394,7 @@ namespace ORTS
         #endregion
 
         #region Mode
-        void radioButtonMode_CheckedChanged  (object sender, EventArgs e)
+        void radioButtonMode_CheckedChanged (object sender, EventArgs e)
         {
             panelModeActivity.Visible = radioButtonModeActivity.Checked;
             panelModeTimetable.Visible = radioButtonModeTimetable.Checked;
@@ -482,7 +482,7 @@ namespace ORTS
         void comboBoxTimetable_selectedIndexChanged(object sender, EventArgs e)
         {
             ShowTimetableTrainList();
-            ShowTimetableStationList();
+            ShowTTStationList();
             ShowDetails();
         }
         #endregion
@@ -526,7 +526,7 @@ namespace ORTS
             ShowDetails();
         }
 
-        void comboBoxStartTimeTimetable_TextChanged(object sender, EventArgs e)
+        void comboBoxTTStartTime_TextChanged(object sender, EventArgs e)
         {
             UpdateTimetableSet();
         }
@@ -620,7 +620,7 @@ namespace ORTS
                 else
                 {
                     SelectedAction = UserAction.SinglePlayerWatchModeTimetableGame;
-                    if (SelectedTimetableStartLocation != null)
+                    if (SelectedTTStartLocation != null)
                         DialogResult = DialogResult.OK;
                 }
             }
@@ -766,10 +766,10 @@ namespace ORTS
             comboBoxHeadTo.Enabled = comboBoxHeadTo.Items.Count > 0 && SelectedActivity is ExploreActivity;
             comboBoxStartTime.Enabled = comboBoxStartSeason.Enabled = comboBoxStartWeather.Enabled = SelectedActivity is ExploreActivity;
             comboBoxStartTime.DropDownStyle = SelectedActivity is ExploreActivity ? ComboBoxStyle.DropDown : ComboBoxStyle.DropDownList;
-            comboBoxStartLocation.Enabled = comboBoxStartLocation.Items.Count > 0 && checkBoxTTWatchMode.Checked;
-            labelStartLocation.Enabled = comboBoxStartLocation.Enabled;
-            comboBoxStartTimeTimetable.Enabled = checkBoxTTWatchMode.Checked;
-            labelTimetableTime.Enabled = comboBoxStartTimeTimetable.Enabled;
+            comboBoxTTStartLocation.Enabled = comboBoxTTStartLocation.Items.Count > 0 && checkBoxTTWatchMode.Checked;
+            labelTTStartLocation.Enabled = comboBoxTTStartLocation.Enabled;
+            comboBoxTTStartTime.Enabled = checkBoxTTWatchMode.Checked;
+            labelTTStartTime.Enabled = comboBoxTTStartTime.Enabled;
             comboBoxTimetable.Enabled = comboBoxTimetableSet.Items.Count > 0;
             comboBoxTimetableTrain.Enabled = comboBoxTimetable.Items.Count > 0 && !checkBoxTTWatchMode.Checked;
             label24.Enabled = comboBoxTimetableTrain.Enabled;
@@ -1098,11 +1098,11 @@ namespace ORTS
             comboBoxTimetableSet.Items.Clear();
             foreach (var timetableSet in TimetableSets)
                 comboBoxTimetableSet.Items.Add(timetableSet);
-            comboBoxStartTimeTimetable.Items.Clear();
+            comboBoxTTStartTime.Items.Clear();
             foreach (var hour in Enumerable.Range(0, 24))
-                comboBoxStartTimeTimetable.Items.Add(String.Format("{0}:00", hour));
+                comboBoxTTStartTime.Items.Add(String.Format("{0}:00", hour));
 
-            UpdateFromMenuSelection<string>(comboBoxStartTimeTimetable, UserSettings.Menu_SelectionIndex.Time, "12:00");
+            UpdateFromMenuSelection<string>(comboBoxTTStartTime, UserSettings.Menu_SelectionIndex.Time, "12:00");
             UpdateFromMenuSelection<TimetableInfo>(comboBoxTimetableSet, UserSettings.Menu_SelectionIndex.TimetableSet, t => t.fileName);
             UpdateEnabled();
         }
@@ -1174,17 +1174,17 @@ namespace ORTS
         #endregion
 
         #region Timetable Station list
-        public void ShowTimetableStationList()
+        public void ShowTTStationList()
         {
-            comboBoxStartLocation.Items.Clear();
+            comboBoxTTStartLocation.Items.Clear();
             if (SelectedTimetable != null)
             {
                 var stations = SelectedTimetableSet.ORTTList[comboBoxTimetable.SelectedIndex].Stations;
                 stations.Sort();
                 foreach (var station in stations)
-                    comboBoxStartLocation.Items.Add(station);
-//                UpdateFromMenuSelection<string>(comboBoxStartTimeTimetable, UserSettings.Menu_SelectionIndex.Time, "12:00");
-                //                UpdateFromMenuSelection<TimetableFileLite.TrainInformation>(comboBoxStartLocation, UserSettings.Menu_SelectionIndex.Train, t => t.Column.ToString());
+                    comboBoxTTStartLocation.Items.Add(station);
+//                UpdateFromMenuSelection<string>(comboBoxTTStartTime, UserSettings.Menu_SelectionIndex.Time, "12:00");
+                //                UpdateFromMenuSelection<TimetableFileLite.TrainInformation>(comboBoxTTStartLocation, UserSettings.Menu_SelectionIndex.Train, t => t.Column.ToString());
             }
             UpdateEnabled();
         }

@@ -779,7 +779,7 @@ namespace Orts.Simulation.Timetables
 
             for (int iTrain = 0; iTrain <= allTrains.Count - 1; iTrain++)
             {
-                if (allTrains[iTrain].StartTime > simulator.WatchStartTime) continue;
+                if (allTrains[iTrain].StartTime > simulator.TTWatchStartTime) continue;
                 if (allTrains[iTrain].Stops.Count > 0 && allTrains[iTrain].Stops?.Last().Value.arrivalTime > stopTime)
                 {
                     playerIndex = iTrain;
@@ -794,7 +794,7 @@ namespace Orts.Simulation.Timetables
                 int startTime = -1;
                 for (int iTrain = 0; iTrain <= allTrains.Count - 1; iTrain++)
                 {
-                    if (allTrains[iTrain].StartTime > simulator.WatchStartTime) continue;
+                    if (allTrains[iTrain].StartTime > simulator.TTWatchStartTime) continue;
                     if (allTrains[iTrain].StartTime > startTime)
                     {
                         playerIndex = iTrain;

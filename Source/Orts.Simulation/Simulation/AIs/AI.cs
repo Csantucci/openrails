@@ -364,7 +364,7 @@ namespace Orts.Simulation.AIs
                 Simulator.PreUpdate = true;
                 for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
                 {
-                    var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.WatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
+                    var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.TTWatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
                     Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
 
                     int fullsec = Convert.ToInt32(runTime);
@@ -616,7 +616,7 @@ namespace Orts.Simulation.AIs
 
             if (Simulator.Settings.TTWatchMode)
             {
-                if (Simulator.ClockTime < Simulator.WatchStartTime)
+                if (Simulator.ClockTime < Simulator.TTWatchStartTime)
                 {
                     if (Simulator.Trains.Count > 0 && Simulator.Trains[0].TrainType == Train.TRAINTYPE.PLAYER)
                     {
@@ -624,10 +624,10 @@ namespace Orts.Simulation.AIs
                         ((TTTrain)Simulator.Trains[0]).PostInit();               // place player train after pre-running of AI trains
                         ((TTTrain)Simulator.Trains[0]).SwitchToAutopilotControl();
                     }
-                    clockTime = Simulator.ClockTime = Simulator.WatchStartTime;
+                    clockTime = Simulator.ClockTime = Simulator.TTWatchStartTime;
                     for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
                     {
-                        var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.WatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
+                        var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.TTWatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
                         Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
 
                         int fullsec = Convert.ToInt32(runTime);
