@@ -616,33 +616,36 @@ namespace Orts.Simulation.AIs
 
             if (Simulator.Settings.TTWatchMode)
             {
-                if (Simulator.ClockTime < Simulator.TTWatchStartTime)
+                if (Simulator.ClockTime > Simulator.TTWatchStartTime)
                 {
-                    if (Simulator.Trains.Count > 0 && Simulator.Trains[0].TrainType == Train.TRAINTYPE.PLAYER)
+                    Simulator.TTWatchStartTime = (int)Simulator.ClockTime + 1;
+                    Trace.TraceWarning("Watch mode delayed due to delayed start of player train");
+                }
+
+                if (Simulator.Trains.Count > 0 && Simulator.Trains[0].TrainType == Train.TRAINTYPE.PLAYER)
+                {
+                    ((TTTrain)Simulator.Trains[0]).CalculatePositionOfCars(); // calculate position of player train cars
+                    ((TTTrain)Simulator.Trains[0]).PostInit();               // place player train after pre-running of AI trains
+                    ((TTTrain)Simulator.Trains[0]).SwitchToAutopilotControl();
+                }
+                clockTime = Simulator.ClockTime = Simulator.TTWatchStartTime;
+                for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
+                {
+                    var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.TTWatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
+                    Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
+
+                    int fullsec = Convert.ToInt32(runTime);
+                    if (fullsec % 3600 < 5) Trace.Write(" " + (fullsec / 3600).ToString("00") + ":00 ");
+
+                    endPreRun = AITTUpdate((float)(runTime - clockTime), Simulator.PreUpdate, ref activeTrains);
+
+                    if (activeTrains)
                     {
-                        ((TTTrain)Simulator.Trains[0]).CalculatePositionOfCars(); // calculate position of player train cars
-                        ((TTTrain)Simulator.Trains[0]).PostInit();               // place player train after pre-running of AI trains
-                        ((TTTrain)Simulator.Trains[0]).SwitchToAutopilotControl();
+                        Simulator.Signals.Update(true);
                     }
-                    clockTime = Simulator.ClockTime = Simulator.TTWatchStartTime;
-                    for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
-                    {
-                        var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.TTWatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
-                        Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
 
-                        int fullsec = Convert.ToInt32(runTime);
-                        if (fullsec % 3600 < 5) Trace.Write(" " + (fullsec / 3600).ToString("00") + ":00 ");
-
-                        endPreRun = AITTUpdate((float)(runTime - clockTime), Simulator.PreUpdate, ref activeTrains);
-
-                        if (activeTrains)
-                        {
-                            Simulator.Signals.Update(true);
-                        }
-
-                        clockTime = runTime;
-                        if (cancellation.IsCancellationRequested) return; // Ping watchdog process
-                    }
+                    clockTime = runTime;
+                    if (cancellation.IsCancellationRequested) return; // Ping watchdog process
                 }
             }
 
