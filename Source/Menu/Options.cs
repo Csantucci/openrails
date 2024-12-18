@@ -826,6 +826,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                 (pbOtherUnits, new Control[] { labelOtherUnits, comboOtherUnits }),
                 (pbEnableTcsScripts, new[] { checkEnableTCSScripts }),
                 (pbEnableWebServer, new[] { checkEnableWebServer }),
+                (pbAutoSave, new[] { checkAutoSaveActive }),
                 (pbOverspeedMonitor, new[] { checkOverspeedMonitor }),
 
                 // Audio tab
@@ -879,6 +880,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
         {
             var urls = new Dictionary<object, string>
             {
+                //general Tab
                 {
                     pbAlerter,
                     BaseDocumentationUrl + "/options.html#alerter-in-cab"
@@ -910,6 +912,10 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                 {
                     pbEnableWebServer,
                     BaseDocumentationUrl + "/options.html#enable-web-server"
+                },
+                {
+                    pbAutoSave,
+                    BaseDocumentationUrl + "/options.html#auto-save"
                 },
                 {
                     pbOverspeedMonitor,

@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.buttonOK = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.pbLAA = new System.Windows.Forms.PictureBox();
@@ -82,6 +80,8 @@
             this.numericSoundVolumePercent = new System.Windows.Forms.NumericUpDown();
             this.numericExternalSoundPassThruPercent = new System.Windows.Forms.NumericUpDown();
             this.numericCab2DStretch = new System.Windows.Forms.NumericUpDown();
+            this.numericSuperElevationGauge = new System.Windows.Forms.NumericUpDown();
+            this.trackWindVariability = new System.Windows.Forms.TrackBar();
             this.checkLODViewingExtension = new System.Windows.Forms.CheckBox();
             this.labelWindowSize = new System.Windows.Forms.Label();
             this.labelWebServerPort = new System.Windows.Forms.Label();
@@ -103,7 +103,6 @@
             this.checkUseMSTSEnv = new System.Windows.Forms.CheckBox();
             this.label8 = new System.Windows.Forms.Label();
             this.pbSuperElevation = new System.Windows.Forms.PictureBox();
-            this.numericSuperElevationGauge = new System.Windows.Forms.NumericUpDown();
             this.label5 = new System.Windows.Forms.Label();
             this.ElevationText = new System.Windows.Forms.Label();
             this.labelLODBias = new System.Windows.Forms.Label();
@@ -234,9 +233,9 @@
             this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
             this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
-            this.trackWindVariability = new System.Windows.Forms.TrackBar();
-            this.windVariabilityValueLabel = new System.Windows.Forms.Label();
             this.label29 = new System.Windows.Forms.Label();
+            this.windVariabilityValueLabel = new System.Windows.Forms.Label();
+            this.pbAutoSave = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbUpdateMode)).BeginInit();
@@ -259,9 +258,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingDistance)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackLODBias)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericPerformanceTunerTarget)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactorChange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSuperElevation)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactorChange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericActRandomizationLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericActWeatherRandomizationLevel)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericDistantMountainsViewingDistance)).BeginInit();
@@ -270,8 +268,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericSoundVolumePercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).BeginInit();
-            this.tabPageExperimental.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).BeginInit();
+            this.tabPageExperimental.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSuperElevation)).BeginInit();
             this.tabPageSystem.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).BeginInit();
@@ -311,7 +311,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOK
@@ -347,7 +347,7 @@
             // labelAutoSaveInterval
             // 
             this.labelAutoSaveInterval.AutoSize = true;
-            this.labelAutoSaveInterval.Location = new System.Drawing.Point(111, 309);
+            this.labelAutoSaveInterval.Location = new System.Drawing.Point(111, 303);
             this.labelAutoSaveInterval.Name = "labelAutoSaveInterval";
             this.labelAutoSaveInterval.Size = new System.Drawing.Size(48, 13);
             this.labelAutoSaveInterval.TabIndex = 35;
@@ -356,7 +356,7 @@
             // ButtonAutoSave60
             // 
             this.ButtonAutoSave60.AutoSize = true;
-            this.ButtonAutoSave60.Location = new System.Drawing.Point(159, 341);
+            this.ButtonAutoSave60.Location = new System.Drawing.Point(159, 347);
             this.ButtonAutoSave60.Name = "ButtonAutoSave60";
             this.ButtonAutoSave60.Size = new System.Drawing.Size(61, 17);
             this.ButtonAutoSave60.TabIndex = 34;
@@ -380,7 +380,7 @@
             // ButtonAutoSave15
             // 
             this.ButtonAutoSave15.AutoSize = true;
-            this.ButtonAutoSave15.Location = new System.Drawing.Point(159, 307);
+            this.ButtonAutoSave15.Location = new System.Drawing.Point(159, 301);
             this.ButtonAutoSave15.Name = "ButtonAutoSave15";
             this.ButtonAutoSave15.Size = new System.Drawing.Size(61, 17);
             this.ButtonAutoSave15.TabIndex = 32;
@@ -392,7 +392,7 @@
             // checkAutoSaveActive
             // 
             this.checkAutoSaveActive.AutoSize = true;
-            this.checkAutoSaveActive.Location = new System.Drawing.Point(32, 308);
+            this.checkAutoSaveActive.Location = new System.Drawing.Point(32, 302);
             this.checkAutoSaveActive.Name = "checkAutoSaveActive";
             this.checkAutoSaveActive.Size = new System.Drawing.Size(73, 17);
             this.checkAutoSaveActive.TabIndex = 31;
@@ -643,11 +643,11 @@
             this.checkUseSuperElevation.AutoSize = true;
             this.checkUseSuperElevation.Location = new System.Drawing.Point(26, 42);
             this.checkUseSuperElevation.Name = "checkUseSuperElevation";
-            this.checkUseSuperElevation.Size = new System.Drawing.Size(122, 17);
+            this.checkUseSuperElevation.Size = new System.Drawing.Size(135, 17);
             this.checkUseSuperElevation.TabIndex = 2;
             this.checkUseSuperElevation.Text = "Legacy Superelevation";
-            this.toolTip1.SetToolTip(this.checkUseSuperElevation, "Enables visual elements of superelevation on legacy routes. " +
-            "May lead to suboptimal track rendering.");
+            this.toolTip1.SetToolTip(this.checkUseSuperElevation, "Enables visual elements of superelevation on legacy routes. May lead to suboptima" +
+        "l track rendering.");
             this.checkUseSuperElevation.UseVisualStyleBackColor = true;
             // 
             // trackLODBias
@@ -983,6 +983,52 @@
             this.toolTip1.SetToolTip(this.numericCab2DStretch, "0 to clip cab view, 100 to stretch it. For cab views that match the display, use " +
         "100.");
             // 
+            // numericSuperElevationGauge
+            // 
+            this.numericSuperElevationGauge.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.numericSuperElevationGauge.Location = new System.Drawing.Point(26, 68);
+            this.numericSuperElevationGauge.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
+            this.numericSuperElevationGauge.Maximum = new decimal(new int[] {
+            1800,
+            0,
+            0,
+            0});
+            this.numericSuperElevationGauge.Minimum = new decimal(new int[] {
+            600,
+            0,
+            0,
+            0});
+            this.numericSuperElevationGauge.Name = "numericSuperElevationGauge";
+            this.numericSuperElevationGauge.Size = new System.Drawing.Size(54, 20);
+            this.numericSuperElevationGauge.TabIndex = 6;
+            this.toolTip1.SetToolTip(this.numericSuperElevationGauge, "The gauge (distance between rails) in millimeters used by the superelevation syst" +
+        "em when gauge data is missing from the route. Set to the most common track gauge" +
+        " used on your route.");
+            this.numericSuperElevationGauge.Value = new decimal(new int[] {
+            600,
+            0,
+            0,
+            0});
+            // 
+            // trackWindVariability
+            // 
+            this.trackWindVariability.AutoSize = false;
+            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
+            this.trackWindVariability.LargeChange = 10;
+            this.trackWindVariability.Location = new System.Drawing.Point(301, 328);
+            this.trackWindVariability.Maximum = 100;
+            this.trackWindVariability.Name = "trackWindVariability";
+            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
+            this.trackWindVariability.TabIndex = 32;
+            this.trackWindVariability.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
+            this.trackWindVariability.Value = 10;
+            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
+            // 
             // checkLODViewingExtension
             // 
             this.checkLODViewingExtension.AutoSize = true;
@@ -1185,39 +1231,21 @@
             this.label8.Location = new System.Drawing.Point(86, 70);
             this.label8.Margin = new System.Windows.Forms.Padding(3);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(64, 13);
+            this.label8.Size = new System.Drawing.Size(101, 13);
             this.label8.TabIndex = 7;
             this.label8.Text = "Default Gauge (mm)";
             // 
-            // numericSuperElevationGauge
+            // pbSuperElevation
             // 
-            this.numericSuperElevationGauge.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericSuperElevationGauge.Location = new System.Drawing.Point(26, 68);
-            this.numericSuperElevationGauge.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericSuperElevationGauge.Maximum = new decimal(new int[] {
-            1800,
-            0,
-            0,
-            0});
-            this.numericSuperElevationGauge.Minimum = new decimal(new int[] {
-            600,
-            0,
-            0,
-            0});
-            this.numericSuperElevationGauge.Name = "numericSuperElevationGauge";
-            this.toolTip1.SetToolTip(this.numericSuperElevationGauge, "The gauge (distance between rails) in millimeters used by the superelevation system " +
-            "when gauge data is missing from the route. Set to the most common track gauge used on your route.");
-            this.numericSuperElevationGauge.Size = new System.Drawing.Size(54, 20);
-            this.numericSuperElevationGauge.TabIndex = 6;
-            this.numericSuperElevationGauge.Value = new decimal(new int[] {
-            600,
-            0,
-            0,
-            0});
+            this.pbSuperElevation.Image = global::ORTS.Properties.Resources.info_18;
+            this.pbSuperElevation.Location = new System.Drawing.Point(6, 23);
+            this.pbSuperElevation.Name = "pbSuperElevation";
+            this.pbSuperElevation.Size = new System.Drawing.Size(18, 18);
+            this.pbSuperElevation.TabIndex = 28;
+            this.pbSuperElevation.TabStop = false;
+            this.pbSuperElevation.Click += new System.EventHandler(this.HelpIcon_Click);
+            this.pbSuperElevation.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
+            this.pbSuperElevation.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // label5
             // 
@@ -1237,21 +1265,9 @@
             this.ElevationText.Location = new System.Drawing.Point(24, 23);
             this.ElevationText.Margin = new System.Windows.Forms.Padding(3);
             this.ElevationText.Name = "ElevationText";
-            this.ElevationText.Size = new System.Drawing.Size(81, 13);
+            this.ElevationText.Size = new System.Drawing.Size(78, 13);
             this.ElevationText.TabIndex = 1;
             this.ElevationText.Text = "Superelevation";
-            // 
-            // pbSuperElevation
-            // 
-            this.pbSuperElevation.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbSuperElevation.Location = new System.Drawing.Point(6, 23);
-            this.pbSuperElevation.Name = "pbSuperElevation";
-            this.pbSuperElevation.Size = new System.Drawing.Size(18, 18);
-            this.pbSuperElevation.TabIndex = 28;
-            this.pbSuperElevation.TabStop = false;
-            this.pbSuperElevation.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbSuperElevation.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbSuperElevation.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // labelLODBias
             // 
@@ -1679,40 +1695,6 @@
             this.checkVerboseConfigurationMessages.TabIndex = 6;
             this.checkVerboseConfigurationMessages.Text = "Verbose ENG/WAG configuration messages";
             this.checkVerboseConfigurationMessages.UseVisualStyleBackColor = true;
-            // 
-            // WindVariabilityValueLabel
-            // 
-            this.windVariabilityValueLabel.Location = new System.Drawing.Point(301, 309);
-            this.windVariabilityValueLabel.Margin = new System.Windows.Forms.Padding(3);
-            this.windVariabilityValueLabel.Name = "WindVariabilityValueLabel";
-            this.windVariabilityValueLabel.Size = new System.Drawing.Size(292, 13);
-            this.windVariabilityValueLabel.TabIndex = 31;
-            this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // trackWindVariability
-            // 
-            this.trackWindVariability.AutoSize = false;
-            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
-            this.trackWindVariability.LargeChange = 10;
-            this.trackWindVariability.Location = new System.Drawing.Point(301, 328);
-            this.trackWindVariability.Maximum = 100;
-            this.trackWindVariability.Name = "trackWindVariability";
-            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
-            this.trackWindVariability.TabIndex = 32;
-            this.trackWindVariability.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
-            this.trackWindVariability.Value = 10;
-            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
-            // 
-            // label29
-            // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(301, 309);
-            this.label29.Margin = new System.Windows.Forms.Padding(3);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(161, 13);
-            this.label29.TabIndex = 30;
-            this.label29.Text = "Wind variability:";
             // 
             // tabPageRailDriver
             // 
@@ -2395,6 +2377,7 @@
             // 
             // tabPageGeneral
             // 
+            this.tabPageGeneral.Controls.Add(this.pbAutoSave);
             this.tabPageGeneral.Controls.Add(this.labelAutoSaveInterval);
             this.tabPageGeneral.Controls.Add(this.ButtonAutoSave60);
             this.tabPageGeneral.Controls.Add(this.ButtonAutoSave30);
@@ -2443,7 +2426,7 @@
             // pbEnableTcsScripts
             // 
             this.pbEnableTcsScripts.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbEnableTcsScripts.Location = new System.Drawing.Point(6, 286);
+            this.pbEnableTcsScripts.Location = new System.Drawing.Point(6, 239);
             this.pbEnableTcsScripts.Name = "pbEnableTcsScripts";
             this.pbEnableTcsScripts.Size = new System.Drawing.Size(18, 18);
             this.pbEnableTcsScripts.TabIndex = 28;
@@ -2455,7 +2438,7 @@
             // pbOtherUnits
             // 
             this.pbOtherUnits.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbOtherUnits.Location = new System.Drawing.Point(6, 257);
+            this.pbOtherUnits.Location = new System.Drawing.Point(6, 210);
             this.pbOtherUnits.Name = "pbOtherUnits";
             this.pbOtherUnits.Size = new System.Drawing.Size(18, 18);
             this.pbOtherUnits.TabIndex = 27;
@@ -2467,7 +2450,7 @@
             // pbPressureUnit
             // 
             this.pbPressureUnit.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbPressureUnit.Location = new System.Drawing.Point(6, 230);
+            this.pbPressureUnit.Location = new System.Drawing.Point(6, 183);
             this.pbPressureUnit.Name = "pbPressureUnit";
             this.pbPressureUnit.Size = new System.Drawing.Size(18, 18);
             this.pbPressureUnit.TabIndex = 26;
@@ -2479,7 +2462,7 @@
             // pbBrakePipeChargingRate
             // 
             this.pbBrakePipeChargingRate.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbBrakePipeChargingRate.Location = new System.Drawing.Point(6, 168);
+            this.pbBrakePipeChargingRate.Location = new System.Drawing.Point(6, 121);
             this.pbBrakePipeChargingRate.Name = "pbBrakePipeChargingRate";
             this.pbBrakePipeChargingRate.Size = new System.Drawing.Size(18, 18);
             this.pbBrakePipeChargingRate.TabIndex = 24;
@@ -2491,7 +2474,7 @@
             // pbGraduatedRelease
             // 
             this.pbGraduatedRelease.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbGraduatedRelease.Location = new System.Drawing.Point(6, 145);
+            this.pbGraduatedRelease.Location = new System.Drawing.Point(6, 98);
             this.pbGraduatedRelease.Name = "pbGraduatedRelease";
             this.pbGraduatedRelease.Size = new System.Drawing.Size(18, 18);
             this.pbGraduatedRelease.TabIndex = 23;
@@ -2503,7 +2486,7 @@
             // pbRetainers
             // 
             this.pbRetainers.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbRetainers.Location = new System.Drawing.Point(6, 122);
+            this.pbRetainers.Location = new System.Drawing.Point(6, 75);
             this.pbRetainers.Name = "pbRetainers";
             this.pbRetainers.Size = new System.Drawing.Size(18, 18);
             this.pbRetainers.TabIndex = 22;
@@ -2541,7 +2524,7 @@
             this.checkEnableTCSScripts.AutoSize = true;
             this.checkEnableTCSScripts.Checked = true;
             this.checkEnableTCSScripts.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkEnableTCSScripts.Location = new System.Drawing.Point(32, 285);
+            this.checkEnableTCSScripts.Location = new System.Drawing.Point(32, 238);
             this.checkEnableTCSScripts.Name = "checkEnableTCSScripts";
             this.checkEnableTCSScripts.Size = new System.Drawing.Size(240, 17);
             this.checkEnableTCSScripts.TabIndex = 13;
@@ -2553,7 +2536,7 @@
             // labelOtherUnits
             // 
             this.labelOtherUnits.AutoSize = true;
-            this.labelOtherUnits.Location = new System.Drawing.Point(156, 257);
+            this.labelOtherUnits.Location = new System.Drawing.Point(156, 210);
             this.labelOtherUnits.Margin = new System.Windows.Forms.Padding(3);
             this.labelOtherUnits.Name = "labelOtherUnits";
             this.labelOtherUnits.Size = new System.Drawing.Size(130, 13);
@@ -2565,7 +2548,7 @@
             // labelPressureUnit
             // 
             this.labelPressureUnit.AutoSize = true;
-            this.labelPressureUnit.Location = new System.Drawing.Point(156, 230);
+            this.labelPressureUnit.Location = new System.Drawing.Point(156, 183);
             this.labelPressureUnit.Margin = new System.Windows.Forms.Padding(3);
             this.labelPressureUnit.Name = "labelPressureUnit";
             this.labelPressureUnit.Size = new System.Drawing.Size(131, 13);
@@ -2578,7 +2561,7 @@
             // 
             this.comboOtherUnits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboOtherUnits.FormattingEnabled = true;
-            this.comboOtherUnits.Location = new System.Drawing.Point(32, 254);
+            this.comboOtherUnits.Location = new System.Drawing.Point(32, 207);
             this.comboOtherUnits.Name = "comboOtherUnits";
             this.comboOtherUnits.Size = new System.Drawing.Size(121, 21);
             this.comboOtherUnits.TabIndex = 8;
@@ -2587,7 +2570,7 @@
             // 
             this.comboPressureUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboPressureUnit.FormattingEnabled = true;
-            this.comboPressureUnit.Location = new System.Drawing.Point(32, 227);
+            this.comboPressureUnit.Location = new System.Drawing.Point(32, 180);
             this.comboPressureUnit.Name = "comboPressureUnit";
             this.comboPressureUnit.Size = new System.Drawing.Size(121, 21);
             this.comboPressureUnit.TabIndex = 11;
@@ -2605,7 +2588,7 @@
             // 
             // numericBrakePipeChargingRate
             // 
-            this.numericBrakePipeChargingRate.Location = new System.Drawing.Point(32, 167);
+            this.numericBrakePipeChargingRate.Location = new System.Drawing.Point(32, 120);
             this.numericBrakePipeChargingRate.Maximum = new decimal(new int[] {
             1000,
             0,
@@ -2628,7 +2611,7 @@
             // checkRetainers
             // 
             this.checkRetainers.AutoSize = true;
-            this.checkRetainers.Location = new System.Drawing.Point(32, 121);
+            this.checkRetainers.Location = new System.Drawing.Point(32, 74);
             this.checkRetainers.Name = "checkRetainers";
             this.checkRetainers.Size = new System.Drawing.Size(257, 17);
             this.checkRetainers.TabIndex = 5;
@@ -2640,7 +2623,7 @@
             // checkGraduatedRelease
             // 
             this.checkGraduatedRelease.AutoSize = true;
-            this.checkGraduatedRelease.Location = new System.Drawing.Point(32, 144);
+            this.checkGraduatedRelease.Location = new System.Drawing.Point(32, 97);
             this.checkGraduatedRelease.Name = "checkGraduatedRelease";
             this.checkGraduatedRelease.Size = new System.Drawing.Size(258, 17);
             this.checkGraduatedRelease.TabIndex = 6;
@@ -2652,7 +2635,7 @@
             // lBrakePipeChargingRate
             // 
             this.lBrakePipeChargingRate.AutoSize = true;
-            this.lBrakePipeChargingRate.Location = new System.Drawing.Point(89, 169);
+            this.lBrakePipeChargingRate.Location = new System.Drawing.Point(89, 122);
             this.lBrakePipeChargingRate.Margin = new System.Windows.Forms.Padding(3);
             this.lBrakePipeChargingRate.Name = "lBrakePipeChargingRate";
             this.lBrakePipeChargingRate.Size = new System.Drawing.Size(198, 13);
@@ -2673,6 +2656,18 @@
             this.checkAlerter.CheckedChanged += new System.EventHandler(this.checkAlerter_CheckedChanged);
             this.checkAlerter.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
             this.checkAlerter.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            // 
+            // pbAutoSave
+            // 
+            this.pbAutoSave.Image = global::ORTS.Properties.Resources.info_18;
+            this.pbAutoSave.Location = new System.Drawing.Point(6, 302);
+            this.pbAutoSave.Name = "pbAutoSave";
+            this.pbAutoSave.Size = new System.Drawing.Size(18, 18);
+            this.pbAutoSave.TabIndex = 36;
+            this.pbAutoSave.TabStop = false;
+            this.pbAutoSave.Click += new System.EventHandler(this.HelpIcon_Click);
+            this.pbAutoSave.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
+            this.pbAutoSave.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // tabOptions
             // 
@@ -2951,6 +2946,25 @@
             this.checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
             this.checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
             // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(301, 309);
+            this.label29.Margin = new System.Windows.Forms.Padding(3);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(81, 13);
+            this.label29.TabIndex = 30;
+            this.label29.Text = "Wind variability:";
+            // 
+            // windVariabilityValueLabel
+            // 
+            this.windVariabilityValueLabel.Location = new System.Drawing.Point(301, 309);
+            this.windVariabilityValueLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.windVariabilityValueLabel.Name = "windVariabilityValueLabel";
+            this.windVariabilityValueLabel.Size = new System.Drawing.Size(292, 13);
+            this.windVariabilityValueLabel.TabIndex = 31;
+            this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
             // OptionsForm
             // 
             this.AcceptButton = this.buttonOK;
@@ -3000,15 +3014,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericSoundVolumePercent)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).EndInit();
             this.tabPageExperimental.ResumeLayout(false);
             this.tabPageExperimental.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbSuperElevation)).EndInit();
             this.tabPageSystem.ResumeLayout(false);
             this.tabPageSystem.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).EndInit();
             this.tabPageEvaluate.ResumeLayout(false);
             this.tabPageEvaluate.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericDataLogTSInterval)).EndInit();
@@ -3052,6 +3067,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -3267,5 +3283,6 @@
         private System.Windows.Forms.TrackBar trackWindVariability;
         private System.Windows.Forms.Label windVariabilityValueLabel;
         private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.PictureBox pbAutoSave;
     }
 }
