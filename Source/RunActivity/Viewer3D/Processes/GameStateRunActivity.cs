@@ -141,7 +141,7 @@ namespace Orts.Viewer3D.Processes
 
             // Look for required type of action
             var acttype = "";
-            var acttypes = new[] { "activity", "explorer", "exploreactivity", "timetable" };
+            var acttypes = new[] { "activity", "explorer", "exploreactivity", "timetable", "watchtimetable" };
             foreach (var possibleActType in acttypes)
                 if (args.Contains("-" + possibleActType) || args.Contains("/" + possibleActType, StringComparer.OrdinalIgnoreCase))
                     acttype = possibleActType;
@@ -307,6 +307,7 @@ namespace Orts.Viewer3D.Processes
             switch (acttype)
             {
                 case "timetable":
+                case "watchtimetable":
                     Simulator.StartTimetable(args, Game.LoaderProcess.CancellationToken);
                     break;
 
@@ -1042,6 +1043,17 @@ namespace Orts.Viewer3D.Processes
                     Console.WriteLine("Weather    = {0} ({1})", GetWeather(args[4]), args[4]);
                     break;
 
+                case "watchtimetable":
+                    if (args.Length < 7) throw new InvalidCommandLine("Mode 'timetable' needs 5 arguments: timetable set file, timetable file, location,  time (hh[:mm[:ss]]), day (???), season (0-3), weather (0-2).");
+                    Console.WriteLine("Set file   = {0}", args[0]);
+                    Console.WriteLine("File       = {0}", args[1]);
+                    Console.WriteLine("Location   = {0}", args[2]);
+                    Console.WriteLine("Time       = {0} ({1})", GetTime(args[3]), args[3]);
+                    Console.WriteLine("Day        = {0}", args[4]);
+                    Console.WriteLine("Season     = {0} ({1})", GetSeason(args[5]), args[5]);
+                    Console.WriteLine("Weather    = {0} ({1})", GetWeather(args[6]), args[6]);
+                    break;
+
                 default:
                     throw new InvalidCommandLine("Unexpected mode '" + acttype + "' with argument count " + args.Length);
             }
@@ -1086,6 +1098,7 @@ namespace Orts.Viewer3D.Processes
                     break;
 
                 case "timetable":
+                case "watchtimetable":
                     Simulator = new Simulator(settings, args[0], true);
                     if (LoadingScreen == null)
                         LoadingScreen = new LoadingScreenPrimitive(Game);

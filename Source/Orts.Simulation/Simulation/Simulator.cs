@@ -35,6 +35,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using static ORTS.Settings.ContentRouteSettings;
 using Event = Orts.Common.Event;
 
 namespace Orts.Simulation
@@ -105,6 +106,8 @@ namespace Orts.Simulation
         public Dictionary<int, AITrain> AutoGenDictionary = new Dictionary<int, AITrain>();
         public List<int> StartReference = new List<int>();
         public Weather Weather = new Weather();
+        public int TTWatchStartTime;
+        public string TTWatchStation;
 
         public float CurveDurability;  // Sets the durability due to curve speeds in TrainCars - read from consist file.
 
@@ -508,6 +511,14 @@ namespace Orts.Simulation
             Trains = new TrainList(this);
             PoolHolder = new Poolholder(this, arguments, cancellation);
             PathName = arguments[1];
+            if (Settings.TTWatchMode)
+            {
+                var time = arguments[3].Split(':');
+                TimeSpan StartTime = new TimeSpan(int.Parse(time[0]), time.Length > 1 ? int.Parse(time[1]) : 0, time.Length > 2 ? int.Parse(time[2]) : 0);
+                TTWatchStartTime = StartTime.Hours * 3600 + StartTime.Minutes * 60 +
+                    StartTime.Seconds;
+                TTWatchStation = arguments[2];
+            }
 
             TimetableInfo TTinfo = new TimetableInfo(this);
 
@@ -517,13 +528,27 @@ namespace Orts.Simulation
 
             AI = new AI(this, allTrains, ref ClockTime, playerTTTrain.FormedOf, playerTTTrain.FormedOfType, playerTTTrain, cancellation);
 
-            Season = (SeasonType)int.Parse(arguments[3]);
-            WeatherType = (WeatherType)int.Parse(arguments[4]);
-
-            // check for user defined weather file
-            if (arguments.Length == 6)
+            if (Settings.TTWatchMode)
             {
-                UserWeatherFile = arguments[5];
+                Season = (SeasonType)int.Parse(arguments[5]);
+                WeatherType = (WeatherType)int.Parse(arguments[6]);
+
+                // check for user defined weather file
+                if (arguments.Length == 8)
+                {
+                    UserWeatherFile = arguments[7];
+                }
+            }
+            else
+            {
+                Season = (SeasonType)int.Parse(arguments[3]);
+                WeatherType = (WeatherType)int.Parse(arguments[4]);
+
+                // check for user defined weather file
+                if (arguments.Length == 6)
+                {
+                    UserWeatherFile = arguments[5];
+                }
             }
 
             if (playerTTTrain != null)

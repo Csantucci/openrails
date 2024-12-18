@@ -40,7 +40,7 @@ namespace Orts.Formats.OR
     /// <summary>
     /// class TimetableFileLite
     /// provides pre-information for menu
-    /// extracts only description and list of trains
+    /// extracts description and list of trains, and list of stations
     /// </summary>
 
     public class TimetableFileLite
@@ -50,6 +50,8 @@ namespace Orts.Formats.OR
         public String Briefing = string.Empty;
 
         private String Separator;
+
+        public List<String> Stations = new List<String>();
 
         /// <summary>
         /// Constructor
@@ -125,12 +127,17 @@ namespace Orts.Formats.OR
             bool consistFound = false;
             bool startFound = false;
             bool briefingFound = false;
+            bool endStationLinesFound = false;
+            bool stationLinesFound = false;
 
             readLine = scrStream.ReadLine();
 
-            while (readLine != null && (!descFound || !pathFound || !consistFound || !startFound || !briefingFound))
+            while (readLine != null && (!descFound || !pathFound || !consistFound || !startFound || !briefingFound || !endStationLinesFound))
             {
                 Parts = readLine.Split(SeparatorArray, System.StringSplitOptions.None);
+
+                if (stationLinesFound && Parts[0].StartsWith("#"))
+                    endStationLinesFound = true;
 
                 if (!descFound && firstCommentColumn > 0)
                 {
@@ -180,6 +187,26 @@ namespace Orts.Formats.OR
                         Briefing = Parts[1].Replace("<br>", "\n");
                         foreach (TrainInformation train in Trains)
                             train.Briefing = Parts[train.Column].Replace("<br>", "\n");
+                    }
+                }
+
+                if (!endStationLinesFound)
+                {
+                    if (!Parts[0].StartsWith("#"))
+                    {
+                        stationLinesFound = true;
+                        var stationString = Parts[0];
+                        if (stationString.Contains("$"))
+                        {
+                            // WIf string contains commands: split name and commands
+                            string[] stationDetails = stationString.Split('$');
+                            Stations.Add(stationDetails[0]);
+                        }
+                        else
+                        {
+                            // String contains name only
+                            Stations.Add(stationString);
+                        }
                     }
                 }
 

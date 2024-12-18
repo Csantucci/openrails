@@ -47,6 +47,8 @@ using ORTS.Common.Input;
 using ORTS.Scripting.Api;
 using ORTS.Settings;
 using Event = Orts.Common.Event;
+using Orts.Simulation.Signalling;
+using Microsoft.CodeAnalysis;
 
 namespace Orts.Viewer3D
 {
@@ -574,6 +576,22 @@ namespace Orts.Viewer3D
                 ActivateCabCamera();
             else
                 CameraActivate();
+            if (Simulator.Settings.TTWatchMode)
+            {
+                foreach (PlatformDetails pfDetails in Simulator.Signals.PlatformDetailsList)
+                {
+                    if (Simulator.TTWatchStation == pfDetails.Name)
+                    {
+                        var pfItem = Simulator.TDB.TrackDB.TrItemTable[pfDetails.PlatformReference[0]];
+                        WorldLocation location = new WorldLocation(pfItem.TileX, pfItem.TileZ, pfItem.X, pfItem.Y + 10, pfItem.Z);
+                        FreeRoamCameraList.Insert(0, new FreeRoamCamera(this, Camera));
+                        FreeRoamCamera.SetLocation(location);
+                        FreeRoamCamera.Activate();
+                        break;
+                    }
+                }
+
+            }
 
             // Prepare the world to be loaded and then load it from the correct thread for debugging/tracing purposes.
             // This ensures that a) we have all the required objects loaded when the 3D view first appears and b) that
