@@ -222,7 +222,7 @@ namespace Orts.Simulation.Physics
             AI_NOTSTARTED,
             AI_AUTOGENERATE,
             REMOTE,
-            AI_PLAYERDRIVEN,   //Player is on board and is durrently driving train
+            AI_PLAYERDRIVEN,   //Player is on board and is currently driving train
             AI_PLAYERHOSTING,   //Player is on board, but train is currently autopiloted
             AI_INCORPORATED    // AI train is incorporated in other train
         }
@@ -1536,6 +1536,7 @@ namespace Orts.Simulation.Physics
                 MUReverserPercent = -MUReverserPercent;
             }
             if (!((this is AITrain && Simulator.PreUpdate) || this.TrainType == TRAINTYPE.STATIC)) FormationReversed = true;
+            RedefineSoundTriggers();
         }
 
         //================================================================================================//
@@ -1570,8 +1571,7 @@ namespace Orts.Simulation.Physics
             // Update flipped state of each car.
             for (var i = 0; i < Cars.Count; i++)
                 Cars[i].Flipped = !Cars[i].Flipped;
-            // if AI train redefine first loco for sound
-            if (TrainType == TRAINTYPE.AI) (this as AITrain).RedefineAITriggers(this as AITrain);
+            RedefineSoundTriggers();
         }
 
         /// <summary>
@@ -13952,6 +13952,81 @@ namespace Orts.Simulation.Physics
             int location = ID.LastIndexOf('-');
             if (location < 0) return ID;
             return ID.Substring(0, location - 1);
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// Redefine sound triggers for AI trains
+        /// </summary>
+        public void RedefineAITriggers()
+        {
+            var leadFound = false;
+            foreach (var car in Cars)
+            {
+                if (car is MSTSLocomotive)
+                {
+                    if (!leadFound)
+                    {
+                        car.SignalEvent(Event.AITrainLeadLoco);
+                        leadFound = true;
+                    }
+                    else
+                    {
+                        car.SignalEvent(Event.AITrainHelperLoco);
+                        car.SignalEvent(Event.EndAITrainLeadLoco);
+                    }
+                }
+            }
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// Redefine sound triggers for Player Train
+        /// </summary>
+        public void RedefinePlayerTrainTriggers()
+        {
+            Simulator.PlayerLocomotive.SignalEvent(Event.PlayerTrainLeadLoco);
+            foreach (var car in Cars)
+            {
+                if (car is MSTSLocomotive)
+                {
+                    if (car != Simulator.PlayerLocomotive)
+                    {
+                        car.SignalEvent(Event.PlayerTrainHelperLoco);
+                    }
+                    car.SignalEvent(Event.EndAITrainLeadLoco);
+                }
+            }
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// Redefine sound triggers for static trains
+        /// </summary>
+        public void RedefineStaticTrainTriggers()
+        {
+            foreach (var car in Cars)
+            {
+                if (car is MSTSLocomotive)
+                {
+                    car.SignalEvent(Event.StaticTrainLoco);
+                    car.SignalEvent(Event.EndAITrainLeadLoco);
+                }
+            }
+        }
+
+        //================================================================================================//
+        /// <summary>
+        /// Redefine sound triggers
+        /// </summary>
+        public void RedefineSoundTriggers()
+        {
+            if (TrainType == TRAINTYPE.PLAYER || TrainType == TRAINTYPE.AI_PLAYERDRIVEN || TrainType == TRAINTYPE.AI_PLAYERHOSTING)
+                RedefinePlayerTrainTriggers();
+            else if (TrainType == TRAINTYPE.AI)
+                RedefineAITriggers();
+            else
+                RedefineStaticTrainTriggers();
         }
 
         //================================================================================================//

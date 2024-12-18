@@ -2301,6 +2301,7 @@ namespace Orts.Simulation.Timetables
                     AIActionItem newAction = new AIActionItem(null, AIActionItem.AI_ACTION_TYPE.STATION_STOP);
                     newAction.SetParam(distancesM[1], 0.0f, distancesM[0], DistanceTravelledM);
                     requiredActions.InsertAction(newAction);
+                    ApproachTriggerSet = false;
 
 #if DEBUG_REPORTS
                     if (StationStops[0].ActualStopType == StationStop.STOPTYPE.STATION_STOP)
@@ -3015,6 +3016,7 @@ namespace Orts.Simulation.Timetables
 
                     TrainType = TRAINTYPE.PLAYER;
                     PostInit(true);
+                    RedefinePlayerTrainTriggers();
                 }
                 // AI train
                 else if (TrainType != TRAINTYPE.PLAYER)
@@ -4018,6 +4020,9 @@ namespace Orts.Simulation.Timetables
 
                         // Reverse formation
                         ReverseFormation(false);
+                        RedefineSoundTriggers();
+
+
 
                         // Get new route list indices from new route
                         DistanceTravelledM = 0;
@@ -4125,6 +4130,7 @@ namespace Orts.Simulation.Timetables
                     Delay = TimeSpan.FromSeconds((presentTime - thisStation.DepartTime) % (24 * 3600));
                 }
             }
+            if (Cars[0] is MSTSLocomotive) Cars[0].SignalEvent(Event.AITrainLeavingStation);
 
 #if DEBUG_REPORTS
             baseDTd = new DateTime();
@@ -4666,7 +4672,7 @@ namespace Orts.Simulation.Timetables
                 }               
                 else if (nextActionInfo.RequiredSpeedMpS == 0)
                 {
-					// Check if stopped at signal
+                    // Check if stopped at signal
                     NextStopDistanceM = distanceToGoM;
                     float stopDistanceM = signalApproachDistanceM;
 
@@ -4734,6 +4740,13 @@ namespace Orts.Simulation.Timetables
                         }
                     }
                 }
+            }
+
+            if (nextActionInfo != null && nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.STATION_STOP &&
+                distanceToGoM < 150 + StationStops[0].PlatformItem.Length && !ApproachTriggerSet)
+            {
+                if (Cars[0] is MSTSLocomotive) Cars[0].SignalEvent(Event.AITrainApproachingStation);
+                ApproachTriggerSet = true;
             }
 
             // Keep speed within required speed band
@@ -6566,6 +6579,19 @@ namespace Orts.Simulation.Timetables
         {
             TrainType = TRAINTYPE.PLAYER;
             InitializeBrakes();
+
+            foreach (var tcar in Cars)
+            {
+                if (tcar is MSTSLocomotive)
+                {
+                    MSTSLocomotive loco = tcar as MSTSLocomotive;
+                    loco.SetPower(true);
+                    loco.AntiSlip = leadLocoAntiSlip;
+                }
+            }
+
+            PowerState = true;
+            RedefinePlayerTrainTriggers();
         }
 
         //================================================================================================//
@@ -9790,6 +9816,8 @@ namespace Orts.Simulation.Timetables
                     // Reinstate as to be started (note : train is not yet removed from reference)
                     AI.StartList.InsertTrain(formedTrain);
                 }
+
+                RedefineSoundTriggers();
             }
         }
 
@@ -12398,6 +12426,7 @@ namespace Orts.Simulation.Timetables
             {
                 attachTrain.InitializeBrakes();
             }
+            attachTrain.RedefineSoundTriggers();
 
             // Update route positions if required
             int trainRearPositionIndex = attachTrain.ValidRoute[0].GetRouteIndex(tempRoute.First().TCSectionIndex, 0);
@@ -12708,6 +12737,9 @@ namespace Orts.Simulation.Timetables
                 DelayedStart = true;
                 DelayedStartState = AI_START_MOVEMENT.PATH_ACTION;
             }
+
+            // redefine sound triggers
+            RedefineSoundTriggers();
 
             // Return new lead locomotive position
             return newLeadLocomotiveIndex;
@@ -13081,6 +13113,7 @@ namespace Orts.Simulation.Timetables
             formedTrain.AI = train.AI;
 
             trainList.Add(formedTrain);
+            formedTrain.RedefineStaticTrainTriggers();
             return formedTrain.Number;
         }
 
@@ -14486,6 +14519,8 @@ namespace Orts.Simulation.Timetables
                         }
                     }
                 }
+                train.RedefineSoundTriggers();
+                newTrain.RedefineSoundTriggers();
             }
 
             return true;
@@ -14587,6 +14622,9 @@ namespace Orts.Simulation.Timetables
                 train.Simulator.Confirmer?.Information("Player switched to train : " + newTrain.Name);
                 Trace.TraceInformation("Player switched to train : " + newTrain.Name);
             }
+
+            train.RedefineSoundTriggers();
+            newTrain.RedefineSoundTriggers();
 
             train.DetachPending = false; // Detach completed
         }

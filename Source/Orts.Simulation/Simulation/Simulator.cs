@@ -1993,6 +1993,7 @@ namespace Orts.Simulation
                         playerTrain.TrainType = Train.TRAINTYPE.AI;
                         if (!TimetableMode) AI.AITrains.Add(playerTrain);
                         playerTrain.Autopilot = false;
+                        playerTrain.RedefineAITriggers();
                         if (TrainSwitcher.SuspendOldPlayer)
                         {
                             playerTrain.MovementState = AITrain.AI_MOVEMENT_STATE.SUSPENDED;
@@ -2192,6 +2193,7 @@ namespace Orts.Simulation
                 PlayerLocomotive.Train.CreatePathlessPlayerTrain();
             }
             var playerLocomotive = PlayerLocomotive as MSTSLocomotive;
+            PlayerLocomotive.Train.RedefinePlayerTrainTriggers();
             playerLocomotive.UsingRearCab = (PlayerLocomotive.Flipped ^ PlayerLocomotive.Train.MUDirection == Direction.Reverse) && (playerLocomotive.HasRearCab || playerLocomotive.HasRear3DCab);
             OnPlayerLocomotiveChanged();
             playerSwitchOngoing = false;

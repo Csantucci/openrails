@@ -31,6 +31,10 @@ namespace Orts.Common
         AITrainHelperLoco,
         AITrainLeadLoco,
         AITrainLeavingStation,
+        PlayerTrainHelperLoco,
+        PlayerTrainLeadLoco,
+        StaticTrainLoco,
+        EndAITrainLeadLoco,
         BatteryOff,
         BatteryOn,
         BatterySwitchOff,
@@ -131,8 +135,6 @@ namespace Orts.Common
         PermissionDenied,
         PermissionGranted,
         PermissionToDepart,
-        PlayerTrainHelperLoco,
-        PlayerTrainLeadLoco,
         PowerKeyOff,
         PowerKeyOn,
         ReverserChange,
@@ -583,7 +585,8 @@ namespace Orts.Common
                         case 333: return Event.PlayerTrainHelperLoco;
                         case 334: return Event.AITrainApproachingStation;
                         case 335: return Event.AITrainLeavingStation;
-
+                        case 336: return Event.StaticTrainLoco;
+                        case 337: return Event.EndAITrainLeadLoco;
                         default: return 0;
                     }
                 case Source.MSTSCrossing:

@@ -4422,7 +4422,8 @@ namespace Orts.Simulation.AIs
                     AI.AITrains.Add(this);
                     AI.aiListChanged = true;
                 }
-                else if (attachTrain is AITrain) RedefineAITriggers(attachTrain as AITrain);
+                else 
+                    attachTrain.RedefineSoundTriggers();
                 if (!UncondAttach)
                 {
                     RemoveTrain();
@@ -4541,8 +4542,7 @@ namespace Orts.Simulation.AIs
             }
             ResetActions(true);
             physicsUpdate(0);
-            RedefineAITriggers(this);
-
+            RedefineSoundTriggers();
         }
 
         //================================================================================================//
@@ -4784,8 +4784,8 @@ namespace Orts.Simulation.AIs
             // Move WP, if any, just under the loco;
             AuxActionsContain.MoveAuxActionAfterReversal(this);
             ResetActions(true);
-            RedefineAITriggers(this);
-            if (attachTrain is AITrain) RedefineAITriggers(attachTrain as AITrain);
+            RedefineSoundTriggers();
+            attachTrain.RedefineSoundTriggers();
             physicsUpdate(0);// Stop the wheels from moving etc
 
         }
