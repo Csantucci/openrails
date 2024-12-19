@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version with addition of Multiplayer Server README - Rev.159
-November 29th, 2024
+﻿Open Rails NewYear README - Rev.160
+December 19th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1393, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1430, 
 plus some of the features already present in the Unstable release.
 
 
@@ -71,7 +71,6 @@ This version includes some features not (yet) available in the Open Rails testin
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
-  *- Auto-save, by roeter, see https://www.elvastower.com/forums/index.php?/topic/35870-auto-save/page__view__findpost__p__280206 (PR #891)
   *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
   *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
@@ -79,9 +78,9 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Fix Lights Crash on Corrupt Shapes (PR #953 by steelfill)
   *- Multiple lightglow types, see https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/  (PR #981) 
   *- Replace dynamic brakes by engine brakes at low speeds, by cesar (PR #996)
-  *- NEW: Merge master PR #1004 from  'mbm-OR/bugfix/Fix-TrainCarOperations-brakehoses-not-sync-coupling-cars'
-  *- NEW: Merge master PR #1006 by rwf-rr: bugfix for content form crash
+  *- NEW: Fix: TrainCarViewer overlaps when display size changed, by mbm_or (PR #1009)
 - NEW: Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window
+- NEW: Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
