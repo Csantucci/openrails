@@ -811,7 +811,7 @@ namespace Orts.Simulation.Timetables
             {
                 throw new InvalidDataException("Suitable player train not found in timetables");
             }
-
+            Trace.TraceInformation("Algorithm selected train {0} as player train", reqTrain.Name);
             return reqTrain;
         }
 
