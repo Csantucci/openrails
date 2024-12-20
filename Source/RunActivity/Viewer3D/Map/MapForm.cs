@@ -300,7 +300,8 @@ namespace Orts.Viewer3D.Debugging
                 int X = this.Bounds.X;
                 int Y = this.Bounds.Y;
                 Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, new int[] { X, Y, Size.Width, Size.Height }, null);
-                Viewer.Settings.Save(name);
+                if (!(X == -32000 && Y == -32000))
+                    Viewer.Settings.Save(name);
             }
         }
 
