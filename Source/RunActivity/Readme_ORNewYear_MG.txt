@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.160
-December 19th, 2024
+﻿Open Rails NewYear README - Rev.160.1
+December 21st, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -81,7 +81,8 @@ This version includes some features not (yet) available in the Open Rails testin
   *- NEW: Fix: TrainCarViewer overlaps when display size changed, by mbm_or (PR #1009)
 - NEW: Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window
 - NEW: Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401
-
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38456-lost-map-window/page__view__findpost__p__313536
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__313550 wrong messages about missing light graphic
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
 
