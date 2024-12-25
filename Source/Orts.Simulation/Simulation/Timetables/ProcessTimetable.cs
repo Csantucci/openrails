@@ -2623,6 +2623,7 @@ namespace Orts.Simulation.Timetables
                     car = RollingStock.Load(simulator, thisTTTrain, wagonFilePath);
                     car.UiD = wagon.UiD;
                     car.Flipped = consistDetails.reversed ? !wagon.Flip : wagon.Flip;
+                    car.FreightAnimations?.Load(wagon.LoadDataList);
                     car.CarID = string.Concat(thisTTTrain.Number.ToString("0###"), "_", carId.ToString("0##"));
                     carId++;
                     car.OrgConsist = consistDetails.consistFile.ToLower();
