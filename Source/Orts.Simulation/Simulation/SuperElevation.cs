@@ -187,10 +187,13 @@ namespace Orts.Simulation
                             }
                             else if (nextSec != null && nextCurve != null) // Not in a curve, but next section is a curve, start superelevation on this section
                             {
-                                MarkSections(simulator, sectionList, curveLen, sectionLengths, curveDir);
-                                curveLen = 0f;
-                                sectionList.Clear();
-                                sectionLengths.Clear();
+                                if(simulator.TRK.Tr_RouteFile.ChangeTrackGauge && sectionList.Count > 0)
+                                { 
+                                    MarkSections(simulator, sectionList, curveLen, sectionLengths, curveDir);
+                                    curveLen = 0f;
+                                    sectionList.Clear();
+                                    sectionLengths.Clear();
+                                }
 
                                 startCurve = true;
                                 curveDir = Math.Sign(nextCurve.Angle);

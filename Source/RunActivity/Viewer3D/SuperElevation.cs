@@ -152,11 +152,11 @@ namespace Orts.Viewer3D
                     TrackSection section = viewer.Simulator.TSectionDat.TrackSections.Get(sid);
                     if (Math.Abs(section.SectionSize.Width - viewer.Simulator.RouteTrackGaugeM) > 0.2 && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
                         continue;//the main route has a gauge different than mine
-                    if (section.SectionCurve == null && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+/*                    if (section.SectionCurve == null && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
                     {
                         continue;
                         //with strait track, will remove all related sections later
-                    }
+                    }*/
                     TrVectorSection tmp = null;
 
                     // Set the start of this section to the end of the previous section
@@ -182,7 +182,7 @@ namespace Orts.Viewer3D
                             tempViewers.Add(new SuperElevationViewer(viewer, root, nextRoot, radius, length, trProfile, tmp.VisElevTable, tmp.ElevOffsetM, reversed));
                         }
                     }
-                    else if (!dontRender && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge) // Section doesn't have superelevation, prepare to generate it without superelevation
+                    else if (!dontRender) // Section doesn't have superelevation, prepare to generate it without superelevation
                         tempViewers.Add(new SuperElevationViewer(viewer, root, nextRoot, radius, length, trProfile));
                 }
             }
