@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.160.1
-December 21st, 2024
+﻿Open Rails NewYear README - Rev.160.2
+December 27th, 2024
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1430, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1435, 
 plus some of the features already present in the Unstable release.
 
 
@@ -79,10 +79,13 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Multiple lightglow types, see https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/  (PR #981) 
   *- Replace dynamic brakes by engine brakes at low speeds, by cesar (PR #996)
   *- NEW: Fix: TrainCarViewer overlaps when display size changed, by mbm_or (PR #1009)
+  *- NEW: Bug fix for https://bugs.launchpad.net/or/+bug/2092489 Containers not appearing in timetable mode (PR #1020)
 - NEW: Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window
 - NEW: Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401
-- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38456-lost-map-window/page__view__findpost__p__313536
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38456-lost-map-window/page__view__findpost__p__313536bug
 - NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__313550 wrong messages about missing light graphic
+- NEW: Fix for ORNYMG only bug about superelevation (see https://www.elvastower.com/forums/index.php?/topic/38458-legacy-superelevation/ )
+
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
 
