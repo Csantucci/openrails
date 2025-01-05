@@ -5286,6 +5286,28 @@ namespace Orts.Simulation.RollingStocks
                         }
                         break;
                     }
+                case Event.EnginePowerOn:
+                    {
+                        if (Train.TrainType != Train.TRAINTYPE.REMOTE)
+                        {
+                            if (this == Simulator.PlayerLocomotive && MPManager.IsMultiPlayer())
+                            {
+                                MPManager.Notify((new MSGEvent(MPManager.GetUserName(), "ENGINE", 1)).ToString());
+                            }
+                        }    
+                        break;
+                    }
+                case Event.EnginePowerOff:
+                    {
+                        if (Train.TrainType != Train.TRAINTYPE.REMOTE)
+                        {
+                            if (this == Simulator.PlayerLocomotive && MPManager.IsMultiPlayer())
+                            {
+                                MPManager.Notify((new MSGEvent(MPManager.GetUserName(), "ENGINE", 0)).ToString());
+                            }
+                        }
+                        break;
+                    }
             }
 
             base.SignalEvent(evt);

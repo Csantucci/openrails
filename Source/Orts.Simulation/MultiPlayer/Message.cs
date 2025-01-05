@@ -2244,6 +2244,12 @@ namespace Orts.MultiPlayer
                 if (t.LeadLocomotive != null && EventState == 2) t.LeadLocomotive.SignalEvent(Event._HeadlightOn);
                 MPManager.BroadCast(this.ToString()); //if the server, will broadcast
             }
+            else if (EventName == "ENGINE")
+            {
+                if (t.LeadLocomotive != null && t.LeadLocomotive is MSTSDieselLocomotive && EventState == 0) t.LeadLocomotive.SignalEvent(Event.EnginePowerOff);
+                else if (t.LeadLocomotive != null && t.LeadLocomotive is MSTSDieselLocomotive && EventState == 1) t.LeadLocomotive.SignalEvent(Event.EnginePowerOn);
+                MPManager.BroadCast(this.ToString()); //if the server, will broadcast
+            }
             else return;
         }
 

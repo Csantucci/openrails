@@ -1577,7 +1577,7 @@ namespace Orts.Viewer3D
                 case Orts.Formats.Msts.VolumeCurve.Controls.Variable2Controlled:
                     {
                         var returnvar = car.Variable2;
-                        if (car is MSTSDieselLocomotive)
+                        if (car is MSTSDieselLocomotive && car.Train.TrainType != Train.TRAINTYPE.REMOTE)
                         {
                             var thisEngine = car as MSTSDieselLocomotive;
                             if (thisEngine.DieselEngines[0].RealRPM < thisEngine.IdleRPM)
