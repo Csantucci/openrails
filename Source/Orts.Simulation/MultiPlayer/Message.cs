@@ -2146,15 +2146,18 @@ namespace Orts.MultiPlayer
         public string user;
         public string EventName;
         public int EventState;
+        public int CarIdx;
 
         public MSGEvent(string m)
         {
             string[] tmp = m.Split(' ');
-            if (tmp.Length != 3) throw new Exception("Parsing error " + m);
+            if (tmp.Length != 4) throw new Exception("Parsing error " + m);
             user = tmp[0].Trim();
             EventName = tmp[1].Trim();
-            EventState = int.Parse(tmp[2]);
+            CarIdx= int.Parse(tmp[2].Trim());
+            EventState = int.Parse(tmp[3]);
         }
+
 
         public MSGEvent(string m, string e, int ID)
         {
@@ -2163,10 +2166,17 @@ namespace Orts.MultiPlayer
             EventState = ID;
         }
 
+        public MSGEvent(string m, string e, int carIdx, int ID)
+        {
+            user = m.Trim();
+            EventName = e;
+            CarIdx = carIdx;
+            EventState = ID;
+        }
+
         public override string ToString()
         {
-
-            string tmp = "EVENT " + user + " " + EventName + " " + EventState;
+            string tmp = "EVENT " + user + " " + EventName + " " + CarIdx + " " + EventState;
             return " " + tmp.Length + ": " + tmp;
         }
 
@@ -2246,9 +2256,12 @@ namespace Orts.MultiPlayer
             }
             else if (EventName == "ENGINE")
             {
-                if (t.LeadLocomotive != null && t.LeadLocomotive is MSTSDieselLocomotive && EventState == 0) t.LeadLocomotive.SignalEvent(Event.EnginePowerOff);
-                else if (t.LeadLocomotive != null && t.LeadLocomotive is MSTSDieselLocomotive && EventState == 1) t.LeadLocomotive.SignalEvent(Event.EnginePowerOn);
-                MPManager.BroadCast(this.ToString()); //if the server, will broadcast
+                if (CarIdx >= 0 && CarIdx < t.Cars.Count)
+                {
+                    if (t.Cars[CarIdx] is MSTSDieselLocomotive && EventState == 0) t.Cars[CarIdx].SignalEvent(Event.EnginePowerOff);
+                    else if (t.Cars[CarIdx] is MSTSDieselLocomotive && EventState == 1) t.Cars[CarIdx].SignalEvent(Event.EnginePowerOn);
+                    MPManager.BroadCast(this.ToString()); //if the server, will broadcast
+                }
             }
             else return;
         }

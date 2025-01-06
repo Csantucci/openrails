@@ -5290,9 +5290,9 @@ namespace Orts.Simulation.RollingStocks
                     {
                         if (Train.TrainType != Train.TRAINTYPE.REMOTE)
                         {
-                            if (this == Simulator.PlayerLocomotive && MPManager.IsMultiPlayer())
+                            if (MPManager.IsMultiPlayer())
                             {
-                                MPManager.Notify((new MSGEvent(MPManager.GetUserName(), "ENGINE", 1)).ToString());
+                                MPManager.Notify((new MSGEvent(MPManager.GetUserName(), "ENGINE", Train.Cars.IndexOf(this), 1)).ToString());
                             }
                         }    
                         break;
@@ -5301,9 +5301,9 @@ namespace Orts.Simulation.RollingStocks
                     {
                         if (Train.TrainType != Train.TRAINTYPE.REMOTE)
                         {
-                            if (this == Simulator.PlayerLocomotive && MPManager.IsMultiPlayer())
+                            if (MPManager.IsMultiPlayer())
                             {
-                                MPManager.Notify((new MSGEvent(MPManager.GetUserName(), "ENGINE", 0)).ToString());
+                                MPManager.Notify((new MSGEvent(MPManager.GetUserName(), "ENGINE", Train.Cars.IndexOf(this), 0)).ToString());
                             }
                         }
                         break;
