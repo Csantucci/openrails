@@ -4,7 +4,7 @@
     <TargetFramework Condition="'$(TargetFramework)' == ''">net472</TargetFramework>
     <OutputType>Library</OutputType>
     <IsPublishable>False</IsPublishable>
-    <AssemblyTitle>Open Rails MSTS Formats Library</AssemblyTitle>
+    <AssemblyTitle>Open Rails IO Library</AssemblyTitle>
     <Description>Open Rails NewYear MG Transport Simulator</Description>
     <Company>Open Rails</Company>
     <Product>Open Rails NewYear MG</Product>
@@ -12,15 +12,6 @@
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <DocumentationFile>..\..\Program\Orts.Formats.Msts.xml</DocumentationFile>
+    <DocumentationFile>..\..\Program\Orts.IO.xml</DocumentationFile>
   </PropertyGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Orts.Parsers.Msts\Orts.Parsers.Msts.csproj" />
-    <ProjectReference Include="..\Orts.Common\Orts.Common.csproj" />
-    <ProjectReference Include="..\Orts.IO\Orts.IO.csproj" />
-    <ProjectReference Include="..\ORTS.Settings\ORTS.Settings.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
-  </ItemGroup>
 </Project>

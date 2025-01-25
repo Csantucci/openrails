@@ -4,7 +4,7 @@
     <TargetFramework Condition="'$(TargetFramework)' == ''">net472</TargetFramework>
     <OutputType>Library</OutputType>
     <IsPublishable>False</IsPublishable>
-    <AssemblyTitle>Open Rails Content Library</AssemblyTitle>
+    <AssemblyTitle>Open Rails Settings Library</AssemblyTitle>
     <Description>Open Rails NewYear MG Transport Simulator</Description>
     <Company>Open Rails</Company>
     <Product>Open Rails NewYear MG</Product>
@@ -12,9 +12,20 @@
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <DocumentationFile>..\..\Program\ORTS.Content.xml</DocumentationFile>
+    <DocumentationFile>..\..\Program\Orts.Settings.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+    <Reference Include="GNU.Gettext, Version=1.1.5151.39896, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\3rdPartyLibs\GNU.Gettext.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Orts.Common\Orts.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
 </Project>

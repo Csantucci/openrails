@@ -4,7 +4,7 @@
     <TargetFramework Condition="'$(TargetFramework)' == ''">net472</TargetFramework>
     <OutputType>Library</OutputType>
     <IsPublishable>False</IsPublishable>
-    <AssemblyTitle>Open Rails Menu Library</AssemblyTitle>
+    <AssemblyTitle>Open Rails Common Library</AssemblyTitle>
     <Description>Open Rails NewYear MG Transport Simulator</Description>
     <Company>Open Rails</Company>
     <Product>Open Rails NewYear MG</Product>
@@ -12,19 +12,20 @@
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
-    <DocumentationFile>..\..\Program\ORTS.Menu.xml</DocumentationFile>
+    <DocumentationFile>..\..\Program\Orts.Common.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GNU.Gettext, Version=1.1.5151.39896, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rdPartyLibs\GNU.Gettext.dll</HintPath>
     </Reference>
+    <Reference Include="RailDriver, Version=0.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RailDriver.0.7.10\lib\netstandard2.0\RailDriver.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Orts.Formats.Msts\Orts.Formats.Msts.csproj" />
-    <ProjectReference Include="..\ORTS.Common\ORTS.Common.csproj" />
-    <ProjectReference Include="..\ORTS.Content\ORTS.Content.csproj" />
-    <ProjectReference Include="..\Orts.Formats.OR\Orts.Formats.OR.csproj" />
-    <ProjectReference Include="..\ORTS.Settings\ORTS.Settings.csproj" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="RailDriver" Version="0.7.10" />
+    <PackageReference Include="System.Management" Version="7.0.0" />
   </ItemGroup>
 </Project>

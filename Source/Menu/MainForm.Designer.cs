@@ -1,6 +1,6 @@
 ﻿// #define INCLUDE_TIMETABLE_INPUT
 
-namespace ORTS
+namespace Menu
 {
     partial class MainForm
     {
@@ -841,7 +841,7 @@ namespace ORTS
             // pbNotificationsSome
             // 
             this.pbNotificationsSome.BackColor = System.Drawing.Color.Transparent;
-            this.pbNotificationsSome.Image = global::ORTS.Properties.Resources.chat_icon_new_message_transparent;
+            this.pbNotificationsSome.Image = global::Menu.Properties.Resources.chat_icon_new_message_transparent;
             this.pbNotificationsSome.Location = new System.Drawing.Point(805, 0);
             this.pbNotificationsSome.Name = "pbNotificationsSome";
             this.pbNotificationsSome.Size = new System.Drawing.Size(37, 31);
@@ -852,7 +852,7 @@ namespace ORTS
             // 
             // pbNotificationsNone
             // 
-            this.pbNotificationsNone.Image = global::ORTS.Properties.Resources.chat_icon_no_message_transparent;
+            this.pbNotificationsNone.Image = global::Menu.Properties.Resources.chat_icon_no_message_transparent;
             this.pbNotificationsNone.InitialImage = ((System.Drawing.Image)(resources.GetObject("pbNotificationsNone.InitialImage")));
             this.pbNotificationsNone.Location = new System.Drawing.Point(805, 0);
             this.pbNotificationsNone.Name = "pbNotificationsNone";
