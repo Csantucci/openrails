@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.160.2
-December 27th, 2024
+﻿Open Rails NewYear README - Rev.161
+January 26th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1435, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1493, 
 plus some of the features already present in the Unstable release.
 
 
@@ -67,7 +67,7 @@ This version includes some features not (yet) available in the Open Rails testin
 - fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__309405
 - fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/ (ORNYMG only?)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
-- Bug fix for chuffing in multiplayer, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/
+- Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401- 
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
@@ -75,16 +75,16 @@ This version includes some features not (yet) available in the Open Rails testin
   *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Fix Lights Crash on Corrupt Shapes (PR #953 by steelfill)
-  *- Multiple lightglow types, see https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/  (PR #981) 
-  *- Replace dynamic brakes by engine brakes at low speeds, by cesar (PR #996)
-  *- NEW: Fix: TrainCarViewer overlaps when display size changed, by mbm_or (PR #1009)
-  *- NEW: Bug fix for https://bugs.launchpad.net/or/+bug/2092489 Containers not appearing in timetable mode (PR #1020)
-- NEW: Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window
-- NEW: Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401
-- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38456-lost-map-window/page__view__findpost__p__313536bug
-- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__313550 wrong messages about missing light graphic
-- NEW: Fix for ORNYMG only bug about superelevation (see https://www.elvastower.com/forums/index.php?/topic/38458-legacy-superelevation/ )
+  *- Fix: TrainCarViewer overlaps when display size changed, by mbm_or (PR #1009)
+  *- Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window (PR #1031)
+  *- Bug fix for chuffing in multiplayer, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/ (PR #1026)
+  *- NEW: DynaTrax Support for Superelevation, by Steelfill (PR #1029); fixes also https://www.elvastower.com/forums/index.php?/topic/38542-problem-with-superelevation-and-two-axle-rolling-stock/
+  *- NEW: Multiple signal light textures per signal, by cesarBLG (PR #1033)
+  *- NEW: Update Spanish translations, by Xavivilla (PR #1036) 
+- NEW: Multiplayer: now any diesel engine on/off sound change broadcasted, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__314883 , by mbm-OR
+
+
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
