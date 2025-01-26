@@ -615,7 +615,7 @@ namespace Orts.Viewer3D.Popups
                 if (controlDiesel == UserCommand.ControlDieselHelper || controlDiesel == UserCommand.ControlDieselPlayer || controlDiesel == UserCommand.ControlInitializeBrakes)
                 {
                     Layout();
-                    PowerSupplyStatus = Owner.Viewer.PlayerTrain.Cars[CarPosition].GetStatus();
+                    PowerSupplyStatus = Owner.Viewer.PlayerTrain.Cars[Owner.Viewer.PlayerTrain.Cars.Count > CarPosition ? CarPosition : CarPosition - 1].GetStatus();
                     ModifiedSetting = true;
                 }
 
