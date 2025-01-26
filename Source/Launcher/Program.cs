@@ -116,7 +116,6 @@ namespace Launcher
                 // Required libraries:
                 "GNU.Gettext.dll",
                 "GNU.Gettext.WinForms.dll",
-                "ICSharpCode.SharpZipLib.dll",
                 @"Native/X86/OpenAL32.dll",
                 @"Native/X64/OpenAL32.dll",
                 // Programs:
