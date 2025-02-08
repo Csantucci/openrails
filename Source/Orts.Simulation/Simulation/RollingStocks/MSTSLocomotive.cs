@@ -2678,7 +2678,7 @@ namespace Orts.Simulation.RollingStocks
                         // Simple slip control
                         // Motive force is reduced to the maximum adhesive force
                         // In wheelslip situations, motive force is set to zero
-                        if (axle.IsWheelSlip)
+                        if (axle.IsWheelSlip || float.IsNaN(axle.DriveForceN))
                         {
                             axle.DriveForceN = 0;
                             return;
