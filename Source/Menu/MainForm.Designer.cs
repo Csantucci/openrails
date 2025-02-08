@@ -629,7 +629,7 @@ namespace Menu
             this.comboBoxStartTime.Name = "comboBoxStartTime";
             this.comboBoxStartTime.Size = new System.Drawing.Size(73, 21);
             this.comboBoxStartTime.TabIndex = 11;
-            this.comboBoxStartTime.TextChanged += new System.EventHandler(this.comboBoxTTStartTime_TextChanged);
+            this.comboBoxStartTime.TextChanged += new System.EventHandler(this.comboBoxStartTime_TextChanged);
             // 
             // comboBoxDuration
             // 
