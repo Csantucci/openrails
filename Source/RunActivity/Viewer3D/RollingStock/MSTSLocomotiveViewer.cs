@@ -3526,16 +3526,7 @@ namespace Orts.Viewer3D.RollingStock
                             break;
                     }
 
-                    if (style is CircularSpeedGaugeRenderer || style is DriverMachineInterfaceRenderer)
-                    {
-                        // Attach the control renderer to the material
-                        var material = Viewer.MaterialManager.Load("Screen", Helpers.GetTextureFile(Viewer.Simulator, Helpers.TextureFlags.None,
-                            TrainCarShape.SharedShape.ReferencePath, matrixName)) as ScreenMaterial;
-                        material?.Set2DRenderer(locoViewer.ThreeDimentionCabRenderer.ControlMap[key]);
-
-                        ScreenDisplays3D.Add(key, new ThreeDimCabScreen(viewer, iMatrix, TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key]));
-                    }
-                    else if (style != null && style is CabViewDigitalRenderer)//digits?
+                    if (style != null && style is CabViewDigitalRenderer)//digits?
                     {
                         //DigitParts.Add(key, new DigitalDisplay(viewer, TrainCarShape, iMatrix, parameter, locoViewer.ThreeDimentionCabRenderer.ControlMap[key]));
                         DigitParts3D.Add(key, new ThreeDimCabDigit(viewer, iMatrix, parameter1, parameter2, this.TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key], Locomotive));
@@ -3577,7 +3568,25 @@ namespace Orts.Viewer3D.RollingStock
                     }
                 }
             }
+
+            // Find the animated textures, like screens
+            if (locoViewer.ThreeDimentionCabRenderer.ControlMap.Values.FirstOrDefault(c => c is DriverMachineInterfaceRenderer) is DriverMachineInterfaceRenderer cvcr
+                && cvcr.Control?.ACEFile is var textureName && textureName != null)
+            {
+                textureName = Path.GetFileName(textureName).ToLower();
+                if (TrainCarShape?.SharedShape?.LodControls?.FirstOrDefault()?.DistanceLevels?.FirstOrDefault()?
+                .SubObjects?.SelectMany(s => s.ShapePrimitives).Where(p => p.Material.Key.Contains(textureName)).FirstOrDefault() is var primitive && primitive != null)
+                {
+                    cvcr.SetTexture3D();
+                    var material = Viewer.MaterialManager.Load("Screen", TrainCarShape.SharedShape.ReferencePath + cvcr.Control.ACEFile, primitive.HierarchyIndex) as ScreenMaterial;
+                    material.Set2DRenderer(cvcr);
+                    primitive.SetMaterial(material);
+                    ScreenDisplays3D.Add((new CabViewControlType(CABViewControlTypes.ORTS_ETCS), 0),
+                        new ThreeDimCabScreen(Viewer, material.HierarchyIndex, TrainCarShape, cvcr));
+                }
+            }
         }
+
         public override void InitializeUserInputCommands() { }
 
         /// <summary>
@@ -3706,6 +3715,24 @@ namespace Orts.Viewer3D.RollingStock
                     foreach (var screen in dpdisplay.Screens)
                     {
                         if (LocoViewer.ThreeDimentionCabRenderer.ActiveScreen[dpdisplay.Display] == screen)
+                        {
+                            p.Value.PrepareFrame(frame, elapsedTime);
+                            break;
+                        }
+                    }
+                    continue;
+                }
+                p.Value.PrepareFrame(frame, elapsedTime);
+            }
+
+            foreach (var p in ScreenDisplays3D)
+            {
+                var screen = p.Value.CVFR.Control;
+                if (screen.Screens != null && screen.Screens[0] != "all")
+                {
+                    foreach (var scr in screen.Screens)
+                    {
+                        if (LocoViewer.ThreeDimentionCabRenderer.ActiveScreen[screen.Display] == scr)
                         {
                             p.Value.PrepareFrame(frame, elapsedTime);
                             break;

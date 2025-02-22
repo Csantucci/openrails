@@ -1832,6 +1832,11 @@ namespace Orts.Viewer3D
           }
       }
 
+      public void SetMaterial(Material material)
+      {
+          Material = material;
+      }
+
       [CallOnThread("Loader")]
       public virtual void Mark()
       {
@@ -1845,52 +1850,48 @@ namespace Orts.Viewer3D
   /// </summary>
   public class MutableShapePrimitive : ShapePrimitive
   {
-      /// <remarks>
-      /// Buffers cannot be expanded, so take care to properly set <paramref name="maxVertices"/> and <paramref name="maxIndices"/>,
-      /// which define the maximum sizes of the vertex and index buffers, respectively.
-      /// </remarks>
-      public MutableShapePrimitive(Material material, int maxVertices, int maxIndices, int[] hierarchy, int hierarchyIndex)
-          : base(material: material,
-                 vertexBufferSet: new SharedShape.VertexBufferSet(new VertexPositionNormalTexture[maxVertices], material.Viewer.GraphicsDevice),
-                 indexData: new ushort[maxIndices],
-                 graphicsDevice: material.Viewer.GraphicsDevice,
-                 hierarchy: hierarchy,
-                 hierarchyIndex: hierarchyIndex) { }
+        /// <remarks>
+        /// Buffers cannot be expanded, so take care to properly set <paramref name="maxVertices"/> and <paramref name="maxIndices"/>,
+        /// which define the maximum sizes of the vertex and index buffers, respectively.
+        /// </remarks>
+        public MutableShapePrimitive(Material material, int maxVertices, int maxIndices, int[] hierarchy, int hierarchyIndex)
+                   : base(material: material,
+                          vertexBufferSet: new SharedShape.VertexBufferSet(new VertexPositionNormalTexture[maxVertices], material.Viewer.GraphicsDevice),
+                          indexData: new ushort[maxIndices],
+                          graphicsDevice: material.Viewer.GraphicsDevice,
+                          hierarchy: hierarchy,
+                          hierarchyIndex: hierarchyIndex)
+        { }
 
-      public void SetVertexData(VertexPositionNormalTexture[] data, int minVertexIndex, int numVertices, int primitiveCount)
-      {
-          VertexBuffer.SetData(data);
-          PrimitiveCount = primitiveCount;
-      }
+        public void SetVertexData(VertexPositionNormalTexture[] data, int minVertexIndex, int numVertices, int primitiveCount)
+        {
+            VertexBuffer.SetData(data);
+            PrimitiveCount = primitiveCount;
+        }
 
-      public void SetIndexData(short[] data)
-      {
-          IndexBuffer.SetData(data);
-      }
+        public void SetIndexData(short[] data)
+        {
+            IndexBuffer.SetData(data);
+        }
+    }
 
-      public void SetMaterial(Material material)
-      {
-          Material = material;
-      }
-  }
-
-  struct ShapeInstanceData
-  {
+    struct ShapeInstanceData
+    {
 #pragma warning disable 0649
-      public Matrix World;
+        public Matrix World;
 #pragma warning restore 0649
 
-      public static readonly VertexElement[] VertexElements = {
-          new VertexElement(sizeof(float) * 0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1),
-          new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 2),
-          new VertexElement(sizeof(float) * 8, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 3),
-          new VertexElement(sizeof(float) * 12, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 4),
-      };
+        public static readonly VertexElement[] VertexElements = {
+            new VertexElement(sizeof(float) * 0, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 1),
+            new VertexElement(sizeof(float) * 4, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 2),
+            new VertexElement(sizeof(float) * 8, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 3),
+            new VertexElement(sizeof(float) * 12, VertexElementFormat.Vector4, VertexElementUsage.TextureCoordinate, 4),
+        };
 
-      public static int SizeInBytes = sizeof(float) * 16;
-  }
+        public static int SizeInBytes = sizeof(float) * 16;
+    }
 
-  public class ShapePrimitiveInstances : RenderPrimitive
+    public class ShapePrimitiveInstances : RenderPrimitive
   {
       public Material Material { get; protected set; }
       public int[] Hierarchy { get; protected set; } // the hierarchy from the sub_object
@@ -2292,25 +2293,20 @@ namespace Orts.Viewer3D
                   if ((textureFlags & Helpers.TextureFlags.Underground) != 0)
                       options |= SceneryMaterialOptions.UndergroundTexture;
 
-                  Material material;
-                  if (primitiveState.tex_idxs.Length != 0)
-                  {
-                      var texture = sFile.shape.textures[primitiveState.tex_idxs[0]];
-                      var imageName = sFile.shape.images[texture.iImage];
-                      if (String.IsNullOrEmpty(sharedShape.ReferencePath))
-                          material = sharedShape.Viewer.MaterialManager.Load("Scenery", Helpers.GetRouteTextureFile(sharedShape.Viewer.Simulator, textureFlags, imageName), (int)options, texture.MipMapLODBias);
-                      else
-                      {
-                          if (imageName.ToUpper().Contains(nameof(CABViewControlTypes.ORTS_ETCS)))
-                              material = sharedShape.Viewer.MaterialManager.Load("Screen", Helpers.GetTextureFile(sharedShape.Viewer.Simulator, Helpers.TextureFlags.None, sharedShape.ReferencePath, imageName));
-                          else
-                              material = sharedShape.Viewer.MaterialManager.Load("Scenery", Helpers.GetTextureFile(sharedShape.Viewer.Simulator, textureFlags, sharedShape.ReferencePath, imageName), (int)options, texture.MipMapLODBias);	
-                      }
-                  }
-                  else
-                  {
-                      material = sharedShape.Viewer.MaterialManager.Load("Scenery", null, (int)options);
-                  }
+                    Material material;
+                    if (primitiveState.tex_idxs.Length != 0)
+                    {
+                        var texture = sFile.shape.textures[primitiveState.tex_idxs[0]];
+                        var imageName = sFile.shape.images[texture.iImage];
+                        if (String.IsNullOrEmpty(sharedShape.ReferencePath))
+                            material = sharedShape.Viewer.MaterialManager.Load("Scenery", Helpers.GetRouteTextureFile(sharedShape.Viewer.Simulator, textureFlags, imageName), (int)options, texture.MipMapLODBias);
+                        else
+                            material = sharedShape.Viewer.MaterialManager.Load("Scenery", Helpers.GetTextureFile(sharedShape.Viewer.Simulator, textureFlags, sharedShape.ReferencePath, imageName), (int)options, texture.MipMapLODBias);
+                    }
+                    else
+                    {
+                        material = sharedShape.Viewer.MaterialManager.Load("Scenery", null, (int)options);
+                    }
 
 #if DEBUG_SHAPE_HIERARCHY
                   debugShapeHierarchy.AppendFormat("        Primitive {0,-2}: pstate={1,-2} vstate={2,-2} lstate={3,-2} matrix={4,-2}", primitiveIndex, primitive.prim_state_idx, primitiveState.ivtx_state, vertexState.LightCfgIdx, vertexState.imatrix);
