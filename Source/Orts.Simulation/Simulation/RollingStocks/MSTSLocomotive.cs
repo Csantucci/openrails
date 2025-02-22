@@ -2232,7 +2232,7 @@ namespace Orts.Simulation.RollingStocks
                     if (RemoteControlGroup != -1 && !Simulator.TimetableMode)
                     {
                         if (!LocomotivePowerSupply.MainPowerSupplyOn)
-                            Train.SignalEvent(PowerSupplyEvent.RaisePantograph, 1);
+                            Train.SignalEvent(PowerSupplyEvent.QuickPowerOn);
 
                         if (this is MSTSDieselLocomotive dieselLocomotive)
                         {
@@ -2602,11 +2602,21 @@ namespace Orts.Simulation.RollingStocks
                         AbsTractionSpeedMpS = AbsSpeedMpS;
                     }
                 }
+                
+                float supplyPowerLimitW = float.MaxValue;
+                if (this is MSTSElectricLocomotive electric)
+                {
+                    supplyPowerLimitW = electric.ElectricPowerSupply.AvailableTractionPowerW;
+                    if (electric.ElectricPowerSupply.MaximumPowerW > 0)
+                        supplyPowerLimitW = Math.Min(supplyPowerLimitW, electric.ElectricPowerSupply.MaximumPowerW * t);
+                }
 
                 if (TractiveForceCurves == null)
                 {
                     float maxForceN = MaxForceN * t * (1 - PowerReduction);
-                    float maxPowerW = MaxPowerW * t * t * (1 - PowerReduction);
+                    float maxPowerW = MaxPowerW;
+                    maxPowerW *= t * t * (1 - PowerReduction);
+                    maxPowerW = Math.Min(maxPowerW, supplyPowerLimitW);
 
                     if (maxForceN * AbsTractionSpeedMpS > maxPowerW)
                         maxForceN = maxPowerW / AbsTractionSpeedMpS;
@@ -2621,6 +2631,8 @@ namespace Orts.Simulation.RollingStocks
                 else
                 {
                     TractiveForceN = TractiveForceCurves.Get(t, AbsTractionSpeedMpS) * (1 - PowerReduction);
+                    if (TractiveForceN * AbsTractionSpeedMpS > supplyPowerLimitW)
+                        TractiveForceN = supplyPowerLimitW / AbsTractionSpeedMpS;
                     if (TractiveForceN < 0 && !TractiveForceCurves.AcceptsNegativeValues())
                         TractiveForceN = 0;
                 }
@@ -2642,13 +2654,18 @@ namespace Orts.Simulation.RollingStocks
             // Calculate the total tractive force for the locomotive - ie Traction + Dynamic Braking force.
             // Note typically only one of the above will only ever be non-zero at the one time.
             // For flipped locomotives the force is "flipped" elsewhere, whereas dynamic brake force is "flipped" below by the direction of the speed.
-
             if (DynamicBrakePercent > 0 && DynamicBrake && DynamicBrakeForceCurves != null && AbsSpeedMpS > 0)
             {
                 float f = DynamicBrakeForceCurves.Get(.01f * DynamicBrakePercent, AbsTractionSpeedMpS);
                 if (f > 0 && LocomotivePowerSupply.DynamicBrakeAvailable)
                 {
                     DynamicBrakeForceN = f * (1 - PowerReduction);
+                    if (LocomotivePowerSupply.MaximumDynamicBrakePowerW > 0)
+                    {
+                        float maxPowerW = LocomotivePowerSupply.MaximumDynamicBrakePowerW * DynamicBrakePercent / 100 * (1 - PowerReduction);
+                        if (DynamicBrakeForceN * AbsTractionSpeedMpS > maxPowerW)
+                            DynamicBrakeForceN = maxPowerW / AbsTractionSpeedMpS;
+                    }
                     TractiveForceN -= (SpeedMpS > 0 ? 1 : SpeedMpS < 0 ? -1 : Direction == Direction.Reverse ? -1 : 1) * DynamicBrakeForceN;                 
                 }
                 else
@@ -6246,6 +6263,12 @@ namespace Orts.Simulation.RollingStocks
                         TrainControlSystem.CabDisplayControls.TryGetValue(cvc.ControlType.Id - 1, out data);
                         break;
 
+
+                    case CABViewControlTypes.ORTS_POWER_SUPPLY:
+                        if (LocomotivePowerSupply is ScriptedLocomotivePowerSupply supply)
+                            supply.CabDisplayControls.TryGetValue(cvc.ControlType.Id - 1, out data);
+                        break;
+
                     case CABViewControlTypes.ORTS_BATTERY_SWITCH_COMMAND_SWITCH:
                         data = LocomotivePowerSupply.BatterySwitch.CommandSwitch ? 1 : 0;
                         break;
@@ -6260,6 +6283,10 @@ namespace Orts.Simulation.RollingStocks
 
                     case CABViewControlTypes.ORTS_BATTERY_SWITCH_ON:
                         data = LocomotivePowerSupply.BatterySwitch.On ? 1 : 0;
+                        break;
+
+                    case CABViewControlTypes.ORTS_BATTERY_VOLTAGE:
+                        data = LocomotivePowerSupply.BatteryVoltageV;
                         break;
 
                     case CABViewControlTypes.ORTS_MASTER_KEY:

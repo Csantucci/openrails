@@ -253,9 +253,8 @@ namespace Orts.Common
 
     // Power : Raise/lower pantograph
     [Serializable()]
-    public sealed class PantographCommand : BooleanCommand
-    {
-        public static MSTSLocomotive Receiver { get; set; }
+    public sealed class PantographCommand : BooleanCommand {
+        public static ILocomotivePowerSupply Receiver { get; set; }
         private int item;
 
         public PantographCommand(CommandLog log, int item, bool toState)
@@ -267,15 +266,62 @@ namespace Orts.Common
 
         public override void Redo()
         {
-            if (Receiver != null && Receiver.Train != null)
-            {
-                Receiver.Train.SignalEvent(ToState ? PowerSupplyEvent.RaisePantograph : PowerSupplyEvent.LowerPantograph, item);
-            }
+            Receiver?.HandleEvent((ToState ? PowerSupplyEvent.RaisePantograph : PowerSupplyEvent.LowerPantograph), item);
         }
 
-        public override string ToString()
+        public override string ToString() {
+            return base.ToString() + " - " + (ToState ? "raise" : "lower") + ", item = " + item;
+        }
+    }
+
+    // Power : Increase/decrease voltage selector position
+    [Serializable()]
+    public sealed class VoltageSelectorCommand : BooleanCommand
+    {
+        public static ILocomotivePowerSupply Receiver { get; set; }
+
+        public VoltageSelectorCommand(CommandLog log, bool toState) : base(log, toState)
         {
-            return base.ToString() + " - " + (ToState ? "raise" : "lower") + ", item = " + item.ToString();
+            Redo();
+        }
+
+        public override void Redo()
+        {
+            Receiver?.HandleEvent(ToState ? PowerSupplyEvent.IncreaseVoltageSelectorPosition : PowerSupplyEvent.DecreaseVoltageSelectorPosition);
+        }
+    }
+
+    // Power : Increase/decrease pantograph selector position
+    [Serializable()]
+    public sealed class PantographSelectorCommand : BooleanCommand
+    {
+        public static ILocomotivePowerSupply Receiver { get; set; }
+
+        public PantographSelectorCommand(CommandLog log, bool toState) : base(log, toState)
+        {
+            Redo();
+        }
+
+        public override void Redo()
+        {
+            Receiver?.HandleEvent(ToState ? PowerSupplyEvent.IncreasePantographSelectorPosition : PowerSupplyEvent.DecreasePantographSelectorPosition);
+        }
+    }
+
+    // Power : Increase/decrease power limitation selector position
+    [Serializable()]
+    public sealed class PowerLimitationSelectorCommand : BooleanCommand
+    {
+        public static ILocomotivePowerSupply Receiver { get; set; }
+
+        public PowerLimitationSelectorCommand(CommandLog log, bool toState) : base(log, toState)
+        {
+            Redo();
+        }
+
+        public override void Redo()
+        {
+            Receiver?.HandleEvent(ToState ? PowerSupplyEvent.IncreasePowerLimitationSelectorPosition : PowerSupplyEvent.DecreasePowerLimitationSelectorPosition);
         }
     }
 
