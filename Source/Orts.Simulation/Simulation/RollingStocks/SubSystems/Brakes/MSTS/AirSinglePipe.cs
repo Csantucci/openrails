@@ -1313,7 +1313,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                         AutoCylPressurePSI += dp;
                     }
 
-                    if (EmergencyDumpValveTimerS == 0)
+                    if (EmergencyDumpValveTimerS == 0 && EmergencyDumpStartTime != null)
                     {
                         if (BrakeLine1PressurePSI < 1) EmergencyDumpStartTime = null;
                     }
@@ -1400,8 +1400,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                     AutoCylPressurePSI -= dp;
             }
             // Special cases for equipment which bypasses triple valve
-            else if ((TwoStageLowSpeedActive && AutoCylPressurePSI > TwoStageLowPressurePSI) ||
-                (!TwoStageLowSpeedActive && AutoCylPressurePSI > ServiceMaxCylPressurePSI)) // Two stage braking
+            else if (TwoStageSpeedDownMpS > 0 && (TwoStageLowSpeedActive && AutoCylPressurePSI > TwoStageLowPressurePSI) ||
+                (TripleValveState != ValveState.Emergency && !TwoStageLowSpeedActive && AutoCylPressurePSI > ServiceMaxCylPressurePSI)) // Two stage braking
             {
                 float target = TwoStageLowSpeedActive ? TwoStageLowPressurePSI : ServiceMaxCylPressurePSI;
                 float dp = elapsedClockSeconds * ReleaseRatePSIpS;
