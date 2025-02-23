@@ -27,6 +27,7 @@ using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.RollingStocks.SubSystems.PowerSupplies;
 using Orts.Simulation.RollingStocks.SubSystems;
+using Orts.Simulation.RollingStocks.SubSystems.Brakes;
 using Orts.Simulation.Signalling;
 using Orts.Simulation.Timetables;
 using ORTS.Common;
@@ -736,6 +737,23 @@ namespace Orts.Simulation
                 TractionCutOffRelayClosingAuthorizationCommand.Receiver = dieselLocomotive.LocomotivePowerSupply;
                 TogglePlayerEngineCommand.Receiver = dieselLocomotive;
                 VacuumExhausterCommand.Receiver = dieselLocomotive;
+            }
+
+            if (PlayerLocomotive is MSTSControlTrailerCar controlCar)
+            {
+                VoltageSelectorCommand.Receiver = controlCar.LocomotivePowerSupply;
+                PantographSelectorCommand.Receiver = controlCar.LocomotivePowerSupply;
+                PowerLimitationSelectorCommand.Receiver = controlCar.LocomotivePowerSupply;
+                CircuitBreakerClosingOrderCommand.Receiver = controlCar.LocomotivePowerSupply;
+                CircuitBreakerClosingOrderButtonCommand.Receiver = controlCar.LocomotivePowerSupply;
+                CircuitBreakerOpeningOrderButtonCommand.Receiver = controlCar.LocomotivePowerSupply;
+                CircuitBreakerClosingAuthorizationCommand.Receiver = controlCar.LocomotivePowerSupply;
+
+                TractionCutOffRelayClosingOrderCommand.Receiver = controlCar.LocomotivePowerSupply;
+                TractionCutOffRelayClosingOrderButtonCommand.Receiver = controlCar.LocomotivePowerSupply;
+                TractionCutOffRelayOpeningOrderButtonCommand.Receiver = controlCar.LocomotivePowerSupply;
+                TractionCutOffRelayClosingAuthorizationCommand.Receiver = controlCar.LocomotivePowerSupply;
+                TogglePlayerEngineCommand.Receiver = controlCar;
             }
 
             ToggleOdometerCommand.Receiver = (MSTSLocomotive)PlayerLocomotive;
