@@ -194,6 +194,7 @@
             this.labelSoundDetailLevel = new System.Windows.Forms.Label();
             this.numericSoundDetailLevel = new System.Windows.Forms.NumericUpDown();
             this.tabPageGeneral = new System.Windows.Forms.TabPage();
+            this.pbAutoSave = new System.Windows.Forms.PictureBox();
             this.pbOverspeedMonitor = new System.Windows.Forms.PictureBox();
             this.pbEnableTcsScripts = new System.Windows.Forms.PictureBox();
             this.pbOtherUnits = new System.Windows.Forms.PictureBox();
@@ -235,7 +236,6 @@
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
             this.label29 = new System.Windows.Forms.Label();
             this.windVariabilityValueLabel = new System.Windows.Forms.Label();
-            this.pbAutoSave = new System.Windows.Forms.PictureBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbUpdateMode)).BeginInit();
@@ -296,6 +296,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbSoundVolumePercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSoundDetailLevel)).BeginInit();
             this.tabPageGeneral.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbOverspeedMonitor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableTcsScripts)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbOtherUnits)).BeginInit();
@@ -311,7 +312,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOK
@@ -2180,7 +2180,7 @@
             // labelFOVHelp
             // 
             this.labelFOVHelp.AutoSize = true;
-            this.labelFOVHelp.Location = new System.Drawing.Point(408, 253);
+            this.labelFOVHelp.Location = new System.Drawing.Point(396, 254);
             this.labelFOVHelp.Margin = new System.Windows.Forms.Padding(3);
             this.labelFOVHelp.Name = "labelFOVHelp";
             this.labelFOVHelp.Size = new System.Drawing.Size(28, 13);
@@ -2201,7 +2201,7 @@
             0,
             0});
             this.numericViewingFOV.Name = "numericViewingFOV";
-            this.numericViewingFOV.Size = new System.Drawing.Size(54, 20);
+            this.numericViewingFOV.Size = new System.Drawing.Size(44, 20);
             this.numericViewingFOV.TabIndex = 13;
             this.numericViewingFOV.Value = new decimal(new int[] {
             1,
@@ -2213,7 +2213,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(406, 234);
+            this.label10.Location = new System.Drawing.Point(396, 235);
             this.label10.Margin = new System.Windows.Forms.Padding(3);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(105, 13);
@@ -2410,6 +2410,18 @@
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "General";
             this.tabPageGeneral.UseVisualStyleBackColor = true;
+            // 
+            // pbAutoSave
+            // 
+            this.pbAutoSave.Image = global::Menu.Properties.Resources.info_18;
+            this.pbAutoSave.Location = new System.Drawing.Point(6, 302);
+            this.pbAutoSave.Name = "pbAutoSave";
+            this.pbAutoSave.Size = new System.Drawing.Size(18, 18);
+            this.pbAutoSave.TabIndex = 36;
+            this.pbAutoSave.TabStop = false;
+            this.pbAutoSave.Click += new System.EventHandler(this.HelpIcon_Click);
+            this.pbAutoSave.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
+            this.pbAutoSave.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // pbOverspeedMonitor
             // 
@@ -2656,18 +2668,6 @@
             this.checkAlerter.CheckedChanged += new System.EventHandler(this.checkAlerter_CheckedChanged);
             this.checkAlerter.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
             this.checkAlerter.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbAutoSave
-            // 
-            this.pbAutoSave.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAutoSave.Location = new System.Drawing.Point(6, 302);
-            this.pbAutoSave.Name = "pbAutoSave";
-            this.pbAutoSave.Size = new System.Drawing.Size(18, 18);
-            this.pbAutoSave.TabIndex = 36;
-            this.pbAutoSave.TabStop = false;
-            this.pbAutoSave.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAutoSave.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAutoSave.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // tabOptions
             // 
@@ -3051,6 +3051,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericSoundDetailLevel)).EndInit();
             this.tabPageGeneral.ResumeLayout(false);
             this.tabPageGeneral.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbOverspeedMonitor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableTcsScripts)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbOtherUnits)).EndInit();
@@ -3067,7 +3068,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).EndInit();
             this.ResumeLayout(false);
 
         }

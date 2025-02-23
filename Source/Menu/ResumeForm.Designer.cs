@@ -175,6 +175,7 @@
             this.labelInvalidSaves.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.labelInvalidSaves.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelInvalidSaves.Location = new System.Drawing.Point(8, 20);
             this.labelInvalidSaves.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.labelInvalidSaves.Name = "labelInvalidSaves";
@@ -190,6 +191,7 @@
             this.buttonDeleteInvalid.Size = new System.Drawing.Size(259, 28);
             this.buttonDeleteInvalid.TabIndex = 1;
             this.buttonDeleteInvalid.Text = "Delete all invalid saves";
+            this.buttonDeleteInvalid.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.buttonDeleteInvalid.UseVisualStyleBackColor = true;
             this.buttonDeleteInvalid.Click += new System.EventHandler(this.buttonDeleteInvalid_Click);
             // 
