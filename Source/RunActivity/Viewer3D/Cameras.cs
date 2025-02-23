@@ -29,6 +29,7 @@ using Orts.Simulation;
 using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.Signalling;
+using Orts.Viewer3D.Popups;
 using ORTS.Common;
 using ORTS.Common.Input;
 using ORTS.Settings;
@@ -129,7 +130,10 @@ namespace Orts.Viewer3D
         public void Activate(bool cameraFollowCutCar = false)
         {
             ScreenChanged();
-            OnActivate(Viewer.Camera == this, cameraFollowCutCar);
+            if (!Viewer.IsFormationReversed)// Avoids flickering
+            {
+                OnActivate(Viewer.Camera == this, cameraFollowCutCar);
+            }
             Viewer.Camera = this;
             Viewer.Simulator.PlayerIsInCab = Style == Styles.Cab || Style == Styles.ThreeDimCab;
             Update(ElapsedTime.Zero);
@@ -1077,7 +1081,7 @@ namespace Orts.Viewer3D
             }
             else
             {
-                isVisibleTrainCarViewerOrWebpage = Viewer.TrainCarOperationsViewerWindow.Visible || (Viewer.TrainCarOperationsWebpage.Connections > 0 && Viewer.TrainCarOperationsWebpage.TrainCarSelected);
+                isVisibleTrainCarViewerOrWebpage = (Viewer.TrainCarOperationsWindow.Visible && !Viewer.TrainCarOperationsViewerWindow.Visible) || Viewer.TrainCarOperationsViewerWindow.Visible || (Viewer.TrainCarOperationsWebpage.Connections > 0 && Viewer.TrainCarOperationsWebpage.TrainCarSelected);
             }
 
             if (attachedCar == null || attachedCar.Train != Viewer.SelectedTrain && !cameraFollowCutCar || carPosition != oldCarPosition)
