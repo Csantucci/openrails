@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.161
-January 26th, 2025
+﻿Open Rails NewYear README - Rev.162
+February 24th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -68,21 +68,33 @@ This version includes some features not (yet) available in the Open Rails testin
 - fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/ (ORNYMG only?)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
 - Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401- 
+- Multiplayer: now any diesel engine on/off sound change broadcasted, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__314883 , by mbm-OR
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
   *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
-  *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Fix: TrainCarViewer overlaps when display size changed, by mbm_or (PR #1009)
   *- Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window (PR #1031)
   *- Bug fix for chuffing in multiplayer, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/ (PR #1026)
-  *- NEW: DynaTrax Support for Superelevation, by Steelfill (PR #1029); fixes also https://www.elvastower.com/forums/index.php?/topic/38542-problem-with-superelevation-and-two-axle-rolling-stock/
-  *- NEW: Multiple signal light textures per signal, by cesarBLG (PR #1033)
+  *- DynaTrax Support for Superelevation, by Steelfill (PR #1029); fixes also https://www.elvastower.com/forums/index.php?/topic/38542-problem-with-superelevation-and-two-axle-rolling-stock/
+  *- Multiple signal light textures per signal, by cesarBLG (PR #1033)
   *- NEW: Update Spanish translations, by Xavivilla (PR #1036) 
-- NEW: Multiplayer: now any diesel engine on/off sound change broadcasted, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/
-- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__314883 , by mbm-OR
+  *- NEW (partially): ETCS DMI Updates, including 280 km/h max tacho setting and DMI in 3D cab by gpz (PR #900)
+  *- NEW: Improvements for power supplies, by César (PR #961)
+  *- NEW: Locomotive operation from control car, by César (PR #1000)
+  *- NEW: Various traincar operations windows fixes, by sweiland (PR #1021)
+  *- NEW: Fix: Adjusts Menu for longer text (Russian), by cjakeman (PR #1039)
+  *- NEW: Trans: updated Portuguese translations, by cjakeman (PR #1041)
+  *- NEW: Trans: Updated German text, by cjakeman (PR #1044)
+- NEW: Fix for crash in wheelslip
+- NEW: Fix for ORNYMG only bug https://www.elvastower.com/forums/index.php?/topic/38601-time-cannot-be-changed-directly-in-ornymg-rev-161/
+- NEW: Hack to avoid exceptions in loading Trat321 shapes, see https://www.elvastower.com/forums/index.php?/topic/38610-many-shapes-are-no-longer-displayed-in-the-trat-321-route/
+
+
+  
+
 
 
 
