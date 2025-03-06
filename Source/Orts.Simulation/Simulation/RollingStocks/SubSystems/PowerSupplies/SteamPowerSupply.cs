@@ -17,6 +17,7 @@
 
 using System.IO;
 using Orts.Parsers.Msts;
+using Orts.Simulation.Physics;
 using ORTS.Scripting.Api;
 
 namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
@@ -217,6 +218,26 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
         public void HandleEvent(PowerSupplyEvent evt, int id)
         {
+            // pantograph animation is used in steam locomotives for various unhandled animations
+            if (evt == PowerSupplyEvent.RaisePantograph || evt == PowerSupplyEvent.LowerPantograph)
+            {
+                (Car as MSTSWagon).Pantographs.HandleEvent(evt, id);
+                // pass command to other locos (e.g. electric helpers) and wagons
+                foreach (TrainCar car in Car.Train.Cars)
+                {
+                    if (car != Locomotive && car.RemoteControlGroup != -1)
+                    {
+                        if (car.PowerSupply != null)
+                        {
+                            car.PowerSupply.HandleEventFromLeadLocomotive(evt, id);
+                        }
+                        else if (car is MSTSWagon wagon)
+                        {
+                            wagon.Pantographs.HandleEvent(evt, id);
+                        }
+                    }
+                }
+            }
         }
 
         public void HandleEventFromTcs(PowerSupplyEvent evt)
@@ -237,6 +258,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
         public void HandleEventFromLeadLocomotive(PowerSupplyEvent evt, int id)
         {
+            // pantograph animation is used in steam locomotives for various unhandled animations
+            if (evt == PowerSupplyEvent.RaisePantograph || evt == PowerSupplyEvent.LowerPantograph)
+                (Car as MSTSWagon).Pantographs.HandleEvent(evt, id);
         }
 
         public void HandleEventFromOtherLocomotive(int locoIndex, PowerSupplyEvent evt)
