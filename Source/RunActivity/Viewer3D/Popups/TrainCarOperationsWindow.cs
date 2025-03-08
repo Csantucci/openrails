@@ -690,9 +690,11 @@ namespace Orts.Viewer3D.Popups
                 // Updates power supply status
                 else if (SelectedCarPosition <= CarPositionVisible && SelectedCarPosition == CarPosition)
                 {
-                    var powerSupplyStatusChanged = PowerSupplyStatus != null && PowerSupplyStatus != Owner.Viewer.PlayerTrain.Cars[CarPosition].GetStatus();
-                    var batteyStatusChanged = BatteryStatus != null && BatteryStatus != Owner.Viewer.PlayerTrain.Cars[CarPosition].GetStatus();
-                    var circuitBreakerStateChanged = CircuitBreakerState != null && CircuitBreakerState != (Owner.Viewer.PlayerTrain.Cars[CarPosition] as MSTSElectricLocomotive).ElectricPowerSupply.CircuitBreaker.State.ToString();
+                    var newCarposition = Owner.Viewer.PlayerTrain.Cars.Count > CarPosition ? CarPosition : CarPosition - 1;
+
+                    var powerSupplyStatusChanged = PowerSupplyStatus != null && PowerSupplyStatus != Owner.Viewer.PlayerTrain.Cars[newCarposition].GetStatus();
+                    var batteyStatusChanged = BatteryStatus != null && BatteryStatus != Owner.Viewer.PlayerTrain.Cars[newCarposition].GetStatus();
+                    var circuitBreakerStateChanged = CircuitBreakerState != null && CircuitBreakerState != (Owner.Viewer.PlayerTrain.Cars[newCarposition] as MSTSElectricLocomotive).ElectricPowerSupply.CircuitBreaker.State.ToString();
 
                     if (powerSupplyStatusChanged || batteyStatusChanged || circuitBreakerStateChanged)
                     {
