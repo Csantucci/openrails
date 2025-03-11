@@ -480,7 +480,7 @@ namespace Orts.Parsers.Msts
         {
             if (!EndOfBlock())
             {
-                if (ID == TokenID.distance_levels)
+                if (ID == TokenID.distance_levels || ID == TokenID.controllers)
                 {
                     TraceWarning_NoPosition("Expected end of block " + ID + "; got more data");
                 }
