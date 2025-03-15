@@ -225,7 +225,12 @@ namespace Orts.Viewer3D.Debugging
                 }
                 if (controlToSet is NumericUpDown numericUpDown)
                 {
-                    numericUpDown.Value = (int)property.GetValue(Viewer.Settings, null);
+                    // in a specific case the value of the property is = 0, which is below the accepted range
+                    var mapResolutionUpDown = (int)property.GetValue(Viewer.Settings, null);
+                    if (mapResolutionUpDown < numericUpDown.Minimum)
+                        mapResolutionUpDown = (int)numericUpDown.Minimum;
+                    numericUpDown.Value = mapResolutionUpDown;
+//                    numericUpDown.Value = (int)property.GetValue(Viewer.Settings, null);
                     numericUpDown.ValueChanged += c_ControlChanged;
                 }
                 if (controlToSet is Button button)
