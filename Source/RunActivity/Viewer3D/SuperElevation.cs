@@ -163,6 +163,8 @@ namespace Orts.Viewer3D
                 foreach (uint sid in id.TrackSections)
                 {
                     TrackSection section = viewer.Simulator.TSectionDat.TrackSections.Get(sid);
+                    if (section == null)
+                        return false;
                     if (Math.Abs(section.SectionSize.Width - viewer.Simulator.RouteTrackGaugeM) > 0.2 && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
                         continue;//the main route has a gauge different than mine
 /*                    if (section.SectionCurve == null && !viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)

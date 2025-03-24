@@ -181,7 +181,9 @@ namespace Orts.Viewer3D
             {
                 float length, radius;
                 uint sid = path.TrackSections[i];
-                TrackSection section = viewer.Simulator.TSectionDat.TrackSections[sid];
+                TrackSection section;
+                if (!viewer.Simulator.TSectionDat.TrackSections.TryGetValue(sid, out section))
+                    return;
                 WorldPosition root = new WorldPosition(nextRoot);
                 nextRoot.XNAMatrix.Translation = Vector3.Zero;
 
