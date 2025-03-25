@@ -651,6 +651,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     foreach (var eventHandler in Wagon.EventHandlers)
                     {
                         eventHandler.HandleEvent(soundEvent);
+                        eventHandler.HandleEvent(Event.PantographToggle);
                     }
                 }
                 catch (Exception error)
