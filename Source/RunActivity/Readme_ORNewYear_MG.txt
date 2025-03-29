@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.162
-February 24th, 2025
+﻿Open Rails NewYear README - Rev.163
+March 28th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1546, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1630, 
 plus some of the features already present in the Unstable release.
 
 
@@ -69,34 +69,31 @@ This version includes some features not (yet) available in the Open Rails testin
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
 - Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401- 
 - Multiplayer: now any diesel engine on/off sound change broadcasted, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/
-- Bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__314883 , by mbm-OR
+- Fix for crash in wheelslip
+- Hack to avoid exceptions in loading Trat321 shapes, see https://www.elvastower.com/forums/index.php?/topic/38610-many-shapes-are-no-longer-displayed-in-the-trat-321-route/
+- Fix for https://www.elvastower.com/forums/index.php?/topic/38647-bogies-on-turntables/
+- Re-instate panto management for steam locomotives, see https://www.elvastower.com/forums/index.php?/topic/38656-panto-function-no-longer-works-on-steam-locomotives/
+- NEW: Bug fix for trainset not shown if in .s file number of controllers set > 0 and controllers not present (Flirt package)
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38660-crash-causing-line-in-openrailsini/ Avoids crash when Map_mapResolutionUpDown = 0
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38688-dynamic-tracks-from-routersshapes-are-not-displayed/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
   *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
-  *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Standalone multiplayer server, forked from OR Ultimate (now FreeTrainSimulator). Can be started from the "Tools" button in the Main Menu Window (PR #1031)
-  *- Bug fix for chuffing in multiplayer, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/ (PR #1026)
+  *- Add curve squeal to route, by steamer_CTN (PR Bug fix for https://www.elvastower.com/forums/index.php?/topic/38688-dynamic-tracks-from-routersshapes-are-not-displayed/#923)
   *- DynaTrax Support for Superelevation, by Steelfill (PR #1029); fixes also https://www.elvastower.com/forums/index.php?/topic/38542-problem-with-superelevation-and-two-axle-rolling-stock/
-  *- Multiple signal light textures per signal, by cesarBLG (PR #1033)
-  *- NEW: Update Spanish translations, by Xavivilla (PR #1036) 
-  *- NEW (partially): ETCS DMI Updates, including 280 km/h max tacho setting and DMI in 3D cab by gpz (PR #900)
-  *- NEW: Improvements for power supplies, by César (PR #961)
-  *- NEW: Locomotive operation from control car, by César (PR #1000)
-  *- NEW: Various traincar operations windows fixes, by sweiland (PR #1021)
-  *- NEW: Fix: Adjusts Menu for longer text (Russian), by cjakeman (PR #1039)
-  *- NEW: Trans: updated Portuguese translations, by cjakeman (PR #1041)
-  *- NEW: Trans: Updated German text, by cjakeman (PR #1044)
-- NEW: Fix for crash in wheelslip
-- NEW: Fix for ORNYMG only bug https://www.elvastower.com/forums/index.php?/topic/38601-time-cannot-be-changed-directly-in-ornymg-rev-161/
-- NEW: Hack to avoid exceptions in loading Trat321 shapes, see https://www.elvastower.com/forums/index.php?/topic/38610-many-shapes-are-no-longer-displayed-in-the-trat-321-route/
-
-
+  *- (partially): ETCS DMI Updates, including 280 km/h max tacho setting and DMI in 3D cab by gpz (PR #900)
+  *- Improvements for power supplies, by César (PR #961)
+  *- Locomotive operation from control car, by César (PR #1000
+  *- Bug fix for https://www.elvastower.com/forums/index.php?/topic/27839-trigger-47-in-sms-files/ (PR #1065)
+  *- UPDATED: Merge remote-tracking branch 'SteelFill/multi_track_profiles' (PR #1029)
+  *- NEW: Bugfix: Empty Start Time for Explore, and other issues loading from Menu Selection and Content Routes, by rwf-rr (PR #1045)
+  *- NEW: Content Manager: Add axle count, and lowest derail force, by rwf-rr (PR #1052)
+  *- NEW: Train Forces popup Window, by rwf-rr (PR #1062)
+  *- NEW: Better Missing Track Section Error Message, by steelfill (PR #1063)
+  *- NEW: Add Train Info tab to Help window (F1), by rwf-rr (PR #1064)
   
-
-
-
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
@@ -125,6 +122,7 @@ This unofficial version couldn't have been created without following contributio
 - SteelFill
 - ExRail
 - roeter
+- rwf-rr
 - Carlo Santucci
 
 - all those who contributed with ideas and provided contents for testing and pointed to malfunctions.
