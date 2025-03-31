@@ -6242,7 +6242,7 @@ namespace Orts.Simulation.RollingStocks
                     default:
                         if (CruiseControl != null)
                             data = CruiseControl.GetDataOf(cvc);
-                        if (Train?.EOT != null && data == 0)
+                        if (Train?.EOT != null)
                             data = Train.EOT.GetDataOf(cvc);
                         break;
                 }
