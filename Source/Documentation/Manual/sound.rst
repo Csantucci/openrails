@@ -446,6 +446,7 @@ Trigger       Function
 334           AITrainApproachingStation
 335           AITrainLeavingStation
 336           StaticTrainLoco
+337           EndAITrainLeadLoco
 =========     =====================================
 
 
