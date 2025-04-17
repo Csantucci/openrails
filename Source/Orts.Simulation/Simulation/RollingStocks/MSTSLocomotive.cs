@@ -2054,6 +2054,7 @@ namespace Orts.Simulation.RollingStocks
         /// </summary>
         public override void Update(float elapsedClockSeconds)
         {
+            elapsedTime = elapsedClockSeconds;
             var gearloco = this as MSTSDieselLocomotive;
 
             // Pass Gearbox commands
