@@ -37,6 +37,7 @@ using Orts.Formats.Msts;
 using SharpFont;
 using static Orts.Viewer3D.WebServices.TrainCarOperationsWebpage.OperationsSend;
 using SharpDX.Direct3D9;
+using Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS;
 
 namespace Orts.Viewer3D.Popups
 {
@@ -1089,7 +1090,7 @@ namespace Orts.Viewer3D.Popups
             }));
             Tabs.Add(new TabData(Tab.TrainInfo, Viewer.Catalog.GetString("Train Info"), (cl) =>
             {
-                var labelWidth = cl.TextHeight * 12;
+                var labelWidth = cl.TextHeight * 13;
                 var scrollbox = cl.AddLayoutScrollboxVertical(cl.RemainingWidth);
                 if (Owner.Viewer.PlayerTrain != null)
                 {
@@ -1226,12 +1227,14 @@ namespace Orts.Viewer3D.Popups
             int numCars = 0;
             int numAxles = 0;
             var totMassKg = playerTrain.MassKg;
+            float trailingMassKg = 0f;
             string sectionMass = ""; // using "  +  " between wagon sets
             var lengthM = playerTrain.Length;
             var maxSpeedMps = playerTrain.TrainMaxSpeedMpS;
             float totPowerW = 0f;
             float totMaxTractiveEffortN = 0f;
-            string sectionMaxTractiveForce = ""; // using "  +  " between DPU sets
+            float totMaxContTractiveEffortN = 0f;
+            string sectionMaxContTractiveForce = ""; // using "  +  " between DPU sets
             float totMaxDynamicBrakeForceN = 0f;
             string sectionMaxDynamicBrakeForce = ""; // using "  +  " between DPU sets
             float maxBrakeForceN = 0f;
@@ -1239,9 +1242,9 @@ namespace Orts.Viewer3D.Popups
             float lowestDerailForceN = 9.999e8f;  // impossible high force
 
             int engCount = 0; string countSeparator = ""; // when set, indicates that subsequent engines are in a separate block
-            float engMaxTractiveForceN = 0f; float engMaxDynBrakeForceN = 0f; string forceSeparator = "";  // when set, indicates that subsequent engines are in a separate block
+            float engMaxContTractiveForceN = 0f; float engMaxDynBrakeForceN = 0f; string forceSeparator = "";  // when set, indicates that subsequent engines are in a separate block
 
-            float wagMassKg = 0f; string massSeparator = ""; // when set, indicates that subsequent engines are in a separate block
+            float wagSectionMassKg = 0f; string massSeparator = ""; // when set, indicates that subsequent engines are in a separate block
             int numOperativeBrakes = 0;
             bool isMetric = false; bool isUK = false;  // isImperial* does not seem to be used in simulation
 
@@ -1267,31 +1270,34 @@ namespace Orts.Viewer3D.Popups
                     numAxles += eng.LocoNumDrvAxles + eng.GetWagonNumAxles();
                     totPowerW += eng.MaxPowerW;
                     totMaxTractiveEffortN += eng.MaxForceN;
-                    engMaxTractiveForceN += eng.MaxForceN;
+                    totMaxContTractiveEffortN += eng.MaxContinuousForceN > 0 ? eng.MaxContinuousForceN : eng.MaxForceN;
+                    engMaxContTractiveForceN += eng.MaxContinuousForceN > 0 ? eng.MaxContinuousForceN : eng.MaxForceN;
                     totMaxDynamicBrakeForceN += eng.MaxDynamicBrakeForceN;
                     engMaxDynBrakeForceN += eng.MaxDynamicBrakeForceN;
 
                     // hanlde transition from wagons to engines
-                    if (wagMassKg > 0)
+                    if (wagSectionMassKg > 0)
                     {
-                        sectionMass += massSeparator + FormatStrings.FormatLargeMass(wagMassKg, isMetric, isUK);
-                        wagMassKg = 0f; massSeparator = "  +  ";
+                        sectionMass += massSeparator + FormatStrings.FormatLargeMass(wagSectionMassKg, isMetric, isUK);
+                        wagSectionMassKg = 0f; massSeparator = "  +  ";
                     }
                 }
                 else if (wag != null)
                 {
                     numCars++;
                     numAxles += wag.GetWagonNumAxles();
-                    wagMassKg += wag.MassKG;
+                    wagSectionMassKg += wag.MassKG;
+                    trailingMassKg += wag.MassKG;
+                    if (wag.MaxBrakeForceN > 0 && car.BrakeSystem != null && !(car.BrakeSystem is SingleTransferPipe) && !(car.BrakeSystem is ManualBraking)) { numOperativeBrakes++; }
 
                     // handle transition from engines to wagons
                     if (engCount > 0 || (engCount == 0 && numCars == 0))
                     {
                         numEngines += countSeparator + engCount.ToString();
                         engCount = 0; countSeparator = "+";
-                        sectionMaxTractiveForce += forceSeparator + FormatStrings.FormatForce(engMaxTractiveForceN, isMetric);
+                        sectionMaxContTractiveForce += forceSeparator + FormatStrings.FormatForce(engMaxContTractiveForceN, isMetric);
                         sectionMaxDynamicBrakeForce += forceSeparator + FormatStrings.FormatForce(engMaxDynBrakeForceN, isMetric);
-                        engMaxTractiveForceN = 0f; engMaxDynBrakeForceN = 0f;  forceSeparator = "  +  ";
+                        engMaxContTractiveForceN = 0f; engMaxDynBrakeForceN = 0f;  forceSeparator = "  +  ";
                     }
                 }
 
@@ -1303,7 +1309,6 @@ namespace Orts.Viewer3D.Popups
                     if (couplerStrength < lowestCouplerStrengthN) { lowestCouplerStrengthN = couplerStrength; }
                     var derailForce = GetDerailForce(wag);
                     if (derailForce < lowestDerailForceN) { lowestDerailForceN = derailForce; }
-                    if (wag.MaxBrakeForceN > 0) { numOperativeBrakes++; }  // simplistic: real world has cutout brakes, and no brakes on some articulated car-segments
 
                     carInfoList.Add(new CarInfo(wag.MassKG, isEng));
                 }
@@ -1311,9 +1316,9 @@ namespace Orts.Viewer3D.Popups
 
             if (engCount > 0) { numEngines = numEngines + countSeparator + engCount.ToString(); }
             if (String.IsNullOrEmpty(numEngines)) { numEngines = "0"; }
-            if (engMaxTractiveForceN > 0) { sectionMaxTractiveForce += forceSeparator + FormatStrings.FormatForce(engMaxTractiveForceN, isMetric); }
+            if (engMaxContTractiveForceN > 0) { sectionMaxContTractiveForce += forceSeparator + FormatStrings.FormatForce(engMaxContTractiveForceN, isMetric); }
             if (engMaxDynBrakeForceN > 0) { sectionMaxDynamicBrakeForce += forceSeparator + FormatStrings.FormatForce(engMaxDynBrakeForceN, isMetric); }
-            if (wagMassKg > 0) { sectionMass += massSeparator + FormatStrings.FormatLargeMass(wagMassKg, isMetric, isUK); }
+            if (wagSectionMassKg > 0) { sectionMass += massSeparator + FormatStrings.FormatLargeMass(wagSectionMassKg, isMetric, isUK); }
 
             var line = scrollbox.AddLayoutHorizontalLineOfText();
             line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Number of Engines:"), LabelAlignment.Left));
@@ -1343,12 +1348,16 @@ namespace Orts.Viewer3D.Popups
             scrollbox.AddHorizontalSeparator();
 
             line = scrollbox.AddLayoutHorizontalLineOfText();
-            line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Total Power:"), LabelAlignment.Left));
+            line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Max Power:"), LabelAlignment.Left));
             line.Add(new Label(line.RemainingWidth, line.RemainingHeight, FormatStrings.FormatPower(totPowerW, isMetric, false, false), LabelAlignment.Left));
 
             line = scrollbox.AddLayoutHorizontalLineOfText();
             line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Max Tractive Effort:"), LabelAlignment.Left));
-            line.Add(new Label(line.RemainingWidth, line.RemainingHeight, sectionMaxTractiveForce, LabelAlignment.Left));
+            line.Add(new Label(line.RemainingWidth, line.RemainingHeight, FormatStrings.FormatForce(totMaxTractiveEffortN, isMetric), LabelAlignment.Left));
+
+            line = scrollbox.AddLayoutHorizontalLineOfText();
+            line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Max Continuous Tractive Effort:"), LabelAlignment.Left));
+            line.Add(new Label(line.RemainingWidth, line.RemainingHeight, sectionMaxContTractiveForce, LabelAlignment.Left));
 
             line = scrollbox.AddLayoutHorizontalLineOfText();
             line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Max Dynamic Brake Force:"), LabelAlignment.Left));
@@ -1356,12 +1365,12 @@ namespace Orts.Viewer3D.Popups
 
             if (!isMetric)
             {
-                float hpt = totMassKg > 0f ? W.ToHp(totPowerW) / Kg.ToTUS(totMassKg) : 0f;
+                float hpt = trailingMassKg > 0f ? W.ToHp(totPowerW) / Kg.ToTUS(trailingMassKg) : 0f;
                 line = scrollbox.AddLayoutHorizontalLineOfText();
                 line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Horespower per Ton:"), LabelAlignment.Left));
                 line.Add(new Label(line.RemainingWidth, line.RemainingHeight, string.Format("{0:0.0}", hpt), LabelAlignment.Left));
 
-                float tpob = numOperativeBrakes > 0 ? Kg.ToTUS(totMassKg) / numOperativeBrakes : 0;
+                float tpob = numOperativeBrakes > 0 ? Kg.ToTUS(trailingMassKg) / numOperativeBrakes : 0;
                 line = scrollbox.AddLayoutHorizontalLineOfText();
                 line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Tons per Operative Brake:"), LabelAlignment.Left));
                 line.Add(new Label(line.RemainingWidth, line.RemainingHeight, string.Format("{0:0}", tpob), LabelAlignment.Left));
@@ -1373,13 +1382,13 @@ namespace Orts.Viewer3D.Popups
                 //       and should really be defined in the path file.
 
                 // tons per equivalent powered axle (TPA or TpEPA)
-                float tpepa = totMaxTractiveEffortN > 0 ? Kg.ToTUS(totMassKg) / (N.ToLbf(totMaxTractiveEffortN) / 10000f) : 0;
+                float tpepa = totMaxContTractiveEffortN > 0 ? Kg.ToTUS(trailingMassKg) / (N.ToLbf(totMaxContTractiveEffortN) / 10000f) : 0;
                 line = scrollbox.AddLayoutHorizontalLineOfText();
                 line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Tons per EPA:"), LabelAlignment.Left));
                 line.Add(new Label(line.RemainingWidth, line.RemainingHeight, string.Format("{0:0}", tpepa), LabelAlignment.Left));
 
                 // tons per equivalent dynamic brake axle (TpEDBA)
-                float tpedba = totMaxDynamicBrakeForceN > 0 ? Kg.ToTUS(totMassKg) / (N.ToLbf(totMaxDynamicBrakeForceN) / 10000f) : 0;
+                float tpedba = totMaxDynamicBrakeForceN > 0 ? Kg.ToTUS(trailingMassKg) / (N.ToLbf(totMaxDynamicBrakeForceN) / 10000f) : 0;
                 line = scrollbox.AddLayoutHorizontalLineOfText();
                 line.Add(new Label(labelWidth, line.RemainingHeight, Viewer.Catalog.GetString("Tons per EDBA:"), LabelAlignment.Left));
                 line.Add(new Label(line.RemainingWidth, line.RemainingHeight, string.Format("{0:0}", tpedba), LabelAlignment.Left));
