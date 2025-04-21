@@ -31,9 +31,10 @@ namespace Orts.Formats.Msts
         public string EngineType;
         public float MaxPowerW;
         public float MaxForceN;
+        public float MaxContinuousForceN;
         public float MaxDynamicBrakeForceN;
         public float MaxSpeedMps;
-        public int NumDriveAxles = -1;  // ORTS; -1 indicates absent
+        public int NumDriveAxles;  // ORTS
         public float NumEngWheels;  // MSTS
         public string Description;
         public string CabViewFile;
@@ -51,6 +52,7 @@ namespace Orts.Formats.Msts
                             new STFReader.TokenProcessor("type", ()=>{ EngineType = stf.ReadStringBlock(null); }),
                             new STFReader.TokenProcessor("maxpower", ()=>{ MaxPowerW = stf.ReadFloatBlock( STFReader.UNITS.Power, null); }),
                             new STFReader.TokenProcessor("maxforce", ()=>{ MaxForceN = stf.ReadFloatBlock( STFReader.UNITS.Force, null); }),
+                            new STFReader.TokenProcessor("maxcontinuousforce", ()=>{ MaxContinuousForceN = stf.ReadFloatBlock( STFReader.UNITS.Force, null); }),
                             new STFReader.TokenProcessor("dynamicbrakesmaximumforce", ()=>{ MaxDynamicBrakeForceN = stf.ReadFloatBlock( STFReader.UNITS.Force, null); }),
                             new STFReader.TokenProcessor("maxvelocity", ()=>{ MaxSpeedMps = stf.ReadFloatBlock( STFReader.UNITS.Speed, null); }),
                             new STFReader.TokenProcessor("ortsnumberdriveaxles", ()=>{ NumDriveAxles = stf.ReadIntBlock(null); }),
