@@ -675,9 +675,16 @@ namespace Orts.Simulation.RollingStocks.SubSystems
 
                     var functionHead = trainSignal.SignalObject.SignalHeads.Find(head => head.Function == function);
                     signalTypeName = functionHead.SignalTypeName;
-                    if (functionHead.signalType.DrawStates.Any(d => d.Value.Index == functionHead.draw_state))
+                    if (functionHead?.signalType?.DrawStates != null)
                     {
-                        drawStateName = functionHead.signalType.DrawStates.First(d => d.Value.Index == functionHead.draw_state).Value.Name;
+                        foreach (var key in functionHead.signalType.DrawStates.Keys)
+                        {
+                            if (functionHead.signalType.DrawStates[key].Index == functionHead.draw_state)
+                            {
+                                drawStateName = functionHead.signalType.DrawStates[key].Name;
+                                break;
+                            }
+                        }
                     }
                     textAspect = functionHead?.TextSignalAspect ?? "";
                     break;
