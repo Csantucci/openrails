@@ -49,7 +49,7 @@ namespace Orts.Viewer3D.Processes
 
         public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
 
-        RenderFrame CurrentFrame;   // a frame contains a list of primitives to draw at a specified time
+        public RenderFrame CurrentFrame;   // a frame contains a list of primitives to draw at a specified time
         RenderFrame NextFrame;      // we prepare the next frame in the background while the current one is rendering,
 
         public bool IsMouseVisible { get; set; }  // handles cross thread issues by signalling RenderProcess of a change

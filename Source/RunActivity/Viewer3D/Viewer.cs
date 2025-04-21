@@ -146,6 +146,18 @@ namespace Orts.Viewer3D
         public List<FreeRoamCamera> FreeRoamCameraList = new List<FreeRoamCamera>();
         public FreeRoamCamera FreeRoamCamera { get { return FreeRoamCameraList[0]; } } // Camera 8
 
+        // variables for extended performance log dump
+        public bool ExtendedPerformanceDump;
+        public long ViewerPrefaceElapsedMicroS;
+        public long ViewerUserInputHandleElapsedMicroS;
+        public long SimulatorElapsedMicroS;
+        public long ViewerMiscellaneousElapsedMicroS;
+        public long ViewerWorldElapsedMicroS;
+        public long ViewerCamerasElapsedMicroS;
+        public long ViewerPrepareFrameElapsedMicroS;
+
+        public Stopwatch Watch = new Stopwatch();
+
         /// <summary>
         /// Activate the 2D or 3D cab camera depending on the current player preference.
         /// </summary>
@@ -600,6 +612,8 @@ namespace Orts.Viewer3D
             // MUST be after loading is done! (Or we try and load shapes on the main thread.)
             PlayerLocomotiveViewer = World.Trains.GetViewer(PlayerLocomotive);
 
+            ExtendedPerformanceDump = Settings.ExtendedPerformanceDump;
+
             SetCommandReceivers();
             InitReplay();
         }
@@ -803,6 +817,10 @@ namespace Orts.Viewer3D
         [CallOnThread("Updater")]
         public void Update(RenderFrame frame, float elapsedRealTime)
         {
+            if (ExtendedPerformanceDump)
+            {
+                Watch = Stopwatch.StartNew();
+            }
             RealTime += elapsedRealTime;
             var elapsedTime = new ElapsedTime(Simulator.GetElapsedClockSeconds(elapsedRealTime), elapsedRealTime);
 
@@ -818,7 +836,12 @@ namespace Orts.Viewer3D
             {
                 ComposeMessageWindow.AppendMessage(UserInput.GetPressedKeys(), UserInput.GetPreviousPressedKeys());
             }
-
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                ViewerPrefaceElapsedMicroS = Watch.ElapsedTicks / 10;
+                Watch = Stopwatch.StartNew();
+            }
             HandleUserInput(elapsedTime);
             // We need to do it also here, because passing from manual to auto a ReverseFormation may be needed
             if (Camera is TrackingCamera && Camera.AttachedCar != null && Camera.AttachedCar.Train != null && Camera.AttachedCar.Train.FormationReversed)
@@ -827,10 +850,22 @@ namespace Orts.Viewer3D
                 Camera.AttachedCar.Train.FormationReversed = false;
                 (Camera as TrackingCamera).SwapCameras();
             }
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                ViewerUserInputHandleElapsedMicroS = Watch.ElapsedTicks / 10;
+                Watch = Stopwatch.StartNew();
+            }
             Simulator.Update(elapsedTime.ClockSeconds);
             if (PlayerLocomotive?.Train?.BrakingTime == -2) // We just had a wagon with stuck brakes
             {
                 LoadDefectCarSound(PlayerLocomotive.Train.Cars[-(int)PlayerLocomotive.Train.ContinuousBrakingTime], "BrakesStuck.sms");
+            }
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                SimulatorElapsedMicroS = Watch.ElapsedTicks / 10;
+                Watch = Stopwatch.StartNew();
             }
             if (MPManager.IsMultiPlayer())
             {
@@ -870,8 +905,19 @@ namespace Orts.Viewer3D
                 MessagesWindow.AddMessage("Replay complete", 2);
                 Log.ReplayComplete = false;
             }
-
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                ViewerMiscellaneousElapsedMicroS = Watch.ElapsedTicks / 10;
+                Watch = Stopwatch.StartNew();
+            }
             World.Update(elapsedTime);
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                ViewerWorldElapsedMicroS = Watch.ElapsedTicks / 10;
+                Watch = Stopwatch.StartNew();
+            }
 
             if (frame.IsScreenChanged)
                 Camera.ScreenChanged();
@@ -923,7 +969,12 @@ namespace Orts.Viewer3D
                     AbovegroundCamera = null;
                 }
             }
-
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                ViewerCamerasElapsedMicroS = Watch.ElapsedTicks / 10;
+                Watch = Stopwatch.StartNew();
+            }
             Simulator.ActiveMovingTable = FindActiveMovingTable();
 
             frame.PrepareFrame(this);
@@ -946,6 +997,11 @@ namespace Orts.Viewer3D
             if (TrainCarOperationsWebpage != null)
             {
                 TrainCarOperationsWebpage.handleReceiveAndSend();
+            }
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                ViewerPrepareFrameElapsedMicroS = Watch.ElapsedTicks / 10;
             }
         }
 

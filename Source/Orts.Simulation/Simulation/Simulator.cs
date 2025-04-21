@@ -263,6 +263,18 @@ namespace Orts.Simulation
 
         public float TimetableLoadedFraction = 0.0f;    // Set by AI.PrerunAI(), Get by GameStateRunActivity.Update()
 
+        // variables for extended performance log dump
+        public bool ExtendedPerformanceDump;
+        public long SimulatorPrefaceElapsedMicroS;
+        public long TrainsUpdateElapsedMicroS;
+        public long CheckForCouplingElapsedMicroS;
+        public long SignalsUpdateElapsedMicroS;
+        public long AITrainsUpdateElapsedMicroS;
+        public long SimulatorMiscellaneousElapsedMicroS;
+
+
+        public Stopwatch SimWatch = new Stopwatch();
+
         public Simulator(UserSettings settings, string activityPath, bool useOpenRailsDirectory, bool deterministic = false)
         {
             Catalog = new GettextResourceManager("Orts.Simulation");
@@ -392,6 +404,8 @@ namespace Orts.Simulation
             ContainerManager = new ContainerManager(this);
             ScriptManager = new ScriptManager();
             Log = new CommandLog(this);
+
+            ExtendedPerformanceDump = Settings.ExtendedPerformanceDump;
         }
 
         public void SetActivity(string activityPath)
@@ -866,6 +880,10 @@ namespace Orts.Simulation
         [CallOnThread("Updater")]
         public void Update(float elapsedClockSeconds)
         {
+            if (ExtendedPerformanceDump)
+            {
+                SimWatch = Stopwatch.StartNew();
+            }
             // Advance the times.
             GameTime += elapsedClockSeconds;
             ClockTime += elapsedClockSeconds;
@@ -909,7 +927,12 @@ namespace Orts.Simulation
                     movingTrains.Add(train);
                 }
             }
-
+            if (ExtendedPerformanceDump)
+            {
+                SimWatch.Stop();
+                SimulatorPrefaceElapsedMicroS = SimWatch.ElapsedTicks / 10;
+                SimWatch = Stopwatch.StartNew();
+            }
             foreach (Train train in movingTrains)
             {
                 if (MPManager.IsMultiPlayer())
@@ -931,6 +954,12 @@ namespace Orts.Simulation
                     ((AITrain)train).AIUpdate(elapsedClockSeconds, ClockTime, false);
                 }
             }
+            if (ExtendedPerformanceDump)
+            {
+                SimWatch.Stop();
+                TrainsUpdateElapsedMicroS = SimWatch.ElapsedTicks / 10;
+                SimWatch = Stopwatch.StartNew();
+            }
 
             if (!TimetableMode)
             {
@@ -946,10 +975,22 @@ namespace Orts.Simulation
                     CheckForCoupling(PlayerLocomotive.Train, elapsedClockSeconds);
                 }
             }
+            if (ExtendedPerformanceDump)
+            {
+                SimWatch.Stop();
+                CheckForCouplingElapsedMicroS = SimWatch.ElapsedTicks / 10;
+                SimWatch = Stopwatch.StartNew();
+            }
 
             if (Signals != null)
             {
                 if (!MPManager.IsMultiPlayer() || MPManager.IsServer()) Signals.Update(false);
+            }
+            if (ExtendedPerformanceDump)
+            {
+                SimWatch.Stop();
+                SignalsUpdateElapsedMicroS = SimWatch.ElapsedTicks / 10;
+                SimWatch = Stopwatch.StartNew();
             }
 
             if (AI != null)
@@ -963,7 +1004,12 @@ namespace Orts.Simulation
                     AI.ActivityUpdate(elapsedClockSeconds);
                 }
             }
-
+            if (ExtendedPerformanceDump)
+            {
+                SimWatch.Stop();
+                AITrainsUpdateElapsedMicroS = SimWatch.ElapsedTicks / 10;
+                SimWatch = Stopwatch.StartNew();
+            }
             if (LevelCrossings != null)
             {
                 LevelCrossings.Update(elapsedClockSeconds);
@@ -977,6 +1023,11 @@ namespace Orts.Simulation
             if (HazzardManager != null) HazzardManager.Update(elapsedClockSeconds);
 
             if (ContainerManager != null) ContainerManager.Update();
+            if (ExtendedPerformanceDump)
+            {
+                SimWatch.Stop();
+                SimulatorMiscellaneousElapsedMicroS = SimWatch.ElapsedTicks / 10;
+            }
         }
 
         internal void SetWeather(WeatherType weather, SeasonType season)

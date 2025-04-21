@@ -354,6 +354,9 @@ namespace ORTS.Settings
         [Default(100)]
         public int WindVariability { get; set; }
 
+        [Default(false)]
+        public bool ExtendedPerformanceDump { get; set; }
+
         // Hidden settings:
         [Default(0)]
         public int CarVibratingLevel { get; set; }

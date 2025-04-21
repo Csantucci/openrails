@@ -238,8 +238,9 @@ namespace Orts.Viewer3D
                 if (Viewer.Settings.DataLogger)
                 {
                     Logger.Separator = (DataLogger.Separators)Enum.Parse(typeof(DataLogger.Separators), Viewer.Settings.DataLoggerSeparator);
-                    if (Viewer.Settings.DataLogPerformance)
+                    if (Viewer.Settings.DataLogPerformance || Viewer.Settings.ExtendedPerformanceDump)
                     {
+                        Logger.Data(FormatStrings.FormatTime(Viewer.Simulator.ClockTime + (MultiPlayer.MPManager.IsClient() ? MultiPlayer.MPManager.Instance().serverTimeDifference : 0)));
                         Logger.Data(VersionInfo.Version);
                         Logger.Data(FrameNumber.ToString("F0"));
                         Logger.Data(GetWorkingSetSize().ToString("F0"));
@@ -249,13 +250,32 @@ namespace Orts.Viewer3D
                         Logger.Data(GC.CollectionCount(2).ToString("F0"));
                         Logger.Data(ProcessorCount.ToString("F0"));
                         Logger.Data(Viewer.RenderProcess.FrameRate.Value.ToString("F0"));
-                        Logger.Data(Viewer.RenderProcess.FrameTime.Value.ToString("F6"));
+                        Logger.Data((Viewer.RenderProcess.FrameTime.Value * 1000).ToString("F6"));
                         Logger.Data(Viewer.RenderProcess.ShadowPrimitivePerFrame.Sum().ToString("F0"));
                         Logger.Data(Viewer.RenderProcess.PrimitivePerFrame.Sum().ToString("F0"));
                         Logger.Data(Viewer.RenderProcess.Profiler.Wall.Value.ToString("F0"));
                         Logger.Data(Viewer.UpdaterProcess.Profiler.Wall.Value.ToString("F0"));
                         Logger.Data(Viewer.LoaderProcess.Profiler.Wall.Value.ToString("F0"));
                         Logger.Data(Viewer.SoundProcess.Profiler.Wall.Value.ToString("F0"));
+                    }
+                    if (Viewer.ExtendedPerformanceDump)
+                    {
+                        Logger.Data(Viewer.ViewerPrefaceElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.ViewerUserInputHandleElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.SimulatorElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.ViewerMiscellaneousElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.ViewerWorldElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.ViewerCamerasElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.ViewerPrepareFrameElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.RenderProcess.CurrentFrame.DrawShadowsElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.RenderProcess.CurrentFrame.DrawSequencesDistantMountainsElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.RenderProcess.CurrentFrame.DrawSequencesElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.Simulator.SimulatorPrefaceElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.Simulator.TrainsUpdateElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.Simulator.CheckForCouplingElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.Simulator.SignalsUpdateElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.Simulator.AITrainsUpdateElapsedMicroS.ToString("F0"));
+                        Logger.Data(Viewer.Simulator.SimulatorMiscellaneousElapsedMicroS.ToString("F0"));
                     }
                     if (Viewer.Settings.DataLogPhysics)
                     {
@@ -409,11 +429,12 @@ namespace Orts.Viewer3D
             {
                 DataLogger.Separators separator = (DataLogger.Separators)Enum.Parse(typeof(DataLogger.Separators), settings.DataLoggerSeparator);
                 string headerLine = "";
-                if (settings.DataLogPerformance)
+                if (settings.DataLogPerformance || settings.ExtendedPerformanceDump)
                 {
                     headerLine = String.Join(Convert.ToString((char)separator),
                         new string[] 
-                            {    
+                            {
+                                "Game Time",
                                 "SVN",
                                 "Frame",
                                 "Memory",
@@ -426,6 +447,7 @@ namespace Orts.Viewer3D
                                 "Frame Time",
                                 "Shadow Primitives",
                                 "Render Primitives",
+                                " ",
                                 "Render Process",
                                 "Updater Process",
                                 "Loader Process",
@@ -433,9 +455,34 @@ namespace Orts.Viewer3D
                             }
                         );
                 }
+                if (settings.ExtendedPerformanceDump)
+                {
+                    headerLine += Convert.ToString((char)separator);
+                    headerLine += String.Join(Convert.ToString((char)separator),
+                            new string[]
+                            {
+                                "Viewer Preface",
+                                "User Input",
+                                "Simulator",
+                                "Viewer Miscellaneous",
+                                "World",
+                                "Cameras",
+                                "PrepareFrame",
+                                "Draw Shadows",
+                                "Draw Sequences d. Mountains",
+                                "Draw Sequences",
+                                "Simulator Preface",
+                                "Trains Update (no AI)",
+                                "Check for Coupling",
+                                "Signals Update",
+                                "AI Trains Update",
+                                "Simulator Miscellanous"
+                            }
+                        );
+                }
                 if (settings.DataLogPhysics)
                 {
-                    if (settings.DataLogPerformance)
+                    if (settings.DataLogPerformance && !settings.ExtendedPerformanceDump)
                         headerLine += Convert.ToString((char)separator);
 
                     headerLine += String.Join(Convert.ToString((char)separator),

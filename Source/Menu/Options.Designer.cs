@@ -236,6 +236,7 @@
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
             this.label29 = new System.Windows.Forms.Label();
             this.windVariabilityValueLabel = new System.Windows.Forms.Label();
+            this.checkExtendedPerformanceDump = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbUpdateMode)).BeginInit();
@@ -2693,6 +2694,7 @@
             // 
             // tabPageORNYMG
             // 
+            this.tabPageORNYMG.Controls.Add(this.checkExtendedPerformanceDump);
             this.tabPageORNYMG.Controls.Add(this.label25);
             this.tabPageORNYMG.Controls.Add(this.precipitationBoxLength);
             this.tabPageORNYMG.Controls.Add(this.label24);
@@ -2964,6 +2966,17 @@
             this.windVariabilityValueLabel.Size = new System.Drawing.Size(292, 13);
             this.windVariabilityValueLabel.TabIndex = 31;
             this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // checkExtendedPerformanceDump
+            // 
+            this.checkExtendedPerformanceDump.AutoSize = true;
+            this.checkExtendedPerformanceDump.Location = new System.Drawing.Point(15, 106);
+            this.checkExtendedPerformanceDump.Name = "checkExtendedPerformanceDump";
+            this.checkExtendedPerformanceDump.Size = new System.Drawing.Size(165, 17);
+            this.checkExtendedPerformanceDump.TabIndex = 49;
+            this.checkExtendedPerformanceDump.Text = "Extended Performance Dump";
+            this.checkExtendedPerformanceDump.UseVisualStyleBackColor = true;
+            this.checkExtendedPerformanceDump.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // OptionsForm
             // 
@@ -3284,5 +3297,6 @@
         private System.Windows.Forms.Label windVariabilityValueLabel;
         private System.Windows.Forms.Label label29;
         private System.Windows.Forms.PictureBox pbAutoSave;
+        private System.Windows.Forms.CheckBox checkExtendedPerformanceDump;
     }
 }
