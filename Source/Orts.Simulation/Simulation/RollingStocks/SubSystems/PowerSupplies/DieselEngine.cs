@@ -994,7 +994,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 RealRPM = IdleRPM;
                 State = DieselEngineState.Running;
             }
-
             RPMRange = MaxRPM - IdleRPM;
             MagnitudeRange = MaxMagnitude - InitialMagnitude;
             ExhaustRange = MaxExhaust - InitialExhaust;
