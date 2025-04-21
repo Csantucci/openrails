@@ -94,13 +94,16 @@ namespace Orts.Viewer3D.Popups
         private int LastPlayerTrainCars;
         private bool LastPlayerLocomotiveFlippedState;
 
-        private float LimitForCouplerStrengthN = 2.2e6f;  // 500k lbf, used for graph scale only
+        private static readonly float HighestRealisticCouplerStrengthN = 2.2e6f;  // 500k lbf, used for graph scale only
+        private float LimitForCouplerStrengthN = HighestRealisticCouplerStrengthN;
         private float CouplerStrengthScaleN;
 
-        private float LimitForDerailForceN = 1.55e5f;  // 35k lbf, used for graph scale only
+        private static readonly float HighestRealisticDerailForceN = 1.55e5f;  // 35k lbf, used for graph scale only
+        private float LimitForDerailForceN = HighestRealisticDerailForceN;
         private float DerailForceScaleN;
 
-        private float LimitForBrakeForceN = 2.0e5f;  // 45k lbf, used for graph scale only
+        private static readonly float HighestRealisticBrakeForceN = 2.0e5f;  // 45k lbf, used for graph scale only
+        private float LimitForBrakeForceN = HighestRealisticBrakeForceN;
         private float BrakeForceScaleN;
 
         private Image[] CouplerForceBarGraph;
@@ -312,9 +315,9 @@ namespace Orts.Viewer3D.Popups
         /// </summary>
         private void SetConsistProperties(Train theTrain)
         {
-            float lowestCouplerBreakN = LimitForCouplerStrengthN;
-            float lowestDerailForceN = LimitForDerailForceN;
-            float lowestMaxBrakeForceN = LimitForBrakeForceN;
+            float lowestCouplerBreakN = HighestRealisticCouplerStrengthN;
+            float lowestDerailForceN = HighestRealisticDerailForceN;
+            float lowestMaxBrakeForceN = HighestRealisticBrakeForceN;
 
             foreach (var car in theTrain.Cars)
             {
@@ -411,7 +414,14 @@ namespace Orts.Viewer3D.Popups
         private void UpdateBrakeForceImage(TrainCar car, int carPosition)
         {
             var idx = 0;  // neutral
-            var absForceN = car.BrakeForceN;
+            bool isDynamicBrakes = false;
+
+            var absForceN = Math.Abs(car.BrakeForceN);  // using Math.Abs() for safety and consistency
+            if (car.WagonType == TrainCar.WagonTypes.Engine && Math.Abs(car.DynamicBrakeForceN) > absForceN)
+            {
+                absForceN = Math.Abs(car.DynamicBrakeForceN);
+                isDynamicBrakes = true;
+            }
 
             if (absForceN > 1000f && BrakeForceScaleN > 1000f)  // exclude improbabl values
             {
@@ -422,8 +432,12 @@ namespace Orts.Viewer3D.Popups
                 if (idx < 0) { idx = 0; } else if (idx > 9) { idx = 9; }
             }
 
-            if (car.WagonType == TrainCar.WagonTypes.Engine) { BrakeForceBarGraph[carPosition].Source = new Rectangle(1 + idx * BarWidth, BarHight * 2, BarWidth, HalfBarHight); }
-            else { BrakeForceBarGraph[carPosition].Source = new Rectangle(1 + idx * BarWidth, BarHight * 2 + HalfBarHight, BarWidth, HalfBarHight); }
+            if (car.WagonType == TrainCar.WagonTypes.Engine)
+            {
+                if (isDynamicBrakes) { BrakeForceBarGraph[carPosition].Source = new Rectangle(1 + idx * BarWidth, BarHight * 2, BarWidth, HalfBarHight); }
+                else { BrakeForceBarGraph[carPosition].Source = new Rectangle(1 + idx * BarWidth, BarHight * 2 + HalfBarHight, BarWidth, HalfBarHight); }
+            }
+            else { BrakeForceBarGraph[carPosition].Source = new Rectangle(1 + idx * BarWidth, BarHight * 2 + HalfBarHight * 2, BarWidth, HalfBarHight); }
         }
     }
 }
