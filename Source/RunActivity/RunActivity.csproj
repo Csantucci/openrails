@@ -26,6 +26,16 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Viewer3D\Materials.cs.bak" />
+    <None Remove="Viewer3D\Materials.cs.bak.bak" />
+    <None Remove="Viewer3D\MSTSSky.cs.bak" />
+    <None Remove="Viewer3D\Precipitation.cs.bak" />
+    <None Remove="Viewer3D\Shaders.cs.bak" />
+    <None Remove="Viewer3D\Sky.cs.bak" />
+    <None Remove="Viewer3D\Sky.cs.bak.bak" />
+    <None Remove="Viewer3D\Weather.cs.bak" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="GNU.Gettext, Version=1.1.5151.39896, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\3rdPartyLibs\GNU.Gettext.dll</HintPath>
@@ -467,43 +477,49 @@
     <Content Include="Content\Loading.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\missing.ace">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Content\MoonMap.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\MoonMask.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop.png">
+	<Content Include="Content\Weather\*.*">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop1.png">
+    <Content Include="Content\Weather\Raindrop.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop2.png">
+    <Content Include="Content\Weather\Raindrop1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop3.png">
+    <Content Include="Content\Weather\Raindrop2.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop4.png">
+    <Content Include="Content\Weather\Raindrop3.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop5.png">
+    <Content Include="Content\Weather\Raindrop4.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop6.png">
+    <Content Include="Content\Weather\Raindrop5.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop7.png">
+    <Content Include="Content\Weather\Raindrop6.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop8.png">
+    <Content Include="Content\Weather\Raindrop7.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop9.png">
+    <Content Include="Content\Weather\Raindrop8.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Raindrop10.png">
+    <Content Include="Content\Weather\Raindrop9.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Weather\Raindrop10.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\SignalAspects.png">
@@ -515,7 +531,7 @@
     <Content Include="Content\SkyDome1.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Snowflake.png">
+    <Content Include="Content\Weather\Snowflake.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\StarDome1.bmp">

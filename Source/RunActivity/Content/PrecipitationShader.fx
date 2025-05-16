@@ -27,6 +27,7 @@ float4x4 worldViewProjection;  // model -> world -> view -> projection
 float4x4 invView;              // inverse view
 
 float3 LightVector; // Direction vector to sun, used for day-night darkening
+float4 Fog;
 
 float particleSize;
 
@@ -121,8 +122,12 @@ float4 PSPrecipitation(in VERTEX_OUTPUT In) : COLOR0
 {
 	float4 color = tex2D(PrecipitationSamp, In.TexCoord);
 	_PSApplyDay2Night(color);
+    // Fogging
+    color.rgb = lerp(color.rgb, color.rgb, saturate((1 - In.Position.z ) * Fog.x));
 	return color;
 }
+
+
 
 ////////////////////    T E C H N I Q U E S    /////////////////////////////////
 

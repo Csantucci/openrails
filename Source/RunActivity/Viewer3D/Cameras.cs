@@ -249,7 +249,7 @@ namespace Orts.Viewer3D
 
         protected static float GetSpeed(ElapsedTime elapsedTime)
         {
-            var speed = 5 * elapsedTime.RealSeconds;
+            var speed = 3 * elapsedTime.RealSeconds; // 5 default
             if (UserInput.IsDown(UserCommand.CameraMoveFast))
                 speed *= SpeedFactorFastSlow;
             if (UserInput.IsDown(UserCommand.CameraMoveSlow))
@@ -454,15 +454,15 @@ namespace Orts.Viewer3D
         protected static float GetMouseDelta(int mouseMovementPixels)
         {
             // Ignore CameraMoveFast as that is too fast to be useful
-            var delta = 0.01f;
-            if (UserInput.IsDown(UserCommand.CameraMoveSlow))
-                delta *= 0.1f;
+            var delta = 0.0050f;
+            if (UserInput.IsDown(UserCommand.CameraMoveSlow)) delta *= 0.025f;
             return delta * mouseMovementPixels;
         }
 
+        bool RightClickToggle = false;
         protected virtual void RotateByMouse()
-        {
-            if (UserInput.IsMouseRightButtonDown)
+        {  
+            if (RightClickToggle) // (UserInput.IsMouseRightButtonDown) 
             {
                 // Mouse movement doesn't use 'var speed' because the MouseMove 
                 // parameters are already scaled down with increasing frame rates, 
@@ -471,12 +471,16 @@ namespace Orts.Viewer3D
             }
             // Support for replaying mouse movements
             if (UserInput.IsMouseRightButtonPressed)
-            {
+            {   
+                // Toggels the mouse instead of holding right button down
+                if(!RightClickToggle)  { RightClickToggle = true; } 
+                else { RightClickToggle = false;  }
+                
                 Viewer.CheckReplaying();
                 CommandStartTime = Viewer.Simulator.ClockTime;
             }
             if (UserInput.IsMouseRightButtonReleased)
-            {
+            {   
                 var commandEndTime = Viewer.Simulator.ClockTime;
                 new CameraMouseRotateCommand(Viewer.Log, CommandStartTime, commandEndTime, RotationXRadians, RotationYRadians);
             }
@@ -564,9 +568,12 @@ namespace Orts.Viewer3D
 
         protected void MoveCamera(Vector3 movement)
         {
+            movement = movement / 1.5f;
             movement = Vector3.Transform(movement, Matrix.CreateRotationX(RotationXRadians));
             movement = Vector3.Transform(movement, Matrix.CreateRotationY(RotationYRadians));
-            cameraLocation.Location += movement;
+            if(!RightClickToggle) cameraLocation.Location.Y = cameraLocation.Location.Y + movement.Y;
+            cameraLocation.Location.X = cameraLocation.Location.X + movement.X;
+            cameraLocation.Location.Z = cameraLocation.Location.Z + movement.Z;
             cameraLocation.Normalize();
         }
 
@@ -597,6 +604,8 @@ namespace Orts.Viewer3D
     {
         const float maxCameraHeight = 1000f;
         const float ZoomFactor = 2f;
+        // Exrail Overriding the default 1.0f value of the nearplane to avoid clipping in FPmode.
+        public override float NearPlane { get { return 0.20f; } }
 
         public override string Name { get { return Viewer.Catalog.GetString("Free"); } }
 
@@ -1557,7 +1566,7 @@ namespace Orts.Viewer3D
     {
         protected bool attachedToRear;
 
-        public override float NearPlane { get { return 0.25f; } }
+        public override float NearPlane { get { return 0.2f; } }
         public override string Name { get { return Viewer.Catalog.GetString("Brakeman"); } }
 
         public BrakemanCamera(Viewer viewer)

@@ -338,12 +338,23 @@ namespace ORTS.Settings
         public bool AdhesionProportionalToWeather { get; set; }
         [Default(false)]
         public bool NoForcedRedAtStationStops { get; set; }
-        [Default(100)]
+        [Default(90)]
         public int PrecipitationBoxHeight { get; set; }
-        [Default(500)]
+        [Default(700)]
         public int PrecipitationBoxWidth { get; set; }
-        [Default(500)]
+        [Default(700)]
         public int PrecipitationBoxLength { get; set; }
+        [Default(60000)]
+        public int NumberOfParticles { get; set; }
+        [Default(90)]
+        public int PrecipitationBoxHeight2 { get; set; }
+        [Default(400)]
+        public int PrecipitationBoxWidth2 { get; set; }
+        [Default(400)]
+        public int PrecipitationBoxLength2 { get; set; }
+        [Default(100000)]
+        public int NumberOfParticles2 { get; set; }
+
         [Default(false)]
         public bool CorrectQuestionableBrakingParams { get; set; }
         [Default(false)]
@@ -444,7 +455,7 @@ namespace ORTS.Settings
         public int[] WindowPosition_ComposeMessage { get; set; }
         [Default(new[] { 100, 0 })]
         public int[] WindowPosition_TrainList { get; set; }
-
+        
         // Menu-game communication settings:
         [Default(false)]
         [DoNotSave]
@@ -464,6 +475,10 @@ namespace ORTS.Settings
         public int OSDCarsState { get; set; }
         [Default(0)] // TrackMonitor.DisplayMode.All
         public int TrackMonitorDisplayMode { get; set; }
+
+        // ExRail settings
+        [Default(95)]
+        public int ExWindSpeed { get; set; }
 
         #endregion
 

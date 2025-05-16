@@ -39,7 +39,7 @@ namespace Orts.Viewer3D.Popups
         }
 
         public CarOperationsWindow(WindowManager owner)
-            : base(owner, Window.DecorationSize.X + owner.TextFontDefault.Height * 20, Window.DecorationSize.Y + owner.TextFontDefault.Height * 12 + ControlLayout.SeparatorSize * 11, Viewer.Catalog.GetString("Car Operation Menu"))
+            : base(owner, Window.DecorationSize.X + owner.TextFontDefault.Height * 15, Window.DecorationSize.Y + owner.TextFontDefault.Height * 12 + ControlLayout.SeparatorSize * 11, Viewer.Catalog.GetString("Car Operation Menu"))
         {
             Viewer = owner.Viewer;
         }
@@ -60,7 +60,7 @@ namespace Orts.Viewer3D.Popups
         }
 protected override ControlLayout Layout(ControlLayout layout)
         {
-            Label ID, buttonHandbrake, buttonTogglePower, buttonToggleMU, buttonToggleBatterySwitch, buttonToggleElectricTrainSupplyCable, buttonToggleFrontBrakeHose, buttonToggleRearBrakeHose, buttonToggleAngleCockA, buttonToggleAngleCockB, buttonToggleBleedOffValve, buttonClose;
+            Label ID, buttonHandbrake, buttonTogglePower, buttonToggleMU, buttonToggleBatterySwitch, buttonToggleElectricTrainSupplyCable, buttonToggleFrontBrakeHose, buttonToggleRearBrakeHose, buttonToggleAngleCockA, buttonToggleAngleCockB, buttonToggleBleedOffValve, buttonClose, buttonWeather;
 
             // update carposition from traincaroperations
             if (Viewer.TrainCarOperationsWindow.Visible && Viewer.TrainCarOperationsViewerWindow.Visible)
@@ -82,7 +82,7 @@ protected override ControlLayout Layout(ControlLayout layout)
 
             var vbox = base.Layout(layout).AddLayoutVertical(); 
             vbox.Add(ID = new Label(vbox.RemainingWidth, Owner.TextFontDefault.Height, Viewer.Catalog.GetString("Car ID") + "  " + (CarPosition >= Viewer.PlayerTrain.Cars.Count ? " " : trainCar.CarID), LabelAlignment.Center));
-            ID.Color = Color.Red;
+            ID.Color = Color.LightGreen;
             vbox.AddHorizontalSeparator();
 
             // Handbrake
@@ -172,6 +172,8 @@ protected override ControlLayout Layout(ControlLayout layout)
 
             // Close button
             vbox.Add(buttonClose = new Label(vbox.RemainingWidth, Owner.TextFontDefault.Height, Viewer.Catalog.GetString("Close window"), LabelAlignment.Center));
+            vbox.AddSpace(1,4);
+
 
             // add click controls
 

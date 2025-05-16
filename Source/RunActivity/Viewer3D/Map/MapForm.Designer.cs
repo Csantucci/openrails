@@ -48,7 +48,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.canvasPanel = new System.Windows.Forms.Panel();
             this.timeLabel = new System.Windows.Forms.Label();
-            this.mapCustomizationButton = new System.Windows.Forms.Button();
             this.mapCustomizationPanel = new System.Windows.Forms.Panel();
             this.showAllTrainsRadio = new System.Windows.Forms.RadioButton();
             this.showActiveTrainsRadio = new System.Windows.Forms.RadioButton();
@@ -75,6 +74,7 @@
             this.mapSettingsPanel = new System.Windows.Forms.Panel();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.followMyTrainOnMap = new System.Windows.Forms.Button();
+            this.mapCustomizationButton = new System.Windows.Forms.Button();
             this.centerOnMyTrainButton = new System.Windows.Forms.Button();
             this.seeTrainInGameButton = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
@@ -95,11 +95,9 @@
             this.followToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.kickFromMultiplayerSessionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setSwitchMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.setSwitchToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mainRouteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.sideRouteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setSignalMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.setSignalAspectToToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.systemControlledToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stopToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.approachToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -142,7 +140,7 @@
             this.playerRolePanel.Location = new System.Drawing.Point(0, 0);
             this.playerRolePanel.Margin = new System.Windows.Forms.Padding(0);
             this.playerRolePanel.Name = "playerRolePanel";
-            this.playerRolePanel.Size = new System.Drawing.Size(784, 30);
+            this.playerRolePanel.Size = new System.Drawing.Size(1310, 30);
             this.playerRolePanel.TabIndex = 0;
             this.playerRolePanel.Visible = false;
             // 
@@ -152,7 +150,7 @@
             this.playerRoleLink.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.playerRoleLink.AutoSize = true;
             this.playerRoleLink.LinkColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(116)))), ((int)(((byte)(166)))));
-            this.playerRoleLink.Location = new System.Drawing.Point(714, 9);
+            this.playerRoleLink.Location = new System.Drawing.Point(1240, 9);
             this.playerRoleLink.Name = "playerRoleLink";
             this.playerRoleLink.Size = new System.Drawing.Size(60, 13);
             this.playerRoleLink.TabIndex = 1;
@@ -185,7 +183,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(784, 561);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1310, 934);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // tableLayoutPanel2
@@ -201,7 +199,7 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(784, 531);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1310, 904);
             this.tableLayoutPanel2.TabIndex = 0;
             // 
             // tableLayoutPanel3
@@ -217,7 +215,7 @@
             this.tableLayoutPanel3.RowCount = 2;
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(584, 531);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(1110, 904);
             this.tableLayoutPanel3.TabIndex = 0;
             // 
             // messagesPanel
@@ -234,7 +232,7 @@
             this.messagesPanel.Margin = new System.Windows.Forms.Padding(0);
             this.messagesPanel.Name = "messagesPanel";
             this.messagesPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.messagesPanel.Size = new System.Drawing.Size(584, 163);
+            this.messagesPanel.Size = new System.Drawing.Size(1110, 163);
             this.messagesPanel.TabIndex = 0;
             this.messagesPanel.Visible = false;
             // 
@@ -247,14 +245,14 @@
             this.messages.IntegralHeight = false;
             this.messages.Location = new System.Drawing.Point(16, 26);
             this.messages.Name = "messages";
-            this.messages.Size = new System.Drawing.Size(554, 97);
+            this.messages.Size = new System.Drawing.Size(1080, 97);
             this.messages.TabIndex = 5;
             // 
             // messageAllButton
             // 
             this.messageAllButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.messageAllButton.AutoEllipsis = true;
-            this.messageAllButton.Location = new System.Drawing.Point(421, 128);
+            this.messageAllButton.Location = new System.Drawing.Point(947, 128);
             this.messageAllButton.Margin = new System.Windows.Forms.Padding(0);
             this.messageAllButton.Name = "messageAllButton";
             this.messageAllButton.Size = new System.Drawing.Size(126, 23);
@@ -268,7 +266,7 @@
             this.moreReplyOptionsButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.moreReplyOptionsButton.AutoSize = true;
             this.moreReplyOptionsButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.moreReplyOptionsButton.Location = new System.Drawing.Point(547, 128);
+            this.moreReplyOptionsButton.Location = new System.Drawing.Point(1073, 128);
             this.moreReplyOptionsButton.Margin = new System.Windows.Forms.Padding(0);
             this.moreReplyOptionsButton.Name = "moreReplyOptionsButton";
             this.moreReplyOptionsButton.Size = new System.Drawing.Size(23, 23);
@@ -283,7 +281,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.messageInput.Location = new System.Drawing.Point(16, 130);
             this.messageInput.Name = "messageInput";
-            this.messageInput.Size = new System.Drawing.Size(402, 20);
+            this.messageInput.Size = new System.Drawing.Size(928, 20);
             this.messageInput.TabIndex = 2;
             this.messageInput.Enter += new System.EventHandler(this.messageInput_Enter);
             this.messageInput.Leave += new System.EventHandler(this.messageInput_Leave);
@@ -301,7 +299,6 @@
             // 
             this.canvasPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.canvasPanel.Controls.Add(this.timeLabel);
-            this.canvasPanel.Controls.Add(this.mapCustomizationButton);
             this.canvasPanel.Controls.Add(this.mapCustomizationPanel);
             this.canvasPanel.Controls.Add(this.mapCanvas);
             this.canvasPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -309,35 +306,19 @@
             this.canvasPanel.Margin = new System.Windows.Forms.Padding(0);
             this.canvasPanel.Name = "canvasPanel";
             this.canvasPanel.Padding = new System.Windows.Forms.Padding(13);
-            this.canvasPanel.Size = new System.Drawing.Size(584, 368);
+            this.canvasPanel.Size = new System.Drawing.Size(1110, 741);
             this.canvasPanel.TabIndex = 1;
             // 
             // timeLabel
             // 
-            this.timeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.timeLabel.AutoSize = true;
             this.timeLabel.BackColor = System.Drawing.Color.Transparent;
-            this.timeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.timeLabel.Location = new System.Drawing.Point(25, 333);
+            this.timeLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.timeLabel.Location = new System.Drawing.Point(16, 16);
             this.timeLabel.Name = "timeLabel";
-            this.timeLabel.Size = new System.Drawing.Size(92, 13);
+            this.timeLabel.Size = new System.Drawing.Size(132, 20);
             this.timeLabel.TabIndex = 1;
             this.timeLabel.Text = "Simulation time";
-            // 
-            // mapCustomizationButton
-            // 
-            this.mapCustomizationButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.mapCustomizationButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.mapCustomizationButton.FlatAppearance.BorderSize = 0;
-            this.mapCustomizationButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.mapCustomizationButton.Location = new System.Drawing.Point(443, 324);
-            this.mapCustomizationButton.Name = "mapCustomizationButton";
-            this.mapCustomizationButton.Size = new System.Drawing.Size(120, 23);
-            this.mapCustomizationButton.TabIndex = 0;
-            this.mapCustomizationButton.Tag = "mapCustomization";
-            this.mapCustomizationButton.Text = "Map customization";
-            this.mapCustomizationButton.UseVisualStyleBackColor = true;
-            this.mapCustomizationButton.Click += new System.EventHandler(this.mapCustomizationButton_Click);
             // 
             // mapCustomizationPanel
             // 
@@ -357,7 +338,7 @@
             this.mapCustomizationPanel.Controls.Add(this.rotateThemesButton);
             this.mapCustomizationPanel.Controls.Add(this.showTimeCheckbox);
             this.mapCustomizationPanel.Controls.Add(this.useAntiAliasingCheckbox);
-            this.mapCustomizationPanel.Location = new System.Drawing.Point(373, 3);
+            this.mapCustomizationPanel.Location = new System.Drawing.Point(899, 376);
             this.mapCustomizationPanel.Name = "mapCustomizationPanel";
             this.mapCustomizationPanel.Size = new System.Drawing.Size(190, 315);
             this.mapCustomizationPanel.TabIndex = 0;
@@ -418,6 +399,8 @@
             // showSignalsCheckbox
             // 
             this.showSignalsCheckbox.AutoSize = true;
+            this.showSignalsCheckbox.Checked = true;
+            this.showSignalsCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showSignalsCheckbox.Location = new System.Drawing.Point(10, 184);
             this.showSignalsCheckbox.Name = "showSignalsCheckbox";
             this.showSignalsCheckbox.Size = new System.Drawing.Size(60, 17);
@@ -428,6 +411,8 @@
             // showSwitchesCheckbox
             // 
             this.showSwitchesCheckbox.AutoSize = true;
+            this.showSwitchesCheckbox.Checked = true;
+            this.showSwitchesCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showSwitchesCheckbox.Location = new System.Drawing.Point(10, 165);
             this.showSwitchesCheckbox.Name = "showSwitchesCheckbox";
             this.showSwitchesCheckbox.Size = new System.Drawing.Size(69, 17);
@@ -448,6 +433,8 @@
             // showPlatformLabelsCheckbox
             // 
             this.showPlatformLabelsCheckbox.AutoSize = true;
+            this.showPlatformLabelsCheckbox.Checked = true;
+            this.showPlatformLabelsCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showPlatformLabelsCheckbox.Location = new System.Drawing.Point(10, 127);
             this.showPlatformLabelsCheckbox.Name = "showPlatformLabelsCheckbox";
             this.showPlatformLabelsCheckbox.Size = new System.Drawing.Size(94, 17);
@@ -458,6 +445,8 @@
             // showPlatformsCheckbox
             // 
             this.showPlatformsCheckbox.AutoSize = true;
+            this.showPlatformsCheckbox.Checked = true;
+            this.showPlatformsCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.showPlatformsCheckbox.Location = new System.Drawing.Point(10, 108);
             this.showPlatformsCheckbox.Name = "showPlatformsCheckbox";
             this.showPlatformsCheckbox.Size = new System.Drawing.Size(69, 17);
@@ -501,6 +490,9 @@
             // useAntiAliasingCheckbox
             // 
             this.useAntiAliasingCheckbox.AutoSize = true;
+            this.useAntiAliasingCheckbox.Checked = true;
+            this.useAntiAliasingCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.useAntiAliasingCheckbox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.useAntiAliasingCheckbox.Location = new System.Drawing.Point(10, 10);
             this.useAntiAliasingCheckbox.Name = "useAntiAliasingCheckbox";
             this.useAntiAliasingCheckbox.Size = new System.Drawing.Size(103, 17);
@@ -514,7 +506,7 @@
             this.mapCanvas.Location = new System.Drawing.Point(13, 13);
             this.mapCanvas.Margin = new System.Windows.Forms.Padding(0);
             this.mapCanvas.Name = "mapCanvas";
-            this.mapCanvas.Size = new System.Drawing.Size(558, 342);
+            this.mapCanvas.Size = new System.Drawing.Size(1084, 715);
             this.mapCanvas.TabIndex = 0;
             this.mapCanvas.TabStop = false;
             this.mapCanvas.MouseDown += new System.Windows.Forms.MouseEventHandler(this.mapCanvas_MouseDown);
@@ -530,7 +522,7 @@
             this.tableLayoutPanel4.Controls.Add(this.mapSettingsPanel, 0, 2);
             this.tableLayoutPanel4.Controls.Add(this.playersPanel, 0, 3);
             this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(584, 0);
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(1110, 0);
             this.tableLayoutPanel4.Margin = new System.Windows.Forms.Padding(0);
             this.tableLayoutPanel4.Name = "tableLayoutPanel4";
             this.tableLayoutPanel4.RowCount = 4;
@@ -538,7 +530,7 @@
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(200, 531);
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(200, 904);
             this.tableLayoutPanel4.TabIndex = 1;
             // 
             // panel1
@@ -613,18 +605,20 @@
             // 
             // mapSettingsPanel
             // 
+            this.mapSettingsPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.mapSettingsPanel.AutoSize = true;
             this.mapSettingsPanel.Controls.Add(this.groupBox1);
             this.mapSettingsPanel.Location = new System.Drawing.Point(0, 103);
             this.mapSettingsPanel.Margin = new System.Windows.Forms.Padding(0);
             this.mapSettingsPanel.Name = "mapSettingsPanel";
             this.mapSettingsPanel.Padding = new System.Windows.Forms.Padding(10, 0, 10, 0);
-            this.mapSettingsPanel.Size = new System.Drawing.Size(200, 191);
+            this.mapSettingsPanel.Size = new System.Drawing.Size(200, 217);
             this.mapSettingsPanel.TabIndex = 0;
             // 
             // groupBox1
             // 
             this.groupBox1.Controls.Add(this.followMyTrainOnMap);
+            this.groupBox1.Controls.Add(this.mapCustomizationButton);
             this.groupBox1.Controls.Add(this.centerOnMyTrainButton);
             this.groupBox1.Controls.Add(this.seeTrainInGameButton);
             this.groupBox1.Controls.Add(this.label3);
@@ -634,7 +628,7 @@
             this.groupBox1.Controls.Add(this.drawPathCheckbox);
             this.groupBox1.Location = new System.Drawing.Point(10, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(180, 185);
+            this.groupBox1.Size = new System.Drawing.Size(180, 211);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Map settings and controls";
@@ -649,6 +643,21 @@
             this.followMyTrainOnMap.Text = "Follow my train on the map";
             this.followMyTrainOnMap.UseVisualStyleBackColor = true;
             this.followMyTrainOnMap.Click += new System.EventHandler(this.followMyTrainOnMap_Click);
+            // 
+            // mapCustomizationButton
+            // 
+            this.mapCustomizationButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.mapCustomizationButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.mapCustomizationButton.BackColor = System.Drawing.SystemColors.Control;
+            this.mapCustomizationButton.FlatAppearance.BorderSize = 0;
+            this.mapCustomizationButton.Location = new System.Drawing.Point(7, 185);
+            this.mapCustomizationButton.Name = "mapCustomizationButton";
+            this.mapCustomizationButton.Size = new System.Drawing.Size(167, 23);
+            this.mapCustomizationButton.TabIndex = 0;
+            this.mapCustomizationButton.Tag = "mapCustomization";
+            this.mapCustomizationButton.Text = "Map customization";
+            this.mapCustomizationButton.UseVisualStyleBackColor = true;
+            this.mapCustomizationButton.Click += new System.EventHandler(this.mapCustomizationButton_Click);
             // 
             // centerOnMyTrainButton
             // 
@@ -750,25 +759,25 @@
             // 
             // playersPanel
             // 
+            this.playersPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.playersPanel.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.playersPanel.Controls.Add(this.groupBox3);
-            this.playersPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.playersPanel.Location = new System.Drawing.Point(0, 294);
+            this.playersPanel.Location = new System.Drawing.Point(0, 320);
             this.playersPanel.Margin = new System.Windows.Forms.Padding(0);
             this.playersPanel.Name = "playersPanel";
             this.playersPanel.Padding = new System.Windows.Forms.Padding(10, 0, 10, 10);
-            this.playersPanel.Size = new System.Drawing.Size(200, 237);
+            this.playersPanel.Size = new System.Drawing.Size(200, 584);
             this.playersPanel.TabIndex = 2;
             this.playersPanel.Visible = false;
             // 
             // groupBox3
             // 
+            this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.groupBox3.Controls.Add(this.playersView);
-            this.groupBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox3.Location = new System.Drawing.Point(10, 0);
+            this.groupBox3.Location = new System.Drawing.Point(10, 3);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(180, 227);
+            this.groupBox3.Size = new System.Drawing.Size(180, 568);
             this.groupBox3.TabIndex = 0;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Players";
@@ -789,7 +798,7 @@
             listViewItem4});
             this.playersView.Location = new System.Drawing.Point(7, 19);
             this.playersView.Name = "playersView";
-            this.playersView.Size = new System.Drawing.Size(167, 202);
+            this.playersView.Size = new System.Drawing.Size(167, 542);
             this.playersView.TabIndex = 1;
             this.playersView.UseCompatibleStateImageBehavior = false;
             this.playersView.View = System.Windows.Forms.View.List;
@@ -872,42 +881,35 @@
             // setSwitchMenu
             // 
             this.setSwitchMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.setSwitchToToolStripMenuItem,
             this.mainRouteToolStripMenuItem,
             this.sideRouteToolStripMenuItem});
             this.setSwitchMenu.Name = "contextMenuStrip1";
-            this.setSwitchMenu.Size = new System.Drawing.Size(157, 70);
+            this.setSwitchMenu.Size = new System.Drawing.Size(153, 52);
             this.setSwitchMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.setSwitchMenu_ItemClicked);
-            // 
-            // setSwitchToToolStripMenuItem
-            // 
-            this.setSwitchToToolStripMenuItem.Enabled = false;
-            this.setSwitchToToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.setSwitchToToolStripMenuItem.Name = "setSwitchToToolStripMenuItem";
-            this.setSwitchToToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
-            this.setSwitchToToolStripMenuItem.Text = "Set switch to...";
             // 
             // mainRouteToolStripMenuItem
             // 
-            this.mainRouteToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(93)))), ((int)(((byte)(64)))), ((int)(((byte)(55)))));
-            this.mainRouteToolStripMenuItem.ForeColor = System.Drawing.Color.White;
+            this.mainRouteToolStripMenuItem.BackColor = System.Drawing.Color.LightBlue;
+            this.mainRouteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.mainRouteToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.mainRouteToolStripMenuItem.Name = "mainRouteToolStripMenuItem";
-            this.mainRouteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.mainRouteToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.mainRouteToolStripMenuItem.Tag = "mainRoute";
             this.mainRouteToolStripMenuItem.Text = "Main route";
             // 
             // sideRouteToolStripMenuItem
             // 
-            this.sideRouteToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(161)))), ((int)(((byte)(136)))), ((int)(((byte)(127)))));
+            this.sideRouteToolStripMenuItem.BackColor = System.Drawing.Color.DarkKhaki;
+            this.sideRouteToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.sideRouteToolStripMenuItem.ForeColor = System.Drawing.Color.Black;
             this.sideRouteToolStripMenuItem.Name = "sideRouteToolStripMenuItem";
-            this.sideRouteToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.sideRouteToolStripMenuItem.Size = new System.Drawing.Size(152, 24);
             this.sideRouteToolStripMenuItem.Tag = "sideRoute";
             this.sideRouteToolStripMenuItem.Text = "Side route";
             // 
             // setSignalMenu
             // 
             this.setSignalMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.setSignalAspectToToolStripMenuItem,
             this.systemControlledToolStripMenuItem,
             this.stopToolStripMenuItem,
             this.approachToolStripMenuItem,
@@ -915,60 +917,60 @@
             this.toolStripSeparator1,
             this.allowCallOnToolStripMenuItem});
             this.setSignalMenu.Name = "contextMenuStrip1";
-            this.setSignalMenu.Size = new System.Drawing.Size(191, 164);
+            this.setSignalMenu.Size = new System.Drawing.Size(164, 140);
             this.setSignalMenu.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.setSignalMenu_ItemClicked);
-            // 
-            // setSignalAspectToToolStripMenuItem
-            // 
-            this.setSignalAspectToToolStripMenuItem.Enabled = false;
-            this.setSignalAspectToToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.setSignalAspectToToolStripMenuItem.Name = "setSignalAspectToToolStripMenuItem";
-            this.setSignalAspectToToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
-            this.setSignalAspectToToolStripMenuItem.Text = "Set signal aspect to...";
             // 
             // systemControlledToolStripMenuItem
             // 
+            this.systemControlledToolStripMenuItem.BackColor = System.Drawing.SystemColors.ActiveCaptionText;
+            this.systemControlledToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.systemControlledToolStripMenuItem.ForeColor = System.Drawing.SystemColors.ActiveCaption;
             this.systemControlledToolStripMenuItem.Name = "systemControlledToolStripMenuItem";
-            this.systemControlledToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.systemControlledToolStripMenuItem.Size = new System.Drawing.Size(163, 26);
             this.systemControlledToolStripMenuItem.Tag = "system";
-            this.systemControlledToolStripMenuItem.Text = "System controlled";
+            this.systemControlledToolStripMenuItem.Text = "System Ctrl";
             // 
             // stopToolStripMenuItem
             // 
             this.stopToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(203)))), ((int)(((byte)(67)))), ((int)(((byte)(53)))));
+            this.stopToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.stopToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.stopToolStripMenuItem.Name = "stopToolStripMenuItem";
-            this.stopToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.stopToolStripMenuItem.Size = new System.Drawing.Size(163, 26);
             this.stopToolStripMenuItem.Tag = "stop";
             this.stopToolStripMenuItem.Text = "Stop";
             // 
             // approachToolStripMenuItem
             // 
             this.approachToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(241)))), ((int)(((byte)(196)))), ((int)(((byte)(15)))));
+            this.approachToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.approachToolStripMenuItem.Name = "approachToolStripMenuItem";
-            this.approachToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.approachToolStripMenuItem.Size = new System.Drawing.Size(163, 26);
             this.approachToolStripMenuItem.Tag = "approach";
             this.approachToolStripMenuItem.Text = "Approach";
             // 
             // proceedToolStripMenuItem
             // 
             this.proceedToolStripMenuItem.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(34)))), ((int)(((byte)(153)))), ((int)(((byte)(84)))));
+            this.proceedToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.proceedToolStripMenuItem.ForeColor = System.Drawing.Color.White;
             this.proceedToolStripMenuItem.Name = "proceedToolStripMenuItem";
-            this.proceedToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.proceedToolStripMenuItem.Size = new System.Drawing.Size(163, 26);
             this.proceedToolStripMenuItem.Tag = "proceed";
             this.proceedToolStripMenuItem.Text = "Proceed";
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(160, 6);
             // 
             // allowCallOnToolStripMenuItem
             // 
+            this.allowCallOnToolStripMenuItem.BackColor = System.Drawing.SystemColors.ControlLight;
             this.allowCallOnToolStripMenuItem.Enabled = false;
+            this.allowCallOnToolStripMenuItem.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.allowCallOnToolStripMenuItem.Name = "allowCallOnToolStripMenuItem";
-            this.allowCallOnToolStripMenuItem.Size = new System.Drawing.Size(190, 22);
+            this.allowCallOnToolStripMenuItem.Size = new System.Drawing.Size(163, 26);
             this.allowCallOnToolStripMenuItem.Tag = "callOn";
             this.allowCallOnToolStripMenuItem.Text = "Allow call on";
             // 
@@ -999,7 +1001,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 561);
+            this.BackColor = System.Drawing.SystemColors.GrayText;
+            this.ClientSize = new System.Drawing.Size(1310, 934);
             this.Controls.Add(this.tableLayoutPanel1);
             this.MinimumSize = new System.Drawing.Size(600, 400);
             this.Name = "MapViewer";
@@ -1100,11 +1103,9 @@
         private System.Windows.Forms.CheckBox showTrainLabelsCheckbox;
         private System.Windows.Forms.RadioButton showAllTrainsRadio;
         private System.Windows.Forms.ContextMenuStrip setSwitchMenu;
-        private System.Windows.Forms.ToolStripMenuItem setSwitchToToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mainRouteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem sideRouteToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip setSignalMenu;
-        private System.Windows.Forms.ToolStripMenuItem setSignalAspectToToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem systemControlledToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stopToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem approachToolStripMenuItem;

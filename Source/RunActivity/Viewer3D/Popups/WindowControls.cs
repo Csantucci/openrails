@@ -144,6 +144,13 @@ namespace Orts.Viewer3D.Popups
             : this(0, 0, width, height, text, align)
         {
         }
+        // ExRail Overload
+        public Label(int width, int height, string text, LabelAlignment align, Color color)
+            : this(0, 0, width, height, text, align)
+        {
+            Color = color;
+        }
+
 
         public Label(int width, int height, string text)
             : this(0, 0, width, height, text, LabelAlignment.Left)

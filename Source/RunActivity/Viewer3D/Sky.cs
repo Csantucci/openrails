@@ -25,12 +25,13 @@ using Orts.Common;
 using ORTS.Common;
 using Orts.Viewer3D.Common;
 using Orts.Viewer3D.Processes;
+using Orts.Viewer3D.RollingStock.Subsystems.ETCS;
 
 namespace Orts.Viewer3D
 {
     public class SkyViewer
     {
-        internal readonly SkyPrimitive Primitive;
+        internal readonly SkyPrimitive   Primitive;
         internal readonly float WindSpeed;
         internal readonly float WindDirection;
         internal int MoonPhase;
@@ -38,11 +39,9 @@ namespace Orts.Viewer3D
         internal Vector3 LunarDirection;
         internal double Latitude; // Latitude of current route in radians. -pi/2 = south pole, 0 = equator, pi/2 = north pole.
         internal double Longitude; // Longitude of current route in radians. -pi = west of prime, 0 = prime, pi = east of prime.
-
         static readonly WorldLatLon WorldLatLon = new WorldLatLon();
-
         readonly Viewer Viewer;
-        readonly Material Material;
+        public readonly Material Material;
         readonly Vector3[] SolarPositionCache = new Vector3[72];
         readonly Vector3[] LunarPositionCache = new Vector3[72];
         readonly SkyInterpolation SkyInterpolation = new SkyInterpolation();
@@ -51,14 +50,13 @@ namespace Orts.Viewer3D
         {
             Viewer = viewer;
             Material = viewer.MaterialManager.Load("Sky");
-
             // Instantiate classes
-            Primitive = new SkyPrimitive(Viewer.RenderProcess);
-
+            Primitive   = new SkyPrimitive(Viewer.RenderProcess);
             // Default wind speed and direction
             // TODO: We should be using Viewer.Simulator.Weather instead of our own local weather fields
-            WindSpeed = 5.0f; // m/s (approx 11 mph)
-            WindDirection = 4.7f; // radians (approx 270 deg, i.e. westerly)
+            WindSpeed = 0.0f; // m/s (approx 11 mph)
+            WindDirection = 14.7f; // radians (approx 270 deg, i.e. westerly)
+     
         }
 
         public void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)
@@ -129,8 +127,8 @@ namespace Orts.Viewer3D
 
     public class SkyPrimitive : RenderPrimitive
     {
-        public const float RadiusM = 6000;
-        public const float CloudsAltitudeM = 1000;
+        public const float RadiusM = 16000;
+        public const float CloudsAltitudeM = 2000;
 
         public SkyElement Element;
 
@@ -330,81 +328,353 @@ namespace Orts.Viewer3D
         }
     }
 
-    class SkyMaterial : Material
+    // Exrail: Mix two texture2D's into one
+    public class SkyMix2Texture2D 
     {
-        const float NightStart = 0.15f; // The sun's Y value where it begins to get dark
+        readonly Viewer Viewer;
+        public Texture2D T1,T2,T3,ReturnSkydomeTexture;
+        const int Sun_NoonTime = 43200;
+        readonly int Sun_RiseTime = 0, Sun_SetTime = 0;
+        int NoonTimeNulled = 0, Sun_SetTimeNulled = 0;
+        int CurrentTime  = 0, CurrentTimeNulled = 0;
+        public float Precentage_Mix = 0;
 
-        const float NightFinish = -0.05f; // The Y value where darkest fog color is reached and held steady
+        Color[] SunriseA;
+        Color[] NoonA;
+        Color[] SunsetA;
 
-        // These should be user defined in the Environment files (future)
-        static readonly Vector3 StartColor = new Vector3(0.647f, 0.651f, 0.655f); // Original daytime fog color - must be preserved!
-        static readonly Vector3 FinishColor = new Vector3(0.05f, 0.05f, 0.05f); // Darkest night-time fog color
+        Vector3[] MixBitmapSunrise;
+        Vector3[] MixBitmapNoon;
+        Vector3[] MixBitmapSunset;
+        Color[]   MixReturn; 
+        int Exsize = 0;
 
+        public SkyMix2Texture2D ( Viewer viewer)
+        {
+            Viewer = viewer;
+            Sun_RiseTime = viewer.ENVFile.SkySatellites[0].RiseTime;
+            Sun_SetTime  = viewer.ENVFile.SkySatellites[0].SetTime;
+            CurrentTime  = (int)Viewer.Simulator.ClockTime;
+
+            if( CurrentTime >= 43200) 
+            {   
+                // After 12:00
+                Sun_SetTimeNulled  = Sun_SetTime - Sun_NoonTime;
+                CurrentTimeNulled  = CurrentTime - Sun_NoonTime;
+                Precentage_Mix = (float) CurrentTimeNulled / Sun_SetTimeNulled * 100;
+	        }
+	        else 
+            { 
+                // Before 12:00
+                CurrentTimeNulled = CurrentTime  - Sun_RiseTime; 
+                NoonTimeNulled    = Sun_NoonTime - Sun_RiseTime; 
+                Precentage_Mix = (float) CurrentTimeNulled / NoonTimeNulled * 100;
+	        }
+        }
+
+        public double ExResetTime(double clockTimeSeconds)
+        {
+            var hour = (int)(clockTimeSeconds / (60 * 60));
+            clockTimeSeconds -= hour * 60 * 60;
+            var minute = (int)(clockTimeSeconds / 60);
+            clockTimeSeconds -= minute * 60;
+            var seconds = (int)clockTimeSeconds;
+
+            // Reset clock before and after midnight
+            if (hour >= 24)  hour %= 24;
+            if (hour < 0)    hour += 24;
+            if (minute < 0)  minute += 60;
+            if (seconds < 0) seconds += 60;
+            
+            clockTimeSeconds = hour * 3600;
+            clockTimeSeconds += minute * 60;
+            clockTimeSeconds += seconds;
+            
+            return clockTimeSeconds; 
+        }
+
+        public void setTexture(Texture2D Ext1, Texture2D Ext2, Texture2D Ext3) 
+        { 
+            T1= Ext1; T2= Ext2; T3= Ext3;
+            Exsize = T1.Width * T1.Height; 
+            ReturnSkydomeTexture = new Texture2D(T1.GraphicsDevice, T1.Width, T1.Height); 
+            
+            // initialize arrays with the size of skydome_Sunrise
+            SunriseA = new Color[Exsize]; 
+            NoonA    = new Color[Exsize];
+            SunsetA  = new Color[Exsize];
+            MixBitmapSunrise = new Vector3[Exsize];
+            MixBitmapNoon    = new Vector3[Exsize];
+            MixBitmapSunset  = new Vector3[Exsize];
+            MixReturn = new Color[Exsize];
+            
+            // grap skydomes images
+            T1.GetData(SunriseA); T2.GetData(NoonA); T3.GetData(SunsetA);
+            
+            // Convert to floats
+            for (int i=0; i < Exsize; i++) 
+            {    
+			    MixBitmapSunrise[i].X = (float) SunriseA[i].R /255;
+			    MixBitmapSunrise[i].Y = (float) SunriseA[i].G /255;
+			    MixBitmapSunrise[i].Z = (float) SunriseA[i].B /255;
+
+                MixBitmapNoon[i].X = (float) NoonA[i].R /255;
+			    MixBitmapNoon[i].Y = (float) NoonA[i].G /255;
+			    MixBitmapNoon[i].Z = (float) NoonA[i].B /255;
+
+                MixBitmapSunset[i].X = (float) SunsetA[i].R /255;
+			    MixBitmapSunset[i].Y = (float) SunsetA[i].G /255;
+			    MixBitmapSunset[i].Z = (float) SunsetA[i].B /255;
+		    }
+        }
+
+        int Count = 1;
+        public void WeatherTimeUpdate ()
+        { 
+            Count--;
+            if(Count == 0) Count = 240;
+            {   // Get time 00:00-23:59
+                CurrentTime = (int)ExResetTime((int)Viewer.Simulator.ClockTime);
+                // Before or after Noon
+                if( CurrentTime >= 43200) 
+                {   // After 
+                    Sun_SetTimeNulled  = Sun_SetTime - Sun_NoonTime;
+                    CurrentTimeNulled  = CurrentTime - Sun_NoonTime;
+                    Precentage_Mix = (float)CurrentTimeNulled / Sun_SetTimeNulled * 100;
+                    MixNoon( Precentage_Mix );
+	            }
+	            else 
+                {   // Before
+                    CurrentTimeNulled = CurrentTime - Sun_RiseTime; 
+                    NoonTimeNulled    = Sun_NoonTime - Sun_RiseTime; 
+                    Precentage_Mix = (float)CurrentTimeNulled / NoonTimeNulled * 100;
+                    MixRise( Precentage_Mix );
+	            }
+            }
+        }
+        
+        void MixNoon( float procent)
+        {
+            // 12:00 - 18:00  
+            if(procent > 100) procent = 100.0f;
+            if(procent < 0) procent = 0.0f;
+
+            float InvPro = 100.0f - procent;
+            for (int i = 0; i < Exsize; i++) {
+                MixReturn[i].R = (byte) ((MixBitmapSunset[i].X * procent /100 + MixBitmapNoon[i].X*InvPro /100) *255.0f);
+                MixReturn[i].G = (byte) ((MixBitmapSunset[i].Y * procent /100 + MixBitmapNoon[i].Y*InvPro /100) *255.0f);
+                MixReturn[i].B = (byte) ((MixBitmapSunset[i].Z * procent /100 + MixBitmapNoon[i].Z*InvPro /100) *255.0f);;
+            }
+            ReturnSkydomeTexture.SetData( MixReturn );
+        }
+
+        void MixRise( float procent)
+        {
+            // 08:00 - 12:00
+            if(procent > 100) procent = 100.0f;
+            if(procent < 0) procent = 0.0f;
+
+            float InvPro = 100.0f - procent;
+            for (int i = 0; i < Exsize; i++) {
+                MixReturn[i].R = (byte) ((MixBitmapNoon[i].X * procent /100 + MixBitmapSunrise[i].X*InvPro /100) *255.0f) ;
+                MixReturn[i].G = (byte) ((MixBitmapNoon[i].Y * procent /100 + MixBitmapSunrise[i].Y*InvPro /100) *255.0f) ;
+                MixReturn[i].B = (byte) ((MixBitmapNoon[i].Z * procent /100 + MixBitmapSunrise[i].Z*InvPro /100) *255.0f) ;
+            }
+            ReturnSkydomeTexture.SetData( MixReturn );
+        }
+    }
+
+
+    public class SkyMaterial : Material
+    {   
+        new readonly Viewer Viewer;
         readonly SkyShader SkyShader;
-        readonly Texture2D SkyTexture;
+        public   Texture2D SkyTextureSunrise;
+        public   Texture2D SkyTextureNoon;
+        public   Texture2D SkyTextureSunset;
+        public   Texture2D SunTexture;
         readonly Texture2D StarTextureN;
         readonly Texture2D StarTextureS;
         readonly Texture2D MoonTexture;
         readonly Texture2D MoonMask;
-        readonly Texture2D CloudTexture;
+        public   Texture2D CloudTexture1;
+        public   Texture2D CloudTexture2;
+        public   Texture2D CloudTexture3;
+        public   SkyMix2Texture2D SkydomeTextureMix;
+
         readonly IEnumerator<EffectPass> ShaderPassesSky;
         readonly IEnumerator<EffectPass> ShaderPassesMoon;
         readonly IEnumerator<EffectPass> ShaderPassesClouds;
 
-        public SkyMaterial(Viewer viewer)
-           : base(viewer, null)
+        public SkyMaterial(Viewer viewer) : base(viewer, null)
         {
+            Viewer = viewer;
             SkyShader = Viewer.MaterialManager.SkyShader;
-
             // TODO: This should happen on the loader thread.
-            SkyTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "SkyDome1.png"));
-            StarTextureN = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Starmap_N.png"));
-            StarTextureS = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Starmap_S.png"));
-            MoonTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "MoonMap.png"));
-            MoonMask = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "MoonMask.png"));
-            CloudTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Clouds01.png"));
+            var VRG = viewer.RenderProcess.GraphicsDevice;
+            StarTextureN = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Starmap_N.png"));
+            StarTextureS = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Starmap_S.png"));
+            MoonTexture  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "MoonMap.png"));
+            MoonMask     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "MoonMask.png"));
 
-            ShaderPassesSky = SkyShader.Techniques["Sky"].Passes.GetEnumerator();
-            ShaderPassesMoon = SkyShader.Techniques["Moon"].Passes.GetEnumerator();
+            SkyShader.StarMapTexture  = StarTextureN;
+            SkyShader.MoonMapTexture  = MoonTexture;
+            SkyShader.MoonMaskTexture = MoonMask;
+            
+            SkydomeTextureMix = new SkyMix2Texture2D(viewer);
+            
+            // ExRail Weather texture selector
+            SetWeather();
+
+            ShaderPassesSky    = SkyShader.Techniques["Sky"].Passes.GetEnumerator();
+            ShaderPassesMoon   = SkyShader.Techniques["Moon"].Passes.GetEnumerator();
             ShaderPassesClouds = SkyShader.Techniques["Clouds"].Passes.GetEnumerator();
 
-            SkyShader.SkyMapTexture = SkyTexture;
-            SkyShader.StarMapTexture = StarTextureN;
-            SkyShader.MoonMapTexture = MoonTexture;
-            SkyShader.MoonMaskTexture = MoonMask;
-            SkyShader.CloudMapTexture = CloudTexture;
+        }
+        
+        // ExRail Weather texture selector
+        public void SetWeather()
+        {
+            // ExRail Weather texture selector
+            Console.WriteLine("\n##########################################");
+            Console.WriteLine("## Exrail Weather Extension V3.2        ##");
+            Console.WriteLine("## Load Sky & Clouds Textures           ##");
+            Console.Write("## WeatherType = ");
+            Console.Write( (int)Viewer.Simulator.WeatherType );
+            Console.Write("                      ##\n");
+            Console.WriteLine("##########################################");
+
+            var VRG = Viewer.RenderProcess.GraphicsDevice;
+
+            switch (Viewer.Simulator.WeatherType)
+            {
+                case Orts.Formats.Msts.WeatherType.Clear:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Clear_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Clear_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Clear_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Clear_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Clear_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Clear_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.Rain:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Rain_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Rain_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Rain_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Rain_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Rain_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Rain_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.Snow:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Snow_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Snow_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Snow_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Snow_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Snow_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Snow_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.Few:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Few_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Few_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Few_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Few_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Few_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Few_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.Cloudy:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Cloudy_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Cloudy_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Cloudy_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Cloudy_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Cloudy_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Cloudy_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.Desert:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Desert_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Desert_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Desert_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Desert_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Desert_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Desert_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.SnowStorm:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/SnowStorm_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/SnowStorm_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/SnowStorm_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/SnowStorm_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/SnowStorm_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/SnowStorm_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.Foggy:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Foggy_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Foggy_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Foggy_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Foggy_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Foggy_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/Foggy_Clouds3.png"));
+                    break;
+                case Orts.Formats.Msts.WeatherType.PartlyCloudy:
+                    SkyTextureSunrise = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/PartlyCloudy_SkyDome_Sunrise.png"));
+                    SkyTextureNoon    = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/PartlyCloudy_SkyDome_Noon.png"));
+                    SkyTextureSunset  = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/PartlyCloudy_SkyDome_Sunset.png"));
+                    CloudTexture1     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/PartlyCloudy_Clouds1.png"));
+                    CloudTexture2     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/PartlyCloudy_Clouds2.png"));
+                    CloudTexture3     = SharedTextureManager.Get(VRG, System.IO.Path.Combine(Viewer.ContentPath, "Weather/PartlyCloudy_Clouds3.png"));
+                break;
+                
+            }
+            // Skydomes x 3
+            SkydomeTextureMix.setTexture(SkyTextureSunrise, SkyTextureNoon, SkyTextureSunset );
+            SkydomeTextureMix.WeatherTimeUpdate();
+                                   
+            // Clouds x 3
+            SkyShader.CloudMapTexture1 = CloudTexture1;
+            SkyShader.CloudMapTexture2 = CloudTexture2;
+            SkyShader.CloudMapTexture3 = CloudTexture3;
+
         }
 
+
+
+        int count =0;
         public override void Render(GraphicsDevice graphicsDevice, IEnumerable<RenderItem> renderItems, ref Matrix XNAViewMatrix, ref Matrix XNAProjectionMatrix)
         {
-            // Adjust Fog color for day-night conditions and overcast
-            FogDay2Night(Viewer.World.Sky.SolarDirection.Y, Viewer.Simulator.Weather.OvercastFactor);
+            // Check Reload Weather texturres 
 
-            // TODO: Use a dirty flag to determine if it is necessary to set the texture again
+            if( Viewer.World.WeatherControl.ReloadWeatherSwitch ) 
+            {   
+                Viewer.WeatherEditorWindow.Bnt_ReloadWeathertype_Sel.Color = Viewer.WeatherEditorWindow.Color_Selected;
+                Viewer.WeatherEditorWindow.Bnt_ReloadWeathertype_Sel.Text = " ◄Reloading Texture►";
+                count++;
+            }
+                
+            if(Viewer.World.WeatherControl.ReloadWeatherSwitch && count > 10) 
+            {   
+                SetWeather();
+                Viewer.World.WeatherControl.ReloadWeatherSwitch = false;
+                count = 0;
+                Viewer.WeatherEditorWindow.Bnt_ReloadWeathertype_Sel.Color = Viewer.WeatherEditorWindow.Color_ReLoaded;
+                Viewer.WeatherEditorWindow.Bnt_ReloadWeathertype_Sel.Text = " ◄Texture Reloaded►";
+            }
+        
+
             SkyShader.StarMapTexture = Viewer.World.Sky.Latitude > 0 ? StarTextureN : StarTextureS;
 
-            SkyShader.Random = Viewer.World.Sky.MoonPhase; // Keep setting this before LightVector for the preshader to work correctly
-            SkyShader.LightVector = Viewer.World.Sky.SolarDirection;
-            SkyShader.Time = (float)Viewer.Simulator.ClockTime / 100000;
-            SkyShader.MoonScale = SkyPrimitive.RadiusM / 20;
-            SkyShader.Overcast = Viewer.Simulator.Weather.OvercastFactor;
-            SkyShader.SetFog(Viewer.Simulator.Weather.FogDistance, ref SharedMaterialManager.FogColor);
-            SkyShader.WindSpeed = Viewer.World.Sky.WindSpeed;
-            SkyShader.WindDirection = Viewer.World.Sky.WindDirection; // Keep setting this after Time and Windspeed. Calculating displacement here.
+            SkydomeTextureMix.WeatherTimeUpdate();
+            Viewer.MaterialManager.SkyShader.SkyMapTexture = SkydomeTextureMix.ReturnSkydomeTexture; 
 
-            for (var i = 0; i < 5; i++)
-            {
+            for (var i = 0; i < 5; i++) {
                 graphicsDevice.SamplerStates[i] = SamplerState.LinearWrap;
             }
-
             var xnaSkyView = XNAViewMatrix * Camera.XNASkyProjection;
+
             var xnaMoonMatrix = Matrix.CreateTranslation(Viewer.World.Sky.LunarDirection * SkyPrimitive.RadiusM);
             var xnaMoonView = xnaMoonMatrix * xnaSkyView;
-            SkyShader.SetViewMatrix(ref XNAViewMatrix);
+            SkyShader.SetViewMatrixMoon(ref XNAViewMatrix);
 
             // Sky dome
             SkyShader.CurrentTechnique = SkyShader.Techniques["Sky"];
-            Viewer.World.Sky.Primitive.Element = SkyPrimitive.SkyElement.Sky;
+            Viewer.World.Sky.Primitive.Element = SkyPrimitive.SkyElement.Sky;  
+        
             graphicsDevice.BlendState = BlendState.Opaque;
             graphicsDevice.DepthStencilState = DepthStencilState.None;
 
@@ -469,44 +739,17 @@ namespace Orts.Viewer3D
 
         public override void Mark()
         {
-            Viewer.TextureManager.Mark(SkyTexture);
+            Viewer.TextureManager.Mark(SkyTextureSunrise);
+            Viewer.TextureManager.Mark(SkyTextureNoon);
+            Viewer.TextureManager.Mark(SkyTextureSunset);
             Viewer.TextureManager.Mark(StarTextureN);
             Viewer.TextureManager.Mark(StarTextureS);
             Viewer.TextureManager.Mark(MoonTexture);
             Viewer.TextureManager.Mark(MoonMask);
-            Viewer.TextureManager.Mark(CloudTexture);
+            Viewer.TextureManager.Mark(CloudTexture1);
+            Viewer.TextureManager.Mark(CloudTexture2);
+            Viewer.TextureManager.Mark(CloudTexture3);
             base.Mark();
-        }
-
-        /// <summary>
-        /// This function darkens the fog color as night begins to fall
-        /// as well as with increasing overcast.
-        /// </summary>
-        /// <param name="sunHeight">The Y value of the sunlight vector.</param>
-        /// <param name="overcast">The amount of overcast.</param>
-        static void FogDay2Night(float sunHeight, float overcast)
-        {
-            Vector3 floatColor;
-
-            if (sunHeight > NightStart)
-            {
-                floatColor = StartColor;
-            }
-            else if (sunHeight < NightFinish)
-            {
-                floatColor = FinishColor;
-            }
-            else
-            {
-                var amount = (sunHeight - NightFinish) / (NightStart - NightFinish);
-                floatColor = Vector3.Lerp(FinishColor, StartColor, amount);
-            }
-
-            // Adjust fog color for overcast
-            floatColor *= 1 - (0.5f * overcast);
-            SharedMaterialManager.FogColor.R = (byte)(floatColor.X * 255);
-            SharedMaterialManager.FogColor.G = (byte)(floatColor.Y * 255);
-            SharedMaterialManager.FogColor.B = (byte)(floatColor.Z * 255);
         }
     }
 }

@@ -96,6 +96,14 @@ namespace Orts.Viewer3D
         readonly EffectParameter nightColorModifier;
         readonly EffectParameter halfNightColorModifier;
         readonly EffectParameter vegetationAmbientModifier;
+        // ExRail Weather Control
+        readonly EffectParameter vegetationDesatuationModifier; 
+        readonly EffectParameter vegetationBrightnessModifier;
+        readonly EffectParameter vegetationContrastModifier;
+        readonly EffectParameter terrainBrightnessModifier;
+        readonly EffectParameter terrainDesatuationModifier;
+        readonly EffectParameter terrainContrastModifier;
+        // ---------------------------
         readonly EffectParameter signalLightIntensity;
         readonly EffectParameter eyeVector;
         readonly EffectParameter sideVector;
@@ -181,10 +189,11 @@ namespace Orts.Viewer3D
             }
         }
 
-        public void SetFog(float depth, ref Color color)
+        public void SetFog(float depth, Color color)
         {
             fog.SetValue(new Vector4(color.R / 255f, color.G / 255f, color.B / 255f, 1f / depth));
         }
+
 
         public void SetLightVector_ZFar(Vector3 sunDirection, int zFar)
         {
@@ -223,6 +232,15 @@ namespace Orts.Viewer3D
 
         public float OverlayScale { set { overlayScale.SetValue(value); } }
 
+        // Weather Vegetation Color control
+        public float VegDesatuationModifier { set { vegetationDesatuationModifier.SetValue(value); } }
+        public float VegBrightnessModifier  { set { vegetationBrightnessModifier.SetValue(value); } }
+        public float VegContrastModifier    { set { vegetationContrastModifier.SetValue(value); } }
+        // Weather Terrain Color control
+        public float TerBrightnessModifier  { set { terrainBrightnessModifier.SetValue(value); } }
+        public float TerDesatuationModifier { set { terrainDesatuationModifier.SetValue(value); } }
+        public float TerContrastModifier    { set { terrainContrastModifier.SetValue(value); } }
+        
         public SceneryShader(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, "SceneryShader")
         {
@@ -250,6 +268,12 @@ namespace Orts.Viewer3D
             nightColorModifier = Parameters["NightColorModifier"];
             halfNightColorModifier = Parameters["HalfNightColorModifier"];
             vegetationAmbientModifier = Parameters["VegetationAmbientModifier"];
+            vegetationDesatuationModifier = Parameters["VegetationDesatuationModifier"];
+            vegetationBrightnessModifier  = Parameters["VegetationBrightnessModifier"];
+            vegetationContrastModifier    = Parameters["VegetationContrastModifier"];
+            terrainBrightnessModifier  = Parameters["TerrainBrightnessModifier"];
+            terrainDesatuationModifier = Parameters["TerrainDesatuationModifier"];
+            terrainContrastModifier    = Parameters["TerrainContrastModifier"];
             signalLightIntensity = Parameters["SignalLightIntensity"];
             eyeVector = Parameters["EyeVector"];
             sideVector = Parameters["SideVector"];
@@ -310,29 +334,37 @@ namespace Orts.Viewer3D
         readonly EffectParameter lightVector;
         readonly EffectParameter time;
         readonly EffectParameter overcast;
+        readonly EffectParameter overcast2;
+        readonly EffectParameter overcast3;
         readonly EffectParameter windDisplacement;
         readonly EffectParameter skyColor;
-        readonly EffectParameter fogColor;
-        readonly EffectParameter fog;
         readonly EffectParameter moonColor;
         readonly EffectParameter moonTexCoord;
+        readonly EffectParameter moonMapTexture;
+        readonly EffectParameter moonMaskTexture;
+        readonly EffectParameter sunSize;
+        readonly EffectParameter fogColor;
+        readonly EffectParameter fog;
         readonly EffectParameter cloudColor;
+        readonly EffectParameter cloudColor2;
+        readonly EffectParameter cloudColor3;
         readonly EffectParameter rightVector;
         readonly EffectParameter upVector;
         readonly EffectParameter skyMapTexture;
         readonly EffectParameter starMapTexture;
-        readonly EffectParameter moonMapTexture;
-        readonly EffectParameter moonMaskTexture;
-        readonly EffectParameter cloudMapTexture;
-
+        readonly EffectParameter cloudMapTexture1;
+        readonly EffectParameter cloudMapTexture2;
+        readonly EffectParameter cloudMapTexture3;
 
         public Vector3 LightVector
         {
             set
             {
                 lightVector.SetValue(new Vector4(value, 1f / value.Length()));
-
-                cloudColor.SetValue(Day2Night(0.2f, -0.2f, 0.15f, value.Y));
+                cloudColor.SetValue(Day2Night( 0.2f, -0.2f, 0.15f, value.Y ));
+                cloudColor2.SetValue(Day2Night(0.2f, -0.2f, 0.15f, value.Y ));
+                cloudColor3.SetValue(Day2Night(0.2f, -0.2f, 0.15f, value.Y ));
+                
                 var skyColor1 = Day2Night(0.25f, -0.25f, -0.5f, value.Y);
                 var skyColor2 = MathHelper.Clamp(skyColor1 + 0.55f, 0, 1);
                 var skyColor3 = 0.001f / (0.8f * Math.Abs(value.Y - 0.1f));
@@ -346,75 +378,67 @@ namespace Orts.Viewer3D
             }
         }
 
-        public void SetFog(float depth, ref Color color)
-        {
+        public void SetFog(float depth, Color color) {
             fogColor.SetValue(new Vector3(color.R / 255f, color.G / 255f, color.B / 255f));
-            fog.SetValue(new Vector4(5000f / depth, 0.015f * MathHelper.Clamp(depth / 5000f, 0, 1), MathHelper.Clamp(depth / 10000f, 0, 1), 0.05f * MathHelper.Clamp(depth / 10000f, 0, 1)));
+            fog.SetValue(new Vector4(5000f / depth, 0.015f * MathHelper.Clamp(depth / 5000f, 0, 1), MathHelper.Clamp(depth / 10000f, 0, 1), 0.01f * MathHelper.Clamp(depth / 10000f, 0, 1)));
         }
 
         float _time;
-        public float Time
-        {
-            set
-            {
-                _time = value;
-                time.SetValue(value);
-            }
-        }
-
+        public float Time { set { _time = value; time.SetValue(value); } }
         int _moonPhase;
-        public float Random
-        {
-            set 
-            { 
-                _moonPhase = (int)value; 
-                moonTexCoord.SetValue(new Vector2((value % 2) / 2, (int)(value / 2) / 4));
-            }
-        }
+        public float RandomMoon { set { _moonPhase = (int)value; moonTexCoord.SetValue(new Vector2((value % 2) / 2, (int)(value / 2) / 4)); } }
 
-        public float Overcast
-        {
-            set
-            {
-                if (value < 0.2f)
-                    overcast.SetValue(new Vector4(5 * value, 0.0f, 0.0f, 0.0f));
-                else
-                    // Coefficients selected by author to achieve the desired appearance
-                    overcast.SetValue(new Vector4(MathHelper.Clamp(2 * value - 0.4f, 0, 1), 1.25f - 1.125f * value, 1.15f - 0.75f * value, 1f));
-            }
+        public float Overcast {
+            set {  
+                if (value < 0.2f) overcast.SetValue(new Vector4(5 * value, 0.0f, 0.0f, 0.0f)); 
+                else overcast.SetValue(new Vector4(MathHelper.Clamp(2 * value - 0.4f, 0, 1), 1.25f - 1.125f * value, 1.15f - 0.75f * value, 1f)); }
         }
-
+        public float Overcast2 {
+            set {
+                if (value < 0.2f) overcast2.SetValue(new Vector4(5 * value, 0.0f, 0.0f, 0.0f));
+                else overcast2.SetValue(new Vector4(MathHelper.Clamp(2 * value - 0.4f, 0, 1), 1.25f - 1.125f * value, 1.15f - 0.75f * value, 1f)); }
+        }
+        public float Overcast3 {
+            set {
+                if (value < 0.2f) overcast3.SetValue(new Vector4(5 * value, 0.0f, 0.0f, 0.0f));
+                else overcast3.SetValue(new Vector4(MathHelper.Clamp(2 * value - 0.4f, 0, 1), 1.25f - 1.125f * value, 1.15f - 0.75f * value, 1f)); }
+        }
+                
         public float WindSpeed { get; set; }
-
-        public float WindDirection
-        {
-            set 
-            {
+        public float WindDirection {
+            set {
                 var totalWindDisplacement = 50 * WindSpeed * _time; // This exaggerates the wind speed, but it is necessary to get a visible effect
                 windDisplacement.SetValue(new Vector2(-(float)Math.Sin(value) * totalWindDisplacement, (float)Math.Cos(value) * totalWindDisplacement));
             }
         }
 
+        public float SunSizeMix = 2.0f;
+        public float SunSize { set{ sunSize.SetValue(value); } }
+
+        public float SunScale { get; set; }
         public float MoonScale { get; set; }
 
-        public Texture2D SkyMapTexture { set { skyMapTexture.SetValue(value); } }
-        public Texture2D StarMapTexture { set { starMapTexture.SetValue(value); } }
-        public Texture2D MoonMapTexture { set { moonMapTexture.SetValue(value); } }
-        public Texture2D MoonMaskTexture { set { moonMaskTexture.SetValue(value); } }
-        public Texture2D CloudMapTexture { set { cloudMapTexture.SetValue(value); } }
+        public Texture2D SkyMapTexture    { set { skyMapTexture.SetValue(value);} }
+        public Texture2D StarMapTexture   { set { starMapTexture.SetValue(value);   } }
+        public Texture2D MoonMapTexture   { set { moonMapTexture.SetValue(value);   } }
+        public Texture2D MoonMaskTexture  { set { moonMaskTexture.SetValue(value);  } }
+        public Texture2D CloudMapTexture1 { set { cloudMapTexture1.SetValue(value); } }
+        public Texture2D CloudMapTexture2 { set { cloudMapTexture2.SetValue(value); } }
+        public Texture2D CloudMapTexture3 { set { cloudMapTexture3.SetValue(value); } }
 
-        public void SetViewMatrix(ref Matrix view)
+
+        public void SetViewMatrixMoon(ref Matrix view)
         {
-            var moonScale = MoonScale;
-            if (_moonPhase == 6)
-                moonScale *= 2;
+            // var moonScale = MoonScale;
+            // if (_moonPhase == 6) moonScale *= 2;
 
-            var eye = Vector3.Normalize(new Vector3(view.M13, view.M23, view.M33));
+            var eye   = Vector3.Normalize(new Vector3(view.M13, view.M23, view.M33));
             var right = Vector3.Cross(eye, Vector3.Up);
-            var up = Vector3.Cross(right, eye);
+            var up    = Vector3.Cross(right, eye);
 
-            rightVector.SetValue(right * moonScale);
-            upVector.SetValue(up * moonScale);
+            rightVector.SetValue(right * MoonScale);
+            upVector.SetValue(up * MoonScale);
+            //Console.Write(" rightvector = ");Console.Write(right.X * moonScale);Console.Write(" "); Console.Write(right.Y * moonScale);Console.Write(" ");Console.Write(right.Z * moonScale);
         }
 
         public void SetMatrix(ref Matrix wvp)
@@ -425,24 +449,31 @@ namespace Orts.Viewer3D
         public SkyShader(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, "SkyShader")
         {
+            time                = Parameters["Time"];    
             worldViewProjection = Parameters["WorldViewProjection"];
-            lightVector = Parameters["LightVector"];
-            time = Parameters["Time"];
-            overcast = Parameters["Overcast"];
+            lightVector         = Parameters["LightVector"];
             windDisplacement = Parameters["WindDisplacement"];
-            skyColor = Parameters["SkyColor"];
-            fogColor = Parameters["FogColor"];
-            fog = Parameters["Fog"];
-            moonColor = Parameters["MoonColor"];
-            moonTexCoord = Parameters["MoonTexCoord"];
-            cloudColor = Parameters["CloudColor"];
-            rightVector = Parameters["RightVector"];
-            upVector = Parameters["UpVector"];
-            skyMapTexture = Parameters["SkyMapTexture"];
-            starMapTexture = Parameters["StarMapTexture"];
-            moonMapTexture = Parameters["MoonMapTexture"];
+            rightVector      = Parameters["RightVector"];
+            upVector         = Parameters["UpVector"];
+            skyMapTexture   = Parameters["SkyMapTexture"];
+            starMapTexture  = Parameters["StarMapTexture"];
+            moonMapTexture  = Parameters["MoonMapTexture"];
             moonMaskTexture = Parameters["MoonMaskTexture"];
-            cloudMapTexture = Parameters["CloudMapTexture"];
+            cloudMapTexture1 = Parameters["CloudMapTexture1"];
+            cloudMapTexture2 = Parameters["CloudMapTexture2"];
+            cloudMapTexture3 = Parameters["CloudMapTexture3"];
+            skyColor = Parameters["SkyColor"];
+            sunSize  = Parameters["SunSize"];
+            fogColor = Parameters["FogColor"];
+            fog      = Parameters["Fog"];
+            moonColor    = Parameters["MoonColor"];
+            moonTexCoord = Parameters["MoonTexCoord"];
+            overcast  = Parameters["Overcast"];
+            overcast2 = Parameters["Overcast2"];
+            overcast3 = Parameters["Overcast3"];
+            cloudColor  = Parameters["CloudColor"];
+            cloudColor2 = Parameters["CloudColor2"];
+            cloudColor3 = Parameters["CloudColor3"];
         }
         
 
@@ -468,6 +499,7 @@ namespace Orts.Viewer3D
             return adjustment;
         }
     }
+    // ===============================================================================
 
     [CallOnThread("Render")]
     public class ParticleEmitterShader : Shader

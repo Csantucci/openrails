@@ -220,10 +220,26 @@ namespace Orts.Formats.Msts
         {
             //int index = (int)seasonType * 3 + (int)weatherType;
             //return ENVFileNames[index];
-            var envfilekey = seasonType.ToString() + weatherType.ToString();
-            var envfile = ENVFileNames[envfilekey];
-//            Trace.TraceInformation("Selected Environment file is {1}", envfilekey, envfile);
-            return envfile;
+
+            // EXR Weathertype expansion - ignore extras to avoid conflicting with the ENV files
+            if (((int)weatherType) <= 2) { 
+                var envfilekey = seasonType.ToString() + weatherType.ToString();
+                var envfile = ENVFileNames[envfilekey];
+                // Trace.TraceInformation("Selected Environment file is {1}", envfilekey, envfile);
+                return envfile;
+            } 
+            else { 
+                var wxtype = weatherType;
+                weatherType = WeatherType.Snow;
+                var envfilekey = seasonType.ToString() + weatherType.ToString();
+                var envfile = ENVFileNames[envfilekey];
+                weatherType = wxtype;
+                return envfile;
+            }
+
+
+
+
         }
     }
 

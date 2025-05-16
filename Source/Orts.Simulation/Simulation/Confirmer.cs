@@ -175,7 +175,7 @@ namespace Orts.Simulation
         readonly string[][] ConfirmText; 
 
         readonly Simulator Simulator;
-        readonly double DefaultDurationS;
+        double DefaultDurationS;
 
         public event System.EventHandler PlayErrorSound;
         public event EventHandler<DisplayMessageEventArgs> DisplayMessage;
@@ -373,6 +373,14 @@ namespace Orts.Simulation
 		public void MSG(string message)
 		{
 			Message(CabControl.None, ConfirmLevel.MSG, message);
+		}
+
+        public void MSG(string message,double defaultDurationS )
+		{
+            var dD = DefaultDurationS; 
+            DefaultDurationS = defaultDurationS;
+			Message(CabControl.None, ConfirmLevel.MSG, message);
+            DefaultDurationS = dD;
 		}
 		
         public void Warning(string message)

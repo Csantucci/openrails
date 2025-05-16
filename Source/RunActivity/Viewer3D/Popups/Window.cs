@@ -384,17 +384,21 @@ namespace Orts.Viewer3D.Popups
 
         internal override bool HandleMouseMove(WindowMouseEvent e)
         {
-            if (base.HandleMouseMove(e))
-                return true;
+            //Console.WriteLine("internal override bool HandleMouseMove");
+            //if ( e.MousePosition.X > 10 ) 
+            //Console.Write("UserInput.MouseX = "); Console.Write(UserInput.MouseX); Console.Write(" "); 
+            //Console.Write("UserInput.MouseY = "); Console.Write(UserInput.MouseY);Console.Write(" \n");
             if (UserInput.IsMouseLeftButtonDown && !Dragging && (DragWindowOffset != DragInvalid) && ((MathHelper.Distance(e.MouseScreenPosition.X, e.MouseDownScreenPosition.X) > WindowManager.DragMinimumDistance) || (MathHelper.Distance(e.MouseScreenPosition.Y, e.MouseDownScreenPosition.Y) > WindowManager.DragMinimumDistance)))
                 Dragging = true;
             else if (UserInput.IsMouseLeftButtonDown && Dragging)
                 Window.MoveTo(e.MouseScreenPosition.X - DragWindowOffset.X, e.MouseScreenPosition.Y - DragWindowOffset.Y);
+                
             return true;
         }
 
         internal override bool HandleUserInput(WindowMouseEvent e)
         {
+            //Console.WriteLine("internal override bool HandleUserInput");
             if (base.HandleUserInput(e))
                 return true;
             return true;

@@ -33,18 +33,29 @@ using Orts.MultiPlayer;
 using Orts.Simulation;
 using ORTS.Common;
 using ORTS.Common.Input;
+using Swan.Logging;
 using Events = Orts.Common.Events;
 
 namespace Orts.Viewer3D
-{
+{   
+    // <----------------------------- ExRail ------------------------------>
     public class WeatherControl
     {
         public readonly Viewer Viewer;
-        public readonly Weather Weather;
-
+        public readonly WeatherExtension Weather;
+        public bool ReloadWeatherSwitch, SaveWeatherSwitch;
+        BinaryWriter WeatherFileOut;
+        BinaryReader WeatherFileIn;
         public readonly List<SoundSourceBase> ClearSound;
         public readonly List<SoundSourceBase> RainSound;
         public readonly List<SoundSourceBase> SnowSound;
+        public readonly List<SoundSourceBase> FewSound;
+        public readonly List<SoundSourceBase> CloudySound;
+        public readonly List<SoundSourceBase> DesertSound;
+        public readonly List<SoundSourceBase> SnowStormSound;
+        public readonly List<SoundSourceBase> FoggySound;
+        public readonly List<SoundSourceBase> PartlyCloudySound;
+
         public readonly List<SoundSourceBase> WeatherSounds = new List<SoundSourceBase>();
 
         public bool weatherChangeOn;
@@ -69,18 +80,20 @@ namespace Orts.Viewer3D
         private const float FogMinDistance = 10f;
         private const float FogMaxDistance = 200000f;
 
-
         public WeatherControl(Viewer viewer)
         {
             Viewer = viewer;
             Weather = Viewer.Simulator.Weather;
-
+            ReloadWeatherSwitch = false;
+            SaveWeatherSwitch = false;
+   
             var pathArray = new[] {
                 Program.Simulator.RoutePath + @"\SOUND",
                 Program.Simulator.BasePath + @"\SOUND",
             };
 
             ClearSound = new List<SoundSourceBase> {
+              
                 new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "clear_in.sms"), false),
                 new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "clear_ex.sms"), false),
             };
@@ -92,11 +105,46 @@ namespace Orts.Viewer3D
                 new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "snow_in.sms"), false),
                 new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "snow_ex.sms"), false),
             };
+            // <----------------------------- ExRail ------------------------------>
+            FewSound = new List<SoundSourceBase> {
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "few_in.sms"), false),
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "few_ex.sms"), false),
+            };
 
+            CloudySound = new List<SoundSourceBase> {
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "cloudy_in.sms"), false),
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "cloudy_ex.sms"), false),
+            };
+
+            DesertSound = new List<SoundSourceBase> {
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "desert_in.sms"), false),
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "desert_ex.sms"), false),
+            };
+
+            SnowStormSound = new List<SoundSourceBase> {
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "SnowStorm_in.sms"), false),
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "SnowStorm_ex.sms"), false),
+            };
+            FoggySound = new List<SoundSourceBase> {
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "Foggy_in.sms"), false),
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "Foggy_ex.sms"), false),
+            };
+            PartlyCloudySound = new List<SoundSourceBase> {
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "PartlyCloudy_in.sms"), false),
+                new SoundSource(viewer, Events.Source.MSTSInGame, ORTSPaths.GetFileFromFolders(pathArray, "PartlyCloudy_ex.sms"), false),
+            };
+        
             WeatherSounds.AddRange(ClearSound);
             WeatherSounds.AddRange(RainSound);
             WeatherSounds.AddRange(SnowSound);
 
+            WeatherSounds.AddRange(FewSound);
+            WeatherSounds.AddRange(CloudySound);
+            WeatherSounds.AddRange(DesertSound);
+            WeatherSounds.AddRange(SnowStormSound);
+            WeatherSounds.AddRange(FoggySound);
+            WeatherSounds.AddRange(PartlyCloudySound);
+        
             SetInitialWeatherParameters();
             UpdateWeatherParameters();
 
@@ -121,56 +169,2396 @@ namespace Orts.Viewer3D
                 UpdateWeatherParameters();
             };
         }
-
+        
         public virtual void SaveWeatherParameters(BinaryWriter outf)
         {
             outf.Write(0); // Set fixed weather
-            outf.Write(Weather.FogDistance);
-            outf.Write(Weather.OvercastFactor);
-            outf.Write(Weather.PricipitationIntensityPPSPM2);
-            outf.Write(Weather.PrecipitationLiquidity);
             outf.Write(RandomizedWeather);
             outf.Write(weatherChangeOn);
-            if (weatherChangeOn)
-            {
+            if (weatherChangeOn) {
                 dynamicWeather.Save(outf);
             }
+
         }
 
         public virtual void RestoreWeatherParameters(BinaryReader inf)
         {
             int weathercontroltype = inf.ReadInt32();
-
             // Restoring wrong type of weather - abort
-            if (weathercontroltype != 0)
-            {
+            if (weathercontroltype != 0) {
                 Trace.TraceError(Simulator.Catalog.GetString("Restoring wrong weather type : trying to restore dynamic weather but save contains user controlled weather"));
             }
-
-            Weather.FogDistance = inf.ReadSingle();
-            Weather.OvercastFactor = inf.ReadSingle();
-            Weather.PricipitationIntensityPPSPM2 = inf.ReadSingle();
-            Weather.PrecipitationLiquidity = inf.ReadSingle();
             RandomizedWeather = inf.ReadBoolean();
             weatherChangeOn = inf.ReadBoolean();
-            if (weatherChangeOn)
-            {
+            
+            if (weatherChangeOn) {
                 dynamicWeather = new DynamicWeather();
                 dynamicWeather.Restore(inf);
             }
             UpdateVolume();
         }
+        // <----------------------------- ExRail ------------------------------>
+        public virtual void LoadWeatherType(BinaryReader wfile)
+        {
+            int weathercontroltype = wfile.ReadInt32();
+            // Restoring wrong type of weather - abort
+            if (weathercontroltype != 0) {
+                Trace.TraceError(Simulator.Catalog.GetString("Restoring wrong weather type : trying to restore dynamic weather but save contains user controlled weather"));
+            }
+            RandomizedWeather = wfile.ReadBoolean();
+            weatherChangeOn = wfile.ReadBoolean();
+            
+            if (weatherChangeOn) {
+                dynamicWeather = new DynamicWeather();
+                // dynamicWeather.Restore(wfile);
+            }
 
+            Weather.PrecipitationLiquidity = wfile.ReadSingle();
+            Weather.PricipitationIntensityPPSPM2 = wfile.ReadSingle();
+            // W I N D
+            Weather.WindSpeed = wfile.ReadSingle();
+            Weather.WindDirectionSky = wfile.ReadSingle();
+            // R A I N / S N O W
+            Weather.PrecipWind1.X = wfile.ReadSingle();                            
+            Weather.PrecipWind1.Y = wfile.ReadSingle();                            
+            Weather.PrecipWind1.Z = wfile.ReadSingle();                            
+            Weather.PrecipWind2.X = wfile.ReadSingle();                            
+            Weather.PrecipWind2.Y = wfile.ReadSingle();                            
+            Weather.PrecipWind2.Z = wfile.ReadSingle(); 
+            // P A R T I C L E  S I Z E
+            Weather.ParticleSize1 = wfile.ReadSingle(); 
+            Weather.ParticleSize2 = wfile.ReadSingle(); 
+            // C L O U D S  O P A C I T Y 
+            Weather.OvercastFactor = wfile.ReadSingle();
+            Weather.OvercastFactor2 = wfile.ReadSingle();
+            Weather.OvercastFactor3 = wfile.ReadSingle();
+            // S U N
+            Weather.SunSize_Sunrise = wfile.ReadSingle();
+            Weather.SunSize_Noon    = wfile.ReadSingle();   
+            Weather.SunSize_Sunset  = wfile.ReadSingle(); 
+            // S K Y
+            Weather.SkyFogDistance_Sunrise = wfile.ReadSingle();
+            Weather.SkyFogDistance_Noon    = wfile.ReadSingle();   
+            Weather.SkyFogDistance_Sunset  = wfile.ReadSingle(); 
+            Weather.SkyFog_Sunrise.R = wfile.ReadByte();
+            Weather.SkyFog_Sunrise.G = wfile.ReadByte();
+            Weather.SkyFog_Sunrise.B = wfile.ReadByte();
+            Weather.SkyFog_Noon.R = wfile.ReadByte();   
+            Weather.SkyFog_Noon.G = wfile.ReadByte();
+            Weather.SkyFog_Noon.B = wfile.ReadByte();
+            Weather.SkyFog_Sunset.R = wfile.ReadByte(); 
+            Weather.SkyFog_Sunset.G = wfile.ReadByte();
+            Weather.SkyFog_Sunset.B = wfile.ReadByte();
+            // S C E N E R Y
+            Weather.SceneryFogDistance_Sunrise = wfile.ReadSingle();
+            Weather.SceneryFogDistance_Noon    = wfile.ReadSingle();   
+            Weather.SceneryFogDistance_Sunset  = wfile.ReadSingle(); 
+            Weather.SceneryFog_Sunrise.R = wfile.ReadByte();
+            Weather.SceneryFog_Sunrise.G = wfile.ReadByte();
+            Weather.SceneryFog_Sunrise.B = wfile.ReadByte();
+            Weather.SceneryFog_Noon.R = wfile.ReadByte();   
+            Weather.SceneryFog_Noon.G = wfile.ReadByte();
+            Weather.SceneryFog_Noon.B = wfile.ReadByte();
+            Weather.SceneryFog_Sunset.R = wfile.ReadByte(); 
+            Weather.SceneryFog_Sunset.G = wfile.ReadByte();
+            Weather.SceneryFog_Sunset.B = wfile.ReadByte();
+            // V E G E T A T I O N
+            Weather.VegetationDesatuationModifier = wfile.ReadSingle();
+            Weather.VegetationBrightnessModifier  = wfile.ReadSingle();
+            Weather.VegetationContrastModifier    = wfile.ReadSingle();
+            // T E R R A I N
+            Weather.TerrainDesatuationModifier = wfile.ReadSingle();
+            Weather.TerrainBrightnessModifier  = wfile.ReadSingle();
+            Weather.TerrainContrastModifier    = wfile.ReadSingle();
+            // 
+            wfile.Close();
+            UpdateVolume();
+        }
+
+        // <----------------------------- ExRail ------------------------------>
+        public virtual void SaveWeatherType(BinaryWriter wfile )
+        {
+            wfile.Write(0); // Set fixed weather
+            wfile.Write(RandomizedWeather);
+            wfile.Write(weatherChangeOn);
+            if (weatherChangeOn) {
+                // dynamicWeather.Save(wfile);
+            }
+            wfile.Write(Weather.PrecipitationLiquidity);
+            wfile.Write(Weather.PricipitationIntensityPPSPM2);
+            // 
+            wfile.Write(Weather.WindSpeed);
+            wfile.Write(Weather.WindDirectionSky);
+            // 
+            wfile.Write(Weather.PrecipWind1.X);                            
+            wfile.Write(Weather.PrecipWind1.Y);                            
+            wfile.Write(Weather.PrecipWind1.Z);                            
+            wfile.Write(Weather.PrecipWind2.X);                            
+            wfile.Write(Weather.PrecipWind2.Y);                            
+            wfile.Write(Weather.PrecipWind2.Z);
+            // P A R T I C L E  S I Z E
+            wfile.Write(Weather.ParticleSize1); 
+            wfile.Write(Weather.ParticleSize2); 
+            // O V E R C A S T 
+            wfile.Write(Weather.OvercastFactor);
+            wfile.Write(Weather.OvercastFactor2);
+            wfile.Write(Weather.OvercastFactor3);
+            // S U N
+            wfile.Write(Weather.SunSize_Sunrise);
+            wfile.Write(Weather.SunSize_Noon);   
+            wfile.Write(Weather.SunSize_Sunset); 
+            // S K Y
+            wfile.Write(Weather.SkyFogDistance_Sunrise);
+            wfile.Write(Weather.SkyFogDistance_Noon);   
+            wfile.Write(Weather.SkyFogDistance_Sunset);
+            wfile.Write(Weather.SkyFog_Sunrise.R);
+            wfile.Write(Weather.SkyFog_Sunrise.G);
+            wfile.Write(Weather.SkyFog_Sunrise.B);
+            wfile.Write(Weather.SkyFog_Noon.R);   
+            wfile.Write(Weather.SkyFog_Noon.G);
+            wfile.Write(Weather.SkyFog_Noon.B);
+            wfile.Write(Weather.SkyFog_Sunset.R); 
+            wfile.Write(Weather.SkyFog_Sunset.G);
+            wfile.Write(Weather.SkyFog_Sunset.B);
+            // S C E N E R Y
+            wfile.Write(Weather.SceneryFogDistance_Sunrise);
+            wfile.Write(Weather.SceneryFogDistance_Noon);   
+            wfile.Write(Weather.SceneryFogDistance_Sunset); 
+            wfile.Write(Weather.SceneryFog_Sunrise.R);
+            wfile.Write(Weather.SceneryFog_Sunrise.G);
+            wfile.Write(Weather.SceneryFog_Sunrise.B);
+            wfile.Write(Weather.SceneryFog_Noon.R);   
+            wfile.Write(Weather.SceneryFog_Noon.G);
+            wfile.Write(Weather.SceneryFog_Noon.B);
+            wfile.Write(Weather.SceneryFog_Sunset.R); 
+            wfile.Write(Weather.SceneryFog_Sunset.G);
+            wfile.Write(Weather.SceneryFog_Sunset.B);
+            // V E G E T A T I O N
+            wfile.Write(Weather.VegetationDesatuationModifier);
+            wfile.Write(Weather.VegetationBrightnessModifier);
+            wfile.Write(Weather.VegetationContrastModifier);
+            // T E R R A I N
+            wfile.Write(Weather.TerrainDesatuationModifier);
+            wfile.Write(Weather.TerrainBrightnessModifier);
+            wfile.Write(Weather.TerrainContrastModifier);
+            // 
+            wfile.Flush();
+            wfile.Close();
+        }
+
+        // <----------------------------- ExRail ------------------------------>
+        // Load or Initilize Weather 
+        string Weatherfilepath;
+        FileInfo fileInfo;
         public void SetInitialWeatherParameters()
         {
-            // These values are defaults only; subsequent changes to the weather via debugging only change the components (weather, overcastFactor and fogDistance) individually.
-            switch (Viewer.Simulator.WeatherType)
+            switch (Viewer.Simulator.Season)
             {
-                case WeatherType.Clear: Weather.OvercastFactor = 0.05f; Weather.FogDistance = 20000; break;
-                case WeatherType.Rain: Weather.OvercastFactor = 0.7f; Weather.FogDistance = 1000; break;
-                case WeatherType.Snow: Weather.OvercastFactor = 0.6f; Weather.FogDistance = 500; break;
-                default: break;
+                case SeasonType.Spring:
+                { 
+                    switch (Viewer.Simulator.WeatherType)
+                    {
+                        case WeatherType.Clear:
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringClear.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   // HUSK DEN LOADER FRA FIL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                // --------------------------------------------                       
+                                Weather.WindSpeed = 12.0f;
+                                Weather.WindDirectionSky = 1.0f;
+                                // --------------------------------------------  
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // --------------------------------------------
+                                Weather.OvercastFactor  = 0.1f;
+                                Weather.OvercastFactor2 = 0.0f; 
+                                Weather.OvercastFactor3 = 0.0f;
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.3f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3940.0f;
+                                Weather.SkyFogDistance_Noon    = 4780.0f;
+                                Weather.SkyFogDistance_Sunset  = 3420.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(142, 172, 215, 255);
+                                Weather.SkyFog_Sunset   = new Color(195, 163, 128, 255);
+                                // --------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise =  710.0f;
+                                Weather.SceneryFogDistance_Noon    =  1440.0f;
+                                Weather.SceneryFogDistance_Sunset  =  830.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(185, 182, 196, 255);
+                                Weather.SceneryFog_Noon     = new Color(149, 176, 218, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 1.0f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut ); 
+                            }
+                        break;
+
+                        case WeatherType.Rain:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringRain.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {  
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 2.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.53f;
+                                Weather.OvercastFactor2 = 0.28f; 
+                                Weather.OvercastFactor3 = 0.56f;
+                                // -----------------------------------------------                
+                                Weather.ParticleSize1 = 0.88f;
+                                Weather.ParticleSize2 = 0.88f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( -7.0f, 0.0f, -14.8f);
+                                Weather.PrecipWind2 = new Vector3( -12.0f, 0.0f, -3.9f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 2950.0f;
+                                Weather.SkyFogDistance_Noon    = 4700.0f;
+                                Weather.SkyFogDistance_Sunset  = 3600.0f;
+                                Weather.SkyFog_Sunrise  = new Color(117, 108, 105, 255);
+                                Weather.SkyFog_Noon     = new Color(116,  111, 113, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 500.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(99, 92, 92, 255);
+                                Weather.SceneryFog_Noon     = new Color(140, 139, 140, 255);
+                                Weather.SceneryFog_Sunset   = new Color(115, 107, 105, 205);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.7f;
+                                Weather.TerrainBrightnessModifier  = 0.77f;
+                                Weather.TerrainContrastModifier    = 0.98f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Snow:
+                
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringSnow.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.195f;
+                                Weather.OvercastFactor2 = 0.20f; 
+                                Weather.OvercastFactor3 = 0.20f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1 = 1.8f;
+                                Weather.ParticleSize2 = 1.5f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 2.0f, 0.0f, 4.4f);
+                                Weather.PrecipWind2 = new Vector3( 8.0f, 0.0f, 8.8f);
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 500.0f;
+                                Weather.SkyFogDistance_Noon    = 500.0f;
+                                Weather.SkyFogDistance_Sunset  = 500.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(183, 182, 182, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 200.0f;
+                                Weather.SceneryFogDistance_Noon    = 350.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Noon     = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Sunset   = new Color(180, 176, 174, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 2.0f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.6f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Few:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringFew.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.10f; 
+                                Weather.OvercastFactor2 = 0.16f; 
+                                Weather.OvercastFactor3 = 0.18f;
+                                // -----------------------------------------------                        
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6600.0f;
+                                Weather.SkyFogDistance_Noon    = 4900.0f;
+                                Weather.SkyFogDistance_Sunset  = 5000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 680.0f;
+                                Weather.SceneryFogDistance_Noon    = 1000.0f;
+                                Weather.SceneryFogDistance_Sunset  = 720.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(170, 172, 170, 255);
+                                Weather.SceneryFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.1f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        
+
+                        break;
+
+                        case WeatherType.Cloudy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = -1.0f;
+                                Weather.WindDirectionSky = 0.55f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.05f; 
+                                Weather.OvercastFactor2 = 0.08f; 
+                                Weather.OvercastFactor3 = 0.15f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 870.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 890.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(174, 175, 173, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                SaveWeatherType( WeatherFileOut );
+                            }
+
+                        break;
+
+                        case WeatherType.Desert:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringDesert.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.3f;
+                                Weather.WindDirectionSky = 2.40f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.07f; 
+                                Weather.OvercastFactor2 = 0.18f; 
+                                Weather.OvercastFactor3 = 0.14f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(229, 194, 152, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.SnowStorm:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringSnowStorm.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.14f;
+                                Weather.WindDirectionSky = 0.0f;
+
+                                Weather.OvercastFactor  = 0.10f;
+                                Weather.OvercastFactor2 = 0.14f; 
+                                Weather.OvercastFactor3 = 0.10f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1  = 1.7f;
+                                Weather.ParticleSize2  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 7.5f, 0.4f, 10.3f);
+                                Weather.PrecipWind2 = new Vector3( 1.7f, 0.0f, 20.6f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6650.0f;
+                                Weather.SkyFogDistance_Noon    = 6400.0f;
+                                Weather.SkyFogDistance_Sunset  = 1960.0f;
+                                Weather.SkyFog_Sunrise  = new Color(164, 161, 163, 255);
+                                Weather.SkyFog_Noon     = new Color(167, 167, 170, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 320.0f;
+                                Weather.SceneryFogDistance_Noon    = 280.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(115, 108, 106, 255);
+                                Weather.SceneryFog_Noon     = new Color(161, 161, 160, 255);
+                                Weather.SceneryFog_Sunset   = new Color(105, 106, 100, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.5f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Foggy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringFoggy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.031f; 
+                                Weather.OvercastFactor3 = 0.081f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3250.0f;
+                                Weather.SkyFogDistance_Noon    = 3600.0f;
+                                Weather.SkyFogDistance_Sunset  = 2800.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(177, 199, 209, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.PartlyCloudy:
+                     
+                            Weatherfilepath = "Weather/Saves/WeatherType_SpringPartlyCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.00f; 
+                                Weather.OvercastFactor3 = 0.01f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 15000.0f;
+                                Weather.SkyFogDistance_Noon    = 15000.0f;
+                                Weather.SkyFogDistance_Sunset  = 15000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 2530.0f;
+                                Weather.SceneryFogDistance_Noon    = 2770.0f;
+                                Weather.SceneryFogDistance_Sunset  = 3030.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(155, 174, 200, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 0.65f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.81f;
+                                Weather.VegetationBrightnessModifier  = 0.84f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.9f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+                    }
+                    break;
+                }
+
+                case SeasonType.Summer:
+                {                     
+                    switch (Viewer.Simulator.WeatherType)
+                    {
+                        case WeatherType.Clear:
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerClear.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   // HUSK DEN LOADER FRA FIL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                // --------------------------------------------                       
+                                Weather.WindSpeed = 12.0f;
+                                Weather.WindDirectionSky = 1.0f;
+                                // --------------------------------------------  
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // --------------------------------------------
+                                Weather.OvercastFactor  = 0.1f;
+                                Weather.OvercastFactor2 = 0.0f; 
+                                Weather.OvercastFactor3 = 0.0f;
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.3f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3940.0f;
+                                Weather.SkyFogDistance_Noon    = 4780.0f;
+                                Weather.SkyFogDistance_Sunset  = 3420.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(142, 172, 215, 255);
+                                Weather.SkyFog_Sunset   = new Color(195, 163, 128, 255);
+                                // --------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise =  710.0f;
+                                Weather.SceneryFogDistance_Noon    =  1440.0f;
+                                Weather.SceneryFogDistance_Sunset  =  830.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(185, 182, 196, 255);
+                                Weather.SceneryFog_Noon     = new Color(149, 176, 218, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 1.0f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut ); 
+                            }
+                        break;
+
+                        case WeatherType.Rain:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerRain.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {  
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 2.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.53f;
+                                Weather.OvercastFactor2 = 0.28f; 
+                                Weather.OvercastFactor3 = 0.56f;
+                                // -----------------------------------------------                
+                                Weather.ParticleSize1 = 0.88f;
+                                Weather.ParticleSize2 = 0.88f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( -7.0f, 0.0f, -14.8f);
+                                Weather.PrecipWind2 = new Vector3( -12.0f, 0.0f, -3.9f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 2950.0f;
+                                Weather.SkyFogDistance_Noon    = 4700.0f;
+                                Weather.SkyFogDistance_Sunset  = 3600.0f;
+                                Weather.SkyFog_Sunrise  = new Color(117, 108, 105, 255);
+                                Weather.SkyFog_Noon     = new Color(116,  111, 113, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 500.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(99, 92, 92, 255);
+                                Weather.SceneryFog_Noon     = new Color(140, 139, 140, 255);
+                                Weather.SceneryFog_Sunset   = new Color(115, 107, 105, 205);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.7f;
+                                Weather.TerrainBrightnessModifier  = 0.77f;
+                                Weather.TerrainContrastModifier    = 0.98f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Snow:
+                
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerSnow.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.195f;
+                                Weather.OvercastFactor2 = 0.20f; 
+                                Weather.OvercastFactor3 = 0.20f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1 = 1.8f;
+                                Weather.ParticleSize2 = 1.5f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 2.0f, 0.0f, 4.4f);
+                                Weather.PrecipWind2 = new Vector3( 8.0f, 0.0f, 8.8f);
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 500.0f;
+                                Weather.SkyFogDistance_Noon    = 500.0f;
+                                Weather.SkyFogDistance_Sunset  = 500.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(183, 182, 182, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 200.0f;
+                                Weather.SceneryFogDistance_Noon    = 350.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Noon     = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Sunset   = new Color(180, 176, 174, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 2.0f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.6f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Few:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerFew.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.10f; 
+                                Weather.OvercastFactor2 = 0.16f; 
+                                Weather.OvercastFactor3 = 0.18f;
+                                // -----------------------------------------------                        
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6600.0f;
+                                Weather.SkyFogDistance_Noon    = 4900.0f;
+                                Weather.SkyFogDistance_Sunset  = 5000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 680.0f;
+                                Weather.SceneryFogDistance_Noon    = 1000.0f;
+                                Weather.SceneryFogDistance_Sunset  = 720.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(170, 172, 170, 255);
+                                Weather.SceneryFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.1f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        
+
+                        break;
+
+                        case WeatherType.Cloudy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = -1.0f;
+                                Weather.WindDirectionSky = 0.55f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.05f; 
+                                Weather.OvercastFactor2 = 0.08f; 
+                                Weather.OvercastFactor3 = 0.15f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 870.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 890.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(174, 175, 173, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                SaveWeatherType( WeatherFileOut );
+                            }
+
+                        break;
+
+                        case WeatherType.Desert:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerDesert.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.3f;
+                                Weather.WindDirectionSky = 2.40f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.07f; 
+                                Weather.OvercastFactor2 = 0.18f; 
+                                Weather.OvercastFactor3 = 0.14f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(229, 194, 152, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.SnowStorm:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerSnowStorm.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.14f;
+                                Weather.WindDirectionSky = 0.0f;
+
+                                Weather.OvercastFactor  = 0.10f;
+                                Weather.OvercastFactor2 = 0.14f; 
+                                Weather.OvercastFactor3 = 0.10f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1  = 1.7f;
+                                Weather.ParticleSize2  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 7.5f, 0.4f, 10.3f);
+                                Weather.PrecipWind2 = new Vector3( 1.7f, 0.0f, 20.6f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6650.0f;
+                                Weather.SkyFogDistance_Noon    = 6400.0f;
+                                Weather.SkyFogDistance_Sunset  = 1960.0f;
+                                Weather.SkyFog_Sunrise  = new Color(164, 161, 163, 255);
+                                Weather.SkyFog_Noon     = new Color(167, 167, 170, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 320.0f;
+                                Weather.SceneryFogDistance_Noon    = 280.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(115, 108, 106, 255);
+                                Weather.SceneryFog_Noon     = new Color(161, 161, 160, 255);
+                                Weather.SceneryFog_Sunset   = new Color(105, 106, 100, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.5f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Foggy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerFoggy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.031f; 
+                                Weather.OvercastFactor3 = 0.081f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3250.0f;
+                                Weather.SkyFogDistance_Noon    = 3600.0f;
+                                Weather.SkyFogDistance_Sunset  = 2800.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(177, 199, 209, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.PartlyCloudy:
+                     
+                            Weatherfilepath = "Weather/Saves/WeatherType_SummerPartlyCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.00f; 
+                                Weather.OvercastFactor3 = 0.01f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 15000.0f;
+                                Weather.SkyFogDistance_Noon    = 15000.0f;
+                                Weather.SkyFogDistance_Sunset  = 15000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 2530.0f;
+                                Weather.SceneryFogDistance_Noon    = 2770.0f;
+                                Weather.SceneryFogDistance_Sunset  = 3030.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(155, 174, 200, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 0.65f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.81f;
+                                Weather.VegetationBrightnessModifier  = 0.84f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.9f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+                    }
+                    break;
+                }
+
+                case SeasonType.Autumn:
+                {
+                    switch (Viewer.Simulator.WeatherType)
+                    {
+                        case WeatherType.Clear:
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnClear.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   // HUSK DEN LOADER FRA FIL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                // --------------------------------------------                       
+                                Weather.WindSpeed = 12.0f;
+                                Weather.WindDirectionSky = 1.0f;
+                                // --------------------------------------------  
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // --------------------------------------------
+                                Weather.OvercastFactor  = 0.1f;
+                                Weather.OvercastFactor2 = 0.0f; 
+                                Weather.OvercastFactor3 = 0.0f;
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.3f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3940.0f;
+                                Weather.SkyFogDistance_Noon    = 4780.0f;
+                                Weather.SkyFogDistance_Sunset  = 3420.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(142, 172, 215, 255);
+                                Weather.SkyFog_Sunset   = new Color(195, 163, 128, 255);
+                                // --------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise =  710.0f;
+                                Weather.SceneryFogDistance_Noon    =  1440.0f;
+                                Weather.SceneryFogDistance_Sunset  =  830.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(185, 182, 196, 255);
+                                Weather.SceneryFog_Noon     = new Color(149, 176, 218, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 1.0f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut ); 
+                            }
+                        break;
+
+                        case WeatherType.Rain:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnRain.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {  
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 2.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.53f;
+                                Weather.OvercastFactor2 = 0.28f; 
+                                Weather.OvercastFactor3 = 0.56f;
+                                // -----------------------------------------------                
+                                Weather.ParticleSize1 = 0.88f;
+                                Weather.ParticleSize2 = 0.88f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( -7.0f, 0.0f, -14.8f);
+                                Weather.PrecipWind2 = new Vector3( -12.0f, 0.0f, -3.9f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 2950.0f;
+                                Weather.SkyFogDistance_Noon    = 4700.0f;
+                                Weather.SkyFogDistance_Sunset  = 3600.0f;
+                                Weather.SkyFog_Sunrise  = new Color(117, 108, 105, 255);
+                                Weather.SkyFog_Noon     = new Color(116,  111, 113, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 500.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(99, 92, 92, 255);
+                                Weather.SceneryFog_Noon     = new Color(140, 139, 140, 255);
+                                Weather.SceneryFog_Sunset   = new Color(115, 107, 105, 205);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.7f;
+                                Weather.TerrainBrightnessModifier  = 0.77f;
+                                Weather.TerrainContrastModifier    = 0.98f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Snow:
+                
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnSnow.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.195f;
+                                Weather.OvercastFactor2 = 0.20f; 
+                                Weather.OvercastFactor3 = 0.20f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1 = 1.8f;
+                                Weather.ParticleSize2 = 1.5f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 2.0f, 0.0f, 4.4f);
+                                Weather.PrecipWind2 = new Vector3( 8.0f, 0.0f, 8.8f);
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 500.0f;
+                                Weather.SkyFogDistance_Noon    = 500.0f;
+                                Weather.SkyFogDistance_Sunset  = 500.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(183, 182, 182, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 200.0f;
+                                Weather.SceneryFogDistance_Noon    = 350.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Noon     = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Sunset   = new Color(180, 176, 174, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 2.0f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.6f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Few:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnFew.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.10f; 
+                                Weather.OvercastFactor2 = 0.16f; 
+                                Weather.OvercastFactor3 = 0.18f;
+                                // -----------------------------------------------                        
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6600.0f;
+                                Weather.SkyFogDistance_Noon    = 4900.0f;
+                                Weather.SkyFogDistance_Sunset  = 5000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 680.0f;
+                                Weather.SceneryFogDistance_Noon    = 1000.0f;
+                                Weather.SceneryFogDistance_Sunset  = 720.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(170, 172, 170, 255);
+                                Weather.SceneryFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.1f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        
+
+                        break;
+
+                        case WeatherType.Cloudy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = -1.0f;
+                                Weather.WindDirectionSky = 0.55f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.05f; 
+                                Weather.OvercastFactor2 = 0.08f; 
+                                Weather.OvercastFactor3 = 0.15f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 870.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 890.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(174, 175, 173, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                SaveWeatherType( WeatherFileOut );
+                            }
+
+                        break;
+
+                        case WeatherType.Desert:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnDesert.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.3f;
+                                Weather.WindDirectionSky = 2.40f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.07f; 
+                                Weather.OvercastFactor2 = 0.18f; 
+                                Weather.OvercastFactor3 = 0.14f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(229, 194, 152, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.SnowStorm:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnSnowStorm.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.14f;
+                                Weather.WindDirectionSky = 0.0f;
+
+                                Weather.OvercastFactor  = 0.10f;
+                                Weather.OvercastFactor2 = 0.14f; 
+                                Weather.OvercastFactor3 = 0.10f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1  = 1.7f;
+                                Weather.ParticleSize2  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 7.5f, 0.4f, 10.3f);
+                                Weather.PrecipWind2 = new Vector3( 1.7f, 0.0f, 20.6f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6650.0f;
+                                Weather.SkyFogDistance_Noon    = 6400.0f;
+                                Weather.SkyFogDistance_Sunset  = 1960.0f;
+                                Weather.SkyFog_Sunrise  = new Color(164, 161, 163, 255);
+                                Weather.SkyFog_Noon     = new Color(167, 167, 170, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 320.0f;
+                                Weather.SceneryFogDistance_Noon    = 280.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(115, 108, 106, 255);
+                                Weather.SceneryFog_Noon     = new Color(161, 161, 160, 255);
+                                Weather.SceneryFog_Sunset   = new Color(105, 106, 100, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.5f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Foggy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnFoggy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.031f; 
+                                Weather.OvercastFactor3 = 0.081f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3250.0f;
+                                Weather.SkyFogDistance_Noon    = 3600.0f;
+                                Weather.SkyFogDistance_Sunset  = 2800.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(177, 199, 209, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+                    
+                        case WeatherType.PartlyCloudy:
+                     
+                            Weatherfilepath = "Weather/Saves/WeatherType_AutumnPartlyCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.00f; 
+                                Weather.OvercastFactor3 = 0.01f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 15000.0f;
+                                Weather.SkyFogDistance_Noon    = 15000.0f;
+                                Weather.SkyFogDistance_Sunset  = 15000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 2530.0f;
+                                Weather.SceneryFogDistance_Noon    = 2770.0f;
+                                Weather.SceneryFogDistance_Sunset  = 3030.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(155, 174, 200, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 0.65f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.81f;
+                                Weather.VegetationBrightnessModifier  = 0.84f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.9f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+
+
+                    }
+                    break;
+                }
+
+                case SeasonType.Winter: 
+                    
+                    switch (Viewer.Simulator.WeatherType)
+                    {
+                        case WeatherType.Clear:
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterClear.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   // HUSK DEN LOADER FRA FIL !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                // --------------------------------------------                       
+                                Weather.WindSpeed = 12.0f;
+                                Weather.WindDirectionSky = 1.0f;
+                                // --------------------------------------------  
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // --------------------------------------------
+                                Weather.OvercastFactor  = 0.1f;
+                                Weather.OvercastFactor2 = 0.0f; 
+                                Weather.OvercastFactor3 = 0.0f;
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.3f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3940.0f;
+                                Weather.SkyFogDistance_Noon    = 4780.0f;
+                                Weather.SkyFogDistance_Sunset  = 3420.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(142, 172, 215, 255);
+                                Weather.SkyFog_Sunset   = new Color(195, 163, 128, 255);
+                                // --------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise =  710.0f;
+                                Weather.SceneryFogDistance_Noon    =  1440.0f;
+                                Weather.SceneryFogDistance_Sunset  =  830.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(185, 182, 196, 255);
+                                Weather.SceneryFog_Noon     = new Color(149, 176, 218, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 1.0f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut ); 
+                            }
+                        break;
+
+                        case WeatherType.Rain:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterRain.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {  
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 2.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.53f;
+                                Weather.OvercastFactor2 = 0.28f; 
+                                Weather.OvercastFactor3 = 0.56f;
+                                // -----------------------------------------------                
+                                Weather.ParticleSize1 = 0.88f;
+                                Weather.ParticleSize2 = 0.88f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( -7.0f, 0.0f, -14.8f);
+                                Weather.PrecipWind2 = new Vector3( -12.0f, 0.0f, -3.9f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 2950.0f;
+                                Weather.SkyFogDistance_Noon    = 4700.0f;
+                                Weather.SkyFogDistance_Sunset  = 3600.0f;
+                                Weather.SkyFog_Sunrise  = new Color(117, 108, 105, 255);
+                                Weather.SkyFog_Noon     = new Color(116,  111, 113, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 500.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(99, 92, 92, 255);
+                                Weather.SceneryFog_Noon     = new Color(140, 139, 140, 255);
+                                Weather.SceneryFog_Sunset   = new Color(115, 107, 105, 205);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.7f;
+                                Weather.TerrainBrightnessModifier  = 0.77f;
+                                Weather.TerrainContrastModifier    = 0.98f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Snow:
+                
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterSnow.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.195f;
+                                Weather.OvercastFactor2 = 0.20f; 
+                                Weather.OvercastFactor3 = 0.20f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1 = 1.8f;
+                                Weather.ParticleSize2 = 1.5f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 2.0f, 0.0f, 4.4f);
+                                Weather.PrecipWind2 = new Vector3( 8.0f, 0.0f, 8.8f);
+                                // --------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 500.0f;
+                                Weather.SkyFogDistance_Noon    = 500.0f;
+                                Weather.SkyFogDistance_Sunset  = 500.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(183, 182, 182, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 200.0f;
+                                Weather.SceneryFogDistance_Noon    = 350.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Noon     = new Color(180, 176, 174, 255);
+                                Weather.SceneryFog_Sunset   = new Color(180, 176, 174, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 2.0f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.6f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Few:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterFew.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.10f; 
+                                Weather.OvercastFactor2 = 0.16f; 
+                                Weather.OvercastFactor3 = 0.18f;
+                                // -----------------------------------------------                        
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6600.0f;
+                                Weather.SkyFogDistance_Noon    = 4900.0f;
+                                Weather.SkyFogDistance_Sunset  = 5000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 680.0f;
+                                Weather.SceneryFogDistance_Noon    = 1000.0f;
+                                Weather.SceneryFogDistance_Sunset  = 720.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(170, 172, 170, 255);
+                                Weather.SceneryFog_Noon     = new Color(128, 164, 227, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.1f;
+                                Weather.SunSize_Noon    = 2.0f;
+                                Weather.SunSize_Sunset  = 1.5f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                Weather.TerrainDesatuationModifier = 1.0f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        
+
+                        break;
+
+                        case WeatherType.Cloudy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = -1.0f;
+                                Weather.WindDirectionSky = 0.55f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.05f; 
+                                Weather.OvercastFactor2 = 0.08f; 
+                                Weather.OvercastFactor3 = 0.15f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 870.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 890.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(174, 175, 173, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------                        
+                                SaveWeatherType( WeatherFileOut );
+                            }
+
+                        break;
+
+                        case WeatherType.Desert:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterDesert.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.3f;
+                                Weather.WindDirectionSky = 2.40f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.07f; 
+                                Weather.OvercastFactor2 = 0.18f; 
+                                Weather.OvercastFactor3 = 0.14f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 5300.0f;
+                                Weather.SkyFogDistance_Noon    = 4480.0f;
+                                Weather.SkyFogDistance_Sunset  = 3640.0f;
+                                Weather.SkyFog_Sunrise  = new Color(187, 187, 196, 255);
+                                Weather.SkyFog_Noon     = new Color(188, 177, 180, 255);
+                                Weather.SkyFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 1070.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(229, 194, 152, 255);
+                                Weather.SceneryFog_Noon     = new Color(207, 191, 194, 255);
+                                Weather.SceneryFog_Sunset   = new Color(200, 164, 128, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.67f;
+                                Weather.SunSize_Noon    = 1.7f;
+                                Weather.SunSize_Sunset  = 2.2f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.7f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.SnowStorm:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterSnowStorm.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 1.14f;
+                                Weather.WindDirectionSky = 0.0f;
+
+                                Weather.OvercastFactor  = 0.10f;
+                                Weather.OvercastFactor2 = 0.14f; 
+                                Weather.OvercastFactor3 = 0.10f; 
+                                // -----------------------------------------------
+                                Weather.ParticleSize1  = 1.7f;
+                                Weather.ParticleSize2  = 2.0f;
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 7.5f, 0.4f, 10.3f);
+                                Weather.PrecipWind2 = new Vector3( 1.7f, 0.0f, 20.6f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 6650.0f;
+                                Weather.SkyFogDistance_Noon    = 6400.0f;
+                                Weather.SkyFogDistance_Sunset  = 1960.0f;
+                                Weather.SkyFog_Sunrise  = new Color(164, 161, 163, 255);
+                                Weather.SkyFog_Noon     = new Color(167, 167, 170, 255);
+                                Weather.SkyFog_Sunset   = new Color(112, 105, 105, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 320.0f;
+                                Weather.SceneryFogDistance_Noon    = 280.0f;
+                                Weather.SceneryFogDistance_Sunset  = 500.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(115, 108, 106, 255);
+                                Weather.SceneryFog_Noon     = new Color(161, 161, 160, 255);
+                                Weather.SceneryFog_Sunset   = new Color(105, 106, 100, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 1.0f;
+                                Weather.SunSize_Sunset  = 1.0f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.6f;
+                                Weather.VegetationBrightnessModifier  = 0.7f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.5f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                        case WeatherType.Foggy:
+
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterFoggy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.031f; 
+                                Weather.OvercastFactor3 = 0.081f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 3250.0f;
+                                Weather.SkyFogDistance_Noon    = 3600.0f;
+                                Weather.SkyFogDistance_Sunset  = 2800.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 100.0f;
+                                Weather.SceneryFogDistance_Noon    = 140.0f;
+                                Weather.SceneryFogDistance_Sunset  = 400.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(177, 199, 209, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 1.0f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.5f;
+                                Weather.VegetationBrightnessModifier  = 1.0f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.8f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+                        
+                        case WeatherType.PartlyCloudy:
+                     
+                            Weatherfilepath = "Weather/Saves/WeatherType_WinterPartlyCloudy.bin";
+                            fileInfo = new FileInfo( Path.Combine(Viewer.ContentPath, Weatherfilepath));
+                    
+                            if (fileInfo.Exists && fileInfo.Length >=64) 
+                            {   
+                                Console.WriteLine("\n" + Weatherfilepath + " exists ##");
+                                WeatherFileIn = new BinaryReader(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Read));
+                                Console.WriteLine("\n" + Weatherfilepath + " Open ##");
+                                LoadWeatherType( WeatherFileIn );
+                                Console.WriteLine("\n" + Weatherfilepath + " Loaded ##");
+                                WeatherFileIn.Close();
+                                Console.WriteLine("\n" + Weatherfilepath + " Closed ##");
+                            } 
+                            else     
+                            {   
+                                WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath ), FileMode.Create, FileAccess.Write));
+                                Console.WriteLine("\n" + Weatherfilepath + " Created ##");
+                                Weather.WindSpeed = 3.0f;
+                                Weather.WindDirectionSky = 3.0f;
+                                // -----------------------------------------------
+                                Weather.OvercastFactor  = 0.00f;
+                                Weather.OvercastFactor2 = 0.00f; 
+                                Weather.OvercastFactor3 = 0.01f; 
+                                // -----------------------------------------------
+                                Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+                                // -----------------------------------------------
+                                Weather.SkyFogDistance_Sunrise = 15000.0f;
+                                Weather.SkyFogDistance_Noon    = 15000.0f;
+                                Weather.SkyFogDistance_Sunset  = 15000.0f;
+                                Weather.SkyFog_Sunrise  = new Color(203, 204, 219, 255);
+                                Weather.SkyFog_Noon     = new Color(176, 196, 206, 255);
+                                Weather.SkyFog_Sunset   = new Color(233, 237, 245, 255);
+                                // -----------------------------------------------
+                                Weather.SceneryFogDistance_Sunrise = 2530.0f;
+                                Weather.SceneryFogDistance_Noon    = 2770.0f;
+                                Weather.SceneryFogDistance_Sunset  = 3030.0f;
+                                Weather.SceneryFog_Sunrise  = new Color(180, 181, 185, 255);
+                                Weather.SceneryFog_Noon     = new Color(155, 174, 200, 255);
+                                Weather.SceneryFog_Sunset   = new Color(178, 181, 184, 255);
+                                // -----------------------------------------------
+                                Weather.SunSize_Sunrise = 0.65f;
+                                Weather.SunSize_Noon    = 0.9f;
+                                Weather.SunSize_Sunset  = 0.8f;
+                                // -----------------------------------------------
+                                Weather.VegetationDesatuationModifier = 0.81f;
+                                Weather.VegetationBrightnessModifier  = 0.84f;
+                                Weather.VegetationContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                Weather.TerrainDesatuationModifier = 0.9f;
+                                Weather.TerrainBrightnessModifier  = 1.0f;
+                                Weather.TerrainContrastModifier    = 1.0f;
+                                // -----------------------------------------------
+                                SaveWeatherType( WeatherFileOut );
+                            }
+                        break;
+
+                    
+                    }
+                break;
             }
+         
         }
 
         public void UpdateWeatherParameters()
@@ -178,11 +2566,63 @@ namespace Orts.Viewer3D
             Viewer.SoundProcess.RemoveSoundSources(this);
             switch (Viewer.Simulator.WeatherType)
             {
-                case WeatherType.Clear: Weather.PrecipitationLiquidity = 1; Weather.PricipitationIntensityPPSPM2 = 0; Viewer.SoundProcess.AddSoundSources(this, ClearSound); break;
-                case WeatherType.Rain: Weather.PrecipitationLiquidity = 1; Weather.PricipitationIntensityPPSPM2 = 0.010f; Viewer.SoundProcess.AddSoundSources(this, RainSound); break;
-                case WeatherType.Snow: Weather.PrecipitationLiquidity = 0; Weather.PricipitationIntensityPPSPM2 = 0.0050f; Viewer.SoundProcess.AddSoundSources(this, SnowSound); break;
+                case WeatherType.Clear:
+                        Weather.PrecipitationLiquidity = 1;
+                        Weather.PricipitationIntensityPPSPM2 = 0;
+                        Viewer.SoundProcess.AddSoundSources(this, ClearSound);
+                break;
+                
+                case WeatherType.Rain: 
+                        Weather.PrecipitationLiquidity = 1;
+                        Weather.PricipitationIntensityPPSPM2 = 0.25f;
+                        Viewer.SoundProcess.AddSoundSources(this, RainSound);
+                break;
+                
+                case WeatherType.Snow: 
+                        Weather.PrecipitationLiquidity = 0;
+                        Weather.PricipitationIntensityPPSPM2 = 0.05f;   
+                        Viewer.SoundProcess.AddSoundSources(this, SnowSound); 
+                break;
+                
+                case WeatherType.Few:
+                        Weather.PrecipitationLiquidity = 1; 
+                        Weather.PricipitationIntensityPPSPM2 = 0; 
+                        Viewer.SoundProcess.AddSoundSources(this, FewSound);
+                break;
+                
+                case WeatherType.Cloudy: 
+                        Weather.PrecipitationLiquidity = 1; 
+                        Weather.PricipitationIntensityPPSPM2 = 0;
+                        Viewer.SoundProcess.AddSoundSources(this, CloudySound);
+                break;
+                
+                case WeatherType.Desert: 
+                        Weather.PrecipitationLiquidity = 1; 
+                        Weather.PricipitationIntensityPPSPM2 = 0; 
+                        Viewer.SoundProcess.AddSoundSources(this, DesertSound);
+                break;
+                
+                case WeatherType.SnowStorm: 
+                        Viewer.SoundProcess.AddSoundSources(this, SnowStormSound);
+                        Weather.PrecipitationLiquidity = 0;
+                        Weather.PricipitationIntensityPPSPM2 = 0.25f;
+                break;
+
+                case WeatherType.Foggy:
+                        Weather.PrecipitationLiquidity = 0.0f;
+                        Weather.PricipitationIntensityPPSPM2 = 0.0f;
+                        Viewer.SoundProcess.AddSoundSources(this, FoggySound);
+                break;
+
+                case WeatherType.PartlyCloudy:
+                        Weather.PrecipitationLiquidity = 0.0f;
+                        Weather.PricipitationIntensityPPSPM2 = 0.0f;
+                        Viewer.SoundProcess.AddSoundSources(this, PartlyCloudySound);
+                break;
+ 
                 default: break;
             }
+
         }
 
         void UpdateSoundSources()
@@ -190,34 +2630,33 @@ namespace Orts.Viewer3D
             Viewer.SoundProcess.RemoveSoundSources(this);
             switch (Viewer.Simulator.WeatherType)
             {
-                case WeatherType.Clear: Viewer.SoundProcess.AddSoundSources(this, ClearSound); break;
-                case WeatherType.Rain: Viewer.SoundProcess.AddSoundSources(this, RainSound); break;
-                case WeatherType.Snow: Viewer.SoundProcess.AddSoundSources(this, SnowSound); break;
+                case WeatherType.Clear:     Viewer.SoundProcess.AddSoundSources(this, ClearSound); break;
+                case WeatherType.Rain:      Viewer.SoundProcess.AddSoundSources(this, RainSound); break;
+                case WeatherType.Snow:      Viewer.SoundProcess.AddSoundSources(this, SnowSound); break;
+                case WeatherType.Few:       Viewer.SoundProcess.AddSoundSources(this, FewSound); break;
+                case WeatherType.Cloudy:    Viewer.SoundProcess.AddSoundSources(this, CloudySound); break;
+                case WeatherType.Desert:    Viewer.SoundProcess.AddSoundSources(this, DesertSound); break;
+                case WeatherType.SnowStorm: Viewer.SoundProcess.AddSoundSources(this, SnowStormSound); break;
+                case WeatherType.Foggy:     Viewer.SoundProcess.AddSoundSources(this, FoggySound); break;
+                case WeatherType.PartlyCloudy: Viewer.SoundProcess.AddSoundSources(this, PartlyCloudySound); break;
                 default: break;
             }
+
         }
 
         void UpdateVolume()
         {
-            if (Viewer.GraphicsDevice.GraphicsProfile == GraphicsProfile.HiDef)
-            {
-                foreach (var soundSource in RainSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
-                foreach (var soundSource in SnowSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
-            }
-            else
-            {
-                foreach (var soundSource in RainSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2_16;
-                foreach (var soundSource in SnowSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2_16;
-            }
+             foreach (var soundSource in RainSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
+             foreach (var soundSource in SnowSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
+             foreach (var soundSource in SnowStormSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
         }
-
+        
         private void UpdateWind(ElapsedTime elapsedTime)
         {
             WindUpdateTimer += elapsedTime.ClockSeconds;
 
             if (WindUpdateTimer > WindGustUpdateTimeS)
             {
-
                 WindSpeedInternalMpS = Vector2.Zero;
                 for (var i = 0; i < windSpeedMpS.Length; i++)
                 {
@@ -226,8 +2665,7 @@ namespace Orts.Viewer3D
 
                     var windMagnitude = windSpeedMpS[i].Length() / (i == 0 ? Weather.WindSpeedMpS.Length() * 0.4f : WindSpeedMaxMpS);
 
-                    if (windMagnitude > 1)
-                        windSpeedMpS[i] /= windMagnitude;
+                    if (windMagnitude > 1) windSpeedMpS[i] /= windMagnitude;
 
                     WindSpeedInternalMpS += windSpeedMpS[i];
                 }
@@ -251,7 +2689,6 @@ namespace Orts.Viewer3D
                 // Test to ensure wind direction stays within the direction bandwidth set, if out of bounds set new random direction
                 if (calculatedWindDirection > (BaseWindDirectionRad + WindDirectionVariationRad))
                     calculatedWindDirection = BaseWindDirectionRad + (WindDirectionVariationRad * (float)Viewer.Random.NextDouble());
-
 
                 if (calculatedWindDirection < (BaseWindDirectionRad - WindDirectionVariationRad))
                     calculatedWindDirection = BaseWindDirectionRad - (WindDirectionVariationRad * (float)Viewer.Random.NextDouble());
@@ -278,13 +2715,12 @@ namespace Orts.Viewer3D
                     Weather.PricipitationIntensityPPSPM2 = (float)(randValue - 40f) / 1000f;
                     if (Viewer.GraphicsDevice.GraphicsProfile != GraphicsProfile.HiDef)
                         Weather.PricipitationIntensityPPSPM2 = Math.Min(Weather.PricipitationIntensityPPSPM2, 0.010f);
-                    if (Viewer.Simulator.Season == SeasonType.Winter)
-                    {
+                    
+                    if (Viewer.Simulator.Season == SeasonType.Winter) {
                         Viewer.Simulator.WeatherType = WeatherType.Snow;
                         Weather.PrecipitationLiquidity = 0;
                     }
-                    else
-                    {
+                    else {
                         Viewer.Simulator.WeatherType = WeatherType.Rain;
                         Weather.PrecipitationLiquidity = 1;
                     }
@@ -296,18 +2732,17 @@ namespace Orts.Viewer3D
             randValue = Viewer.Random.Next(2000);
             if (Weather.PricipitationIntensityPPSPM2 > 0 || Weather.OvercastFactor > 0.7f)
                 // Use first digit to define power of ten and the other three to define the multiplying number
-                Weather.FogDistance = Math.Max(100, (float)Math.Pow(10, randValue / 1000 + 2) * (float)(((randValue % 1000) + 1) / 100f));
+                Weather.SceneryFogDistance_Mix = Math.Max(100, (float)Math.Pow(10, randValue / 1000 + 2) * (float)(((randValue % 1000) + 1) / 100f));
             else
-                Weather.FogDistance = Math.Max(500, (float)Math.Pow(10, (randValue / 1000) + 3) * (float)(((randValue % 1000) + 1) / 100f));
+                Weather.SceneryFogDistance_Mix = Math.Max(500, (float)Math.Pow(10, (randValue / 1000) + 3) * (float)(((randValue % 1000) + 1) / 100f));
             return true;
         }
 
-        // TODO: Add several other weather conditions, such as PartlyCloudy, LightRain, 
-        // HeavySnow, etc. to the Options dialog as dropdown list boxes. Transfer user's
-        // selection to RunActivity and make appropriate adjustments to the weather here.
+
         // This class will eventually be expanded to interpret dynamic weather scripts and
         // make game-time weather transitions.
 
+ 
         private void CheckDesertZone()
         {
             // Compute player train lat/lon in degrees 
@@ -331,12 +2766,644 @@ namespace Orts.Viewer3D
             }
         }
 
+                
+        // <----------------------------- ExRail ------------------------------>
+        // Update labels stats
+        public void GuiUpdateStats()
+        {
+            Viewer.WeatherEditorWindow.ScFCSunrise_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.R.ToString();
+            Viewer.WeatherEditorWindow.ScFCSunrise_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.G.ToString();
+            Viewer.WeatherEditorWindow.ScFCSunrise_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.B.ToString();
+
+            Viewer.WeatherEditorWindow.ScFCNoon_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.R.ToString();
+            Viewer.WeatherEditorWindow.ScFCNoon_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.G.ToString();
+            Viewer.WeatherEditorWindow.ScFCNoon_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.B.ToString();
+
+            Viewer.WeatherEditorWindow.ScFCSunset_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.R.ToString();
+            Viewer.WeatherEditorWindow.ScFCSunset_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.G.ToString();
+            Viewer.WeatherEditorWindow.ScFCSunset_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.B.ToString();
+
+            Viewer.WeatherEditorWindow.SkyFCSunrise_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.R.ToString();
+            Viewer.WeatherEditorWindow.SkyFCSunrise_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.G.ToString();
+            Viewer.WeatherEditorWindow.SkyFCSunrise_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.B.ToString();
+
+            Viewer.WeatherEditorWindow.SkyFCNoon_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.R.ToString();
+            Viewer.WeatherEditorWindow.SkyFCNoon_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.G.ToString();
+            Viewer.WeatherEditorWindow.SkyFCNoon_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.B.ToString();
+
+            Viewer.WeatherEditorWindow.SkyFCSunset_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.R.ToString();
+            Viewer.WeatherEditorWindow.SkyFCSunset_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.G.ToString();
+            Viewer.WeatherEditorWindow.SkyFCSunset_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.B.ToString();
+
+            Viewer.WeatherEditorWindow.WindSpeed.Text = Viewer.World.WeatherControl.Weather.WindSpeed.ToString("0.00");
+            Viewer.WeatherEditorWindow.WindDirSky.Text = Viewer.World.WeatherControl.Weather.WindDirectionSky.ToString("0.00");
+
+            Viewer.WeatherEditorWindow.PrecipWind1X.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.X.ToString("0.00");
+            Viewer.WeatherEditorWindow.PrecipWind1Y.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.Y.ToString("0.00");
+            Viewer.WeatherEditorWindow.PrecipWind1Z.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.Z.ToString("0.00");
+            Viewer.WeatherEditorWindow.PrecipWind2X.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.X.ToString("0.00");
+            Viewer.WeatherEditorWindow.PrecipWind2Y.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.Y.ToString("0.00");
+            Viewer.WeatherEditorWindow.PrecipWind2Z.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.Z.ToString("0.00");
+
+            Viewer.WeatherEditorWindow.PrecipLiquid.Text = Viewer.World.WeatherControl.Weather.PrecipitationLiquidity.ToString("0.00");
+            Viewer.WeatherEditorWindow.PricipIntPPSPM2.Text = Viewer.World.WeatherControl.Weather.PricipitationIntensityPPSPM2.ToString("0.00");
+            
+            Viewer.WeatherEditorWindow.PrecipParSize1.Text = Viewer.World.WeatherControl.Weather.ParticleSize1.ToString("0.00");
+            //Viewer.WeatherEditorWindow.PrecipParSize2.Text = Viewer.World.WeatherControl.Weather.ParticleSize2.ToString("0.00");
+
+            Viewer.WeatherEditorWindow.Overcast1.Text = Viewer.World.WeatherControl.Weather.OvercastFactor.ToString("0.00");
+            Viewer.WeatherEditorWindow.Overcast2.Text = Viewer.World.WeatherControl.Weather.OvercastFactor2.ToString("0.00");
+            Viewer.WeatherEditorWindow.Overcast3.Text = Viewer.World.WeatherControl.Weather.OvercastFactor3.ToString("0.00");
+        
+            Viewer.WeatherEditorWindow.ScVDSunrise.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunrise.ToString("0.00");
+            Viewer.WeatherEditorWindow.ScVDNoon.Text    = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Noon.ToString("0.00");
+            Viewer.WeatherEditorWindow.ScVDSunset.Text  = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunset.ToString("0.00");
+            Viewer.WeatherEditorWindow.ScVDPrecentMix.Text = Viewer.MaterialManager.SceneryFogDistanceMix.MixOut.ToString("0.00");
+
+            Viewer.WeatherEditorWindow.SkyVDSunrise.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunrise.ToString("0.00");
+            Viewer.WeatherEditorWindow.SkyVDNoon.Text    = Viewer.World.WeatherControl.Weather.SkyFogDistance_Noon.ToString("0.00");
+            Viewer.WeatherEditorWindow.SkyVDSunset.Text  = Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunset.ToString("0.00");
+            Viewer.WeatherEditorWindow.SkyVDPrecentMix.Text = Viewer.MaterialManager.SkyFogDistanceMix.MixOut.ToString("0.00");
+            
+            Viewer.WeatherEditorWindow.SkySunSizeSunrise.Text = Viewer.World.WeatherControl.Weather.SunSize_Sunrise.ToString("0.00");
+            Viewer.WeatherEditorWindow.SkySunSizeNoon.Text    = Viewer.World.WeatherControl.Weather.SunSize_Noon.ToString("0.00");
+            Viewer.WeatherEditorWindow.SkySunSizeSunset.Text  = Viewer.World.WeatherControl.Weather.SunSize_Sunset.ToString("0.00");
+            Viewer.WeatherEditorWindow.SkySunSizeCurrent.Text = Viewer.World.WeatherControl.Weather.SunSize_Mix.ToString("0.00");
+
+            Viewer.WeatherEditorWindow.VegDesatMod.Text  = Viewer.World.WeatherControl.Weather.VegetationDesatuationModifier.ToString("0.00");
+            Viewer.WeatherEditorWindow.VegBrightMod.Text = Viewer.World.WeatherControl.Weather.VegetationBrightnessModifier.ToString("0.00");
+            Viewer.WeatherEditorWindow.VegContMod.Text   = Viewer.World.WeatherControl.Weather.VegetationContrastModifier.ToString("0.00");
+
+            Viewer.WeatherEditorWindow.TerrDesatMod.Text  = Viewer.World.WeatherControl.Weather.TerrainDesatuationModifier.ToString("0.00");
+            Viewer.WeatherEditorWindow.TerrBrightMod.Text = Viewer.World.WeatherControl.Weather.TerrainBrightnessModifier.ToString("0.00");
+            Viewer.WeatherEditorWindow.TerrContMod.Text   = Viewer.World.WeatherControl.Weather.TerrainContrastModifier.ToString("0.00");
+
+            Viewer.WeatherEditorWindow.SkyFCCurrent.Color = Viewer.World.WeatherControl.Weather.SkyFogMix;
+            Viewer.WeatherEditorWindow.ScFCCurrent.Color  = Viewer.World.WeatherControl.Weather.SceneryFogMix;
+
+            Color col = new Color(0xFF,0xFA,0x79);
+            Viewer.WeatherEditorWindow.WeatherType.Color = col;
+            Viewer.WeatherEditorWindow.Season.Color      = col;
+            Viewer.WeatherEditorWindow.Time.Color        = col;
+            Viewer.WeatherEditorWindow.SunriseTime.Color = col;
+            Viewer.WeatherEditorWindow.SunsetTime.Color  = col;
+            Viewer.WeatherEditorWindow.CurrentTime.Color = col;
+
+            switch (Viewer.Simulator.WeatherType)
+            {   
+                case Orts.Formats.Msts.WeatherType.Clear:     Viewer.WeatherEditorWindow.WeatherType.Text = "Clear"; break;
+                case Orts.Formats.Msts.WeatherType.Snow:      Viewer.WeatherEditorWindow.WeatherType.Text = "Snow"; break;
+                case Orts.Formats.Msts.WeatherType.Rain:      Viewer.WeatherEditorWindow.WeatherType.Text = "Rain"; break;
+                case Orts.Formats.Msts.WeatherType.Few:       Viewer.WeatherEditorWindow.WeatherType.Text = "Few"; break;
+                case Orts.Formats.Msts.WeatherType.Cloudy:    Viewer.WeatherEditorWindow.WeatherType.Text = "Cloudy"; break;
+                case Orts.Formats.Msts.WeatherType.Desert:    Viewer.WeatherEditorWindow.WeatherType.Text = "Desert"; break;
+                case Orts.Formats.Msts.WeatherType.SnowStorm: Viewer.WeatherEditorWindow.WeatherType.Text = "Snowstorm"; break;
+                case Orts.Formats.Msts.WeatherType.Foggy:     Viewer.WeatherEditorWindow.WeatherType.Text = "Foggy"; break;
+                case Orts.Formats.Msts.WeatherType.PartlyCloudy: Viewer.WeatherEditorWindow.WeatherType.Text = "PartlyCloudy"; break;
+            }
+            switch (Viewer.Simulator.Season)
+            {
+                case Orts.Formats.Msts.SeasonType.Spring: Viewer.WeatherEditorWindow.Season.Text = "Spring"; break;
+                case Orts.Formats.Msts.SeasonType.Summer: Viewer.WeatherEditorWindow.Season.Text = "Summer"; break;
+                case Orts.Formats.Msts.SeasonType.Autumn: Viewer.WeatherEditorWindow.Season.Text = "Autumn"; break;
+                case Orts.Formats.Msts.SeasonType.Winter: Viewer.WeatherEditorWindow.Season.Text = "Winter"; break;
+            }
+            
+
+        }
+
+
+
+        public void GuiSelection()
+        { 
+            // Update Time & labels with currrent Sky/Scnenery Fog Color Mix
+            Viewer.WeatherEditorWindow.Time.Text          = ORTS.Common.FormatStrings.FormatTime( Viewer.Simulator.ClockTime);
+            Viewer.WeatherEditorWindow.SunriseTime.Text   = ORTS.Common.FormatStrings.FormatTime( Viewer.ENVFile.SkySatellites[0].RiseTime);
+            Viewer.WeatherEditorWindow.SunsetTime.Text    = ORTS.Common.FormatStrings.FormatTime( Viewer.ENVFile.SkySatellites[0].SetTime);
+            Viewer.WeatherEditorWindow.SkyFCCurrent.Color = Viewer.World.WeatherControl.Weather.SkyFogMix;
+            Viewer.WeatherEditorWindow.ScFCCurrent.Color  = Viewer.World.WeatherControl.Weather.SceneryFogMix;
+            var Extime = Viewer.Simulator.GameTime ;
+            Viewer.WeatherEditorWindow.CurrentTime.Text   = ORTS.Common.FormatStrings.FormatTime(Extime);
+
+            switch (Viewer.Simulator.WeatherType)
+            {   
+                case Orts.Formats.Msts.WeatherType.Clear:     Viewer.WeatherEditorWindow.WeatherType.Text = "Clear"; break;
+                case Orts.Formats.Msts.WeatherType.Snow:      Viewer.WeatherEditorWindow.WeatherType.Text = "Snow"; break;
+                case Orts.Formats.Msts.WeatherType.Rain:      Viewer.WeatherEditorWindow.WeatherType.Text = "Rain"; break;
+                case Orts.Formats.Msts.WeatherType.Few:       Viewer.WeatherEditorWindow.WeatherType.Text = "Few"; break;
+                case Orts.Formats.Msts.WeatherType.Cloudy:    Viewer.WeatherEditorWindow.WeatherType.Text = "Cloudy"; break;
+                case Orts.Formats.Msts.WeatherType.Desert:    Viewer.WeatherEditorWindow.WeatherType.Text = "Desert"; break;
+                case Orts.Formats.Msts.WeatherType.SnowStorm: Viewer.WeatherEditorWindow.WeatherType.Text = "Snowstorm"; break;
+                case Orts.Formats.Msts.WeatherType.Foggy:     Viewer.WeatherEditorWindow.WeatherType.Text = "Foggy"; break;
+                case Orts.Formats.Msts.WeatherType.PartlyCloudy: Viewer.WeatherEditorWindow.WeatherType.Text = "PartlyCloudy"; break;
+            }
+            
+            // Swich Gui selected item
+            switch (Viewer.WeatherEditorWindow.EnmSelect)
+            {
+                // Scenery Fog Color Sunrise
+                case Popups.WeatherEditorWindow.EnuSelection.ScFC_Sunrise_Sel:
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.R += 1;
+                        Viewer.WeatherEditorWindow.ScFCSunrise_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.R.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.R -= 1;
+                        Viewer.WeatherEditorWindow.ScFCSunrise_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.R.ToString();
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.G += 1;
+                        Viewer.WeatherEditorWindow.ScFCSunrise_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.G.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                       Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.G -= 1;
+                        Viewer.WeatherEditorWindow.ScFCSunrise_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.G.ToString();
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.B += 1;
+                        Viewer.WeatherEditorWindow.ScFCSunrise_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.B.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.B -= 1;
+                        Viewer.WeatherEditorWindow.ScFCSunrise_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunrise.B.ToString();
+                    }        
+                break;
+                
+                // Scenery Fog Color Noon
+                case Popups.WeatherEditorWindow.EnuSelection.ScFC_Noon_Sel:
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Noon.R += 1;
+                        Viewer.WeatherEditorWindow.ScFCNoon_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.R.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Noon.R -= 1;
+                        Viewer.WeatherEditorWindow.ScFCNoon_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.R.ToString();
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Noon.G += 1;
+                        Viewer.WeatherEditorWindow.ScFCNoon_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.G.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Noon.G -= 1;
+                        Viewer.WeatherEditorWindow.ScFCNoon_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.G.ToString();
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Noon.B += 1;
+                        Viewer.WeatherEditorWindow.ScFCNoon_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.B.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Noon.B -= 1;
+                        Viewer.WeatherEditorWindow.ScFCNoon_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Noon.B.ToString();
+                    }        
+                break;
+
+                // Scenery Fog Color Sunset
+                case Popups.WeatherEditorWindow.EnuSelection.ScFC_Sunset_Sel:
+                                    
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.R += 1;
+                        Viewer.WeatherEditorWindow.ScFCSunset_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.R.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.R -= 1;
+                        Viewer.WeatherEditorWindow.ScFCSunset_R.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.R.ToString();
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.G += 1;
+                        Viewer.WeatherEditorWindow.ScFCSunset_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.G.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.G -= 1;
+                        Viewer.WeatherEditorWindow.ScFCSunset_G.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.G.ToString();
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.B += 1;
+                        Viewer.WeatherEditorWindow.ScFCSunset_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.B.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.B -= 1;
+                        Viewer.WeatherEditorWindow.ScFCSunset_B.Text = Viewer.World.WeatherControl.Weather.SceneryFog_Sunset.B.ToString();
+                    }        
+                break;
+                 
+                // Sky Fog Color Sunrise
+                case Popups.WeatherEditorWindow.EnuSelection.SkyFC_Sunrise_Sel:
+                    
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.R += 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunrise_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.R.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.R -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunrise_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.R.ToString();
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.G += 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunrise_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.G.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                       Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.G -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunrise_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.G.ToString();
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.B += 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunrise_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.B.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.B -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunrise_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunrise.B.ToString();
+                    }        
+                break;
+
+                // Sky Fog Color Noon
+                case Popups.WeatherEditorWindow.EnuSelection.SkyFC_Noon_Sel:
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Noon.R += 1;
+                        Viewer.WeatherEditorWindow.SkyFCNoon_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.R.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Noon.R -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCNoon_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.R.ToString();
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Noon.G += 1;
+                        Viewer.WeatherEditorWindow.SkyFCNoon_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.G.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Noon.G -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCNoon_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.G.ToString();
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Noon.B += 1;
+                        Viewer.WeatherEditorWindow.SkyFCNoon_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.B.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Noon.B -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCNoon_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Noon.B.ToString();
+                    }        
+                break;
+
+                // Sky Fog Color Sunset
+                case Popups.WeatherEditorWindow.EnuSelection.SkyFC_Sunset_Sel:
+                                    
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunset.R += 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunset_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.R.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunset.R -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunset_R.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.R.ToString();
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunset.G += 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunset_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.G.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunset.G -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunset_G.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.G.ToString();
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunset.B += 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunset_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.B.ToString();
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SkyFog_Sunset.B -= 1;
+                        Viewer.WeatherEditorWindow.SkyFCSunset_B.Text = Viewer.World.WeatherControl.Weather.SkyFog_Sunset.B.ToString();
+                    } 
+                    Viewer.WeatherEditorWindow.SkyVDPrecentMix.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Mix.ToString("0.00");
+                break;
+
+                // Scenery View Distance - Sunrise/Noon/sunset
+                case Popups.WeatherEditorWindow.EnuSelection.ScViewDistance_Sel:
+                                    
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunrise += 10;
+                        Viewer.WeatherEditorWindow.ScVDSunrise.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunrise.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunrise -= 10;
+                        Viewer.WeatherEditorWindow.ScVDSunrise.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunrise.ToString("0.00");
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFogDistance_Noon += 10;
+                        Viewer.WeatherEditorWindow.ScVDNoon.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Noon.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFogDistance_Noon -= 10;
+                        Viewer.WeatherEditorWindow.ScVDNoon.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Noon.ToString("0.00");
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunset += 10;
+                        Viewer.WeatherEditorWindow.ScVDSunset.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunset.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunset -= 10;
+                        Viewer.WeatherEditorWindow.ScVDSunset.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Sunset.ToString("0.00");
+                    }
+                    Viewer.WeatherEditorWindow.ScVDPrecentMix.Text = Viewer.World.WeatherControl.Weather.SceneryFogDistance_Mix.ToString("0.00");
+                break;
+
+                // Sky View Distance - Sunrise/Noon/sunset
+                case Popups.WeatherEditorWindow.EnuSelection.SkyViewDistance_Sel:
+           
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunrise += 10;
+                        Viewer.WeatherEditorWindow.SkyVDSunrise.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunrise.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunrise -= 10;
+                        Viewer.WeatherEditorWindow.SkyVDSunrise.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunrise.ToString("0.00");
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SkyFogDistance_Noon += 10;
+                        Viewer.WeatherEditorWindow.SkyVDNoon.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Noon.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.SkyFogDistance_Noon -= 10;
+                        Viewer.WeatherEditorWindow.SkyVDNoon.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Noon.ToString("0.00");
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunset += 10;
+                        Viewer.WeatherEditorWindow.SkyVDSunset.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunset.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunset -= 10;
+                        Viewer.WeatherEditorWindow.SkyVDSunset.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Sunset.ToString("0.00");
+                    } 
+                    Viewer.WeatherEditorWindow.SkyVDPrecentMix.Text = Viewer.World.WeatherControl.Weather.SkyFogDistance_Mix.ToString("0.00");
+                break;
+                
+                // Wind speed & Direction
+                case Popups.WeatherEditorWindow.EnuSelection.Wind_Sel:
+           
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.WindSpeed += .1f;
+                        Viewer.WeatherEditorWindow.WindSpeed.Text = Viewer.World.WeatherControl.Weather.WindSpeed.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.WindSpeed -= .1f;
+                        Viewer.WeatherEditorWindow.WindSpeed.Text = Viewer.World.WeatherControl.Weather.WindSpeed.ToString("0.00");
+                    }        
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.WindDirectionSky += .01f;
+                        Viewer.WeatherEditorWindow.WindDirSky.Text = Viewer.World.WeatherControl.Weather.WindDirectionSky.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.WindDirectionSky -= .01f;
+                        Viewer.WeatherEditorWindow.WindDirSky.Text = Viewer.World.WeatherControl.Weather.WindDirectionSky.ToString("0.00");
+                    }        
+                break;
+
+                // Overcast 1,2,3
+                case Popups.WeatherEditorWindow.EnuSelection.Overcast:
+           
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.OvercastFactor +=  .01f;
+                        Viewer.WeatherEditorWindow.Overcast1.Text = Viewer.World.WeatherControl.Weather.OvercastFactor.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.OvercastFactor -=  .01f;
+                        Viewer.WeatherEditorWindow.Overcast1.Text = Viewer.World.WeatherControl.Weather.OvercastFactor.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.OvercastFactor2 += .01f;
+                        Viewer.WeatherEditorWindow.Overcast2.Text = Viewer.World.WeatherControl.Weather.OvercastFactor2.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.OvercastFactor2 -= .01f;
+                        Viewer.WeatherEditorWindow.Overcast2.Text = Viewer.World.WeatherControl.Weather.OvercastFactor2.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.OvercastFactor3 += .01f;
+                        Viewer.WeatherEditorWindow.Overcast3.Text = Viewer.World.WeatherControl.Weather.OvercastFactor3.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.OvercastFactor3 -= .01f;
+                        Viewer.WeatherEditorWindow.Overcast3.Text = Viewer.World.WeatherControl.Weather.OvercastFactor3.ToString("0.00");
+                    }   
+                break;
+
+                // Sun Size
+                case Popups.WeatherEditorWindow.EnuSelection.SkySunSize_Sel:
+
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.SunSize_Sunrise +=  .025f;
+                        Viewer.WeatherEditorWindow.SkySunSizeSunrise.Text = Viewer.World.WeatherControl.Weather.SunSize_Sunrise.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.SunSize_Sunrise -=  .025f;
+                        Viewer.WeatherEditorWindow.SkySunSizeSunrise.Text = Viewer.World.WeatherControl.Weather.SunSize_Sunrise.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.SunSize_Noon += .025f;
+                        Viewer.WeatherEditorWindow.SkySunSizeNoon.Text = Viewer.World.WeatherControl.Weather.SunSize_Noon.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.SunSize_Noon -= .025f;
+                        Viewer.WeatherEditorWindow.SkySunSizeNoon.Text = Viewer.World.WeatherControl.Weather.SunSize_Noon.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.SunSize_Sunset += .025f;
+                        Viewer.WeatherEditorWindow.SkySunSizeSunset.Text = Viewer.World.WeatherControl.Weather.SunSize_Sunset.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.SunSize_Sunset -= .025f;
+                        Viewer.WeatherEditorWindow.SkySunSizeSunset.Text = Viewer.World.WeatherControl.Weather.SunSize_Sunset.ToString("0.00");
+                    } 
+                    Viewer.WeatherEditorWindow.SkySunSizeCurrent.Text = Viewer.World.WeatherControl.Weather.SunSize_Mix.ToString("0.00");
+                    
+
+                break;
+                
+                // Precipitation Wind 1
+                case Popups.WeatherEditorWindow.EnuSelection.PrecipWind1_Sel:
+                        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind1.X +=  .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind1X.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.X.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind1.X -=  .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind1X.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.X.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                      Viewer.World.WeatherControl.Weather.PrecipWind1.Y += .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind1Y.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.Y.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind1.Y -= .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind1Y.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.Y.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind1.Z += .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind1Z.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.Z.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind1.Z -= .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind1Z.Text = Viewer.World.WeatherControl.Weather.PrecipWind1.Z.ToString("0.00");
+                    }  
+                break;
+
+                // Precipitation Wind 1
+                case Popups.WeatherEditorWindow.EnuSelection.PrecipWind2_Sel:
+                        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind2.X +=  .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind2X.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.X.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind2.X -=  .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind2X.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.X.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                      Viewer.World.WeatherControl.Weather.PrecipWind2.Y += .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind2Y.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.Y.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind2.Y -= .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind2Y.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.Y.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind2.Z += .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind2Z.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.Z.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.PrecipWind2.Z -= .1f;
+                        Viewer.WeatherEditorWindow.PrecipWind2Z.Text = Viewer.World.WeatherControl.Weather.PrecipWind2.Z.ToString("0.00");
+                    }  
+                break;
+
+                // Vegetation Color Control
+                case Popups.WeatherEditorWindow.EnuSelection.VegMod_Sel:
+                        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.VegetationDesatuationModifier += .02f;
+                        Viewer.WeatherEditorWindow.VegDesatMod.Text = Viewer.World.WeatherControl.Weather.VegetationDesatuationModifier.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.VegetationDesatuationModifier -= .02f;
+                        Viewer.WeatherEditorWindow.VegDesatMod.Text = Viewer.World.WeatherControl.Weather.VegetationDesatuationModifier.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.VegetationBrightnessModifier += .02f;
+                        Viewer.WeatherEditorWindow.VegBrightMod.Text = Viewer.World.WeatherControl.Weather.VegetationBrightnessModifier.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.VegetationBrightnessModifier -= .02f;
+                        Viewer.WeatherEditorWindow.VegBrightMod.Text = Viewer.World.WeatherControl.Weather.VegetationBrightnessModifier.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.VegetationContrastModifier += .02f;
+                        Viewer.WeatherEditorWindow.VegContMod.Text = Viewer.World.WeatherControl.Weather.VegetationContrastModifier.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.VegetationContrastModifier -= .02f;
+                        Viewer.WeatherEditorWindow.VegContMod.Text = Viewer.World.WeatherControl.Weather.VegetationContrastModifier.ToString("0.00");
+                    }  
+                break;
+                
+                // Vegetation Color Control
+                case Popups.WeatherEditorWindow.EnuSelection.TerrMod_Sel:
+                        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.TerrainDesatuationModifier += .02f;
+                        Viewer.WeatherEditorWindow.TerrDesatMod.Text = Viewer.World.WeatherControl.Weather.TerrainDesatuationModifier.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.TerrainDesatuationModifier -= .02f;
+                        Viewer.WeatherEditorWindow.TerrDesatMod.Text = Viewer.World.WeatherControl.Weather.TerrainDesatuationModifier.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                      Viewer.World.WeatherControl.Weather.TerrainBrightnessModifier += .02f;
+                        Viewer.WeatherEditorWindow.TerrBrightMod.Text = Viewer.World.WeatherControl.Weather.TerrainBrightnessModifier.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.TerrainBrightnessModifier -= .02f;
+                        Viewer.WeatherEditorWindow.TerrBrightMod.Text = Viewer.World.WeatherControl.Weather.TerrainBrightnessModifier.ToString("0.00");
+                    }        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgUp)) {
+                        Viewer.World.WeatherControl.Weather.TerrainContrastModifier += .02f;
+                        Viewer.WeatherEditorWindow.TerrContMod.Text = Viewer.World.WeatherControl.Weather.TerrainContrastModifier.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_PgDn)) {
+                        Viewer.World.WeatherControl.Weather.TerrainContrastModifier -= .02f;
+                        Viewer.WeatherEditorWindow.TerrContMod.Text = Viewer.World.WeatherControl.Weather.TerrainContrastModifier.ToString("0.00");
+                    }  
+                break;
+
+                // Precipitation particle size 1
+                case Popups.WeatherEditorWindow.EnuSelection.PrecipParSize_Sel:
+                        
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Insert)) {
+                        Viewer.World.WeatherControl.Weather.ParticleSize1 += .02f;
+                        Viewer.WeatherEditorWindow.PrecipParSize1.Text = Viewer.World.WeatherControl.Weather.ParticleSize1.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_Delete)) {
+                        Viewer.World.WeatherControl.Weather.ParticleSize1 -= .02f;
+                        Viewer.WeatherEditorWindow.PrecipParSize1.Text = Viewer.World.WeatherControl.Weather.ParticleSize1.ToString("0.00");
+                    }        
+                    /* Only one shader, todo: create two or options?
+                     * if (UserInput.IsDown(UserCommand.Weather_Control_Home)) {
+                        Viewer.World.WeatherControl.Weather.ParticleSize2 += .02f;
+                        Viewer.WeatherEditorWindow.PrecipParSize2.Text = Viewer.World.WeatherControl.Weather.ParticleSize2.ToString("0.00");
+                    }
+                    if (UserInput.IsDown(UserCommand.Weather_Control_End)) {
+                        Viewer.World.WeatherControl.Weather.ParticleSize2 -= .02f;
+                        Viewer.WeatherEditorWindow.PrecipParSize2.Text = Viewer.World.WeatherControl.Weather.ParticleSize2.ToString("0.00");
+                    }
+                     */       
+                break;
+                
+                // 
+                case Popups.WeatherEditorWindow.EnuSelection.Precip_Sel:
+                    Viewer.WeatherEditorWindow.PrecipLiquid.Text = Viewer.World.WeatherControl.Weather.PrecipitationLiquidity.ToString("0.00");
+                    Viewer.WeatherEditorWindow.PricipIntPPSPM2.Text = Viewer.World.WeatherControl.Weather.PricipitationIntensityPPSPM2.ToString("0.00");   
+                break;
+
+                case Popups.WeatherEditorWindow.EnuSelection.Notselected:
+                break;
+
+                default:
+                break;
+            }
+
+        }
+
+        void ReloadWeather()
+        {
+            if(Viewer.MaterialManager.Materials.ContainsKey("Sky::0:0:0"))
+            {
+                Material bdata;
+                // Get runtime SkyMaterial class
+                Viewer.MaterialManager.Materials.TryGetValue("Sky::0:0:0", out bdata);
+                // Load weather settings file or create new
+                SetInitialWeatherParameters();
+                var x = bdata as SkyMaterial;
+                // Reload weather textures
+                x.SetWeather();
+            }
+
+        }
+
         [CallOnThread("Updater")]
         public virtual void Update(ElapsedTime elapsedTime)
         {
             Time += elapsedTime.ClockSeconds;
             var manager = MPManager.Instance();
 
+            
             if (MPManager.IsClient() && manager.weatherChanged)
             {
                 // Multiplayer weather has changed so we need to update our state to match weather, overcastFactor, pricipitationIntensity and fogDistance.
@@ -353,7 +3420,7 @@ namespace Orts.Viewer3D
                     UpdateVolume();
                 }
                 if (manager.fogDistance >= 0)
-                    Weather.FogDistance = manager.fogDistance;
+                    Weather.SceneryFogDistance_Mix = manager.fogDistance;
 
                 // Reset the message now that we've applied all the changes.
                 if ((manager.weather >= 0 && manager.weather != (int)Viewer.Simulator.WeatherType) || manager.overcastFactor >= 0 || manager.pricipitationIntensity >= 0 || manager.fogDistance >= 0)
@@ -366,20 +3433,54 @@ namespace Orts.Viewer3D
                 }
             }
             else if (!MPManager.IsClient())
-            {
+            {   
+                if(Viewer.WeatherEditorWindow.Visible) 
+                { 
+                    // Update Weather Editor Window labels
+                    GuiSelection();
+                }
+                
                 // The user is able to change the weather for debugging. This will cycle through clear, rain and snow.
                 if (UserInput.IsPressed(UserCommand.DebugWeatherChange))
                 {
                     switch (Viewer.Simulator.WeatherType)
-                    {
+                    { 
+                        // { Clear, Snow, Rain, Few, Cloudy, Desert, SnowStorm, Foggy, PartlyCloudy }
                         case WeatherType.Clear:
                             Viewer.Simulator.WeatherType = WeatherType.Rain;
+                            ReloadWeather();
                             break;
                         case WeatherType.Rain:
                             Viewer.Simulator.WeatherType = WeatherType.Snow;
+                            ReloadWeather();
                             break;
                         case WeatherType.Snow:
+                            Viewer.Simulator.WeatherType = WeatherType.SnowStorm;
+                            ReloadWeather();
+                            break;
+                        case WeatherType.Few:
+                            Viewer.Simulator.WeatherType = WeatherType.Cloudy;
+                            ReloadWeather();
+                            break;
+                        case WeatherType.Cloudy:
+                            Viewer.Simulator.WeatherType = WeatherType.PartlyCloudy;
+                            ReloadWeather();
+                            break;
+                        case WeatherType.Desert:
+                            Viewer.Simulator.WeatherType = WeatherType.Few;
+                            ReloadWeather();
+                            break;
+                        case WeatherType.SnowStorm:
+                            Viewer.Simulator.WeatherType = WeatherType.Foggy;
+                            ReloadWeather();
+                            break;
+                        case WeatherType.Foggy:
+                            Viewer.Simulator.WeatherType = WeatherType.Desert;
+                            ReloadWeather();
+                            break;
+                        case WeatherType.PartlyCloudy:
                             Viewer.Simulator.WeatherType = WeatherType.Clear;
+                            ReloadWeather();
                             break;
                     }
                     // Block dynamic weather change after a manual weather change operation
@@ -390,20 +3491,8 @@ namespace Orts.Viewer3D
                     // If we're a multiplayer server, send out the new weather to all clients.
                     if (MPManager.IsServer())
                         MPManager.Notify(new MSGWeather((int)Viewer.Simulator.WeatherType, -1, -1, -1).ToString());
-                }
 
-                // Overcast ranges from 0 (completely clear) to 1 (completely overcast).
-                if (UserInput.IsDown(UserCommand.DebugOvercastIncrease))
-                {
-                    Weather.OvercastFactor = MathHelper.Clamp(Weather.OvercastFactor + (elapsedTime.RealSeconds / 10), 0, 1);
-                    weatherChangeOn = false;
-                    if (dynamicWeather != null) dynamicWeather.ORTSOvercast = -1;
-                }
-                if (UserInput.IsDown(UserCommand.DebugOvercastDecrease))
-                {
-                    Weather.OvercastFactor = MathHelper.Clamp(Weather.OvercastFactor - (elapsedTime.RealSeconds / 10), 0, 1);
-                    weatherChangeOn = false;
-                    if (dynamicWeather != null) dynamicWeather.ORTSOvercast = -1;
+                        
                 }
 
                 // Pricipitation ranges from 0 to max PrecipitationViewer.MaxIntensityPPSPM2 if 32bit.
@@ -425,22 +3514,21 @@ namespace Orts.Viewer3D
                             Viewer.SoundProcess.AddSoundSources(this, SnowSound);
                         }
                     }
-                    Weather.PricipitationIntensityPPSPM2 = MathHelper.Clamp(Weather.PricipitationIntensityPPSPM2 * 1.05f, PrecipitationViewer.MinIntensityPPSPM2 + 0.0000001f,
-                            Viewer.GraphicsDevice.GraphicsProfile == GraphicsProfile.HiDef ? PrecipitationViewer.MaxIntensityPPSPM2 : PrecipitationViewer.MaxIntensityPPSPM2_16);
+                    Weather.PricipitationIntensityPPSPM2 = MathHelper.Clamp(Weather.PricipitationIntensityPPSPM2 * 1.05f
+                        , PrecipitationViewer.MinIntensityPPSPM2 + 0.0000001f, PrecipitationViewer.MaxIntensityPPSPM2 );
                     weatherChangeOn = false;
                     if (dynamicWeather != null) dynamicWeather.ORTSPrecipitationIntensity = -1;
                 }
                 if (UserInput.IsDown(UserCommand.DebugPrecipitationDecrease))
                 {
-                    Weather.PricipitationIntensityPPSPM2 = MathHelper.Clamp(Weather.PricipitationIntensityPPSPM2 / 1.05f, PrecipitationViewer.MinIntensityPPSPM2,
-                        Viewer.GraphicsDevice.GraphicsProfile == GraphicsProfile.HiDef ? PrecipitationViewer.MaxIntensityPPSPM2 : PrecipitationViewer.MaxIntensityPPSPM2_16);
+                    Weather.PricipitationIntensityPPSPM2 = MathHelper.Clamp(Weather.PricipitationIntensityPPSPM2 / 1.05f
+                        , PrecipitationViewer.MinIntensityPPSPM2, PrecipitationViewer.MaxIntensityPPSPM2);
                     if (Weather.PricipitationIntensityPPSPM2 < PrecipitationViewer.MinIntensityPPSPM2 + 0.00001f)
                     {
                         Weather.PricipitationIntensityPPSPM2 = 0;
                         if (Viewer.Simulator.WeatherType != WeatherType.Clear)
                         {
                             Viewer.SoundProcess.RemoveSoundSources(this);
-                            Viewer.Simulator.WeatherType = WeatherType.Clear;
                             Viewer.SoundProcess.AddSoundSources(this, ClearSound);
                         }
                     }
@@ -478,20 +3566,6 @@ namespace Orts.Viewer3D
                 }
                 if (UserInput.IsDown(UserCommand.DebugPrecipitationLiquidityIncrease) || UserInput.IsDown(UserCommand.DebugPrecipitationLiquidityDecrease)) UpdateVolume();
 
-                // Fog ranges from 10m (can't see anything) to 100km (clear arctic conditions).
-                if (UserInput.IsDown(UserCommand.DebugFogIncrease))
-                {
-                    Weather.FogDistance = MathHelper.Clamp(Weather.FogDistance - elapsedTime.RealSeconds * Weather.FogDistance, FogMinDistance, FogMaxDistance);
-                    weatherChangeOn = false;
-                    if (dynamicWeather != null) dynamicWeather.ORTSFog = -1;
-                }
-                if (UserInput.IsDown(UserCommand.DebugFogDecrease))
-                {
-                    Weather.FogDistance = MathHelper.Clamp(Weather.FogDistance + elapsedTime.RealSeconds * Weather.FogDistance, FogMinDistance, FogMaxDistance);
-                    if (dynamicWeather != null) dynamicWeather.ORTSFog = -1;
-                    weatherChangeOn = false;
-                }
-
                 // Daylight offset is useful for debugging night running timetables; it ranges from -12h to +12h
                 string FormatDaylightOffsetHour(int h) => h <= 0 ? h.ToString() : $"+{h}";
                 if (UserInput.IsPressed(UserCommand.DebugDaylightOffsetIncrease) && Weather.DaylightOffset < 12)
@@ -505,14 +3579,92 @@ namespace Orts.Viewer3D
                     Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Decreased daylight offset to {0} h", FormatDaylightOffsetHour(Weather.DaylightOffset)));
                 }
 
+                // Save Weather Parameters to Log File
+                if (UserInput.IsPressed(UserCommand.DebugWeatherSave) || SaveWeatherSwitch) {
+                    SaveWeatherSwitch = false;
+                    Viewer.WeatherEditorWindow.Bnt_SaveWeathertype_Sel.Text = " Saving Weather";
+                    Viewer.Simulator.Confirmer.Message(ConfirmLevel.None, Viewer.Catalog.GetStringFmt("Saving Weather Parameters"));
+                    Console.WriteLine("\n##########################################");
+                    Console.WriteLine("## Exrail Weather Extension V3.2        ##");
+                    Console.WriteLine("## Saved Weather Parameters             ##");
+                    Console.Write(    "## WeatherType = "); 
+                    Console.Write( (int)Viewer.Simulator.WeatherType );
+                    Console.Write(    "                      ##\n");
+                    Console.WriteLine("##########################################");
+                    Console.WriteLine("Weather.PrecipitationLiquidity = " + Weather.PrecipitationLiquidity);
+                    Console.WriteLine("Weather.PricipitationIntensityPPSPM2 = " + Weather.PricipitationIntensityPPSPM2);
+                    
+                    Console.WriteLine("Weather.WindSpeed = " + Weather.WindSpeed);
+                    Console.WriteLine("Weather.WindDirectionSky = " + Weather.WindDirectionSky);
+                    
+                    Console.WriteLine("Weather.PrecipWind1.X = " + Weather.PrecipWind1.X);                            
+                    Console.WriteLine("Weather.PrecipWind1.Y = " + Weather.PrecipWind1.Y);                            
+                    Console.WriteLine("Weather.PrecipWind1.Z = " + Weather.PrecipWind1.Z);                            
+                    Console.WriteLine("Weather.PrecipWind2.X = " + Weather.PrecipWind2.X);                            
+                    Console.WriteLine("Weather.PrecipWind2.Y = " + Weather.PrecipWind2.Y);                            
+                    Console.WriteLine("Weather.PrecipWind2.Z = " + Weather.PrecipWind2.Z);
+                    
+                    Console.WriteLine("Weather.ParticleSize1 = " + Weather.ParticleSize1);  
+                    Console.WriteLine("Weather.ParticleSize2 = " + Weather.ParticleSize2);  
+                   
+                    Console.WriteLine("Weather.OvercastFactor  = "  + Weather.OvercastFactor);
+                    Console.WriteLine("Weather.OvercastFactor2 = " + Weather.OvercastFactor2);
+                    Console.WriteLine("Weather.OvercastFactor3 = " + Weather.OvercastFactor3);
+                    
+                    Console.WriteLine("Weather.SunSize_Sunrise = " + Weather.SunSize_Sunrise);
+                    Console.WriteLine("Weather.SunSize_Noon    = "    + Weather.SunSize_Noon);   
+                    Console.WriteLine("Weather.SunSize_Sunset  = "  + Weather.SunSize_Sunset); 
+                    
+                    Console.WriteLine("Weather.SkyFogDistance_Sunrise = " + Weather.SkyFogDistance_Sunrise);
+                    Console.WriteLine("Weather.SkyFogDistance_Noon    = "    + Weather.SkyFogDistance_Noon);   
+                    Console.WriteLine("Weather.SkyFogDistance_Sunset  = "  + Weather.SkyFogDistance_Sunset);
+                    Console.WriteLine("Weather.SkyFog_Sunrise.R = " + Weather.SkyFog_Sunrise.R);
+                    Console.WriteLine("Weather.SkyFog_Sunrise.G = " + Weather.SkyFog_Sunrise.G);
+                    Console.WriteLine("Weather.SkyFog_Sunrise.B = " + Weather.SkyFog_Sunrise.B);
+                    Console.WriteLine("Weather.SkyFog_Noon.R = " + Weather.SkyFog_Noon.R);  
+                    Console.WriteLine("Weather.SkyFog_Noon.G = " + Weather.SkyFog_Noon.G);   
+                    Console.WriteLine("Weather.SkyFog_Noon.B = " + Weather.SkyFog_Noon.B);
+                    Console.WriteLine("Weather.SkyFog_Sunset.R = " + Weather.SkyFog_Sunset.R); 
+                    Console.WriteLine("Weather.SkyFog_Sunset.G = " + Weather.SkyFog_Sunset.G);
+                    Console.WriteLine("Weather.SkyFog_Sunset.B = " + Weather.SkyFog_Sunset.B);
+                  
+                    Console.WriteLine("Weather.SceneryFogDistance_Sunrise = " + Weather.SceneryFogDistance_Sunrise);
+                    Console.WriteLine("Weather.SceneryFogDistance_Noon    = "    + Weather.SceneryFogDistance_Noon);   
+                    Console.WriteLine("Weather.SceneryFogDistance_Sunset  = "  + Weather.SceneryFogDistance_Sunset); 
+                    Console.WriteLine("Weather.SceneryFog_Sunrise.R = " + Weather.SceneryFog_Sunrise.R);
+                    Console.WriteLine("Weather.SceneryFog_Sunrise.G = " + Weather.SceneryFog_Sunrise.G);
+                    Console.WriteLine("Weather.SceneryFog_Sunrise.B = " + Weather.SceneryFog_Sunrise.B);
+                    Console.WriteLine("Weather.SceneryFog_Noon.R = " + Weather.SceneryFog_Noon.R);   
+                    Console.WriteLine("Weather.SceneryFog_Noon.G = " + Weather.SceneryFog_Noon.G);
+                    Console.WriteLine("Weather.SceneryFog_Noon.B = " + Weather.SceneryFog_Noon.B);
+                    Console.WriteLine("Weather.SceneryFog_Sunset.R = " + Weather.SceneryFog_Sunset.R); 
+                    Console.WriteLine("Weather.SceneryFog_Sunset.G = " + Weather.SceneryFog_Sunset.G);
+                    Console.WriteLine("Weather.SceneryFog_Sunset.B = " + Weather.SceneryFog_Sunset.B);
+                    
+                    Console.WriteLine("Weather.VegetationDesatuationModifier = " + Weather.VegetationDesatuationModifier);
+                    Console.WriteLine("Weather.VegetationBrightnessModifier  = "  + Weather.VegetationBrightnessModifier);
+                    Console.WriteLine("Weather.VegetationContrastModifier    = "    + Weather.VegetationContrastModifier);
+                    
+                    Console.WriteLine("Weather.TerrainDesatuationModifier = " + Weather.TerrainDesatuationModifier);
+                    Console.WriteLine("Weather.TerrainBrightnessModifier  = "  + Weather.TerrainBrightnessModifier);
+                    Console.WriteLine("Weather.TerrainContrastModifier    = "    + Weather.TerrainContrastModifier);
+                    WeatherFileOut = new BinaryWriter(new FileStream(Path.Combine(Viewer.ContentPath, Weatherfilepath), FileMode.Open, FileAccess.Write));
+                    Console.WriteLine("########### Saving WeatherType ###########");
+                    SaveWeatherType( WeatherFileOut );
+                    Console.WriteLine("########### Weather File Saved ###########");
+                    Console.WriteLine("##########################################");
+                    // ===================================/\============================================
+                    Viewer.WeatherEditorWindow.Bnt_SaveWeathertype_Sel.Color = Viewer.WeatherEditorWindow.Color_ReLoaded;
+                    Viewer.WeatherEditorWindow.Bnt_SaveWeathertype_Sel.Text = " ◄Save Weather►";
+                }
                 UpdateWind(elapsedTime);
             }
 
             if (!MPManager.IsMultiPlayer())
             {
-                // Shift the clock forwards or backwards at 1h-per-second.
-                if (UserInput.IsDown(UserCommand.DebugClockForwards)) Viewer.Simulator.ClockTime += elapsedTime.RealSeconds * 3600;
-                if (UserInput.IsDown(UserCommand.DebugClockBackwards)) Viewer.Simulator.ClockTime -= elapsedTime.RealSeconds * 3600;
+                // Shift the clock forwards or backwards at 1/2 h-per-second.
+                if (UserInput.IsDown(UserCommand.DebugClockForwards)) Viewer.Simulator.ClockTime += elapsedTime.RealSeconds * 1800;
+                if (UserInput.IsDown(UserCommand.DebugClockBackwards)) Viewer.Simulator.ClockTime -= elapsedTime.RealSeconds * 1800;
             }
 
             // If we're a multiplayer server, send out the new overcastFactor, pricipitationIntensity and fogDistance to all clients.
@@ -522,8 +3674,8 @@ namespace Orts.Viewer3D
                     || UserInput.IsReleased(UserCommand.DebugPrecipitationIncrease) || UserInput.IsReleased(UserCommand.DebugPrecipitationDecrease)
                     || UserInput.IsReleased(UserCommand.DebugFogIncrease) || UserInput.IsReleased(UserCommand.DebugFogDecrease))
                 {
-                    manager.SetEnvInfo(Weather.OvercastFactor, Weather.FogDistance);
-                    MPManager.Notify(new MSGWeather(-1, Weather.OvercastFactor, Weather.PricipitationIntensityPPSPM2, Weather.FogDistance).ToString());
+                    manager.SetEnvInfo(Weather.OvercastFactor, Weather.SceneryFogDistance_Mix);
+                    MPManager.Notify(new MSGWeather(-1, Weather.OvercastFactor, Weather.PricipitationIntensityPPSPM2, Weather.SceneryFogDistance_Mix).ToString());
                 }
             }
             if (Program.Simulator != null && Program.Simulator.ActivityRun != null && Program.Simulator.ActivityRun.triggeredEventWrapper != null &&
@@ -546,9 +3698,10 @@ namespace Orts.Viewer3D
             }
             if (RandomizedWeather && !weatherChangeOn) // Time to prepare a new weather change
                 dynamicWeather.WeatherChange_NextRandomization(elapsedTime, this);
+            
             if (Weather.PricipitationIntensityPPSPM2 == 0 && Viewer.Simulator.WeatherType != WeatherType.Clear)
             {
-                Viewer.Simulator.WeatherType = WeatherType.Clear;
+                // ExRail - Disable setting the weather to Clear | Viewer.Simulator.WeatherType = WeatherType.Clear;
                 UpdateWeatherParameters();
             }
             else if (Weather.PricipitationIntensityPPSPM2 > 0 && Viewer.Simulator.WeatherType == WeatherType.Clear)
@@ -652,12 +3805,12 @@ namespace Orts.Viewer3D
                     fogTimer = ORTSFogTransitionTimeS;
                     var fogFinalValue = MathHelper.Clamp(ORTSFog, FogMinDistance, FogMaxDistance);
                     fogDistanceIncreasing = false;
-                    fogChangeRate = fogTimer > 0 ? (fogFinalValue - weatherControl.Weather.FogDistance) / (ORTSFogTransitionTimeS * ORTSFogTransitionTimeS) : 0;
-                    if (fogFinalValue > weatherControl.Weather.FogDistance)
+                    fogChangeRate = fogTimer > 0 ? (fogFinalValue - weatherControl.Weather.SceneryFogDistance_Mix) / (ORTSFogTransitionTimeS * ORTSFogTransitionTimeS) : 0;
+                    if (fogFinalValue > weatherControl.Weather.SceneryFogDistance_Mix)
                     {
                         fogDistanceIncreasing = true;
                         fogChangeRate = -fogChangeRate;
-                        if (fogTimer > 0) ORTSFog = weatherControl.Weather.FogDistance;
+                        if (fogTimer > 0) ORTSFog = weatherControl.Weather.SceneryFogDistance_Mix;
                     }
                     wChangeOn = true;
                 }
@@ -702,11 +3855,11 @@ namespace Orts.Viewer3D
                     if (fogTimer <= 0) fogTimer = 0;
                     else wChangeOn = true;
                     if (!fogDistanceIncreasing)
-                        weatherControl.Weather.FogDistance = ORTSFog - (fogTimer * fogTimer * fogChangeRate);
+                        weatherControl.Weather.SceneryFogDistance_Mix = ORTSFog - (fogTimer * fogTimer * fogChangeRate);
                     else
                     {
                         var fogTimerDifference = ORTSFogTransitionTimeS - fogTimer;
-                        weatherControl.Weather.FogDistance = ORTSFog - (fogTimerDifference * fogTimerDifference * fogChangeRate);
+                        weatherControl.Weather.SceneryFogDistance_Mix = ORTSFog - (fogTimerDifference * fogTimerDifference * fogChangeRate);
                     }
                     if (fogTimer == 0) ORTSFog = -1;
                 }
@@ -832,14 +3985,10 @@ namespace Orts.Viewer3D
                 if (ORTSPrecipitationIntensity >= 0)
                 {
                     precipitationIntensityTimer = ORTSPrecipitationIntensityTransitionTimeS;
-                    // Pricipitation ranges from 0 to max PrecipitationViewer.MaxIntensityPPSPM2 if 32bit.
-                    // 16bit uses PrecipitationViewer.MaxIntensityPPSPM2_16
-                    if (weatherControl.Viewer.GraphicsDevice.GraphicsProfile == GraphicsProfile.HiDef)
-                        precipitationIntensityChangeRate = precipitationIntensityTimer > 0 ? (MathHelper.Clamp(ORTSPrecipitationIntensity, 0, PrecipitationViewer.MaxIntensityPPSPM2)
-                            - weatherControl.Weather.PricipitationIntensityPPSPM2) / ORTSPrecipitationIntensityTransitionTimeS : 0;
-                    else
-                        precipitationIntensityChangeRate = precipitationIntensityTimer > 0 ? (MathHelper.Clamp(ORTSPrecipitationIntensity, 0, PrecipitationViewer.MaxIntensityPPSPM2_16)
-                            - weatherControl.Weather.PricipitationIntensityPPSPM2) / ORTSPrecipitationIntensityTransitionTimeS : 0;
+                    // Pricipitation ranges from 0 to max PrecipitationViewer.MaxIntensityPPSPM2 
+                    precipitationIntensityChangeRate = precipitationIntensityTimer > 0 ? (MathHelper.Clamp(ORTSPrecipitationIntensity, 0, PrecipitationViewer.MaxIntensityPPSPM2)
+                       - weatherControl.Weather.PricipitationIntensityPPSPM2) / ORTSPrecipitationIntensityTransitionTimeS : 0;
+       
                 }
 
                 // And now define visibility
@@ -853,12 +4002,12 @@ namespace Orts.Viewer3D
                 fogTimer = ORTSFogTransitionTimeS;
                 var fogFinalValue = MathHelper.Clamp(ORTSFog, 10, 100000);
                 fogDistanceIncreasing = false;
-                fogChangeRate = fogTimer > 0 ? (fogFinalValue - weatherControl.Weather.FogDistance) / (ORTSFogTransitionTimeS * ORTSFogTransitionTimeS) : 0;
-                if (fogFinalValue > weatherControl.Weather.FogDistance)
+                fogChangeRate = fogTimer > 0 ? (fogFinalValue - weatherControl.Weather.SceneryFogDistance_Mix) / (ORTSFogTransitionTimeS * ORTSFogTransitionTimeS) : 0;
+                if (fogFinalValue > weatherControl.Weather.SceneryFogDistance_Mix)
                 {
                     fogDistanceIncreasing = true;
                     fogChangeRate = -fogChangeRate;
-                    ORTSFog = weatherControl.Weather.FogDistance;
+                    ORTSFog = weatherControl.Weather.SceneryFogDistance_Mix;
                 }
 
                 weatherControl.weatherChangeOn = true;
@@ -1089,7 +4238,7 @@ namespace Orts.Viewer3D
                 WeatherSettingOvercast lastWeatherOvercast = lastWeather as WeatherSettingOvercast;
                 AWOvercastCloudcover = Math.Max(0, Math.Min(1, (lastWeatherOvercast.Overcast / 100) +
                     ((float)Viewer.Random.Next((int)(-0.5f * lastWeatherOvercast.OvercastVariation), (int)(0.5f * lastWeatherOvercast.OvercastVariation)) / 100)));
-                AWActualVisibility = Weather.FogDistance = lastWeatherOvercast.OvercastVisibilityM;
+                AWActualVisibility = Weather.SceneryFogDistance_Mix = lastWeatherOvercast.OvercastVisibilityM;
 
 #if DEBUG_AUTOWEATHER
                 Trace.TraceInformation("Visibility : {0}", Weather.FogDistance);
@@ -1105,7 +4254,7 @@ namespace Orts.Viewer3D
                 case WeatherType.Rain:
                     Weather.PricipitationIntensityPPSPM2 = AWPrecipitationActualPPSPM2;
                     Weather.OvercastFactor = AWOvercastCloudcover;
-                    Weather.FogDistance = AWActualVisibility;
+                    Weather.SceneryFogDistance_Mix = AWActualVisibility;
                     Viewer.SoundProcess.AddSoundSources(this, RainSound);
                     foreach (var soundSource in RainSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
 #if DEBUG_AUTOWEATHER
@@ -1116,7 +4265,7 @@ namespace Orts.Viewer3D
                 case WeatherType.Snow:
                     Weather.PricipitationIntensityPPSPM2 = AWPrecipitationActualPPSPM2;
                     Weather.OvercastFactor = AWOvercastCloudcover;
-                    Weather.FogDistance = AWActualVisibility;
+                    Weather.SceneryFogDistance_Mix = AWActualVisibility;
                     Viewer.SoundProcess.AddSoundSources(this, SnowSound);
                     foreach (var soundSource in SnowSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
 #if DEBUG_AUTOWEATHER
@@ -1128,7 +4277,7 @@ namespace Orts.Viewer3D
                     Weather.PricipitationIntensityPPSPM2 = 0;
                     Viewer.SoundProcess.AddSoundSources(this, ClearSound);
                     Weather.OvercastFactor = AWOvercastCloudcover;
-                    Weather.FogDistance = AWActualVisibility;
+                    Weather.SceneryFogDistance_Mix = AWActualVisibility;
 #if DEBUG_AUTOWEATHER
                     Trace.TraceInformation("Weather type CLEAR");
 #endif
@@ -1197,13 +4346,13 @@ namespace Orts.Viewer3D
                     else
                     {
                         AWOvercastCloudcover = CalculateOvercast(lastWeatherPrecipitation.Overcast, lastWeatherPrecipitation.OvercastVariation, lastWeatherPrecipitation.OvercastRateOfChange, elapsedTime);
-                        if (Weather.FogDistance > lastWeatherPrecipitation.OvercastVisibilityM)
+                        if (Weather.SceneryFogDistance_Mix > lastWeatherPrecipitation.OvercastVisibilityM)
                         {
-                            AWActualVisibility = Weather.FogDistance - (40 * elapsedTime.RealSeconds); // reduce visibility by 40 m/s
+                            AWActualVisibility = Weather.SceneryFogDistance_Mix - (40 * elapsedTime.RealSeconds); // reduce visibility by 40 m/s
                         }
-                        else if (Weather.FogDistance < lastWeatherPrecipitation.OvercastVisibilityM)
+                        else if (Weather.SceneryFogDistance_Mix < lastWeatherPrecipitation.OvercastVisibilityM)
                         {
-                            AWActualVisibility = Weather.FogDistance + (40 * elapsedTime.RealSeconds); // increase visibility by 40 m/s
+                            AWActualVisibility = Weather.SceneryFogDistance_Mix + (40 * elapsedTime.RealSeconds); // increase visibility by 40 m/s
                         }
                     }
                 }
@@ -1253,7 +4402,7 @@ namespace Orts.Viewer3D
                 case WeatherType.Rain:
                     Weather.PricipitationIntensityPPSPM2 = AWPrecipitationActualPPSPM2;
                     Weather.OvercastFactor = AWOvercastCloudcover;
-                    Weather.FogDistance = AWActualVisibility;
+                    Weather.SceneryFogDistance_Mix = AWActualVisibility;
                     Viewer.SoundProcess.AddSoundSources(this, RainSound);
                     foreach (var soundSource in RainSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
                     break;
@@ -1261,7 +4410,7 @@ namespace Orts.Viewer3D
                 case WeatherType.Snow:
                     Weather.PricipitationIntensityPPSPM2 = AWPrecipitationActualPPSPM2;
                     Weather.OvercastFactor = AWOvercastCloudcover;
-                    Weather.FogDistance = AWActualVisibility;
+                    Weather.SceneryFogDistance_Mix = AWActualVisibility;
                     Viewer.SoundProcess.AddSoundSources(this, SnowSound);
                     foreach (var soundSource in SnowSound) soundSource.Volume = Weather.PricipitationIntensityPPSPM2 / PrecipitationViewer.MaxIntensityPPSPM2;
                     break;
@@ -1270,7 +4419,7 @@ namespace Orts.Viewer3D
                     Weather.PricipitationIntensityPPSPM2 = 0;
                     Viewer.SoundProcess.AddSoundSources(this, ClearSound);
                     Weather.OvercastFactor = AWOvercastCloudcover;
-                    Weather.FogDistance = AWActualVisibility;
+                    Weather.SceneryFogDistance_Mix = AWActualVisibility;
                     break;
             }
 
@@ -1287,7 +4436,7 @@ namespace Orts.Viewer3D
                 {
                     // Set final values of last weather
                     lastWeather.GenOvercast = Weather.OvercastFactor;
-                    lastWeather.GenVisibility = AWLastVisibility = Weather.FogDistance;
+                    lastWeather.GenVisibility = AWLastVisibility = Weather.SceneryFogDistance_Mix;
                     //lastWeater.AWGenWind = ?? // TODO
 
                     AWActiveIndex++;
@@ -1312,7 +4461,7 @@ namespace Orts.Viewer3D
 
         float GetWeatherVisibility(WeatherSetting weatherDetail)
         {
-            float nextVisibility = Weather.FogDistance; // Present visibility
+            float nextVisibility = Weather.SceneryFogDistance_Mix; // Present visibility
             if (weatherDetail is WeatherSettingFog)
             {
                 WeatherSettingFog weatherFog = weatherDetail as WeatherSettingFog;
@@ -1489,7 +4638,7 @@ namespace Orts.Viewer3D
             AWPrecipitationActualPPSPM2 = PrecipitationViewer.MinIntensityPPSPM2;
             AWPrecipitationRequiredPPSPM2 = MathHelper.Clamp((1.0f + ((float)Viewer.Random.Next(-precvariation, precvariation) / 100)) * baseDensitiy,
                                            PrecipitationViewer.MinIntensityPPSPM2, PrecipitationViewer.MaxIntensityPPSPM2);
-            AWLastVisibility = Weather.FogDistance;
+            AWLastVisibility = Weather.SceneryFogDistance_Mix;
 
             // Rate of change at start is max. difference over defined time span +- 10%, scaled between 1/2 and 4 mins
             float startphase = MathHelper.Clamp(lastWeatherPrecipitation.PrecipitationStartPhaseS * (0.9f + (Viewer.Random.Next(100) / 1000)), 30, 240);
@@ -1639,7 +4788,7 @@ namespace Orts.Viewer3D
             outf.Write(AWOvercastCloudRateOfChangepS);
 
             outf.Write(Weather.OvercastFactor);
-            outf.Write(Weather.FogDistance);
+            outf.Write(Weather.SceneryFogDistance_Mix);
             outf.Write(Weather.PricipitationIntensityPPSPM2);
         }
 
@@ -1714,7 +4863,7 @@ namespace Orts.Viewer3D
             AWOvercastCloudRateOfChangepS = inf.ReadSingle();
 
             Weather.OvercastFactor = inf.ReadSingle();
-            Weather.FogDistance = inf.ReadSingle();
+
             Weather.PricipitationIntensityPPSPM2 = inf.ReadSingle();
 
             Time = (float)Viewer.Simulator.ClockTime;

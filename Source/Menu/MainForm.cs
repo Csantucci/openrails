@@ -155,6 +155,13 @@ namespace ORTS
                     new KeyedComboBoxItem(0, catalog.GetString("Clear")),
                     new KeyedComboBoxItem(1, catalog.GetString("Snow")),
                     new KeyedComboBoxItem(2, catalog.GetString("Rain")),
+                    new KeyedComboBoxItem(3, catalog.GetString("Few")),
+                    new KeyedComboBoxItem(4, catalog.GetString("Cloudy")),
+                    new KeyedComboBoxItem(5, catalog.GetString("Desert")),
+                    new KeyedComboBoxItem(6, catalog.GetString("SnowStorm")),
+                    new KeyedComboBoxItem(7, catalog.GetString("Foggy")),
+                    new KeyedComboBoxItem(8, catalog.GetString("PartlyCloudy")),
+                    // remember to update number
                 };
                 var Difficulties = new[] {
                     catalog.GetString("Easy"),

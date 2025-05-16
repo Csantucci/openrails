@@ -50,7 +50,7 @@ namespace Orts.Viewer3D.Debugging
         private GettextResourceManager catalog = new GettextResourceManager("RunActivity");
         private readonly MapDataProvider MapDataProvider;
         private readonly MapThemeProvider MapThemeProvider;
-        private string ThemeName = "light";
+        private string ThemeName = "dark"; // Start theme
         private ThemeStyle Theme;
         /// <summary>
         /// Used to periodically check if we should shift the view when the user is holding down a "shift view" button.
@@ -84,26 +84,59 @@ namespace Orts.Viewer3D.Debugging
         /// </summary>
         private System.Drawing.Point LastCursorPosition = new System.Drawing.Point();
 
+        // **************** SIGNALS *********************
+        public Font SignalFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
+        // Signals line
         public Pen redPen = new Pen(Color.FromArgb(244, 67, 54));
         public Pen greenPen = new Pen(Color.FromArgb(76, 175, 80));
         public Pen orangePen = new Pen(Color.FromArgb(255, 235, 59));
-        public Pen trainPen = new Pen(Color.DarkGreen);
+        // Signals brush - labels & symbols
+        public SolidBrush SignalBrushRed = new SolidBrush(Color.FromArgb(244, 67, 54));
+        public SolidBrush SignalBrushGreen = new SolidBrush(Color.FromArgb(76, 194, 80));
+        public SolidBrush SignalBrushYellow = new SolidBrush(Color.FromArgb(255, 235, 59));
+        // ***********************************************************
+                   
+        // Train labels
+        public Font trainFont = new Font("Segoe UI Semibold", 12, FontStyle.Bold);
+        public Pen trainPen = new Pen(Color.FromArgb(255, 255, 255));
+        
+        public Pen TrainActivePen = new Pen(Color.FromArgb(204, 170, 0));
+        public Pen TrainInactivePen = new Pen(Color.FromArgb(153, 128, 0));
+        public Pen CarActivePen = new Pen(Color.FromArgb(0, 204, 0));
+        public Pen CarInactivePen = new Pen(Color.FromArgb(0, 153, 0));
+        
+        private readonly SolidBrush trainBrush = new SolidBrush(Color.FromArgb(124, 104, 238));
+        public SolidBrush InactiveTrainBrush = new SolidBrush(Color.DarkRed);
+
         public Pen pathPen = new Pen(Color.FromArgb(52, 152, 219));
         public Pen grayPen = new Pen(Color.Gray);
         public Pen PlatformPen = new Pen(Color.Blue);
-        public Pen TrackPen = new Pen(Color.FromArgb(46, 64, 83));
+        public Pen TrackPen = new Pen(Color.FromArgb(99, 99, 99),2); // EXR: Pen width = 2
         public Pen ZoomTargetPen = new Pen(Color.FromArgb(46, 64, 83));
 
-        public Font trainFont = new Font("Segoe UI Semibold", 10, FontStyle.Bold);
         public Font sidingFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
         public Font PlatformFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
-        public Font SignalFont = new Font("Segoe UI Semibold", 10, FontStyle.Regular);
-        private readonly SolidBrush trainBrush = new SolidBrush(Color.Red);
+
+        
+        
+
+
         public SolidBrush sidingBrush = new SolidBrush(Color.Blue);
-        public SolidBrush PlatformBrush = new SolidBrush(Color.DarkBlue);
-        public SolidBrush SignalBrush = new SolidBrush(Color.DarkRed);
-        public SolidBrush InactiveTrainBrush = new SolidBrush(Color.DarkRed);
-        private Color MapCanvasColor = Color.White;
+        public SolidBrush PlatformBrush = new SolidBrush(Color.LightBlue); 
+        
+        public SolidBrush SignalBrush = new SolidBrush(Color.Pink); 
+        
+        
+
+        
+        public SolidBrush SwitchBrush = new SolidBrush(Color.FromArgb(132, 157, 172));
+        public SolidBrush SwitchBrushSelected = new SolidBrush(Color.FromArgb(127, 209, 193));
+
+
+
+
+        
+        private Color MapCanvasColor = Color.FromArgb(31, 31, 31);
 
         // The train selected by clicking on it on the map or indirectly via the "follow" or "jump to" train options
         public Train PickedTrain = Program.Simulator.PlayerLocomotive.Train;
@@ -146,6 +179,11 @@ namespace Orts.Viewer3D.Debugging
             selectedTrainList = new List<Train>();
 
             InitializeData();
+            // start theme
+            Theme = MapThemeProvider.GetTheme(ThemeName);
+            ApplyThemeRecursively(this);
+            MapCanvasColor = Theme.MapCanvasColor;
+            TrackPen.Color = Theme.TrackColor;
             InitializeImage();
 
             MPManager.Instance().MessageReceived += (sender, e) =>
@@ -158,6 +196,7 @@ namespace Orts.Viewer3D.Debugging
             UITimer.Interval = 100;
             UITimer.Tick += new System.EventHandler(UITimer_Tick);
             UITimer.Start();
+
         }
 
         void InitializeForm()
@@ -177,11 +216,11 @@ namespace Orts.Viewer3D.Debugging
             followToolStripMenuItem.Text = Viewer.Catalog.GetString("Follow on the map");
             kickFromMultiplayerSessionToolStripMenuItem.Text = Viewer.Catalog.GetString("Kick from multiplayer session");
 
-            setSwitchToToolStripMenuItem.Text = Viewer.Catalog.GetString("Set switch to...");
+            // setSwitchToToolStripMenuItem.Text = Viewer.Catalog.GetString("Set switch to...");
             mainRouteToolStripMenuItem.Text = Viewer.Catalog.GetString("Main route");
             sideRouteToolStripMenuItem.Text = Viewer.Catalog.GetString("Side route");
 
-            setSignalAspectToToolStripMenuItem.Text = Viewer.Catalog.GetString("Set signal aspect to...");
+            // setSignalAspectToToolStripMenuItem.Text = Viewer.Catalog.GetString("Set signal aspect to...");
             systemControlledToolStripMenuItem.Text = Viewer.Catalog.GetString("System controlled");
             stopToolStripMenuItem.Text = Viewer.Catalog.GetString("Stop");
             approachToolStripMenuItem.Text = Viewer.Catalog.GetString("Approach");
@@ -662,15 +701,15 @@ namespace Orts.Viewer3D.Debugging
             // Hue: if loco then H=50/360 else H=120/360
             // Lightness: if active then L=40/100 else L=30/100
             // RGB values
-            // active loco: RGB 204,170,0
-            // inactive loco: RGB 153,128,0
-            // active car: RGB 0,204,0
-            // inactive car: RGB 0,153,0
+            // active loco: RGB 204,170,0   TrainActivePen
+            // inactive loco: RGB 153,128,0 TrainInActivePen
+            // active car: RGB 0,204,0      CarActivePen
+            // inactive car: RGB 0,153,0    CarActivePen
             trainPen.Color = MapDataProvider.IsActiveTrain(t as AITrain)
                 ? car is MSTSLocomotive
                     ? (car == locoCar) ? Color.FromArgb(204, 170, 0) : Color.FromArgb(153, 128, 0)
                     : Color.FromArgb(0, 204, 0)
-                : car is MSTSLocomotive ? Color.FromArgb(153, 128, 0) : Color.FromArgb(0, 153, 0);
+                : car is MSTSLocomotive ? Color.FromArgb(153, 128, 0) : Color.FromArgb(0, 153, 0); // cars
 
             if (t.TrainType == Train.TRAINTYPE.STATIC || (t.TrainType == Train.TRAINTYPE.AI && t.GetAIMovementState() == AITrain.AI_MOVEMENT_STATE.AI_STATIC))
             {
@@ -751,9 +790,9 @@ namespace Orts.Viewer3D.Debugging
                 var scaledItem = new PointF() { X = x, Y = y };
 
                 if (sw.Item.TrJunctionNode.SelectedRoute == sw.main)
-                    g.FillEllipse(new SolidBrush(Color.FromArgb(93, 64, 55)), GetRect(scaledItem, width));
+                    g.FillEllipse(SwitchBrush , GetRect(scaledItem, width));
                 else
-                    g.FillEllipse(new SolidBrush(Color.FromArgb(161, 136, 127)), GetRect(scaledItem, width));
+                    g.FillEllipse(SwitchBrushSelected , GetRect(scaledItem, width));
 
                 sw.Location2D.X = scaledItem.X; sw.Location2D.Y = scaledItem.Y;
                 switchItemsDrawn.Add(sw);
@@ -777,20 +816,20 @@ namespace Orts.Viewer3D.Debugging
                 var scaledItem = new PointF() { X = x, Y = y };
                 s.Location2D.X = scaledItem.X; s.Location2D.Y = scaledItem.Y;
                 if (s.Signal.isSignalNormal())
-                {
-                    var color = new SolidBrush(Color.FromArgb(76, 175, 80));
+                {   // EXRS
+                    var color = SignalBrushGreen; // Green
                     var pen = greenPen;
                     if (s.IsProceed == 0)
                     {
                     }
                     else if (s.IsProceed == 1)
                     {
-                        color = new SolidBrush(Color.FromArgb(255, 235, 59));
+                        color = SignalBrushYellow; //Yellow
                         pen = orangePen;
                     }
                     else
                     {
-                        color = new SolidBrush(Color.FromArgb(244, 67, 54));
+                        color = SignalBrushRed; // Red
                         pen = redPen;
                     }
                     g.FillEllipse(color, GetRect(scaledItem, width));
@@ -1782,7 +1821,6 @@ namespace Orts.Viewer3D.Debugging
             ThemeName = i >= 0 && i < themes.Length - 1 ? themes[i + 1] : themes[0];
 
             Theme = MapThemeProvider.GetTheme(ThemeName);
-
             ApplyThemeRecursively(this);
             MapCanvasColor = Theme.MapCanvasColor;
             TrackPen.Color = Theme.TrackColor;

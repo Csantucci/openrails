@@ -106,7 +106,7 @@ namespace Orts.Simulation
         public Dictionary<string, Train> NameDictionary = new Dictionary<string, Train>();
         public Dictionary<int, AITrain> AutoGenDictionary = new Dictionary<int, AITrain>();
         public List<int> StartReference = new List<int>();
-        public Weather Weather = new Weather();
+        public WeatherExtension Weather = new WeatherExtension();
 
         public float CurveDurability;  // Sets the durability due to curve speeds in TrainCars - read from consist file.
 

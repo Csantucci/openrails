@@ -2130,7 +2130,7 @@ namespace Orts.Viewer3D.Popups
             if (hudWindowFullScreen || WebServerEnabled)
                 TableSetLabelValueColumns(table, 0, 2);
 
-            TableAddLabelValue(table, Viewer.Catalog.GetString("Visibility"), Viewer.Catalog.GetStringFmt("{0:N0} m", Viewer.Simulator.Weather.FogDistance));
+            TableAddLabelValue(table, Viewer.Catalog.GetString("Visibility"), Viewer.Catalog.GetStringFmt("{0:N0} m", Viewer.Simulator.Weather.SceneryFogDistance_Mix));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Cloud cover"), Viewer.Catalog.GetStringFmt("{0:F0} %", Viewer.Simulator.Weather.OvercastFactor * 100));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Intensity"), Viewer.Catalog.GetStringFmt("{0:F4} p/s/m^2", Viewer.Simulator.Weather.PricipitationIntensityPPSPM2));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Liquidity"), Viewer.Catalog.GetStringFmt("{0:F0} %", Viewer.Simulator.Weather.PrecipitationLiquidity * 100));
@@ -2140,7 +2140,7 @@ namespace Orts.Viewer3D.Popups
             TextLineNumber(6, table.CurrentRow + 6, 2);//HudScroll
         }
 
-            void TextPageDebugInfo(TableData table)
+        void TextPageDebugInfo(TableData table)
         {
             TableSetLabelValueColumns(table, 0, 2);
             TextPageHeading(table, Viewer.Catalog.GetString("DEBUG INFORMATION"));
@@ -2176,8 +2176,41 @@ namespace Orts.Viewer3D.Popups
             TableAddLabelValue(table, Viewer.Catalog.GetString("Loader process"), Viewer.Catalog.GetStringFmt("{0:F0}% ({1:F0}% {2})", Viewer.LoaderProcess.Profiler.Wall.SmoothedValue, Viewer.LoaderProcess.Profiler.Wait.SmoothedValue, Viewer.Catalog.GetString("wait")));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Sound process"), Viewer.Catalog.GetStringFmt("{0:F0}% ({1:F0}% {2})", Viewer.SoundProcess.Profiler.Wall.SmoothedValue, Viewer.SoundProcess.Profiler.Wait.SmoothedValue, Viewer.Catalog.GetString("wait")));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Total process"), Viewer.Catalog.GetStringFmt("{0:F0}% ({1:F0}% {2})", Viewer.RenderProcess.Profiler.Wall.SmoothedValue + Viewer.UpdaterProcess.Profiler.Wall.SmoothedValue + Viewer.LoaderProcess.Profiler.Wall.SmoothedValue + Viewer.SoundProcess.Profiler.Wall.SmoothedValue, Viewer.RenderProcess.Profiler.Wait.SmoothedValue + Viewer.UpdaterProcess.Profiler.Wait.SmoothedValue + Viewer.LoaderProcess.Profiler.Wait.SmoothedValue + Viewer.SoundProcess.Profiler.Wait.SmoothedValue, Viewer.Catalog.GetString("wait")));
-            TableSetCells(table, 0, Viewer.Catalog.GetString("Camera"), "", Viewer.Camera.TileX.ToString("F0"), Viewer.Camera.TileZ.ToString("F0"), Viewer.Camera.Location.X.ToString("F2"), Viewer.Camera.Location.Y.ToString("F2"), Viewer.Camera.Location.Z.ToString("F2"), String.Format("{0:F1} {1}", Viewer.Tiles.GetElevation(Viewer.Camera.CameraWorldLocation), FormatStrings.m), Viewer.Settings.LODBias + "%", String.Format("{0} {1}", Viewer.Settings.ViewingDistance, FormatStrings.m), Viewer.Settings.DistantMountains ? String.Format("{0:F0} {1}", (float)Viewer.Settings.DistantMountainsViewingDistance * 1e-3f, FormatStrings.km) : "");
+            TableSetCells(table, 0, Viewer.Catalog.GetString("Camera"), "", "TX:" +Viewer.Camera.TileX.ToString("F0"), "TZ:"+Viewer.Camera.TileZ.ToString("F0"), "LX:"+Viewer.Camera.Location.X.ToString("F2"), "LY:"+Viewer.Camera.Location.Y.ToString("F2"), "LZ:" + Viewer.Camera.Location.Z.ToString("F2"), String.Format("{0:F1} {1}", "Elv"+Viewer.Tiles.GetElevation(Viewer.Camera.CameraWorldLocation), FormatStrings.m), Viewer.Settings.LODBias + "%", String.Format("{0} {1}", "Vdis"+Viewer.Settings.ViewingDistance, FormatStrings.m), Viewer.Settings.DistantMountains ? String.Format("{0:F0} {1}", (float)Viewer.Settings.DistantMountainsViewingDistance * 1e-3f, FormatStrings.km) : "");
             TableAddLine(table);
+
+            // ExRail 3DCabHeadPos used for optaining a 3dCab cvf file position when parked 0 north or 180 south
+            if(Viewer.PlayerLocomotive.HasFront3DCab) {
+                TableSetCells(table, 0, Viewer.Catalog.GetString("3DCabHeadPos"), ""
+                , Viewer.PlayerLocomotive.CabViewpoints[0].Location.X.ToString("F3") + ":X"
+                , Viewer.PlayerLocomotive.CabViewpoints[0].Location.Y.ToString("F3") + ":Y"
+                , Viewer.PlayerLocomotive.CabViewpoints[0].Location.Z.ToString("F3") + ":Z"
+                , String.Format("{0:F3}", Viewer.PlayerLocomotive.WorldPosition.Location.X - Viewer.Camera.Location.X )
+                , String.Format("{0:F3}", (Viewer.Camera.Location.Y - Viewer.PlayerLocomotive.WorldPosition.Location.Y) + 0.012)     
+                , String.Format("{0:F3}", (Viewer.PlayerLocomotive.WorldPosition.Location.Z - Viewer.Camera.Location.Z) - 0.007 )
+                ); // adding difference in height and subtracting difference in forward 
+            }
+
+            TableAddLine(table);
+            //
+            TableSetCells(table, 0, Viewer.Catalog.GetString("Sun"), ""
+            , Viewer.MaterialManager.sunDirection.X.ToString("F3") + ":X"
+            , Viewer.MaterialManager.sunDirection.Y.ToString("F3") + ":Y"
+            , Viewer.MaterialManager.sunDirection.Z.ToString("F3") + ":Z"
+            );
+            TableAddLine(table);
+            /*
+            TableSetCells(table, 0, Viewer.Catalog.GetString("Weather Parms"), ""
+            , Viewer.MaterialManager.SceneryFogDistanceMixing.FogDistance_Mix.ToString("F2") + ":ScFog"
+            , Viewer.MaterialManager.SkyFogDistanceMixing.FogDistance_Mix.ToString("F2") + ":SkyFog"
+            , Viewer.Simulator.ClockTime.ToString("F2") + ":Clock"
+            
+            );*/
+            TableAddLine(table);
+
+
+
+
         }
 
         /// <summary>

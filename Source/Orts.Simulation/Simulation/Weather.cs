@@ -16,44 +16,79 @@
 // along with Open Rails.  If not, see <http://www.gnu.org/licenses/>.
 
 using Microsoft.Xna.Framework;
+
+//using SharpDX;
 using System;
 using System.Diagnostics;
 
 namespace Orts.Simulation
 {
-    public class Weather
+    public class WeatherExtension
     {
-        // Rainy conditions (Glossary of Meteorology (June 2000). "Rain". American Meteorological Society. Retrieved 2010-01-15.):
-        //   Type        Rate
-        //   Light       <2.5mm/h
-        //   Moderate     2.5-7.3mm/h
-        //   Heavy           >7.3mm/h
-        //   Violent         >50.0mm/h
-        //
-        // Snowy conditions (Glossary of Meteorology (2009). "Snow". American Meteorological Society. Retrieved 2009-06-28.):
-        //   Type        Visibility
-        //   Light           >1.0km
-        //   Moderate     0.5-1.0km
-        //   Heavy       <0.5km
-
-        // Overcast factor: 0.0 = almost no clouds; 0.1 = wispy clouds; 1.0 = total overcast.
-        public float OvercastFactor;
+        // SunSize
+        public float SunSize_Sunrise = 1.0f;
+        public float SunSize_Noon    = 1.0f;
+        public float SunSize_Sunset  = 1.0f;
+        public float SunSize_Mix  = 1.0f;
         
-        // Pricipitation intensity in particles per second per meter^2 (PPSPM2).
-        public float PricipitationIntensityPPSPM2;
+        // Wind Speed and direction
+        public float WindSpeed  = 0;  
+        public float WindDirectionSky = 0.0f;
         
-        // Fog/visibility distance. Ranges from 10m (can't see anything), 5km (medium), 20km (clear) to 100km (clear arctic).
-        public float FogDistance;
+        // Overcast factor 1,2,3
+        public float OvercastFactor  = 0;
+        public float OvercastFactor2 = 0;
+        public float OvercastFactor3 = 0;
+        
+        // Precipitation vectors
+        public Vector3 PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
+        public Vector3 PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);
+       
+        // Precipitation Particlesize 
+        public float ParticleSize1  = 1.5f;
+        public float ParticleSize2  = 2.0f;
+        
+        // Sky Fog/visibility distance 
+        public float SkyFogDistance_Mix     = 200.0f;
+        public float SkyFogDistance_Sunrise = 500.0f;
+        public float SkyFogDistance_Noon    = 500.0f;
+        public float SkyFogDistance_Sunset  = 500.0f;
+        public Color SkyFog_Sunrise = new Color(112,120,120,255);
+        public Color SkyFog_Noon    = new Color(111,111,111,255);
+        public Color SkyFog_Sunset  = new Color(120,120,110,255);
+        public Color SkyFogMix      = new Color(120,120,110,255);
+        
+        // Scenery Fog/visibility distance 
+        public float SceneryFogDistance_Mix = 210.0f;
+        public float SceneryFogDistance_Sunrise = 500.0f;
+        public float SceneryFogDistance_Noon    = 500.0f;
+        public float SceneryFogDistance_Sunset  = 500.0f;
+        public Color SceneryFogMix = new Color(120,120,110,255);
+        public Color SceneryFog_Sunrise = new Color(112,120,120,255);
+        public Color SceneryFog_Noon    = new Color(111,111,111,255);
+        public Color SceneryFog_Sunset  = new Color(120,120,110,255);
+        
+        // Vegetation color control
+        public float VegetationDesatuationModifier = 0;
+        public float VegetationBrightnessModifier  = 0; 
+        public float VegetationContrastModifier    = 0; 
+        
+        // Terrain Color control
+        public float TerrainBrightnessModifier  = 0;
+        public float TerrainDesatuationModifier = 0; 
+        public float TerrainContrastModifier    = 0;
 
         // Daylight offset (-12h to +12h)
         public int DaylightOffset = 0;
         
         // Precipitation liquidity; =1 for rain, =0 for snow; intermediate values possible with dynamic weather;
-        public float PrecipitationLiquidity;
-        public float CalculatedWindDirection;
+        public float PrecipitationLiquidity  = 0;
+        public float CalculatedWindDirection = 0;
         public Vector2 WindSpeedMpS = new Vector2();
-        public float WindSpeed {get { return WindSpeedMpS.Length(); } }
-        //        public float WindDirection { get { return (float)Math.Atan2(WindSpeedMpS.X, WindSpeedMpS.Y); } }
+        
+        // Pricipitation intensity in particles per second per meter^2 (PPSPM2).
+        public float PricipitationIntensityPPSPM2;
         public float WindDirection { get { return CalculatedWindDirection; } }
+
     }
 }

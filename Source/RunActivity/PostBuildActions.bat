@@ -22,6 +22,9 @@ FOR %%i IN (Source\RunActivity\Content\*.fx) DO (
     echo Compiling Source\RunActivity\Content\%%~ni.mgfx
 	dotnet tool run mgfxc Source\RunActivity\Content\%%~nxi Program\Content\%%~ni.mgfx /Profile:DirectX_11
 )
+
+IF NOT EXIST "Program\Content\Weather\Saves" MKDIR "Program\Content\Weather\Saves"
+
 REM Copy source effects
 IF EXIST "Program\ShaderSources" RMDIR "Program\ShaderSources" /S /Q
 IF NOT EXIST "Program\ShaderSources" MKDIR "Program\ShaderSources"

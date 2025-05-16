@@ -150,7 +150,7 @@ namespace Orts.Viewer3D
                     mstsskymoonPhase = 3; // Moon dog only occurs in winter
                 // Overcast factor: 0.0=almost no clouds; 0.1=wispy clouds; 1.0=total overcast
                 //mstsskyovercastFactor = MSTSSkyViewer.World.WeatherControl.overcastFactor;
-                mstsskyfogDistance = MSTSSkyViewer.Simulator.Weather.FogDistance;
+                mstsskyfogDistance = MSTSSkyViewer.Simulator.Weather.SceneryFogDistance_Mix;
             }
 
             MPManager manager = MPManager.Instance();
@@ -181,11 +181,11 @@ namespace Orts.Viewer3D
             if (!MPManager.IsClient())
             {
                 // Overcast ranges from 0 (completely clear) to 1 (completely overcast).
-                if (UserInput.IsDown(UserCommand.DebugOvercastIncrease)) mstsskyovercastFactor = MathHelper.Clamp(mstsskyovercastFactor + elapsedTime.RealSeconds / 10, 0, 1);
-                if (UserInput.IsDown(UserCommand.DebugOvercastDecrease)) mstsskyovercastFactor = MathHelper.Clamp(mstsskyovercastFactor - elapsedTime.RealSeconds / 10, 0, 1);
+                //if (UserInput.IsDown(UserCommand.DebugOvercastIncrease)) mstsskyovercastFactor = MathHelper.Clamp(mstsskyovercastFactor + elapsedTime.RealSeconds / 10, 0, 1);
+                //if (UserInput.IsDown(UserCommand.DebugOvercastDecrease)) mstsskyovercastFactor = MathHelper.Clamp(mstsskyovercastFactor - elapsedTime.RealSeconds / 10, 0, 1);
                 // Fog ranges from 10m (can't see anything) to 100km (clear arctic conditions).
-                if (UserInput.IsDown(UserCommand.DebugFogIncrease)) mstsskyfogDistance = MathHelper.Clamp(mstsskyfogDistance - elapsedTime.RealSeconds * mstsskyfogDistance, 10, 100000);
-                if (UserInput.IsDown(UserCommand.DebugFogDecrease)) mstsskyfogDistance = MathHelper.Clamp(mstsskyfogDistance + elapsedTime.RealSeconds * mstsskyfogDistance, 10, 100000);
+                //if (UserInput.IsDown(UserCommand.DebugFogIncrease)) mstsskyfogDistance = MathHelper.Clamp(mstsskyfogDistance - elapsedTime.RealSeconds * mstsskyfogDistance, 10, 100000);
+                //if (UserInput.IsDown(UserCommand.DebugFogDecrease)) mstsskyfogDistance = MathHelper.Clamp(mstsskyfogDistance + elapsedTime.RealSeconds * mstsskyfogDistance, 10, 100000);
             }
             // Don't let clock shift if multiplayer.
             if (!MPManager.IsMultiPlayer())
@@ -565,7 +565,7 @@ namespace Orts.Viewer3D
             MSTSSkyShader.StarMapTexture = MSTSSkyStarTexture;
             MSTSSkyShader.MoonMapTexture = MSTSSkyMoonTexture;
             MSTSSkyShader.MoonMaskTexture = MSTSSkyMoonMask;
-            MSTSSkyShader.CloudMapTexture = MSTSSkyCloudTexture[0];
+            MSTSSkyShader.CloudMapTexture1 = MSTSSkyCloudTexture[0];
         }
         public override void Render(GraphicsDevice graphicsDevice, IEnumerable<RenderItem> renderItems, ref Matrix XNAViewMatrix, ref Matrix XNAProjectionMatrix)
         {
@@ -579,12 +579,12 @@ namespace Orts.Viewer3D
 
             if (Viewer.World.MSTSSky.mstsskylatitude > 0) // TODO: Use a dirty flag to determine if it is necessary to set the texture again
                 MSTSSkyShader.StarMapTexture = MSTSSkyStarTexture;
-            MSTSSkyShader.Random = Viewer.World.MSTSSky.mstsskymoonPhase; // Keep setting this before LightVector for the preshader to work correctly
+            MSTSSkyShader.RandomMoon = Viewer.World.MSTSSky.mstsskymoonPhase; // Keep setting this before LightVector for the preshader to work correctly
             MSTSSkyShader.LightVector = Viewer.World.MSTSSky.mstsskysolarDirection;
             MSTSSkyShader.Time = (float)Viewer.Simulator.ClockTime / 100000;
             MSTSSkyShader.MoonScale = MSTSSkyConstants.skyRadius / 20;
             MSTSSkyShader.Overcast = Viewer.World.MSTSSky.mstsskyovercastFactor;
-            MSTSSkyShader.SetFog(Viewer.World.MSTSSky.mstsskyfogDistance, ref SharedMaterialManager.FogColor);
+            //MSTSSkyShader.SetFog(Viewer.World.MSTSSky.mstsskyfogDistance, Viewer.MaterialManager.FogColorMixing. );
             MSTSSkyShader.WindSpeed = Viewer.World.MSTSSky.mstsskywindSpeed;
             MSTSSkyShader.WindDirection = Viewer.World.MSTSSky.mstsskywindDirection; // Keep setting this after Time and Windspeed. Calculating displacement here.
 
@@ -597,7 +597,7 @@ namespace Orts.Viewer3D
 
             MSTSSkyShader.CurrentTechnique = MSTSSkyShader.Techniques["Sky"];
             Viewer.World.MSTSSky.MSTSSkyMesh.drawIndex = 1;
-            MSTSSkyShader.SetViewMatrix(ref XNAViewMatrix);
+            MSTSSkyShader.SetViewMatrixMoon(ref XNAViewMatrix);
             ShaderPassesSky.Reset();
             while (ShaderPassesSky.MoveNext())
             {
@@ -696,9 +696,9 @@ namespace Orts.Viewer3D
 
             // Adjust fog color for overcast
             floatColor *= (1 - 0.5f * overcast);
-            SharedMaterialManager.FogColor.R = (byte)(floatColor.X * 255);
-            SharedMaterialManager.FogColor.G = (byte)(floatColor.Y * 255);
-            SharedMaterialManager.FogColor.B = (byte)(floatColor.Z * 255);
+            //SharedMaterialManager.FogColor.R = (byte)(floatColor.X * 255);
+            //SharedMaterialManager.FogColor.G = (byte)(floatColor.Y * 255);
+            //SharedMaterialManager.FogColor.B = (byte)(floatColor.Z * 255);
         }
     }
     #endregion

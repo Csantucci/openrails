@@ -351,7 +351,7 @@ namespace Orts.Viewer3D.Popups
 
                             if (car == PlayerTrain.LeadLocomotive || car is MSTSLocomotive || car.WagonType == TrainCar.WagonTypes.Tender) carLabel.Color = Color.Green;
 
-                            if (car.BrakesStuck || ((car is MSTSLocomotive) && (car as MSTSLocomotive).PowerReduction > 0)) carLabel.Color = Color.Red;
+                            if (car.BrakesStuck || ((car is MSTSLocomotive) && (car as MSTSLocomotive).PowerReduction > 0)) carLabel.Color = Color.IndianRed;
 
                             // Left arrow
                             line.Add(new buttonArrowLeft(0, 0, SymbolSize, Owner.Viewer, carPosition));

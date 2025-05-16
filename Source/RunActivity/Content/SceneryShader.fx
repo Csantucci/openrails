@@ -49,6 +49,12 @@ float    ImageTextureIsNight;
 float    NightColorModifier;
 float    HalfNightColorModifier;
 float    VegetationAmbientModifier;
+float    VegetationDesatuationModifier;
+float    VegetationBrightnessModifier;
+float    VegetationContrastModifier;
+float    TerrainBrightnessModifier;
+float    TerrainDesatuationModifier;
+float    TerrainContrastModifier;
 float    SignalLightIntensity;
 float4   EyeVector;
 float3   SideVector;
@@ -173,7 +179,7 @@ void _VSSignalProjection(uniform bool Glow, in VERTEX_INPUT_SIGNAL In, inout VER
 	// Project position, normal and copy texture coords
 	float3 relPos = (float3)mul(In.Position, World) - ViewerPos;
 	// Position 1.5cm in front of signal.
-	In.Position.z += 0.015;
+	In.Position.z += 0.025;
 	if (Glow) {
 		// Position glow a further 1.5cm in front of the light.
 		In.Position.z += 0.015;
@@ -189,6 +195,7 @@ void _VSSignalProjection(uniform bool Glow, in VERTEX_INPUT_SIGNAL In, inout VER
 	Out.RelPosition.xyz = relPos;
 	Out.RelPosition.w = Out.Position.z;
 	Out.TexCoords.xy = In.TexCoords;
+    Out.Color.a /= 4;
 	Out.Color = In.Color;
 }
 
@@ -441,7 +448,8 @@ float4 PSImageTransfer(uniform bool ClampTexCoords, in VERTEX_OUTPUT In) : COLOR
 	// Headlights effect use original Color.
 	_PSApplyHeadlights(litColor, Color, In);
 	// And fogging is last.
-	_PSApplyFog(litColor, In);
+	// _PSApplyFog(litColor, In);
+    litColor = lerp(litColor, Fog.rgb, In.LightDir_Fog.w);
 	_PSSceneryFade(Color, In);
 	//_PSApplyShadowColor(litColor, In);
 	return float4(litColor, Color.a);
@@ -455,6 +463,28 @@ float4 PSImage(in VERTEX_OUTPUT In) : COLOR0
 float4 PSTransfer(in VERTEX_OUTPUT In) : COLOR0
 {
 	return PSImageTransfer(true, In);
+}
+
+
+// ExRail Veg
+// This function adjusts brightness, saturation and contrast
+// By Romain Dura aka Romz - Colors edit by DR_Aeronautics
+float3 ContrastSaturationBrightness(float3 color, float brt, float sat, float con)
+{
+	// Increase or decrease theese values to adjust r, g and b color channels separately
+    const float AvgLumR = 0.5;
+    const float AvgLumG = 0.5;
+    const float AvgLumB = 0.5;
+	
+    const float3 LumCoeff = float3(0.2125, 0.7154, 0.0721);
+    	
+    float3 AvgLumin = float3(AvgLumR, AvgLumG, AvgLumB);
+    float3 brtColor = color * brt;
+    float intensityf = dot(brtColor, LumCoeff);
+    float3 intensity = float3(intensityf, intensityf, intensityf);
+    float3 satColor = lerp(intensity, brtColor, sat);
+    float3 conColor = lerp(AvgLumin, satColor, con);
+    return conColor;
 }
 
 float4 PSVegetation(in VERTEX_OUTPUT In) : COLOR0
@@ -471,6 +501,9 @@ float4 PSVegetation(in VERTEX_OUTPUT In) : COLOR0
 	litColor *= NightColorModifier;
 	// Headlights effect use original Color.
 	_PSApplyHeadlights(litColor, Color, In);
+	// And fogging is last.
+    // ExRail Weather Color control 
+    litColor = ContrastSaturationBrightness( litColor, VegetationBrightnessModifier, VegetationDesatuationModifier, VegetationContrastModifier);
 	// And fogging is last.
 	_PSApplyFog(litColor, In);
 	_PSSceneryFade(Color, In);
@@ -494,6 +527,8 @@ float4 PSTerrain(in VERTEX_OUTPUT In) : COLOR0
 	litColor.rgb *= (float3)tex2D(Overlay, In.TexCoords.xy * OverlayScale) * 2;
 	// Headlights effect use original Color.
 	_PSApplyHeadlights(litColor, Color, In);
+    // ExRail Weather Color control 
+    litColor = ContrastSaturationBrightness(litColor, TerrainBrightnessModifier, TerrainDesatuationModifier, TerrainContrastModifier);
 	// And fogging is last.
 	_PSApplyFog(litColor, In);
 	_PSSceneryFade(Color, In);
@@ -571,8 +606,13 @@ float4 PSSignalLight(in VERTEX_OUTPUT In) : COLOR0
 	// No ambient and shadow effects for signal lights.
 	// Apply signal coloring effect.
 	float3 litColor = lerp(Color.rgb, In.Color.rgb, Color.r);
+
 	// No specular effect, overcast effect, night-time darkening, headlights or fogging effect for signal lights.
-	return float4(litColor, Color.a * SignalLightIntensity);
+    
+    //litColor.rgb = lerp(moonColor.rgb, FogColor.rgb, saturate((1 - In.Normal.y) * Fog.x));
+    
+    return float4(litColor, Color.a * (SignalLightIntensity / 2));
+    
 }
 
 ////////////////////    T E C H N I Q U E S    /////////////////////////////////

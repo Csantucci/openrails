@@ -28,6 +28,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Orts.Viewer3D.Common;
 using Orts.Viewer3D.Popups;
 using ORTS.Common;
+using ORTS.Common.Input;
 
 namespace Orts.Viewer3D
 {
@@ -98,8 +99,7 @@ namespace Orts.Viewer3D
                         }
                         else
                         {
-                            Texture2D missing()
-                            {
+                            Texture2D missing()                            {
                                 if (required)
                                     Trace.TraceWarning("Missing texture {0} replaced with default texture", path);
                                 return defaultTexture;
@@ -240,7 +240,7 @@ namespace Orts.Viewer3D
     public class SharedMaterialManager
     {
         readonly Viewer Viewer;
-        Dictionary<string, Material> Materials = new Dictionary<string, Material>();
+        public Dictionary<string, Material> Materials = new Dictionary<string, Material>();
         Dictionary<string, bool> MaterialMarks = new Dictionary<string, bool>();
 
         public readonly LightConeShader LightConeShader;
@@ -257,10 +257,19 @@ namespace Orts.Viewer3D
         public static Texture2D DefaultSnowTexture;
         public static Texture2D DefaultDMSnowTexture;
 
+        // <--------------- ExRail ------------------>
+        public WeatherFloatMix SkyFogDistanceMix;
+        public WeatherFloatMix SceneryFogDistanceMix;
+        public WeatherFloatMix SunSizeMix;
+        public WeatherColorMix SceneryFogColorMix;
+        public WeatherColorMix SkyFogColorMix;
+        //public SkyMaterial ExSkyMaterial;
+            
         [CallOnThread("Render")]
         public SharedMaterialManager(Viewer viewer)
         {
             Viewer = viewer;
+           
             // TODO: Move to Loader process.
             LightConeShader = new LightConeShader(viewer.RenderProcess.GraphicsDevice);
             LightGlowShader = new LightGlowShader(viewer.RenderProcess.GraphicsDevice);
@@ -268,6 +277,7 @@ namespace Orts.Viewer3D
             PopupWindowShader = new PopupWindowShader(viewer, viewer.RenderProcess.GraphicsDevice);
             PrecipitationShader = new PrecipitationShader(viewer.RenderProcess.GraphicsDevice);
             SceneryShader = new SceneryShader(viewer.RenderProcess.GraphicsDevice);
+
             var microtexPath = viewer.Simulator.RoutePath + @"\TERRTEX\microtex.ace";
             if (File.Exists(microtexPath))
             {
@@ -289,14 +299,20 @@ namespace Orts.Viewer3D
             DebugShader = new DebugShader(viewer.RenderProcess.GraphicsDevice);
 
             // TODO: This should happen on the loader thread.
-            MissingTexture = SharedTextureManager.Get(viewer.RenderProcess.GraphicsDevice, Path.Combine(viewer.ContentPath, "blank.bmp"));
+            MissingTexture = SharedTextureManager.Get(viewer.RenderProcess.GraphicsDevice, Path.Combine(viewer.ContentPath, "Missing.ace"));
 
             // Managing default snow textures
             var defaultSnowTexturePath = viewer.Simulator.RoutePath + @"\TERRTEX\SNOW\ORTSDefaultSnow.ace";
             DefaultSnowTexture = Viewer.TextureManager.Get(defaultSnowTexturePath);
             var defaultDMSnowTexturePath = viewer.Simulator.RoutePath + @"\TERRTEX\SNOW\ORTSDefaultDMSnow.ace";
             DefaultDMSnowTexture = Viewer.TextureManager.Get(defaultDMSnowTexturePath);
+            // Weather Mix init                
+            SceneryFogDistanceMix = new WeatherFloatMix(Viewer);
+            SceneryFogColorMix    = new WeatherColorMix(Viewer);
+            SkyFogDistanceMix     = new WeatherFloatMix(Viewer);
+            SkyFogColorMix        = new WeatherColorMix(Viewer);
 
+            SunSizeMix = new WeatherFloatMix(Viewer);
         }
 
         public Material Load(string materialName)
@@ -324,6 +340,7 @@ namespace Orts.Viewer3D
                 textureName = textureName.ToLower();
 
             var materialKey = String.Format("{0}:{1}:{2}:{3}:{4}", materialName, textureName, options, mipMapBias, cabShaderKey);
+            //Console.WriteLine(materialKey);
 
             if (!Materials.ContainsKey(materialKey))
             {
@@ -379,6 +396,8 @@ namespace Orts.Viewer3D
                         break;
                     case "CabSpriteBatch":
                         Materials[materialKey] = new CabSpriteBatchMaterial(Viewer, cabShader);
+                        Console.WriteLine("Materials[CabSpriteBatchMaterial]");
+                        Console.WriteLine(materialKey);
                         break;
                     case "Terrain":
                         Materials[materialKey] = new TerrainMaterial(Viewer, textureName, SharedMaterialManager.MissingTexture);
@@ -403,11 +422,12 @@ namespace Orts.Viewer3D
                         Materials[materialKey] = new YellowMaterial(Viewer);
                         break;
                 }
+        
             }
             return Materials[materialKey];
         }
 
-       public bool LoadNightTextures()
+        public bool LoadNightTextures()
         {
             int count = 0;
             foreach (KeyValuePair<string, Material> materialPair in Materials)
@@ -504,8 +524,314 @@ namespace Orts.Viewer3D
         {
             return Viewer.Catalog.GetPluralStringFmt("{0:F0} material", "{0:F0} materials", Materials.Keys.Count);
         }
+        
+        // <----------------------------- ExRail ------------------------------------->
+        const float NightStart = 0.05f; // The sun's Y value where it begins to get dark
+        const float NightFinish = -0.15f; // The Y value where darkest fog color is reached and held steady
+        static readonly Vector3 StartColor = new Vector3(1.0f, 1.0f, 1.0f); // Original daytime fog color - must be preserved!
+        static readonly Vector3 FinishColor = new Vector3(0.15f, 0.15f, 0.15f); // Darkest night-time fog color
+        
+        Color FogDay2Night(Color exbasecolor, float sunHeight, float overcast)
+        {
+            Vector3 floatColor;
 
-        public static Color FogColor = new Color(110, 110, 110, 255);
+            if (sunHeight > NightStart) { 
+                floatColor = StartColor;
+            }
+            else if (sunHeight < NightFinish) { 
+                floatColor = FinishColor;
+            }
+            else { 
+                var amount = (sunHeight - NightFinish) / (NightStart - NightFinish);
+                floatColor = Vector3.Lerp(FinishColor, StartColor, amount);
+            }
+
+            // Adjust fog color for overcast
+            floatColor *= 1 - (0.5f * overcast);
+            Color excolor = new Color(0,0,0);
+            // ExRail - include Weather setting
+            excolor.R = (byte)(floatColor.X * ( exbasecolor.R ));
+            excolor.G = (byte)(floatColor.Y * ( exbasecolor.G ));
+            excolor.B = (byte)(floatColor.Z * ( exbasecolor.B ));
+            return  excolor;
+        }
+        
+        // <----------------------------- ExRail ------------------------------------->
+        //   Mixes 3 floats based on the Routes Env files Sun-rise and set-time 
+        // <-------------------------------------------------------------------------->
+        public class WeatherFloatMix 
+        {   
+            readonly Viewer Viewer;
+            const int Sun_NoonTime = 43200;
+            int NoonTimeNulled = 0, Sun_RiseTime = 0, Sun_SetTime  = 0, Sun_SetTimeNulled = 0;
+            int CurrentTime  = 0, CurrentTimeNulled = 0;
+            public float Precentage_Mix = 0, MixOut = 0;
+            float Sunrise = 0, Noon = 0, Sunset = 0;
+
+            public double ExResetTime(double clockTimeSeconds)
+            {
+                var hour = (int)(clockTimeSeconds / (60 * 60));
+                clockTimeSeconds -= hour * 60 * 60;
+                var minute = (int)(clockTimeSeconds / 60);
+                clockTimeSeconds -= minute * 60;
+                var seconds = (int)clockTimeSeconds;
+
+                // Reset clock before and after midnight
+                if (hour >= 24)  hour %= 24;
+                if (hour < 0)    hour += 24;
+                if (minute < 0)  minute += 60;
+                if (seconds < 0) seconds += 60;
+            
+                clockTimeSeconds = hour * 3600;
+                clockTimeSeconds += minute * 60;
+                clockTimeSeconds += seconds;
+            
+                return clockTimeSeconds; 
+            }
+        
+            public WeatherFloatMix ( Viewer viewer)
+            {
+                Viewer = viewer;
+                Sun_RiseTime = viewer.ENVFile.SkySatellites[0].RiseTime;
+                Sun_SetTime  = viewer.ENVFile.SkySatellites[0].SetTime;
+
+                CurrentTime = (int)ExResetTime((int)Viewer.Simulator.ClockTime);
+
+                // Day or Night
+                if( CurrentTime >= 43200) {   
+                        // After 12:00
+                        Sun_SetTimeNulled  = Sun_SetTime - Sun_NoonTime;
+                        CurrentTimeNulled  = CurrentTime - Sun_NoonTime;
+                        Precentage_Mix = (float)CurrentTimeNulled / Sun_SetTimeNulled * 100;
+                }
+	            else { 
+                        // Before
+                        CurrentTimeNulled = CurrentTime - Sun_RiseTime; 
+                        NoonTimeNulled    = Sun_NoonTime - Sun_RiseTime; 
+                        Precentage_Mix = (float)CurrentTimeNulled / NoonTimeNulled * 100;
+	            }
+                
+            }
+            public void SetInputs(float sunrise, float noon, float sunset) {
+                Sunrise = sunrise; Noon = noon; Sunset = sunset;
+            }
+            void mixRiseNoon( float percent)
+            {
+                if(percent > 100) percent = 100.0f;
+                if(percent < 0) percent = 0.0f;
+                float InvPro = 100.0f - percent;
+                MixOut =  Noon* percent/100 + Sunrise*InvPro /100 ;
+            }
+            void mixNoonSet( float percent)
+            {
+                if(percent > 100) percent = 100.0f;
+                if(percent < 0) percent = 0.0f;
+                float InvPro = 100.0f - percent;
+                MixOut = Sunset * percent/100 + Noon*InvPro /100 ;
+            }
+            int count = 30;
+            public void UpdateMix ()
+            { 
+                CurrentTime = (int)ExResetTime((int)Viewer.Simulator.ClockTime);
+                count--;
+                if(count == 0) count = 30;
+                {    
+                    //  After Noon
+                    if( CurrentTime >= 43200)
+                    { 
+                        Sun_SetTimeNulled  = Sun_SetTime - Sun_NoonTime;
+                        CurrentTimeNulled  = CurrentTime - Sun_NoonTime;
+                        Precentage_Mix = (float)CurrentTimeNulled / Sun_SetTimeNulled * 100;
+                        mixNoonSet( Precentage_Mix );
+	                }
+	                else
+                    { 
+                        // Before
+                        CurrentTimeNulled = CurrentTime - Sun_RiseTime; 
+                        NoonTimeNulled    = Sun_NoonTime - Sun_RiseTime; 
+                        Precentage_Mix = (float)CurrentTimeNulled / NoonTimeNulled * 100;
+                        mixRiseNoon( Precentage_Mix );
+	                }
+
+                }
+            }
+        }
+
+        // <------------------------------ ExRail ------------------------------------->
+        //    Mixes 3 RGB colors based on the Routes Env files Sun rise and set time 
+        // <--------------------------------------------------------------------------->
+        public class WeatherColorMix
+        {
+            readonly Viewer Viewer;
+            const int Sun_NoonTime = 43200;
+            readonly int Sun_RiseTime = 0, Sun_SetTime = 0;
+            int NoonTimeNulled = 0, Sun_SetTimeNulled = 0;
+            int CurrentTime  = 0, CurrentTimeNulled = 0;
+            public float Precentage_Mix = 0;
+
+            Color SunriseCol = new Color(); 
+            Color NoonCol    = new Color(); 
+            Color SunsetCol  = new Color(); 
+            Vector3 mixColor1 = new Vector3(); 
+            Vector3 mixColor2 = new Vector3(); 
+            public Color MixReturn = new Color();
+
+            public double ExResetTime(double clockTimeSeconds)
+            {
+                var hour = (int)(clockTimeSeconds / (60 * 60));
+                clockTimeSeconds -= hour * 60 * 60;
+                var minute = (int)(clockTimeSeconds / 60);
+                clockTimeSeconds -= minute * 60;
+                var seconds = (int)clockTimeSeconds;
+
+                // Reset clock before and after midnight
+                if (hour >=  24) hour %= 24;
+                if (hour    < 0) hour += 24;
+                if (minute  < 0) minute += 60;
+                if (seconds < 0) seconds += 60;
+            
+                clockTimeSeconds = hour * 3600;
+                clockTimeSeconds += minute * 60;
+                clockTimeSeconds += seconds;
+            
+                return clockTimeSeconds; 
+            }
+
+            public WeatherColorMix ( Viewer viewer)
+            {
+                Viewer = viewer;
+                Sun_RiseTime = viewer.ENVFile.SkySatellites[0].RiseTime;
+                Sun_SetTime  = viewer.ENVFile.SkySatellites[0].SetTime;
+                CurrentTime  = (int)ExResetTime((int)Viewer.Simulator.ClockTime);
+
+                if( CurrentTime >= 43200) 
+                {   
+                    // After 12:00
+                    Sun_SetTimeNulled  = Sun_SetTime - Sun_NoonTime;
+                    CurrentTimeNulled  = CurrentTime - Sun_NoonTime;
+                    Precentage_Mix = (float)CurrentTimeNulled / Sun_SetTimeNulled * 100;
+	            }
+	            else 
+                { 
+                    // Before 12:00
+                    CurrentTimeNulled = CurrentTime - Sun_RiseTime; 
+                    NoonTimeNulled    = Sun_NoonTime - Sun_RiseTime; 
+                    Precentage_Mix = (float)CurrentTimeNulled / NoonTimeNulled * 100;
+	            }
+            }
+
+            public void setColor( Color Ext1, Color Ext2, Color Ext3) { 
+                SunriseCol = Ext1; 
+                NoonCol    = Ext2;  
+                SunsetCol  = Ext3;  
+            }
+            int Count = 60;
+            public void UpdateMix ()
+            { 
+                Count--;
+                if(Count <= 0) 
+                {
+                    Count = 60;
+                    CurrentTime  = (int)ExResetTime((int)Viewer.Simulator.ClockTime);
+                    // Before or after Noon
+                    if( CurrentTime >= 43200) 
+                    {   
+                        // After 
+                        Sun_SetTimeNulled  = Sun_SetTime - Sun_NoonTime;
+                        CurrentTimeNulled  = CurrentTime - Sun_NoonTime;
+                        Precentage_Mix = (float)CurrentTimeNulled / Sun_SetTimeNulled * 100;
+                        MixNoon( Precentage_Mix );
+	                }
+	                else 
+                    { 
+                        // Before
+                        CurrentTimeNulled = CurrentTime - Sun_RiseTime; 
+                        NoonTimeNulled    = Sun_NoonTime - Sun_RiseTime; 
+                        Precentage_Mix = (float)CurrentTimeNulled / NoonTimeNulled * 100;
+                        MixRise( Precentage_Mix );
+	                }
+                }
+            }
+
+            void MixNoon( float procent)
+            {
+                // 12:00 - 18:00
+                if(procent > 100) procent = 100.0f;
+                if(procent < 0) procent = 0.0f;
+                // Convert bitmap rgb into float Colors
+    	        mixColor1.X = (float) SunsetCol.R /255;
+		        mixColor1.Y = (float) SunsetCol.G /255;
+		        mixColor1.Z = (float) SunsetCol.B /255;
+        
+                mixColor2.X = (float) NoonCol.R /255;
+			    mixColor2.Y = (float) NoonCol.G /255;
+			    mixColor2.Z = (float) NoonCol.B /255;
+
+                // Mix the two images at specified procentage  
+                float InvPro = 100.0f - procent;
+                MixReturn.R = (byte)((mixColor1.X * procent /100 + mixColor2.X*InvPro /100) *255.0f);
+                MixReturn.G = (byte)((mixColor1.Y * procent /100 + mixColor2.Y*InvPro /100) *255.0f);
+                MixReturn.B = (byte)((mixColor1.Z * procent /100 + mixColor2.Z*InvPro /100) *255.0f);
+                MixReturn.A = 255;
+            }
+
+            void MixRise( float procent)
+            {
+                // 08:00 - 12:00        
+                if(procent > 100) procent = 100.0f;
+                if(procent < 0) procent = 0.0f;
+                // Convert bitmap rgb into float Colors
+	            mixColor1.X = (float) NoonCol.R /255;
+	            mixColor1.Y = (float) NoonCol.G /255;
+	            mixColor1.Z = (float) NoonCol.B /255;
+						   
+	            mixColor2.X = (float) SunriseCol.R /255;
+	            mixColor2.Y = (float) SunriseCol.G /255;
+	            mixColor2.Z = (float) SunriseCol.B /255;
+                
+                // Mix the two images at specified procentage  
+                float InvPro = 100.0f - procent;
+                MixReturn.R = (byte)((mixColor1.X * procent /100 + mixColor2.X*InvPro /100) *255.0f);
+                MixReturn.G = (byte)((mixColor1.Y * procent /100 + mixColor2.Y*InvPro /100) *255.0f);
+                MixReturn.B = (byte)((mixColor1.Z * procent /100 + mixColor2.Z*InvPro /100) *255.0f);
+                MixReturn.A = 255;
+            }
+        }
+
+        public class ExHeadlight
+        {
+            Viewer Viewer;
+            public Vector3 LightConePosition;
+            public Vector3 LightConeDirection;
+            public float LightConeDistance;
+            public float LightConeMinDotProduct;
+            public Vector4 LightConeColor;
+
+            public ExHeadlight(Viewer viewer)
+            {
+                Viewer = viewer;
+                LightConePosition  = new Vector3(0.0f, 0.0f, 0.0f);
+                LightConeDirection = new Vector3(0.0f, 0.0f, 0.0f);
+                LightConeDistance = 0;
+                LightConeMinDotProduct = 0;
+                LightConeColor = new Vector4(0.0f, 0.0f, 0.0f, 0.0f);
+            }
+            public void SetupLight(Vector3 pos, Vector3 dir, float dist, float dot, Vector4 color)
+            {
+                LightConePosition = pos;
+                LightConeDirection = dir;
+                LightConeDistance = dist;
+                LightConeMinDotProduct = dot;
+                LightConeColor = color;
+            
+            }
+            public Vector3 GetLightPosCVF()
+            {
+              return LightConePosition - Viewer.PlayerLocomotive.WorldPosition.Location;
+
+            }
+            
+        }
 
         internal Vector3 sunDirection;
         bool lastLightState;
@@ -513,15 +839,15 @@ namespace Orts.Viewer3D
         float fadeDuration = -1;
         float clampValue = 1;
         float distance = 1000;
+
         internal void UpdateShaders()
         {
-            if(Viewer.Settings.UseMSTSEnv == false)
+            if(Viewer.Settings.UseMSTSEnv == false) { 
                 sunDirection = Viewer.World.Sky.SolarDirection;
-            else
+            } else { 
                 sunDirection = Viewer.World.MSTSSky.mstsskysolarDirection;
-
+            }
             SceneryShader.SetLightVector_ZFar(sunDirection, Viewer.Settings.ViewingDistance);
-            
             // Headlight illumination
             if (Viewer.PlayerLocomotiveViewer != null
                 && Viewer.PlayerLocomotiveViewer.lightDrawer != null
@@ -531,66 +857,138 @@ namespace Orts.Viewer3D
                 var lightState = lightDrawer.IsLightConeActive;
                 if (lightState != lastLightState)
                 {
-                    if (lightDrawer.LightConeFadeIn > 0)
-                    {
+                    if (lightDrawer.LightConeFadeIn > 0) { 
                         fadeStartTimer = Viewer.Simulator.GameTime;
                         fadeDuration = lightDrawer.LightConeFadeIn;
                     }
-                    else if (lightDrawer.LightConeFadeOut > 0)
-                    {
+                    else if (lightDrawer.LightConeFadeOut > 0) {
                         fadeStartTimer = Viewer.Simulator.GameTime;
                         fadeDuration = -lightDrawer.LightConeFadeOut;
                     }
                     lastLightState = lightState;
                 }
-                else if (!lastLightState && fadeDuration < 0 && Viewer.Simulator.GameTime > fadeStartTimer - fadeDuration)
-                {
+                else if (!lastLightState && fadeDuration < 0 && Viewer.Simulator.GameTime > fadeStartTimer - fadeDuration) {
                     fadeDuration = 0;
                 }
                 if (!lightState && fadeDuration == 0)
                     // This occurs when switching locos and needs to be handled or we get lingering light.
                     SceneryShader.SetHeadlightOff();
-                else
+                else 
                 {
-                    if (sunDirection.Y <= -0.05)
-                    {
+                    if (sunDirection.Y <= -0.05) {
                         clampValue = 1; // at nighttime max headlight
                         distance = lightDrawer.LightConeDistance; // and max distance
                     }
-                    else if (sunDirection.Y >= 0.15)
-                    {
+                    else if (sunDirection.Y >= 0.15) {
                         clampValue = 0.5f; // at daytime min headlight
                         distance = lightDrawer.LightConeDistance*0.1f; // and min distance
-
                     }
-                    else
-                    {
+                    else {
                         clampValue = 1 - 2.5f * (sunDirection.Y + 0.05f); // in the meantime interpolate
                         distance = lightDrawer.LightConeDistance*(1-4.5f*(sunDirection.Y + 0.05f)); //ditto
                     }
                     SceneryShader.SetHeadlight(ref lightDrawer.LightConePosition, ref lightDrawer.LightConeDirection, distance, lightDrawer.LightConeMinDotProduct, (float)(Viewer.Simulator.GameTime - fadeStartTimer), fadeDuration, clampValue, ref lightDrawer.LightConeColor);
                 }
             }
-            else
-            {
-                SceneryShader.SetHeadlightOff();
-            }
+            else { SceneryShader.SetHeadlightOff(); }
             // End headlight illumination
+
             if (Viewer.Settings.UseMSTSEnv == false)
-            {
-                SceneryShader.Overcast = Viewer.Simulator.Weather.OvercastFactor;
-                SceneryShader.SetFog(Viewer.Simulator.Weather.FogDistance, ref SharedMaterialManager.FogColor);
-                ParticleEmitterShader.SetFog(Viewer.Simulator.Weather.FogDistance, ref SharedMaterialManager.FogColor);
+            {   
                 SceneryShader.ViewerPos = Viewer.Camera.XnaLocation(Viewer.Camera.CameraWorldLocation);
+                // <----------------------------- ExRail ------------------------------>
+                // =============\/============ S C E N E R Y ===========\/==============
+                // Overcast
+                SceneryShader.Overcast = Viewer.Simulator.Weather.OvercastFactor;
+                
+                // Scenery fog colors mixing of Sunrise/Noon/Sunset 
+                SceneryFogColorMix.setColor( Viewer.Simulator.Weather.SceneryFog_Sunrise, Viewer.Simulator.Weather.SceneryFog_Noon
+                    , Viewer.Simulator.Weather.SceneryFog_Sunset
+                );
+                SceneryFogColorMix.UpdateMix();
+                Viewer.Simulator.Weather.SceneryFogMix = SceneryFogColorMix.MixReturn;
+                // Scenery fog distance mixing of Sunrise/Noon/Sunset 
+                SceneryFogDistanceMix.SetInputs( 
+                    Viewer.Simulator.Weather.SceneryFogDistance_Sunrise
+                        , Viewer.Simulator.Weather.SceneryFogDistance_Noon
+                        , Viewer.Simulator.Weather.SceneryFogDistance_Sunset
+                );
+                SceneryFogDistanceMix.UpdateMix();
+                // Transfer to Weather
+                Viewer.World.WeatherControl.Weather.SceneryFogDistance_Mix = SceneryFogDistanceMix.MixOut;
+                // Scenery dimm colors and fog
+                SceneryShader.SetFog(SceneryFogDistanceMix.MixOut , FogDay2Night( SceneryFogColorMix.MixReturn 
+                    , Viewer.World.Sky.SolarDirection.Y, Viewer.Simulator.Weather.OvercastFactor));
+                
+                // Vegetation: 
+                SceneryShader.VegDesatuationModifier = Viewer.Simulator.Weather.VegetationDesatuationModifier;
+                SceneryShader.VegBrightnessModifier  = Viewer.Simulator.Weather.VegetationBrightnessModifier;
+                SceneryShader.VegContrastModifier    = Viewer.Simulator.Weather.VegetationContrastModifier;
+                // Terrain: 
+                SceneryShader.TerDesatuationModifier = Viewer.Simulator.Weather.TerrainDesatuationModifier;
+                SceneryShader.TerBrightnessModifier  = Viewer.Simulator.Weather.TerrainBrightnessModifier;
+                SceneryShader.TerContrastModifier    = Viewer.Simulator.Weather.TerrainContrastModifier;
+                // <-------------------------- ExRail --------------------------->
+                // ==============\/=========== S K Y =============\/==============
+                // Sky fog colors mixing of Sunrise/Noon/Sunset 
+                SkyFogColorMix.setColor( Viewer.Simulator.Weather.SkyFog_Sunrise, Viewer.Simulator.Weather.SkyFog_Noon
+                    , Viewer.Simulator.Weather.SkyFog_Sunset
+                );
+                SkyFogColorMix.UpdateMix();
+                Viewer.Simulator.Weather.SkyFogMix = SkyFogColorMix.MixReturn;
+
+                // Scenery fog distance mixing of Sunrise/Noon/Sunset 
+                SkyFogDistanceMix.SetInputs(  
+                    Viewer.Simulator.Weather.SkyFogDistance_Sunrise
+                    , Viewer.Simulator.Weather.SkyFogDistance_Noon
+                    , Viewer.Simulator.Weather.SkyFogDistance_Sunset
+                );
+                SkyFogDistanceMix.UpdateMix();
+                Viewer.World.WeatherControl.Weather.SkyFogDistance_Mix = SkyFogDistanceMix.MixOut;
+                
+                // Smoke & fx
+                ParticleEmitterShader.SetFog(SceneryFogDistanceMix.MixOut, ref Viewer.Simulator.Weather.SceneryFogMix);
+                Viewer.MaterialManager.PrecipitationShader.SetParticleSize(Viewer.World.WeatherControl.Weather.ParticleSize1);
+
+                // Sky: fog color for day-night conditions and overcast
+                SkyShader.SetFog(SkyFogDistanceMix.MixOut, FogDay2Night( SkyFogColorMix.MixReturn, Viewer.World.Sky.SolarDirection.Y, Viewer.Simulator.Weather.OvercastFactor));
+
+                // Clouds Opacity: Overcast 1. is special since it control lighting.
+                SkyShader.Overcast  = Viewer.Simulator.Weather.OvercastFactor;
+                SkyShader.Overcast2 = Viewer.Simulator.Weather.OvercastFactor2;
+                SkyShader.Overcast3 = Viewer.Simulator.Weather.OvercastFactor3;
+                // Sun size
+                SunSizeMix.SetInputs( Viewer.Simulator.Weather.SunSize_Sunrise
+                                     , Viewer.Simulator.Weather.SunSize_Noon
+                                     , Viewer.Simulator.Weather.SunSize_Sunset
+                );
+                SunSizeMix.UpdateMix();
+                Viewer.World.WeatherControl.Weather.SunSize_Mix = SunSizeMix.MixOut;
+                SkyShader.SunSize = SunSizeMix.MixOut;
+                
+               
+                // #################  Move clouds layers 2 & 3  ##########################
+                SkyShader.WindDirection = Viewer.Simulator.Weather.WindDirectionSky;  
+                SkyShader.WindSpeed = Viewer.Simulator.Weather.WindSpeed; 
+
+                // TODO: Use a dirty flag to determine if it is necessary to set the texture again
+
+                SkyShader.RandomMoon = Viewer.World.Sky.MoonPhase; // Keep setting this before LightVector for the preshader to work correctly
+                SkyShader.LightVector = Viewer.World.Sky.SolarDirection;
+                SkyShader.Time = (float)Viewer.Simulator.ClockTime / 100000;
+
+                SkyShader.MoonScale = SkyPrimitive.RadiusM / 10;
+
             }
             else
             {
                 SceneryShader.Overcast = Viewer.World.MSTSSky.mstsskyovercastFactor;
-                SceneryShader.SetFog(Viewer.World.MSTSSky.mstsskyfogDistance, ref SharedMaterialManager.FogColor);
-                ParticleEmitterShader.SetFog(Viewer.Simulator.Weather.FogDistance, ref SharedMaterialManager.FogColor);
+                SceneryShader.SetFog(Viewer.World.MSTSSky.mstsskyfogDistance, Viewer.Simulator.Weather.SceneryFogMix);
+                ParticleEmitterShader.SetFog(Viewer.Simulator.Weather.SceneryFogDistance_Mix, ref Viewer.Simulator.Weather.SceneryFogMix);
                 SceneryShader.ViewerPos = Viewer.Camera.XnaLocation(Viewer.Camera.CameraWorldLocation);
             }
         }
+        
     }
 
     public abstract class Material
@@ -614,6 +1012,9 @@ namespace Orts.Viewer3D
         public virtual void SetState(GraphicsDevice graphicsDevice, Material previousMaterial) { }
         public virtual void Render(GraphicsDevice graphicsDevice, IEnumerable<RenderItem> renderItems, ref Matrix XNAViewMatrix, ref Matrix XNAProjectionMatrix) { }
         public virtual void ResetState(GraphicsDevice graphicsDevice) { }
+        
+        // ExRail
+        //public virtual void SetWeather() { }
 
         public virtual bool GetBlending() { return false; }
         public virtual Texture2D GetShadowTexture() { return null; }
@@ -854,10 +1255,10 @@ namespace Orts.Viewer3D
             graphicsDevice.RasterizerState = RasterizerState.CullCounterClockwise;
 
             var shader = Viewer.MaterialManager.SceneryShader;
-            if (ShaderPassesDarkShade == null) ShaderPassesDarkShade = shader.Techniques["DarkShadePS"].Passes.GetEnumerator();
+            if (ShaderPassesDarkShade  == null) ShaderPassesDarkShade  = shader.Techniques["DarkShadePS"].Passes.GetEnumerator();
             if (ShaderPassesFullBright == null) ShaderPassesFullBright = shader.Techniques["FullBrightPS"].Passes.GetEnumerator();
             if (ShaderPassesHalfBright == null) ShaderPassesHalfBright = shader.Techniques["HalfBrightPS"].Passes.GetEnumerator();
-            if (ShaderPassesImage == null) ShaderPassesImage = shader.Techniques["ImagePS"].Passes.GetEnumerator();
+            if (ShaderPassesImage      == null) ShaderPassesImage      = shader.Techniques["ImagePS"].Passes.GetEnumerator();
             if (ShaderPassesVegetation == null) ShaderPassesVegetation = shader.Techniques["VegetationPS"].Passes.GetEnumerator();
 
             shader.LightingDiffuse = (Options & SceneryMaterialOptions.Diffuse) != 0 ? 1 : 0;

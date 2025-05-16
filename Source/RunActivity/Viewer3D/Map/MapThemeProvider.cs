@@ -26,6 +26,7 @@ namespace Orts.Viewer3D.Map
     {
         public void InitializeThemes()
         {
+
             var LightTheme = new ThemeStyle
             {
                 BackColor = Color.Transparent,
@@ -38,12 +39,12 @@ namespace Orts.Viewer3D.Map
 
             var DarkTheme = new ThemeStyle
             {
-                BackColor = Color.FromArgb(44, 62, 80),
+                BackColor = Color.FromArgb(31, 31, 31),
                 ForeColor = Color.FromArgb(247, 249, 249),
-                PanelBackColor = Color.FromArgb(28, 40, 51),
+                PanelBackColor = Color.FromArgb(51, 52, 53),
                 FlatStyle = FlatStyle.Flat,
-                MapCanvasColor = Color.FromArgb(44, 62, 80),
-                TrackColor = Color.FromArgb(234, 236, 238),
+                MapCanvasColor = Color.FromArgb(47, 47, 47),
+                TrackColor = Color.FromArgb(128, 128, 128),
             };
 
             // Reference for "solarized" themes: https://github.com/altercation/solarized?tab=readme-ov-file#the-values
@@ -71,6 +72,7 @@ namespace Orts.Viewer3D.Map
             Themes.Add("light-solarized", LightSolarizedTheme);
             Themes.Add("dark-solarized", DarkSolarizedTheme);
             Themes.Add("dark", DarkTheme);
+
         }
 
         private readonly Dictionary<string, ThemeStyle> Themes = new Dictionary<string, ThemeStyle>();

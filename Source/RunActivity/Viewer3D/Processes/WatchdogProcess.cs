@@ -108,7 +108,9 @@ namespace Orts.Viewer3D.Processes
 
             while (true)
             {
-                Thread.Sleep(1000);
+                // ExRail: value increased from 1000 to 2000
+                // to enable Reloading of 3 x 8K cloud textures.
+                Thread.Sleep(2000);
                 if (State.Terminated)
                     break;
 

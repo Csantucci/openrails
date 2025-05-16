@@ -64,8 +64,8 @@ namespace Orts.Viewer3D.Popups
                     var carLabel = new TrainOperationsLabel(textHeight * 6, textHeight, Owner.Viewer, car, carPosition, LabelAlignment.Center);
                     carLabel.Click += new Action<Control, Point>(carLabel_Click);
 
-                    if (car == PlayerTrain.LeadLocomotive) carLabel.Color = Color.Green;
-                    if (car.BrakesStuck || ((car is MSTSLocomotive) && (car as MSTSLocomotive).PowerReduction > 0)) carLabel.Color = Color.Red;
+                    if (car == PlayerTrain.LeadLocomotive) carLabel.Color = Color.LightGreen;
+                    if (car.BrakesStuck || ((car is MSTSLocomotive) && (car as MSTSLocomotive).PowerReduction > 0)) carLabel.Color = Color.IndianRed;
 
                     scrollbox.Add(carLabel);
                     if (car != PlayerTrain.Cars.Last())

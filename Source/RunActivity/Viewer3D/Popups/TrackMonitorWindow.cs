@@ -261,17 +261,17 @@ namespace Orts.Viewer3D.Popups
             var vbox = base.Layout(layout).AddLayoutVertical();
             {
                 var hbox = vbox.AddLayoutHorizontalLineOfText();
-                hbox.Add(new Label(hbox.RemainingWidth / 2, hbox.RemainingHeight, Viewer.Catalog.GetString("Speed:")));
+                hbox.Add(new Label(hbox.RemainingWidth / 2, hbox.RemainingHeight, Viewer.Catalog.GetString(" Speed:")));
                 hbox.Add(SpeedCurrent = new Label(hbox.RemainingWidth, hbox.RemainingHeight, "", LabelAlignment.Right));
             }
             {
                 var hbox = vbox.AddLayoutHorizontalLineOfText();
-                hbox.Add(new Label(hbox.RemainingWidth / 2, hbox.RemainingHeight, Viewer.Catalog.GetString("Projected:")));
+                hbox.Add(new Label(hbox.RemainingWidth / 2, hbox.RemainingHeight, Viewer.Catalog.GetString(" Projected:")));
                 hbox.Add(SpeedProjected = new Label(hbox.RemainingWidth, hbox.RemainingHeight, "", LabelAlignment.Right));
             }
             {
                 var hbox = vbox.AddLayoutHorizontalLineOfText();
-                hbox.Add(new Label(hbox.RemainingWidth / 2, hbox.RemainingHeight, Viewer.Catalog.GetString("Limit:")));
+                hbox.Add(new Label(hbox.RemainingWidth / 2, hbox.RemainingHeight, Viewer.Catalog.GetString(" Limit:")));
                 hbox.Add(SpeedAllowed = new Label(hbox.RemainingWidth, hbox.RemainingHeight, "", LabelAlignment.Right));
             }
             vbox.AddHorizontalSeparator();

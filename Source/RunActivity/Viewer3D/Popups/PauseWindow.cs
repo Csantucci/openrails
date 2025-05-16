@@ -37,7 +37,7 @@ namespace Orts.Viewer3D.Popups
         public PauseWindow(WindowManager owner)
             : base(owner, 10, 10, "Pause")
         {
-            Visible = true;
+            Visible = false;
         }
 
         internal override void ScreenChanged()

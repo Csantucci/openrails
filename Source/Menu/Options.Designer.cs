@@ -169,13 +169,13 @@
             this.tabPageKeyboard = new System.Windows.Forms.TabPage();
             this.panelKeys = new System.Windows.Forms.Panel();
             this.tabPageSimulation = new System.Windows.Forms.TabPage();
-            this.checkElectricPowerConnected = new System.Windows.Forms.CheckBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.checkDieselEnginesStarted = new System.Windows.Forms.CheckBox();
-            this.labelLocoStartActivity = new System.Windows.Forms.Label();
             this.checkBoilerPreheated = new System.Windows.Forms.CheckBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkElectricPowerConnected = new System.Windows.Forms.CheckBox();
+            this.labelLocoStartActivity = new System.Windows.Forms.Label();
             this.checkUseLocationPassingPaths = new System.Windows.Forms.CheckBox();
+            this.checkDieselEnginesStarted = new System.Windows.Forms.CheckBox();
             this.checkDoorsAITrains = new System.Windows.Forms.CheckBox();
             this.checkForcedRedAtStationStops = new System.Windows.Forms.CheckBox();
             this.checkSimpleControlsPhysics = new System.Windows.Forms.CheckBox();
@@ -240,6 +240,7 @@
             this.precipitationBoxWidth = new System.Windows.Forms.NumericUpDown();
             this.label23 = new System.Windows.Forms.Label();
             this.precipitationBoxHeight = new System.Windows.Forms.NumericUpDown();
+
             this.pbEnableWebServer = new System.Windows.Forms.PictureBox();
             this.checkEnableWebServer = new System.Windows.Forms.CheckBox();
             this.labelCab2DStretch = new System.Windows.Forms.Label();
@@ -251,6 +252,18 @@
             this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
             this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
+            this.NumberOfParticles = new System.Windows.Forms.NumericUpDown();
+            this.LNumberOfParticles = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label14 = new System.Windows.Forms.Label();
+            this.precipitationBoxHeight2 = new System.Windows.Forms.NumericUpDown();
+            this.label15 = new System.Windows.Forms.Label();
+            this.precipitationBoxWidth2 = new System.Windows.Forms.NumericUpDown();
+            this.label21 = new System.Windows.Forms.Label();
+            this.precipitationBoxLength2 = new System.Windows.Forms.NumericUpDown();
+            this.NumberOfParticles2 = new System.Windows.Forms.NumericUpDown();
+            this.label28 = new System.Windows.Forms.Label();
+            this.LNumberOfParticles2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.bindingSourceContent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
@@ -331,12 +344,17 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles2)).BeginInit();
             this.SuspendLayout();
             // 
             // buttonOK
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(466, 446);
+            this.buttonOK.Location = new System.Drawing.Point(517, 527);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -348,7 +366,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(547, 446);
+            this.buttonCancel.Location = new System.Drawing.Point(598, 527);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
@@ -1030,7 +1048,7 @@
             0,
             0,
             0});
-            this.numericCab2DStretch.Location = new System.Drawing.Point(15, 235);
+            this.numericCab2DStretch.Location = new System.Drawing.Point(15, 210);
             this.numericCab2DStretch.Name = "numericCab2DStretch";
             this.numericCab2DStretch.Size = new System.Drawing.Size(54, 20);
             this.numericCab2DStretch.TabIndex = 28;
@@ -2091,7 +2109,7 @@
             this.checkBoilerPreheated.UseVisualStyleBackColor = true;
             // 
             // groupBox1
-            //
+            // 
             this.groupBox1.Controls.Add(this.checkElectricPowerConnected);
             this.groupBox1.Controls.Add(this.labelLocoStartActivity);
             this.groupBox1.Controls.Add(this.checkUseLocationPassingPaths);
@@ -2126,7 +2144,6 @@
             this.labelLocoStartActivity.Size = new System.Drawing.Size(161, 13);
             this.labelLocoStartActivity.TabIndex = 47;
             this.labelLocoStartActivity.Text = "At game start, locomotives have:";
-            // 
             // 
             // checkUseLocationPassingPaths
             // 
@@ -2903,15 +2920,27 @@
             this.tabOptions.Location = new System.Drawing.Point(13, 12);
             this.tabOptions.Name = "tabOptions";
             this.tabOptions.SelectedIndex = 0;
-            this.tabOptions.Size = new System.Drawing.Size(610, 428);
+            this.tabOptions.Size = new System.Drawing.Size(661, 509);
             this.tabOptions.TabIndex = 0;
             // 
             // tabPageORNYMG
             // 
+            this.tabPageORNYMG.Controls.Add(this.LNumberOfParticles2);
+            this.tabPageORNYMG.Controls.Add(this.label28);
+            this.tabPageORNYMG.Controls.Add(this.LNumberOfParticles);
+            this.tabPageORNYMG.Controls.Add(this.NumberOfParticles2);
             this.tabPageORNYMG.Controls.Add(this.label25);
+            this.tabPageORNYMG.Controls.Add(this.precipitationBoxLength2);
+            this.tabPageORNYMG.Controls.Add(this.NumberOfParticles);
+            this.tabPageORNYMG.Controls.Add(this.label21);
             this.tabPageORNYMG.Controls.Add(this.precipitationBoxLength);
+            this.tabPageORNYMG.Controls.Add(this.precipitationBoxWidth2);
             this.tabPageORNYMG.Controls.Add(this.label24);
             this.tabPageORNYMG.Controls.Add(this.precipitationBoxWidth);
+            this.tabPageORNYMG.Controls.Add(this.label14);
+            this.tabPageORNYMG.Controls.Add(this.label15);
+            this.tabPageORNYMG.Controls.Add(this.label11);
+            this.tabPageORNYMG.Controls.Add(this.precipitationBoxHeight2);
             this.tabPageORNYMG.Controls.Add(this.label23);
             this.tabPageORNYMG.Controls.Add(this.precipitationBoxHeight);
             this.tabPageORNYMG.Controls.Add(this.pbEnableWebServer);
@@ -2929,7 +2958,7 @@
             this.tabPageORNYMG.Location = new System.Drawing.Point(4, 22);
             this.tabPageORNYMG.Name = "tabPageORNYMG";
             this.tabPageORNYMG.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageORNYMG.Size = new System.Drawing.Size(602, 402);
+            this.tabPageORNYMG.Size = new System.Drawing.Size(653, 483);
             this.tabPageORNYMG.TabIndex = 11;
             this.tabPageORNYMG.Text = "ORNYMG Only";
             this.tabPageORNYMG.UseVisualStyleBackColor = true;
@@ -2958,7 +2987,7 @@
             0,
             0});
             this.precipitationBoxLength.Minimum = new decimal(new int[] {
-            500,
+            50,
             0,
             0,
             0});
@@ -2995,7 +3024,7 @@
             0,
             0});
             this.precipitationBoxWidth.Minimum = new decimal(new int[] {
-            500,
+            50,
             0,
             0,
             0});
@@ -3032,7 +3061,7 @@
             0,
             0});
             this.precipitationBoxHeight.Minimum = new decimal(new int[] {
-            100,
+            10,
             0,
             0,
             0});
@@ -3048,7 +3077,7 @@
             // pbEnableWebServer
             // 
             this.pbEnableWebServer.Image = global::ORTS.Properties.Resources.info_18;
-            this.pbEnableWebServer.Location = new System.Drawing.Point(15, 284);
+            this.pbEnableWebServer.Location = new System.Drawing.Point(15, 242);
             this.pbEnableWebServer.Name = "pbEnableWebServer";
             this.pbEnableWebServer.Size = new System.Drawing.Size(18, 18);
             this.pbEnableWebServer.TabIndex = 31;
@@ -3057,7 +3086,7 @@
             // checkEnableWebServer
             // 
             this.checkEnableWebServer.AutoSize = true;
-            this.checkEnableWebServer.Location = new System.Drawing.Point(41, 283);
+            this.checkEnableWebServer.Location = new System.Drawing.Point(41, 241);
             this.checkEnableWebServer.Name = "checkEnableWebServer";
             this.checkEnableWebServer.Size = new System.Drawing.Size(255, 17);
             this.checkEnableWebServer.TabIndex = 30;
@@ -3067,7 +3096,7 @@
             // labelCab2DStretch
             // 
             this.labelCab2DStretch.AutoSize = true;
-            this.labelCab2DStretch.Location = new System.Drawing.Point(75, 237);
+            this.labelCab2DStretch.Location = new System.Drawing.Point(75, 212);
             this.labelCab2DStretch.Margin = new System.Windows.Forms.Padding(3);
             this.labelCab2DStretch.Name = "labelCab2DStretch";
             this.labelCab2DStretch.Size = new System.Drawing.Size(88, 13);
@@ -3077,7 +3106,7 @@
             // checkTunnelResistanceDependent
             // 
             this.checkTunnelResistanceDependent.AutoSize = true;
-            this.checkTunnelResistanceDependent.Location = new System.Drawing.Point(15, 189);
+            this.checkTunnelResistanceDependent.Location = new System.Drawing.Point(15, 164);
             this.checkTunnelResistanceDependent.Name = "checkTunnelResistanceDependent";
             this.checkTunnelResistanceDependent.Size = new System.Drawing.Size(164, 17);
             this.checkTunnelResistanceDependent.TabIndex = 26;
@@ -3087,7 +3116,7 @@
             // checkWindResistanceDependent
             // 
             this.checkWindResistanceDependent.AutoSize = true;
-            this.checkWindResistanceDependent.Location = new System.Drawing.Point(15, 212);
+            this.checkWindResistanceDependent.Location = new System.Drawing.Point(15, 187);
             this.checkWindResistanceDependent.Name = "checkWindResistanceDependent";
             this.checkWindResistanceDependent.Size = new System.Drawing.Size(156, 17);
             this.checkWindResistanceDependent.TabIndex = 25;
@@ -3097,7 +3126,7 @@
             // checkCurveResistanceDependent
             // 
             this.checkCurveResistanceDependent.AutoSize = true;
-            this.checkCurveResistanceDependent.Location = new System.Drawing.Point(15, 166);
+            this.checkCurveResistanceDependent.Location = new System.Drawing.Point(15, 141);
             this.checkCurveResistanceDependent.Name = "checkCurveResistanceDependent";
             this.checkCurveResistanceDependent.Size = new System.Drawing.Size(159, 17);
             this.checkCurveResistanceDependent.TabIndex = 24;
@@ -3151,12 +3180,217 @@
             // checkFastFullScreenAltTab
             // 
             this.checkFastFullScreenAltTab.AutoSize = true;
-            this.checkFastFullScreenAltTab.Location = new System.Drawing.Point(15, 143);
+            this.checkFastFullScreenAltTab.Location = new System.Drawing.Point(15, 118);
             this.checkFastFullScreenAltTab.Name = "checkFastFullScreenAltTab";
             this.checkFastFullScreenAltTab.Size = new System.Drawing.Size(129, 17);
             this.checkFastFullScreenAltTab.TabIndex = 2;
             this.checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
             this.checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
+            // 
+            // NumberOfParticles
+            // 
+            this.NumberOfParticles.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.NumberOfParticles.Location = new System.Drawing.Point(15, 397);
+            this.NumberOfParticles.Maximum = new decimal(new int[] {
+            500000,
+            0,
+            0,
+            0});
+            this.NumberOfParticles.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.NumberOfParticles.Name = "NumberOfParticles";
+            this.NumberOfParticles.Size = new System.Drawing.Size(54, 20);
+            this.NumberOfParticles.TabIndex = 47;
+            this.NumberOfParticles.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            // 
+            // LNumberOfParticles
+            // 
+            this.LNumberOfParticles.AutoSize = true;
+            this.LNumberOfParticles.Location = new System.Drawing.Point(75, 399);
+            this.LNumberOfParticles.Margin = new System.Windows.Forms.Padding(3);
+            this.LNumberOfParticles.Name = "LNumberOfParticles";
+            this.LNumberOfParticles.Size = new System.Drawing.Size(99, 13);
+            this.LNumberOfParticles.TabIndex = 48;
+            this.LNumberOfParticles.Text = "Number of Particles";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(16, 300);
+            this.label11.Margin = new System.Windows.Forms.Padding(3);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(111, 13);
+            this.label11.TabIndex = 44;
+            this.label11.Text = "Precipitation System 1";
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Location = new System.Drawing.Point(254, 300);
+            this.label14.Margin = new System.Windows.Forms.Padding(3);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(111, 13);
+            this.label14.TabIndex = 44;
+            this.label14.Text = "Precipitation System 2";
+            // 
+            // precipitationBoxHeight2
+            // 
+            this.precipitationBoxHeight2.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.precipitationBoxHeight2.Location = new System.Drawing.Point(256, 319);
+            this.precipitationBoxHeight2.Maximum = new decimal(new int[] {
+            3000,
+            0,
+            0,
+            0});
+            this.precipitationBoxHeight2.Minimum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.precipitationBoxHeight2.Name = "precipitationBoxHeight2";
+            this.precipitationBoxHeight2.Size = new System.Drawing.Size(54, 20);
+            this.precipitationBoxHeight2.TabIndex = 43;
+            this.precipitationBoxHeight2.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(316, 321);
+            this.label15.Margin = new System.Windows.Forms.Padding(3);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(134, 13);
+            this.label15.TabIndex = 44;
+            this.label15.Text = "Precipitation box height (m)";
+            // 
+            // precipitationBoxWidth2
+            // 
+            this.precipitationBoxWidth2.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.precipitationBoxWidth2.Location = new System.Drawing.Point(256, 345);
+            this.precipitationBoxWidth2.Maximum = new decimal(new int[] {
+            3000,
+            0,
+            0,
+            0});
+            this.precipitationBoxWidth2.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.precipitationBoxWidth2.Name = "precipitationBoxWidth2";
+            this.precipitationBoxWidth2.Size = new System.Drawing.Size(54, 20);
+            this.precipitationBoxWidth2.TabIndex = 45;
+            this.precipitationBoxWidth2.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(316, 347);
+            this.label21.Margin = new System.Windows.Forms.Padding(3);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(130, 13);
+            this.label21.TabIndex = 46;
+            this.label21.Text = "Precipitation box width (m)";
+            // 
+            // precipitationBoxLength2
+            // 
+            this.precipitationBoxLength2.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.precipitationBoxLength2.Location = new System.Drawing.Point(256, 371);
+            this.precipitationBoxLength2.Maximum = new decimal(new int[] {
+            3000,
+            0,
+            0,
+            0});
+            this.precipitationBoxLength2.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.precipitationBoxLength2.Name = "precipitationBoxLength2";
+            this.precipitationBoxLength2.Size = new System.Drawing.Size(54, 20);
+            this.precipitationBoxLength2.TabIndex = 47;
+            this.precipitationBoxLength2.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            // 
+            // NumberOfParticles2
+            // 
+            this.NumberOfParticles2.Increment = new decimal(new int[] {
+            25,
+            0,
+            0,
+            0});
+            this.NumberOfParticles2.Location = new System.Drawing.Point(256, 397);
+            this.NumberOfParticles2.Maximum = new decimal(new int[] {
+            500000,
+            0,
+            0,
+            0});
+            this.NumberOfParticles2.Minimum = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.NumberOfParticles2.Name = "NumberOfParticles2";
+            this.NumberOfParticles2.Size = new System.Drawing.Size(54, 20);
+            this.NumberOfParticles2.TabIndex = 47;
+            this.NumberOfParticles2.Value = new decimal(new int[] {
+            500,
+            0,
+            0,
+            0});
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(316, 373);
+            this.label28.Margin = new System.Windows.Forms.Padding(3);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(134, 13);
+            this.label28.TabIndex = 48;
+            this.label28.Text = "Precipitation box length (m)";
+            // 
+            // LNumberOfParticles2
+            // 
+            this.LNumberOfParticles2.AutoSize = true;
+            this.LNumberOfParticles2.Location = new System.Drawing.Point(316, 399);
+            this.LNumberOfParticles2.Margin = new System.Windows.Forms.Padding(3);
+            this.LNumberOfParticles2.Name = "LNumberOfParticles2";
+            this.LNumberOfParticles2.Size = new System.Drawing.Size(99, 13);
+            this.LNumberOfParticles2.TabIndex = 48;
+            this.LNumberOfParticles2.Text = "Number of Particles";
             // 
             // OptionsForm
             // 
@@ -3164,7 +3398,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(634, 481);
+            this.ClientSize = new System.Drawing.Size(685, 562);
             this.Controls.Add(this.tabOptions);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
@@ -3267,6 +3501,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles2)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -3495,5 +3734,17 @@
         private System.Windows.Forms.PictureBox pbControlConfirmations;
         private System.Windows.Forms.ComboBox comboControlConfirmations;
         private System.Windows.Forms.Label labelControlConfirmations;
+        private System.Windows.Forms.Label LNumberOfParticles;
+        private System.Windows.Forms.NumericUpDown NumberOfParticles;
+        private System.Windows.Forms.Label label14;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label LNumberOfParticles2;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.NumericUpDown NumberOfParticles2;
+        private System.Windows.Forms.NumericUpDown precipitationBoxLength2;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.NumericUpDown precipitationBoxWidth2;
+        private System.Windows.Forms.Label label15;
+        private System.Windows.Forms.NumericUpDown precipitationBoxHeight2;
     }
 }

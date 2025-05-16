@@ -27,20 +27,27 @@ float4x4 WorldViewProjection;  // model -> world -> view -> projection
 float4   LightVector;  // Direction vector to sun, w = 1/length of vector
 float    Time;  // Used for moving textures across the sky
 float4   Overcast;  // x = alpha, y = contrast, z = brightness, w = !Overcast.y && !Overcast.z
+float4   Overcast2;
+float4   Overcast3;
 float2   WindDisplacement;
 float3   SkyColor;
+float    SunSize;
 float3   FogColor;
 float4   Fog;
 float2   MoonColor;
 float2   MoonTexCoord;
 float    CloudColor;
+float    CloudColor2;
+float    CloudColor3;
 float3   RightVector;
 float3   UpVector;
 texture  SkyMapTexture;
 texture  StarMapTexture;
 texture  MoonMapTexture;
 texture  MoonMaskTexture;
-texture  CloudMapTexture;
+texture  CloudMapTexture1; // Background Static layer titled 1x1
+texture  CloudMapTexture2; // Mid Titled 4x4
+texture  CloudMapTexture3; // Low Titled 4x4
 
 sampler SkyMapSampler = sampler_state
 {
@@ -88,7 +95,7 @@ sampler MoonMaskSampler = sampler_state
 
 sampler CloudMapSampler = sampler_state
 {
-	Texture = (CloudMapTexture);
+	Texture = (CloudMapTexture1);
 	MAGFILTER = LINEAR;
 	MINFILTER = LINEAR;
 	MIPFILTER = LINEAR;
@@ -97,6 +104,26 @@ sampler CloudMapSampler = sampler_state
 	AddressV = wrap;
 };
 
+sampler CloudMapSampler2 = sampler_state
+{
+    Texture = (CloudMapTexture2);
+    MAGFILTER = LINEAR;
+    MINFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+    MIPLODBIAS = 0.000000;
+    AddressU = wrap;
+    AddressV = wrap;
+};
+sampler CloudMapSampler3 = sampler_state
+{
+    Texture = (CloudMapTexture3);
+    MAGFILTER = LINEAR;
+    MINFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+    MIPLODBIAS = 0.000000;
+    AddressU = wrap;
+    AddressV = wrap;
+};
 ////////////////////    V E R T E X   I N P U T S    ///////////////////////////
 
 struct VERTEX_INPUT
@@ -154,9 +181,7 @@ float3 ContrastSaturationBrightness(float3 color, float brt, float sat, float co
 	const float AvgLumR = 0.5;
 	const float AvgLumG = 0.5;
 	const float AvgLumB = 0.5;
-	
 	const float3 LumCoeff = float3(0.2125, 0.7154, 0.0721);
-	
 	float3 AvgLumin = float3(AvgLumR, AvgLumG, AvgLumB);
 	float3 brtColor = color * brt;
 	float intensityf = dot(brtColor, LumCoeff);
@@ -169,70 +194,37 @@ float3 ContrastSaturationBrightness(float3 color, float brt, float sat, float co
 float4 PSSky(VERTEX_OUTPUT In) : COLOR
 {
 	// Get the color information for the current pixel
-	float4 skyColor = tex2D(SkyMapSampler, In.TexCoord);
-	float2 TexCoord = float2((1.0 - In.TexCoord.x) + Time, In.TexCoord.y);
-	float4 starColor = tex2D(StarMapSampler, TexCoord);
-	
+    float4 skyColor = tex2D(SkyMapSampler, In.TexCoord);
+    // Astro - move with time
+    float2 TexCoord = float2((1.0 - In.TexCoord.x) + Time, In.TexCoord.y);
+    float4 starColor = tex2D(StarMapSampler, TexCoord);
 	// Adjust sky color brightness for time of day
-	skyColor *= SkyColor.y;
-	
+    skyColor *= SkyColor.y;
 	// Stars (power function keeps stars hidden until after sunset)
 	// if-statement handles astronomical/final stage of twilight
-	if (LightVector.y < -0.2)
-		{
-		skyColor = lerp(starColor, skyColor, LightVector.y*6.6+2.22);
-		}
-		else 
-		{
-		skyColor = lerp(starColor, skyColor, pow(abs(SkyColor.y),0.125));
-		}
-	
+    if (LightVector.y < -0.2)     {
+        skyColor = lerp(starColor, skyColor, LightVector.y * 6.6 + 2.22);
+    }
+    else {
+        skyColor = lerp(starColor, skyColor, pow(abs(SkyColor.y), 0.125));
+    }
 	// Fogging
-	skyColor.rgb = lerp(skyColor.rgb, FogColor.rgb, saturate((1 - In.Normal.y) * Fog.x));
-	
-	// Calculate angular difference between LightVector and vertex normal, radians
-	float dotproduct = dot(LightVector.xyz, In.Normal);
-	float angleRcp = 1 / acos(dotproduct * LightVector.w / length(In.Normal));
-	
-	// Sun glow
-	// Coefficients selected by the author to achieve the desired appearance - fot limits the effect
-	skyColor += angleRcp * Fog.y;
-	
-	// increase orange at sunset and yellow at sunrise - fog limits the effect
-	if (LightVector.x < 0)
-	{
-		// These if-statements prevent the yellow-flash effect
-		if (LightVector.y > 0.13)
-		{
-			skyColor.rg += SkyColor.z*2 * angleRcp * Fog.z;
-			skyColor.r += SkyColor.z*2 * angleRcp * Fog.z;
-		}
-	
-		else
-		{
-			skyColor.rg += angleRcp * 0.075 * SkyColor.y;
-			skyColor.r += angleRcp * 0.075 * SkyColor.y;
-		}
-	}
-	else
-	{
-		if (LightVector.y > 0.15)
-		{
-			skyColor.rg += SkyColor.z*3 * angleRcp * Fog.z;
-			skyColor.r += SkyColor.z * angleRcp * Fog.z;
-		}
-	
-		else
-		{
-			skyColor.rg += angleRcp * 0.075 * SkyColor.y;
-			skyColor.r += pow(angleRcp * 0.075 * SkyColor.y,2);
-		}
-	}
-	
+    skyColor.rgb = lerp(skyColor.rgb, FogColor.rgb, saturate((1 - In.Normal.y) * Fog.x));
+
+    if (LightVector.y > -0.4)
+    {
+        // Sun - Calculate angular difference between LightVector and vertex normal, radians
+        float dotproduct = dot(LightVector.xyz, In.Normal);
+        float angleRcp = SunSize / acos(dotproduct * LightVector.w / length(In.Normal));
+        skyColor.rg += angleRcp * Fog.y;
+        skyColor.r += angleRcp * Fog.y;
+        skyColor.rgb += (angleRcp / 1.3) * Fog.y;
+    }
 	// Keep alpha opague
-	skyColor.a = 1.0;
-	return skyColor;
+    skyColor.a = 1.0;
+    return skyColor;
 }
+
 
 float4 PSMoon(VERTEX_OUTPUT In) : COLOR
 {
@@ -255,39 +247,81 @@ float4 PSMoon(VERTEX_OUTPUT In) : COLOR
 
 float4 PSClouds(VERTEX_OUTPUT In) : COLOR
 {
-	// Get the color information for the current pixel
-	// Cloud map is tiled. Tiling factor: 4
-	// Move cloud map to suit wind conditions
-	float2 TexCoord = float2(In.TexCoord.x * 4 + WindDisplacement.x, In.TexCoord.y * 4 + WindDisplacement.y);
+    float2 TexCoord = float2(In.TexCoord.x *4 + WindDisplacement.x, In.TexCoord.y *4 + WindDisplacement.y);
 	float4 cloudColor = tex2D(CloudMapSampler, TexCoord);
 	float alpha = cloudColor.a;
-	
     // Fogging
     cloudColor.rgb = lerp(cloudColor.rgb, FogColor.rgb, saturate((1 - In.Normal.y) * Fog.x));
-	
     // Adjust amount of overcast by adjusting alpha
-	if (Overcast.w)
-	{
-		alpha += Overcast.x;
+    if (Overcast.w)
+    {
+        alpha += Overcast.x;
 		// Reduce contrast and brightness
-		float3 color = ContrastSaturationBrightness(cloudColor.xyz, 1.0, Overcast.z, Overcast.y); // Brightness and saturation are really need to be exchanged?
-		cloudColor = float4(color, alpha);
-	}
-	else
-	{
-		alpha *= Overcast.x;
-	}
-
+        float3 color = ContrastSaturationBrightness(cloudColor.xyz, 1.0, Overcast.z, Overcast.y); // Brightness and saturation are really need to be exchanged?
+        cloudColor = float4(color, alpha);
+    }
+    else
+    {
+        alpha *= Overcast.x;
+    }
 	// Adjust cloud color brightness for time of day
-	cloudColor *= CloudColor;
-	cloudColor.a = alpha;
-	return cloudColor;
+    cloudColor *= CloudColor;
+    cloudColor.a = alpha;
+    return cloudColor;
 }
 
-///////////////////////////    T E C H N I Q U E S    ///////////////////////////////
+float4 PSClouds2(VERTEX_OUTPUT In) : COLOR
+{
+    float2 TexCoord = float2(In.TexCoord.x * 4 + WindDisplacement.x*2, In.TexCoord.y * 4 + WindDisplacement.y*2);
+    float4 cloudColor = tex2D(CloudMapSampler2, TexCoord);
+    float alpha = cloudColor.a;
+    // Fogging
+    cloudColor.rgb = lerp(cloudColor.rgb, FogColor.rgb, saturate((1 - In.Normal.y) * Fog.x));
+    // Adjust amount of overcast by adjusting alpha
+    if (Overcast2.w)
+    {
+        alpha += Overcast2.x;
+		// Reduce contrast and brightness
+        float3 color = ContrastSaturationBrightness(cloudColor.xyz, 1.0, Overcast2.z, Overcast2.y);
+        cloudColor = float4(color, alpha);
+    }
+    else
+    {
+        alpha *= Overcast2.x;
+    }
+	// Adjust cloud color brightness for time of day
+    cloudColor *= CloudColor2;
+    cloudColor.a = alpha;
+    return cloudColor;
+}
 
+float4 PSClouds3(VERTEX_OUTPUT In) : COLOR
+{
+    float2 TexCoord = float2(In.TexCoord.x * 4 + WindDisplacement.x*4, In.TexCoord.y * 4 + WindDisplacement.y*4);
+    float4 cloudColor = tex2D(CloudMapSampler3, TexCoord);
+    float alpha = cloudColor.a;
+    // Fogging
+    cloudColor.rgb = lerp(cloudColor.rgb, FogColor.rgb, saturate((1 - In.Normal.y) * Fog.x));
+    // Adjust amount of overcast by adjusting alpha
+    if (Overcast3.w)
+    {
+        alpha += Overcast3.x;
+		// Reduce contrast and brightness
+        float3 color = ContrastSaturationBrightness(cloudColor.xyz, 1.0, Overcast3.z, Overcast3.y); 
+        cloudColor = float4(color, alpha);
+    }
+    else
+    {
+        alpha *= Overcast3.x;
+    }
+	// Adjust cloud color brightness for time of day
+    cloudColor *= CloudColor3;
+    cloudColor.a = alpha;
+    return cloudColor;
+}
+
+///////////////////////////    T E C H N I Q U E S    //////////////////////
 // These techniques are all the same, but we'll keep them separate for now.
-
 technique Sky {
    pass Pass_0 {
 	  VertexShader = compile vs_4_0_level_9_3 VSSky();
@@ -295,16 +329,27 @@ technique Sky {
    }
 }
 
-technique Moon {
-   pass Pass_0 {
-	  VertexShader = compile vs_4_0_level_9_3 VSMoon();
-	  PixelShader = compile ps_4_0_level_9_3 PSMoon();
-   }
+technique Moon
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_4_0_level_9_3 VSMoon();
+        PixelShader = compile ps_4_0_level_9_3 PSMoon();
+    }
 }
 
 technique Clouds {
    pass Pass_0 {
 	  VertexShader = compile vs_4_0_level_9_3 VSSky();
-	  PixelShader = compile ps_4_0_level_9_3 PSClouds();
+        PixelShader = compile ps_4_0_level_9_3 PSClouds();
+    }
+   pass Pass_1   {
+        VertexShader = compile vs_4_0_level_9_3 VSSky();
+        PixelShader = compile ps_4_0_level_9_3 PSClouds2();
    }
+   pass Pass_2   {
+       VertexShader = compile vs_4_0_level_9_3 VSSky();
+       PixelShader = compile ps_4_0_level_9_3 PSClouds3();
+    }
 }
+

@@ -309,29 +309,40 @@ namespace ORTS.Settings
 			Commands[(int)UserCommand.CameraToggleThreeDimensionalCab] = new UserCommandKeyInput(0x02, KeyModifiers.Alt);
             Commands[(int)UserCommand.CameraCarFirst] = new UserCommandKeyInput(0x47, KeyModifiers.Alt);
             Commands[(int)UserCommand.CameraCarLast] = new UserCommandKeyInput(0x4F, KeyModifiers.Alt);
-            Commands[(int)UserCommand.CameraCarNext] = new UserCommandKeyInput(0x49, KeyModifiers.Alt);
-            Commands[(int)UserCommand.CameraCarPrevious] = new UserCommandKeyInput(0x51, KeyModifiers.Alt);
+            Commands[(int)UserCommand.CameraCarNext] = new UserCommandKeyInput(0x49, KeyModifiers.Alt | KeyModifiers.Shift);
+            Commands[(int)UserCommand.CameraCarPrevious] = new UserCommandKeyInput(0x51, KeyModifiers.Alt | KeyModifiers.Shift);
             Commands[(int)UserCommand.CameraFree] = new UserCommandKeyInput(0x09);
+
             Commands[(int)UserCommand.CameraHeadOutBackward] = new UserCommandKeyInput(0x4F);
             Commands[(int)UserCommand.CameraHeadOutForward] = new UserCommandKeyInput(0x47);
+
             Commands[(int)UserCommand.CameraJumpBackPlayer] = new UserCommandKeyInput(0x0A);
             Commands[(int)UserCommand.CameraJumpingTrains] = new UserCommandKeyInput(0x0A, KeyModifiers.Alt);
             Commands[(int)UserCommand.CameraJumpSeeSwitch] = new UserCommandKeyInput(0x22, KeyModifiers.Control | KeyModifiers.Alt);
+
             Commands[(int)UserCommand.CameraOutsideFront] = new UserCommandKeyInput(0x03);
             Commands[(int)UserCommand.CameraOutsideRear] = new UserCommandKeyInput(0x04);
-            Commands[(int)UserCommand.CameraPanDown] = new UserCommandModifiableKeyInput(0x50, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
-            Commands[(int)UserCommand.CameraPanLeft] = new UserCommandModifiableKeyInput(0x4B, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
-            Commands[(int)UserCommand.CameraPanRight] = new UserCommandModifiableKeyInput(0x4D, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
-            Commands[(int)UserCommand.CameraPanUp] = new UserCommandModifiableKeyInput(0x48, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+
             Commands[(int)UserCommand.CameraPassenger] = new UserCommandKeyInput(0x06);
             Commands[(int)UserCommand.CameraPreviousFree] = new UserCommandKeyInput(0x09, KeyModifiers.Shift);
             Commands[(int)UserCommand.CameraReset] = new UserCommandKeyInput(0x09, KeyModifiers.Control);
-            Commands[(int)UserCommand.CameraRotateDown] = new UserCommandModifiableKeyInput(0x50, KeyModifiers.Alt, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
-            Commands[(int)UserCommand.CameraRotateLeft] = new UserCommandModifiableKeyInput(0x4B, KeyModifiers.Alt, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            // ExRail
+            Commands[(int)UserCommand.CameraPanDown]  = new UserCommandModifiableKeyInput(0x51, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            Commands[(int)UserCommand.CameraPanLeft]  = new UserCommandModifiableKeyInput(0x4B, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            Commands[(int)UserCommand.CameraPanRight] = new UserCommandModifiableKeyInput(0x4D, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            Commands[(int)UserCommand.CameraPanUp]    = new UserCommandModifiableKeyInput(0x49, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            // ExRail
+            Commands[(int)UserCommand.CameraZoomIn] = new UserCommandModifiableKeyInput(0x48, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            Commands[(int)UserCommand.CameraZoomOut] = new UserCommandModifiableKeyInput(0x50, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            // ------
+            Commands[(int)UserCommand.CameraRotateDown]  = new UserCommandModifiableKeyInput(0x49, KeyModifiers.Alt, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+            Commands[(int)UserCommand.CameraRotateLeft]  = new UserCommandModifiableKeyInput(0x4B, KeyModifiers.Alt, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
             Commands[(int)UserCommand.CameraRotateRight] = new UserCommandModifiableKeyInput(0x4D, KeyModifiers.Alt, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
-            Commands[(int)UserCommand.CameraRotateUp] = new UserCommandModifiableKeyInput(0x48, KeyModifiers.Alt, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
-            Commands[(int)UserCommand.CameraScrollLeft] = new UserCommandModifiableKeyInput(0x4B, KeyModifiers.Alt);
-            Commands[(int)UserCommand.CameraScrollRight] = new UserCommandModifiableKeyInput(0x4D, KeyModifiers.Alt);
+            Commands[(int)UserCommand.CameraRotateUp]    = new UserCommandModifiableKeyInput(0x51, KeyModifiers.Alt, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+
+            Commands[(int)UserCommand.CameraScrollLeft] = new UserCommandModifiableKeyInput(0x4B);
+            Commands[(int)UserCommand.CameraScrollRight] = new UserCommandModifiableKeyInput(0x4D);
+
             Commands[(int)UserCommand.CameraChangePassengerViewPoint] = new UserCommandKeyInput(0x06, KeyModifiers.Shift);
             Commands[(int)UserCommand.CameraChange3DCabViewPoint] = new UserCommandKeyInput(0x02, KeyModifiers.Control | KeyModifiers.Shift);
             Commands[(int)UserCommand.CameraToggleLetterboxCab] = new UserCommandKeyInput(0x02, KeyModifiers.Control);
@@ -339,8 +350,7 @@ namespace ORTS.Settings
             Commands[(int)UserCommand.CameraTrackside] = new UserCommandKeyInput(0x05);
             Commands[(int)UserCommand.CameraSpecialTracksidePoint] = new UserCommandKeyInput(0x05, KeyModifiers.Shift);
             Commands[(int)UserCommand.CameraVibrate] = new UserCommandKeyInput(0x2F, KeyModifiers.Control);
-            Commands[(int)UserCommand.CameraZoomIn] = new UserCommandModifiableKeyInput(0x49, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
-            Commands[(int)UserCommand.CameraZoomOut] = new UserCommandModifiableKeyInput(0x51, Commands[(int)UserCommand.CameraMoveFast], Commands[(int)UserCommand.CameraMoveSlow]);
+
             Commands[(int)UserCommand.ControlAIFireOn] = new UserCommandKeyInput(0x23, KeyModifiers.Alt);
             Commands[(int)UserCommand.ControlAIFireOff] = new UserCommandKeyInput(0x23, KeyModifiers.Control);
             Commands[(int)UserCommand.ControlAIFireReset] = new UserCommandKeyInput(0x23, KeyModifiers.Control | KeyModifiers.Alt);
@@ -348,7 +358,6 @@ namespace ORTS.Settings
             Commands[(int)UserCommand.ControlAIFireOff] = new UserCommandKeyInput(0x23, KeyModifiers.Control);
             Commands[(int)UserCommand.ControlAIFireReset] = new UserCommandKeyInput(0x23, KeyModifiers.Control | KeyModifiers.Alt);
             Commands[(int)UserCommand.ControlAlerter] = new UserCommandKeyInput(0x2C);
-            Commands[(int)UserCommand.ControlBackwards] = new UserCommandKeyInput(0x1F);
             Commands[(int)UserCommand.ControlBailOff] = new UserCommandKeyInput(0x35);
             Commands[(int)UserCommand.ControlBrakeQuickRelease] = new UserCommandKeyInput(0x35, KeyModifiers.Control);
             Commands[(int)UserCommand.ControlBrakeOvercharge] = new UserCommandKeyInput(0x35, KeyModifiers.Control | KeyModifiers.Shift);
@@ -400,7 +409,13 @@ namespace ORTS.Settings
             Commands[(int)UserCommand.ControlFiring] = new UserCommandKeyInput(0x21, KeyModifiers.Control);
             Commands[(int)UserCommand.ControlFiringRateDecrease] = new UserCommandKeyInput(0x13, KeyModifiers.Shift);
             Commands[(int)UserCommand.ControlFiringRateIncrease] = new UserCommandKeyInput(0x13);
+            // Reverser
             Commands[(int)UserCommand.ControlForwards] = new UserCommandKeyInput(0x11);
+            Commands[(int)UserCommand.ControlBackwards] = new UserCommandKeyInput(0x1F);
+              //
+            Commands[(int)UserCommand.ControlThrottleDecrease] = new UserCommandKeyInput(0x1E);
+            Commands[(int)UserCommand.ControlThrottleIncrease] = new UserCommandKeyInput(0x20);
+            
             Commands[(int)UserCommand.ControlGearDown] = new UserCommandKeyInput(0x12, KeyModifiers.Shift);
             Commands[(int)UserCommand.ControlGearUp] = new UserCommandKeyInput(0x12);
             Commands[(int)UserCommand.ControlGenericItem1] = new UserCommandKeyInput(0x33, KeyModifiers.Shift);
@@ -440,8 +455,7 @@ namespace ORTS.Settings
             Commands[(int)UserCommand.ControlSanderToggle] = new UserCommandKeyInput(0x2D, KeyModifiers.Shift);
             Commands[(int)UserCommand.ControlServiceRetention] = new UserCommandKeyInput(0x53);
             Commands[(int)UserCommand.ControlServiceRetentionCancellation] = new UserCommandKeyInput(0x53, KeyModifiers.Control);
-            Commands[(int)UserCommand.ControlThrottleDecrease] = new UserCommandKeyInput(0x1E);
-            Commands[(int)UserCommand.ControlThrottleIncrease] = new UserCommandKeyInput(0x20);
+            // 
             Commands[(int)UserCommand.ControlThrottleZero] = new UserCommandKeyInput(0x1E, KeyModifiers.Control);
             Commands[(int)UserCommand.ControlTractionCutOffRelayClosingOrder] = new UserCommandKeyInput(0x18);
             Commands[(int)UserCommand.ControlTractionCutOffRelayOpeningOrder] = new UserCommandKeyInput(0x17);
@@ -482,20 +496,31 @@ namespace ORTS.Settings
             Commands[(int)UserCommand.DebugClockBackwards] = new UserCommandKeyInput(0x0C);
             Commands[(int)UserCommand.DebugClockForwards] = new UserCommandKeyInput(0x0D);
             Commands[(int)UserCommand.DebugDumpKeymap] = new UserCommandKeyInput(0x3B, KeyModifiers.Alt);
-            Commands[(int)UserCommand.DebugFogDecrease] = new UserCommandKeyInput(0x0C, KeyModifiers.Shift);
-            Commands[(int)UserCommand.DebugFogIncrease] = new UserCommandKeyInput(0x0D, KeyModifiers.Shift);
             Commands[(int)UserCommand.DebugLockShadows] = new UserCommandKeyInput(0x1F, KeyModifiers.Control | KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugLogger] = new UserCommandKeyInput(0x58);
             Commands[(int)UserCommand.DebugLogRenderFrame] = new UserCommandKeyInput(0x58, KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugDaylightOffsetDecrease] = new UserCommandKeyInput(0x0C, KeyModifiers.Shift |  KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugDaylightOffsetIncrease] = new UserCommandKeyInput(0x0D, KeyModifiers.Shift |  KeyModifiers.Alt);
-            Commands[(int)UserCommand.DebugOvercastDecrease] = new UserCommandKeyInput(0x0C, KeyModifiers.Control);
-            Commands[(int)UserCommand.DebugOvercastIncrease] = new UserCommandKeyInput(0x0D, KeyModifiers.Control);
-            Commands[(int)UserCommand.DebugPhysicsForm] = new UserCommandKeyInput(0x3D, KeyModifiers.Alt);
+            Commands[(int)UserCommand.DebugFogDecrease] = new UserCommandKeyInput(0x0C, KeyModifiers.Shift);
+            Commands[(int)UserCommand.DebugFogIncrease] = new UserCommandKeyInput(0x0D, KeyModifiers.Shift);
+            Commands[(int)UserCommand.DebugOvercastDecrease] = new UserCommandKeyInput(0x53, KeyModifiers.Control);
+            Commands[(int)UserCommand.DebugOvercastIncrease] = new UserCommandKeyInput(0x52, KeyModifiers.Control);
             Commands[(int)UserCommand.DebugPrecipitationDecrease] = new UserCommandKeyInput(0x0C, KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugPrecipitationIncrease] = new UserCommandKeyInput(0x0D, KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugPrecipitationLiquidityDecrease] = new UserCommandKeyInput(0x0C, KeyModifiers.Control | KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugPrecipitationLiquidityIncrease] = new UserCommandKeyInput(0x0D, KeyModifiers.Control | KeyModifiers.Alt);
+            // <----------------------------- ExRail ------------------------------------->
+            Commands[(int)UserCommand.Weather_Control_Insert] = new UserCommandKeyInput(0x52, KeyModifiers.Control); // Insert
+            Commands[(int)UserCommand.Weather_Control_Delete] = new UserCommandKeyInput(0x53, KeyModifiers.Control); // Del
+            Commands[(int)UserCommand.Weather_Control_Home]   = new UserCommandKeyInput(0x47, KeyModifiers.Control); // Home
+            Commands[(int)UserCommand.Weather_Control_End]    = new UserCommandKeyInput(0x4F, KeyModifiers.Control); // End
+            Commands[(int)UserCommand.Weather_Control_PgUp]   = new UserCommandKeyInput(0x49, KeyModifiers.Control); // PgUp
+            Commands[(int)UserCommand.Weather_Control_PgDn]   = new UserCommandKeyInput(0x51, KeyModifiers.Control); // PgDn
+            Commands[(int)UserCommand.DebugWeatherSave]       = new UserCommandKeyInput(0x0E, KeyModifiers.Alt | KeyModifiers.Shift);
+            Commands[(int)UserCommand.DisplayWeatherEditorWindow]   = new UserCommandKeyInput(0x3D);
+            // <----------------------------- ExRail ------------------------------------->       
+            Commands[(int)UserCommand.DebugPhysicsForm] = new UserCommandKeyInput(0x3D, KeyModifiers.Alt);
+           
             Commands[(int)UserCommand.DebugResetWheelSlip] = new UserCommandKeyInput(0x2D, KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugSignalling] = new UserCommandKeyInput(0x57, KeyModifiers.Control | KeyModifiers.Alt);
             Commands[(int)UserCommand.DebugSoundForm] = new UserCommandKeyInput(0x1F, KeyModifiers.Alt);
@@ -526,8 +551,11 @@ namespace ORTS.Settings
 
             Commands[(int)UserCommand.GameAutopilotMode] = new UserCommandKeyInput(0x1E, KeyModifiers.Alt);
             Commands[(int)UserCommand.GameChangeCab] = new UserCommandKeyInput(0x12, KeyModifiers.Control);
+
             Commands[(int)UserCommand.GameClearSignalBackward] = new UserCommandKeyInput(0x0F, KeyModifiers.Shift);
+
             Commands[(int)UserCommand.GameClearSignalForward] = new UserCommandKeyInput(0x0F);
+
             Commands[(int)UserCommand.GameExternalCabController] = new UserCommandKeyInput(0x29);
             Commands[(int)UserCommand.GameFullscreen] = new UserCommandKeyInput(0x1C, KeyModifiers.Alt);
             Commands[(int)UserCommand.GameMultiPlayerDispatcher] = new UserCommandKeyInput(0x0A, KeyModifiers.Control);
@@ -537,7 +565,9 @@ namespace ORTS.Settings
             Commands[(int)UserCommand.GameQuit] = new UserCommandKeyInput(0x3E, KeyModifiers.Alt);
             Commands[(int)UserCommand.GameResetOutOfControlMode] = new UserCommandKeyInput(0x0E, KeyModifiers.Shift);
             Commands[(int)UserCommand.GameRequestControl] = new UserCommandKeyInput(0x12, KeyModifiers.Alt);
+
             Commands[(int)UserCommand.GameResetSignalBackward] = new UserCommandKeyInput(0x0F, KeyModifiers.Control | KeyModifiers.Shift);
+
             Commands[(int)UserCommand.GameResetSignalForward] = new UserCommandKeyInput(0x0F, KeyModifiers.Control);
             Commands[(int)UserCommand.GameSave] = new UserCommandKeyInput(0x3C);
             Commands[(int)UserCommand.GameScreenshot] = new UserCommandKeyInput(Keys.PrintScreen);

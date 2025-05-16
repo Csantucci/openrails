@@ -74,7 +74,7 @@ namespace Orts.Viewer3D.Popups
             vbox.AddHorizontalSeparator();
             {
                 var hbox = vbox.AddLayoutHorizontalLineOfText();
-                hbox.Add(new Label(boxWidth * 3, hbox.RemainingHeight, Viewer.Catalog.GetString("Station")));
+                hbox.Add(new Label(boxWidth * 3, hbox.RemainingHeight, Viewer.Catalog.GetString(" Station")));
                 hbox.Add(new Label(boxWidth, hbox.RemainingHeight, Viewer.Catalog.GetString("Distance"), LabelAlignment.Center));
                 hbox.Add(new Label(boxWidth, hbox.RemainingHeight, Viewer.Catalog.GetString("Arrive"), LabelAlignment.Center));
                 hbox.Add(new Label(boxWidth, hbox.RemainingHeight, Viewer.Catalog.GetString("Actual"), LabelAlignment.Center));

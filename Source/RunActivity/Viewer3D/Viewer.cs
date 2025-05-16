@@ -104,6 +104,9 @@ namespace Orts.Viewer3D
         public TrainDpuWindow TrainDpuWindow { get; private set; } // Shift + F9 train distributed power window
         public NextStationWindow NextStationWindow { get; private set; } // F10 window
         public CompassWindow CompassWindow { get; private set; } // 0 window
+        
+        public WeatherEditorWindow WeatherEditorWindow { get; private set; } // F3 window
+        
         public TracksDebugWindow TracksDebugWindow { get; private set; } // Control-Alt-F6
         public SignallingDebugWindow SignallingDebugWindow { get; private set; } // Control-Alt-F11 window
         public ComposeMessage ComposeMessageWindow { get; private set; } // ??? window
@@ -403,7 +406,9 @@ namespace Orts.Viewer3D
             SaveActivityThumbnail = true;
             outf.Write(NightTexturesNotLoaded);
             outf.Write(DayTexturesNotLoaded);
+            // ExRail Point of interest
             World.WeatherControl.SaveWeatherParameters(outf);
+
             if ((PlayerLocomotiveViewer as MSTSLocomotiveViewer)._CabRenderer != null)
             {
                 outf.Write(0);
@@ -513,6 +518,10 @@ namespace Orts.Viewer3D
             TrainDpuWindow = new TrainDpuWindow(WindowManager);
             NextStationWindow = new NextStationWindow(WindowManager);
             CompassWindow = new CompassWindow(WindowManager);
+    
+            // Exrail
+            WeatherEditorWindow = new WeatherEditorWindow(WindowManager);
+       
             TracksDebugWindow = new TracksDebugWindow(WindowManager);
             SignallingDebugWindow = new SignallingDebugWindow(WindowManager);
             ComposeMessageWindow = new ComposeMessage(WindowManager);
@@ -1047,7 +1056,22 @@ namespace Orts.Viewer3D
             if (UserInput.IsPressed(UserCommand.DisplayTrainCarOperationsWindow)) if (UserInput.IsDown(UserCommand.DisplayNextWindowTab)) TrainCarOperationsWindow.TabAction(); else { TrainCarOperationsWindow.Visible = !TrainCarOperationsWindow.Visible; if (!TrainCarOperationsWindow.Visible) CarOperationsWindow.Visible = false; }
             if (UserInput.IsPressed(UserCommand.DisplayTrainDpuWindow)) if (UserInput.IsDown(UserCommand.DisplayNextWindowTab)) TrainDpuWindow.Visible = !TrainDpuWindow.Visible ; else TrainDpuWindow.TabAction();
             if (UserInput.IsPressed(UserCommand.DisplayNextStationWindow)) if (UserInput.IsDown(UserCommand.DisplayNextWindowTab)) NextStationWindow.TabAction(); else NextStationWindow.Visible = !NextStationWindow.Visible;
+            
             if (UserInput.IsPressed(UserCommand.DisplayCompassWindow)) if (UserInput.IsDown(UserCommand.DisplayNextWindowTab)) CompassWindow.TabAction(); else CompassWindow.Visible = !CompassWindow.Visible;
+            
+            // <----------------------------- ExRail ------------------------------------->
+            if (UserInput.IsPressed(UserCommand.DisplayWeatherEditorWindow)) 
+            {
+                if (UserInput.IsDown(UserCommand.DisplayNextWindowTab)) WeatherEditorWindow.TabAction(); else WeatherEditorWindow.Visible = !WeatherEditorWindow.Visible; 
+                // Update Weather Editor stats
+                World.WeatherControl.GuiUpdateStats();
+                if(!WeatherEditorWindow.Visible) 
+                {   
+                    WeatherEditorWindow.EnmSelect = WeatherEditorWindow.EnuSelection.Notselected;
+                    WeatherEditorWindow.ClearLabelColor();
+                }
+            }
+
             if (UserInput.IsPressed(UserCommand.DebugTracks)) if (UserInput.IsDown(UserCommand.DisplayNextWindowTab)) TracksDebugWindow.TabAction(); else TracksDebugWindow.Visible = !TracksDebugWindow.Visible;
             if (UserInput.IsPressed(UserCommand.DebugSignalling)) if (UserInput.IsDown(UserCommand.DisplayNextWindowTab)) SignallingDebugWindow.TabAction(); else SignallingDebugWindow.Visible = !SignallingDebugWindow.Visible;
             if (UserInput.IsPressed(UserCommand.DisplayTrainListWindow)) TrainListWindow.Visible = !TrainListWindow.Visible;
