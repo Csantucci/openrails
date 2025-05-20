@@ -91,8 +91,9 @@ function ApiHeadUpDisplay() {
 						DebugWidthTofix = ['primitives','Camera'],
 					// Force information
 						ForceColSpanTo15 = ['Wind Speed'],
-						ForceColSpanTo4 = ['(Simple adhesion model)','Dynamic brake'],
-						ForceColSpanTo3 = ['Axle out force','Loco Adhesion','Wagon Adhesion'],
+						ForceColSpanTo4 = ['(Advanced adhesion model)', '(Simple adhesion model)'],
+						ForceColSpanTo3 = ['Wheel slip (Thres)', 'Conditions', 'Axle drive force', 'Axle brake force', 'Number of substeps', 'Wheel Adh. (Max)',
+							'Axle out force', 'Comp Axle out force', 'Wheel speed (Slip)', 'Wheel ang. pos.', 'Loco Adhesion', 'Wagon Adhesion'],
 					// Brake information
 						BrakeColSpanTo2 = ['PlayerLoco','Brake Sys Vol'];
 
@@ -101,6 +102,7 @@ function ApiHeadUpDisplay() {
 						var colspanmax = false,
 							colspan10 = false,
 							colspan3 = false,
+							colspan2 = false,
 							fixwidth = false,
 							locomotivetype = false;
 
@@ -147,8 +149,12 @@ function ApiHeadUpDisplay() {
 								locomotivetype = true;
 								Str += "<td colspan='2' >" + newText + "</td>";
 							}
-							else if (colspan3 || BrakeColSpanTo2.indexOf(newText) !== -1){
-								Str += "<td colspan='3' >" + newText + "</td>";
+							else if (colspan2)
+							{
+								Str += "<td class='td_nowrap' colspan='2' >" + obj.extraTable.values[next] + "</td>";
+							}
+							else if (colspan3 || BrakeColSpanTo2.indexOf(obj.extraTable.values[next]) !== -1){
+								Str += "<td colspan='3' >" + obj.extraTable.values[next] + "</td>";
 							}
 							else if (colspan10){
 								Str += "<td class ='td_nowrap' colspan='10' >" + newText + "</td>";
@@ -165,6 +171,7 @@ function ApiHeadUpDisplay() {
 							}
 							else if (ForceColSpanTo3.indexOf(newText) !== -1 ){
 								Str += "<td colspan='3' >" + newText + "</td>";
+								colspan2 = true; // data cells in these row span two columns
 							}
 							else {
 								// Apply colspan if required after first col

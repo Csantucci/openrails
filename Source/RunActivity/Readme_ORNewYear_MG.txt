@@ -1,5 +1,5 @@
-﻿Open Rails, NewYear version README - Rev.151
-March 14th, 2024
+﻿Open Rails NewYear README - Rev.164
+April 22nd, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-905, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1695, 
 plus some of the features already present in the Unstable release.
 
 
@@ -48,7 +48,6 @@ This version includes some features not (yet) available in the Open Rails testin
 - fix crash when reinitializing EOTs on a carless train
 - enable modifying and compiling the .fx shader files, see http://www.elvastower.com/forums/index.php?/topic/36968-mgfxwhywhen-nov-2022what-does-a-user-do-now/page__view__findpost__p__295571
 - accept ORTSAirBrakeMainResVolume as .eng files token, used in some TrainSimulations routes (see https://www.trainsim.com/forums/forum/open-rails/open-rails-discussion/2284903-shasta-route-available?p=2285365#post2285365)
-- Provide more tolerance for CentreOfGravity, see http://www.elvastower.com/forums/index.php?/topic/37366-centreofgravity/
 - Add curve force and brake cylinder pressure in sound debug window
 - Sort of hack to fix http://www.elvastower.com/forums/index.php?/topic/37448-ammeter-configuration-steeringcarriages-emudmu/
 - Re-instate and extend Precision and UpdateTime for SPEEDOMETER in cabvies, see http://www.elvastower.com/forums/index.php?/topic/37448-ammeter-configuration-steeringcarriages-emudmu/page__view__findpost__p__300651 
@@ -56,35 +55,51 @@ This version includes some features not (yet) available in the Open Rails testin
 - Tentative (ORNYMG only?) bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__302440
 - (signalling) No speed update parameter, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37573-proposed-new-signal-aspect-parameter-or-nospeedupdate/page__view__findpost__p__302320
 - (timetables) Many options to define power related features, by roeter, see https://www.elvastower.com/forums/index.php?/topic/36899-update-timetable-mode/page__view__findpost__p__293894
-- Improvements to display features on web clients, by mbm_OR 
-- Timetable: autopilot, player train switching, open/close doors on AI trains and some minor extra features, see https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/
+- Timetable: open/close doors on AI trains and some minor extra features, see https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/
 - Disable Polach adhesion, see here https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__305613 and following posts
+- Fix for https://bugs.launchpad.net/or/+bug/2057708 ORTSScreenPage parameter doesn't work for Dials
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/37911-timetable-crashing-for-no-reason/
+- Fix 3Dcab digits alignment, see https://www.elvastower.com/forums/index.php?/topic/24040-3d-cabs/page__view__findpost__p__307374
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/37948-or-timetable-error/page__view__findpost__p__307975
+- Workaround for https://www.elvastower.com/forums/index.php?/topic/38038-crash-on-attaching-to-an-ai-train/
+- Conditionally correct invalid values of TrainPipeLeakRate and Auxiliary Reservoir Volume
+- Add slider to set wind variability in ORNYMG only options
+- fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__309405
+- fix for https://www.elvastower.com/forums/index.php?/topic/38126-signal-off-when-approach-on-platform/ (ORNYMG only?)
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/38305-ai-does-not-open-the-doors-if-it-is-on-a-platform-at-the-start-of-a-new-service/
+- Watch Mode for Timetable Mode, see https://www.elvastower.com/forums/index.php?/topic/38444-proposal-map-only-mode/page__view__findpost__p__313401- 
+- Multiplayer: now any diesel engine on/off sound change broadcasted, see https://www.elvastower.com/forums/index.php?/topic/38353-other-engines-missing-sound-in-or-multiplayer/
+- Fix for crash in wheelslip
+- Hack to avoid exceptions in loading Trat321 shapes, see https://www.elvastower.com/forums/index.php?/topic/38610-many-shapes-are-no-longer-displayed-in-the-trat-321-route/
+- Fix for https://www.elvastower.com/forums/index.php?/topic/38647-bogies-on-turntables/
+- Re-instate panto management for steam locomotives, see https://www.elvastower.com/forums/index.php?/topic/38656-panto-function-no-longer-works-on-steam-locomotives/
+- Bug fix for trainset not shown if in .s file number of controllers set > 0 and controllers not present (Flirt package)
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/38660-crash-causing-line-in-openrailsini/ Avoids crash when Map_mapResolutionUpDown = 0
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/38688-dynamic-tracks-from-routersshapes-are-not-displayed/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
   (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
-  *- Additional parameters for Cruise Control, see https://blueprints.launchpad.net/or/+spec/additional-cruise-control-parameters (PR #839)
-  *- Auto-save, by roeter, see https://www.elvastower.com/forums/index.php?/topic/35870-auto-save/page__view__findpost__p__280206 (PR #891)
   *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
-  *- ETCS DMI Updates, including 280 km/h max tacho setting by gpz (PR #900)
-  *- Triple valve features vol.2 by SteelFill, see https://www.elvastower.com/forums/index.php?/topic/34527-wishes-for-improvement-of-braking-systems/page__st__600__p__305027#entry305027 (PR #912)
-  *- Train car operations UI window, by mbm-OR, see http://www.elvastower.com/forums/index.php?/topic/37062-proposal-f9-train-operations/page__view__findpost__p__301151 (PR #882)
-  *- NEW: Fix https://www.elvastower.com/forums/index.php?/topic/37765-or-forgets-target-car-u20240124-2007/ , by mbm-OR (included in PR #882)
-  *- NEW: Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
-  *- NEW: Improvements in default weather textures, see https://www.elvastower.com/forums/index.php?/topic/37832-sky-dome-and-cloud-layer-testing/page__view__findpost__p__306340 , by SteelFill (PR #924)
-  *- NEW: Fix brakeshoe force bug, see https://bugs.launchpad.net/or/+bug/2056722 , by steamer_ctn (PR #925)
-- NEW: Fix for ORNYMG only bug  https://www.elvastower.com/forums/index.php?/topic/37710-autopilot-for-timetable-mode/page__view__findpost__p__305866
-- NEW: fix for https://bugs.launchpad.net/or/+bug/2057708 ORTSScreenPage parameter doesn't work for Dials
-- NEW: fix for ORNYMG only bug causing crash when switching player train, introduced with Timetable extensions
-
- 
-
-
-
+  *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
+  *- Add curve squeal to route, by steamer_CTN (PR Bug fix for https://www.elvastower.com/forums/index.php?/topic/38688-dynamic-tracks-from-routersshapes-are-not-displayed/#923)
+  *- (partially): ETCS DMI Updates, including 280 km/h max tacho setting and DMI in 3D cab by gpz (PR #900)
+  *- Locomotive operation from control car, by César (PR #1000)
+  *- UPDATED: Merge remote-tracking branch 'SteelFill/multi_track_profiles' (PR #1029); fixes also https://www.elvastower.com/forums/index.php?/topic/38497-incorrect-gradient-display-on-track-monitor/
+  *- Bugfix: Empty Start Time for Explore, and other issues loading from Menu Selection and Content Routes, by rwf-rr (PR #1045)
+  *- Content Manager: Add axle count, and lowest derail force, by rwf-rr (PR #1052)
+  *- Train Forces popup Window, by rwf-rr (PR #1062)
+  *- Add Train Info tab to Help window (F1), by rwf-rr (PR #1064)
+  *- NEW: Log derailment, using TraceInformation, by rwf-rr (PR #1066)
+  *- NEW: Fix a NullReferenceException in TCS scripts, by pzgulyas (PR #1070)
+- NEW: extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
+- NEW: fix for ORNYMG-only bug with EOT cab display not working
+- NEW: fix for ReShade not working when linked to OpenRails64
+- NEW: Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
+- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
 
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
-
 
 The Monogame related code intentionally coincides only partly with the code of the OR official testing version.
 
@@ -110,6 +125,7 @@ This unofficial version couldn't have been created without following contributio
 - SteelFill
 - ExRail
 - roeter
+- rwf-rr
 - Carlo Santucci
 
 - all those who contributed with ideas and provided contents for testing and pointed to malfunctions.

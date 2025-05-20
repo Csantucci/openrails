@@ -101,6 +101,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 case "engine(ortsdieselengines":
                     stf.MustMatch("(");
                     int count = stf.ReadInt(0);
+                    DEList.Clear();
                     for (int i = 0; i < count; i++)
                     {
                         string setting = stf.ReadString().ToLower();
@@ -993,7 +994,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 RealRPM = IdleRPM;
                 State = DieselEngineState.Running;
             }
-
             RPMRange = MaxRPM - IdleRPM;
             MagnitudeRange = MaxMagnitude - InitialMagnitude;
             ExhaustRange = MaxExhaust - InitialExhaust;
@@ -1029,13 +1029,10 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
             DemandedThrottlePercent = Math.Max(DemandedThrottlePercent, ReverseThrottleRPMTab[Locomotive.DieselPowerSupply.DieselEngineMinRpm]);
 
-            if (Locomotive.Direction == Direction.Reverse)
-                Locomotive.PrevMotiveForceN *= -1f;
-
             if ((State == DieselEngineState.Running) && (Locomotive.ThrottlePercent > 0))
             {
-                var abstempMotiveForce = Math.Abs(Locomotive.PrevMotiveForceN);
-                OutputPowerW = ( abstempMotiveForce > 0 ? abstempMotiveForce * Locomotive.AbsSpeedMpS : 0) / Locomotive.DieselEngines.NumOfActiveEngines;
+                var abstempTractiveForce = Math.Abs(Locomotive.PrevTractiveForceN);
+                OutputPowerW = ( abstempTractiveForce > 0 ? abstempTractiveForce * Locomotive.AbsWheelSpeedMpS : 0) / Locomotive.DieselEngines.NumOfActiveEngines;
             }
             else
             {

@@ -36,6 +36,7 @@ using ORTS.Scripting.Api;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace Orts.Viewer3D
@@ -89,8 +90,8 @@ namespace Orts.Viewer3D
             Viewer = viewer;
             Car = car;
             CarViewer = carViewer;
-
-            LightGlowMaterial = viewer.MaterialManager.Load("LightGlow");
+            
+            LightGlowMaterial = viewer.MaterialManager.Load("LightGlow", DefineFullTexturePath(Car.Lights.GeneralLightGlowGraphic));
             LightConeMaterial = viewer.MaterialManager.Load("LightCone");
 
             UpdateState();
@@ -102,6 +103,10 @@ namespace Orts.Viewer3D
                     {
                         case LightType.Glow:
                             LightPrimitives.Add(new LightGlowPrimitive(this, Viewer.RenderProcess, light));
+                            if (light.Graphic != null)
+                                (LightPrimitives.Last() as LightGlowPrimitive).SpecificGlowMaterial = viewer.MaterialManager.Load("LightGlow", DefineFullTexturePath(light.Graphic, true));
+                            else
+                                (LightPrimitives.Last() as LightGlowPrimitive).SpecificGlowMaterial = LightGlowMaterial;
                             break;
                         case LightType.Cone:
                             LightPrimitives.Add(new LightConePrimitive(this, Viewer.RenderProcess, light));
@@ -147,6 +152,17 @@ namespace Orts.Viewer3D
 #endif
 
             UpdateActiveLightCone();
+        }
+
+        string DefineFullTexturePath(string textureName, bool searchSpecificTexture = false)
+        {
+            if (File.Exists(Path.Combine(Path.GetDirectoryName(Car.WagFilePath), textureName)))
+                return Path.Combine(Path.GetDirectoryName(Car.WagFilePath), textureName);
+            if (searchSpecificTexture)
+                Trace.TraceWarning("Could not find light graphic {0} at {1}", textureName, Path.Combine(Path.GetDirectoryName(Car.WagFilePath), textureName));
+            if (File.Exists(Path.Combine(Viewer.ContentPath, textureName)))
+                return Path.Combine(Viewer.ContentPath, textureName);
+            return Path.Combine(Viewer.ContentPath, "LightGlow.png");
         }
 
         void UpdateActiveLightCone()
@@ -220,9 +236,9 @@ namespace Orts.Viewer3D
                     if ((lightPrimitive.Enabled || lightPrimitive.FadeOut) && lightPrimitive is LightGlowPrimitive)
                     {
                         if (ShapeXNATranslations.TryGetValue(lightPrimitive.Light.ShapeIndex, out Matrix lightMatrix))
-                            frame.AddPrimitive(LightGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref lightMatrix);
+                            frame.AddPrimitive((lightPrimitive as LightGlowPrimitive).SpecificGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref lightMatrix);
                         else
-                            frame.AddPrimitive(LightGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref xnaDTileTranslation);
+                            frame.AddPrimitive((lightPrimitive as LightGlowPrimitive).SpecificGlowMaterial, lightPrimitive, RenderPrimitiveGroup.Lights, ref xnaDTileTranslation);
                     }
 
 #if DEBUG_LIGHT_CONE
@@ -252,6 +268,11 @@ namespace Orts.Viewer3D
         {
             LightGlowMaterial.Mark();
             LightConeMaterial.Mark();
+            foreach (var lightPrimitive in LightPrimitives)
+                if (lightPrimitive is LightGlowPrimitive && lightPrimitive.Light.Graphic != null)
+                {
+                    (lightPrimitive as LightGlowPrimitive).SpecificGlowMaterial.Mark();
+                 }
         }
 
         public static void CalculateLightCone(LightState lightState, out Vector3 position, out Vector3 direction, out float angle, out float radius, out float distance, out Vector4 color)
@@ -279,28 +300,30 @@ namespace Orts.Viewer3D
 			Debug.Assert(Viewer.PlayerTrain.LeadLocomotive == Viewer.PlayerLocomotive ||Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING ||
 				Viewer.PlayerTrain.Autopilot ||
                 Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.REMOTE || Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.STATIC, "PlayerTrain.LeadLocomotive must be PlayerLocomotive.");
-			var leadLocomotiveCar = Car.Train?.LeadLocomotive;
-            if (leadLocomotiveCar == null && Car.Train?.Cars[0] is MSTSLocomotive) // AI trains have no lead locomotive
-                leadLocomotiveCar = Car.Train.Cars[0];
+			var leadLocomotiveCar = Car.Train != null && Car.Train.IsActualPlayerTrain ? Viewer.PlayerLocomotive : null;
+            if (leadLocomotiveCar == null && Car.Train != null && Car.Train.TrainType == Train.TRAINTYPE.REMOTE && Car is MSTSLocomotive && (Car as MSTSLocomotive) == Car.Train.LeadLocomotive)
+                leadLocomotiveCar = Car.Train.LeadLocomotive;
 			var leadLocomotive = leadLocomotiveCar as MSTSLocomotive;
 
             // There are a lot of conditions now! IgnoredConditions[] stores which conditions are ignored, allowing shortcutting of many of these calculations
             // Should prevent some unneeded computation, but is a little messy. May revise in the future
             
             // Headlight
-			int newTrainHeadlight = !Car.Lights.IgnoredConditions[0] ? (Car.Train != null ? Car.Train.TrainType != Train.TRAINTYPE.STATIC ? leadLocomotiveCar.Headlight : 0 : 0) : 0;
+			int newTrainHeadlight = leadLocomotiveCar != null ? leadLocomotiveCar.Headlight : Car.Train != null && Car.Train.TrainType != Train.TRAINTYPE.STATIC ? 2 : 0;
             // Unit
             bool locomotiveFlipped = leadLocomotiveCar != null && leadLocomotiveCar.Flipped;
             bool locomotiveReverseCab = leadLocomotive != null && leadLocomotive.UsingRearCab;
             bool newCarIsReversed = Car.Flipped ^ locomotiveFlipped ^ locomotiveReverseCab;
-            bool newCarIsFirst = !Car.Lights.IgnoredConditions[1] && Car.Train == null || (locomotiveFlipped ^ locomotiveReverseCab ? Car.Train.LastCar : Car.Train.FirstCar) == Car;
-            bool newCarIsLast = !Car.Lights.IgnoredConditions[1] && Car.Train == null || (locomotiveFlipped ^ locomotiveReverseCab ? Car.Train.FirstCar : Car.Train.LastCar) == Car;
+            bool newCarIsFirst = !Car.Lights.IgnoredConditions[1] && (locomotiveFlipped ^ locomotiveReverseCab ? Car.Train?.LastCar : Car.Train?.FirstCar) == Car;
+            bool newCarIsLast = !Car.Lights.IgnoredConditions[1] && (locomotiveFlipped ^ locomotiveReverseCab ? Car.Train?.FirstCar : Car.Train?.LastCar) == Car;
             // Penalty
-			bool newPenalty = !Car.Lights.IgnoredConditions[2] && leadLocomotive != null && leadLocomotive.TrainBrakeController.EmergencyBraking;
+			bool newPenalty = !Car.Lights.IgnoredConditions[2] && Car.Train != null && Car.Train.TrainType != Train.TRAINTYPE.AI
+                && leadLocomotive != null && leadLocomotive.TrainBrakeController.EmergencyBraking;
             // Control
             bool newCarIsPlayer = !Car.Lights.IgnoredConditions[3] && Car.Train != null && (Car.Train == Viewer.PlayerTrain || Car.Train.TrainType == Train.TRAINTYPE.REMOTE);
             // Service - if a player or AI train, then will considered to be in servie, loose consists will not be considered to be in service.
-            bool newCarInService = !Car.Lights.IgnoredConditions[4] && Car.Train != null && (Car.Train == Viewer.PlayerTrain || Car.Train.TrainType == Train.TRAINTYPE.REMOTE || Car.Train.TrainType == Train.TRAINTYPE.AI);
+            bool newCarInService = !Car.Lights.IgnoredConditions[4] && Car.Train != null
+                && (Car.Train == Viewer.PlayerTrain || Car.Train.TrainType == Train.TRAINTYPE.REMOTE || Car.Train.TrainType == Train.TRAINTYPE.AI);
             // Time of day
             bool newIsDay = false;
             if (!Car.Lights.IgnoredConditions[5])
@@ -321,11 +344,11 @@ namespace Orts.Viewer3D
             // Friction brakes, activation force is arbitrary
             bool newBrakeOn = !Car.Lights.IgnoredConditions[9] && Car.BrakeForceN > 250.0f;
             // Reverser: -1: reverse, 0: within 10% of neutral, 1: forwards. Automatically swaps if this car is reversed
-            int newReverserState = !Car.Lights.IgnoredConditions[10] ? ((Car.Train.MUDirection == Direction.N || Math.Abs(Car.Train.MUReverserPercent) < 10.0f) ? 0 : 
+            int newReverserState = (!Car.Lights.IgnoredConditions[10] && Car.Train != null) ? ((Car.Train.MUDirection == Direction.N || Math.Abs(Car.Train.MUReverserPercent) < 10.0f) ? 0 : 
                 Car.Train.MUDirection == Direction.Forward ? 1 : -1) * (Car.Flipped ? -1 : 1) : 0;
             // Passenger doors
-            bool newLeftDoorOpen = !Car.Lights.IgnoredConditions[11] && Car.Train.DoorState(DoorSide.Left) != DoorState.Closed;
-            bool newRightDoorOpen = !Car.Lights.IgnoredConditions[11] && Car.Train.DoorState(DoorSide.Right) != DoorState.Closed;
+            bool newLeftDoorOpen = !Car.Lights.IgnoredConditions[11] && Car.Train?.DoorState(DoorSide.Left) != DoorState.Closed;
+            bool newRightDoorOpen = !Car.Lights.IgnoredConditions[11] && Car.Train?.DoorState(DoorSide.Right) != DoorState.Closed;
             // Horn and bell (for flashing ditch lights)
             bool newHornOn = !Car.Lights.IgnoredConditions[12] && leadLocomotive != null && leadLocomotive.HornRecent;
             bool newBellOn = !Car.Lights.IgnoredConditions[13] && leadLocomotive != null && leadLocomotive.BellRecent;
@@ -421,7 +444,7 @@ namespace Orts.Viewer3D
         public LightPrimitive(Light light)
         {
             Light = light;
-            StateCount = Light.Cycle ? 2 * Light.States.Count - 2 : Light.States.Count;
+            StateCount = Math.Max(Light.Cycle ? 2 * Light.States.Count - 2 : Light.States.Count, 1);
             UpdateStates(State, (State + 1) % StateCount);
         }
 
@@ -436,7 +459,7 @@ namespace Orts.Viewer3D
                 for (var i = 0; i < Light.States.Count - 1; i++)
                     transitionHandler(i, i, i + 1);
                 for (var i = Light.States.Count - 1; i > 0; i--)
-                    transitionHandler(Light.States.Count * 2 - 1 - i, i, i - 1);
+                    transitionHandler((Light.States.Count * 2 - 2) - i, i, i - 1);
             }
             else
             {
@@ -681,6 +704,7 @@ namespace Orts.Viewer3D
         static VertexDeclaration VertexDeclaration;
         VertexBuffer VertexBuffer;
         static IndexBuffer IndexBuffer;
+        public Material SpecificGlowMaterial;
 
         public LightGlowPrimitive(LightViewer lightViewer, RenderProcess renderProcess, Light light)
             : base(light)
@@ -890,6 +914,12 @@ namespace Orts.Viewer3D
 
         protected override void UpdateStates(int stateIndex1, int stateIndex2)
         {
+            // Cycling light: state index will be set above actual number of states
+            if (stateIndex1 >= Light.States.Count)
+                stateIndex1 = StateCount - stateIndex1;
+            if (stateIndex2 >= Light.States.Count)
+                stateIndex2 = StateCount - stateIndex2;
+
             var state1 = Light.States[stateIndex1];
             var state2 = Light.States[stateIndex2];
 
@@ -927,11 +957,11 @@ namespace Orts.Viewer3D
     {
         readonly Texture2D LightGlowTexture;
 
-        public LightGlowMaterial(Viewer viewer)
-            : base(viewer, null)
+        public LightGlowMaterial(Viewer viewer, string textureName)
+            : base(viewer, textureName)
         {
             // TODO: This should happen on the loader thread.
-            LightGlowTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Lightglow.png"));
+            LightGlowTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, textureName);
         }
 
         public override void SetState(GraphicsDevice graphicsDevice, Material previousMaterial)

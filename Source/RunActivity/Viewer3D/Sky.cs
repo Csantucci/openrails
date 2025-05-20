@@ -31,9 +31,7 @@ namespace Orts.Viewer3D
 {
     public class SkyViewer
     {
-        internal readonly SkyPrimitive   Primitive;
-        internal readonly float WindSpeed;
-        internal readonly float WindDirection;
+        internal readonly SkyPrimitive Primitive;
         internal int MoonPhase;
         internal Vector3 SolarDirection;
         internal Vector3 LunarDirection;
@@ -51,12 +49,7 @@ namespace Orts.Viewer3D
             Viewer = viewer;
             Material = viewer.MaterialManager.Load("Sky");
             // Instantiate classes
-            Primitive   = new SkyPrimitive(Viewer.RenderProcess);
-            // Default wind speed and direction
-            // TODO: We should be using Viewer.Simulator.Weather instead of our own local weather fields
-            WindSpeed = 0.0f; // m/s (approx 11 mph)
-            WindDirection = 14.7f; // radians (approx 270 deg, i.e. westerly)
-     
+            Primitive = new SkyPrimitive(Viewer.RenderProcess);
         }
 
         public void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)

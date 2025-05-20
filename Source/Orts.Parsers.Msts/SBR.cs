@@ -15,12 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Open Rails.  If not, see <http://www.gnu.org/licenses/>.
 
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 using Microsoft.Xna.Framework;
+using SharpDX.Direct3D11;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace Orts.Parsers.Msts
@@ -60,12 +61,14 @@ namespace Orts.Parsers.Msts
             // SIMISA@@  means uncompressed
             if (headerString.StartsWith("SIMISA@F"))
             {
-                fb = new InflaterInputStream(fb);
+                // Skip over the 2 byte zlib header and onto the DEFLATE stream itself
+                fb.Read(buffer, 16, 2);
+                fb = new DeflateStream(fb, CompressionMode.Decompress);
             }
             else if (headerString.StartsWith("\r\nSIMISA"))
             {
                 // ie us1rd2l1000r10d.s, we are going to allow this but warn
-                Console.Error.WriteLine("Improper header in " + filename);
+                Trace.TraceWarning("Improper header in " + filename);
                 fb.Read(buffer, 0, 4);
             }
             else if (!headerString.StartsWith("SIMISA@@"))
@@ -477,7 +480,12 @@ namespace Orts.Parsers.Msts
         {
             if (!EndOfBlock())
             {
-                TraceWarning("Expected end of block " + ID + "; got more data");
+                if (ID == TokenID.distance_levels || ID == TokenID.controllers || ID == TokenID.points)
+                {
+                    TraceWarning_NoPosition("Expected end of block " + ID + "; got more data");
+                }
+                else
+                    TraceWarning("Expected end of block " + ID + "; got more data");
                 Skip();
             }
         }
@@ -512,6 +520,11 @@ namespace Orts.Parsers.Msts
             SBRException.TraceWarning(this, message);
         }
 
+        public void TraceWarning_NoPosition(string message)
+        {
+            SBRException.TraceWarning_NoPosition(this, message);
+        }
+
         public override void ThrowException(string message)
         {
             throw new SBRException(this, message);
@@ -523,6 +536,10 @@ namespace Orts.Parsers.Msts
         public static void TraceWarning(BinaryBlockReader sbr, string message)
         {
             Trace.TraceWarning("{2} in {0}:byte {1}", sbr.Filename, sbr.InputStream.BaseStream.Position, message);
+        }
+        public static void TraceWarning_NoPosition(BinaryBlockReader sbr, string message)
+        {
+            Trace.TraceWarning("{1} in {0}", sbr.Filename, message);
         }
 
         public static void TraceInformation(BinaryBlockReader sbr, string message)

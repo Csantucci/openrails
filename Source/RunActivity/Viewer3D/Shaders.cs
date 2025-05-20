@@ -1,29 +1,30 @@
-﻿// COPYRIGHT 2009, 2010, 2011, 2012, 2013 by the Open Rails project.
-// 
+﻿// COPYRIGHT 2009 - 2023 by the Open Rails project.
+//
 // This file is part of Open Rails.
-// 
+//
 // Open Rails is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
-// 
+//
 // Open Rails is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Open Rails.  If not, see <http://www.gnu.org/licenses/>.
 
-// This file is the responsibility of the 3D & Environment Team. 
+// This file is the responsibility of the 3D & Environment Team.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content.Pipeline;
 using Microsoft.Xna.Framework.Graphics;
-using Orts.Viewer3D.Processes;
 using ORTS.Common;
+using Orts.Viewer3D.Processes;
 
 namespace Orts.Viewer3D
 {
@@ -36,7 +37,7 @@ namespace Orts.Viewer3D
 
         static byte[] GetEffectCode(string filename)
         {
-            string filePath = Path.Combine(Path.GetDirectoryName(System.Windows.Forms.Application.ExecutablePath), "Content", filename + ".mgfx");
+            string filePath = Path.Combine(ApplicationInfo.ProcessDirectory, "Content", filename + ".mgfx");
             return File.ReadAllBytes(filePath);
         }
     }
@@ -57,7 +58,7 @@ namespace Orts.Viewer3D
         readonly OpaqueDataDictionary parameters = new OpaqueDataDictionary();
 
         public override ContentBuildLogger Logger { get { return logger; } }
-        readonly ContentBuildLogger logger = new Logger();
+        readonly ContentBuildLogger logger = new TraceContentBuildLogger();
 
         public override void AddDependency(string filename) { }
         public override void AddOutputFile(string filename) { }
@@ -67,11 +68,11 @@ namespace Orts.Viewer3D
         public override ExternalReference<TOutput> BuildAsset<TInput, TOutput>(ExternalReference<TInput> sourceAsset, string processorName, OpaqueDataDictionary processorParameters, string importerName, string assetName) { throw new NotImplementedException(); }
     }
 
-    class Logger : ContentBuildLogger
+    class TraceContentBuildLogger : ContentBuildLogger
     {
-        public override void LogMessage(string message, params object[] messageArgs) => Console.WriteLine(message, messageArgs);
-        public override void LogImportantMessage(string message, params object[] messageArgs) => Console.WriteLine(message, messageArgs);
-        public override void LogWarning(string helpLink, ContentIdentity contentIdentity, string message, params object[] messageArgs) => Console.WriteLine(message, messageArgs);
+        public override void LogMessage(string message, params object[] messageArgs) => Trace.TraceInformation(message, messageArgs);
+        public override void LogImportantMessage(string message, params object[] messageArgs) => Trace.TraceInformation(message, messageArgs);
+        public override void LogWarning(string helpLink, ContentIdentity contentIdentity, string message, params object[] messageArgs) => Trace.TraceWarning(message, messageArgs);
     }
 
     [CallOnThread("Render")]
@@ -337,6 +338,7 @@ namespace Orts.Viewer3D
         readonly EffectParameter overcast2;
         readonly EffectParameter overcast3;
         readonly EffectParameter windDisplacement;
+        readonly EffectParameter cloudScalePosition;
         readonly EffectParameter skyColor;
         readonly EffectParameter moonColor;
         readonly EffectParameter moonTexCoord;
@@ -412,6 +414,8 @@ namespace Orts.Viewer3D
             }
         }
 
+        public Vector4 CloudScalePosition { set => cloudScalePosition.SetValue(value); }
+
         public float SunSizeMix = 2.0f;
         public float SunSize { set{ sunSize.SetValue(value); } }
 
@@ -458,6 +462,8 @@ namespace Orts.Viewer3D
             skyMapTexture   = Parameters["SkyMapTexture"];
             starMapTexture  = Parameters["StarMapTexture"];
             moonMapTexture  = Parameters["MoonMapTexture"];
+            time = Parameters["Time"];
+            cloudScalePosition = Parameters["CloudScalePosition"];
             moonMaskTexture = Parameters["MoonMaskTexture"];
             cloudMapTexture1 = Parameters["CloudMapTexture1"];
             cloudMapTexture2 = Parameters["CloudMapTexture2"];

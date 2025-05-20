@@ -1740,11 +1740,10 @@ namespace Orts.Simulation.Signalling
 
                             case HoldState.ManualApproach:
                                 sigHead.RequestApproachAspect();
-                                break;
-
+                                return;
                             case HoldState.ManualPass:
                                 sigHead.RequestLeastRestrictiveAspect();
-                                break;
+                                return;
                         }
                     }
                 }

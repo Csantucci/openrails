@@ -161,7 +161,7 @@ namespace Orts.Simulation.AIs
             {
                 RandomizeEfficiency(ref Efficiency);
             }
-            Name = String.Copy(name);
+            Name = name;
             TrafficService = trafficService;
             MaxVelocityA = maxVelocityA;
             // <CSComment> TODO: as Cars.Count is always = 0 at this point, activityClearingDistanceM is set to the short distance also for long trains
@@ -379,8 +379,8 @@ namespace Orts.Simulation.AIs
                 float initialThrottlepercent = InitialThrottlepercent;
                 MUDynamicBrakePercent = -1;
                 AITrainBrakePercent = 0;
-
-                FirstCar.CurrentElevationPercent = 100f * FirstCar.WorldPosition.XNAMatrix.M32;
+                // Force calculate gradient at the front of the train
+                FirstCar.UpdateGravity();
                 // Give it a bit more gas if it is uphill
                 if (FirstCar.CurrentElevationPercent < -2.0) initialThrottlepercent = 40f;
                 // Better block gas if it is downhill
@@ -714,7 +714,7 @@ namespace Orts.Simulation.AIs
 
                 if (Cars[0] is MSTSLocomotive leadingLoco)
                 {
-                    var isRainingOrSnowing = Simulator.Weather.PricipitationIntensityPPSPM2 > 0;
+                    var isRainingOrSnowing = Simulator.Weather.PrecipitationIntensityPPSPM2 > 0;
                     if (leadingLoco.Wiper && !isRainingOrSnowing)
                         leadingLoco.SignalEvent(Event.WiperOff);
                     else if (!leadingLoco.Wiper && isRainingOrSnowing)
@@ -1873,6 +1873,12 @@ namespace Orts.Simulation.AIs
         /// </summary>
         public virtual void UpdateStationState(float elapsedClockSeconds, int presentTime)
         {
+            if (StationStops.Count == 0)
+            {
+                AtStation = false;
+                MovementState = AI_MOVEMENT_STATE.STOPPED;
+                return;
+            }
             StationStop thisStation = StationStops[0];
             bool removeStation = true;
 
@@ -1890,13 +1896,12 @@ namespace Orts.Simulation.AIs
                     thisStation.ActualArrival = presentTime;
                     var stopTime = thisStation.CalculateDepartTime(presentTime, this);
                     actualdepart = thisStation.ActualDepart;
-                    DoorOpenTimer = 4.0f;
-                    DoorCloseTimer = stopTime - 10.0f;
-                    if (PreUpdate) DoorCloseTimer -= 10;
+                    DoorOpenTimer = PreUpdate ? 0 : 4;
+                    DoorCloseTimer = PreUpdate ? stopTime - 20 : stopTime - 10.0f;
                     if (DoorCloseTimer - 6 < DoorOpenTimer)
                     {
                         DoorOpenTimer = 0;
-                        DoorCloseTimer = stopTime - 3;
+                        DoorCloseTimer = Math.Max (stopTime - 3, 0);
                     }
 
 #if DEBUG_REPORTS
@@ -1926,7 +1931,7 @@ namespace Orts.Simulation.AIs
                     if (!IsFreight && Simulator.OpenDoorsInAITrains)
                     {
                         var frontIsFront = thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
-                        if (DoorOpenTimer > 0)
+                        if (DoorOpenTimer >= 0)
                         {
                             DoorOpenTimer -= elapsedClockSeconds;
                             if (DoorOpenTimer < 0)
@@ -1943,19 +1948,19 @@ namespace Orts.Simulation.AIs
                                 }
                             }
                         }
-                        if (DoorCloseTimer > 0)
+                        if (DoorCloseTimer >= 0)
                         {
                             DoorCloseTimer -= elapsedClockSeconds;
                             if (DoorCloseTimer < 0)
                             {
                                 if (thisStation.PlatformItem.PlatformSide[0])
                                 {
-                                    // Open left doors
+                                    // Close left doors
                                     SetDoors(frontIsFront ? DoorSide.Right : DoorSide.Left, false);
                                 }
                                 if (thisStation.PlatformItem.PlatformSide[1])
                                 {
-                                    // Open right doors
+                                    // Close right doors
                                     SetDoors(frontIsFront ? DoorSide.Left : DoorSide.Right, false);
                                 }
                             }
@@ -4415,7 +4420,8 @@ namespace Orts.Simulation.AIs
                     AI.AITrains.Add(this);
                     AI.aiListChanged = true;
                 }
-                else if (attachTrain is AITrain) RedefineAITriggers(attachTrain as AITrain);
+                else 
+                    attachTrain.RedefineSoundTriggers();
                 if (!UncondAttach)
                 {
                     RemoveTrain();
@@ -4534,8 +4540,7 @@ namespace Orts.Simulation.AIs
             }
             ResetActions(true);
             physicsUpdate(0);
-            RedefineAITriggers(this);
-
+            RedefineSoundTriggers();
         }
 
         //================================================================================================//
@@ -4777,8 +4782,8 @@ namespace Orts.Simulation.AIs
             // Move WP, if any, just under the loco;
             AuxActionsContain.MoveAuxActionAfterReversal(this);
             ResetActions(true);
-            RedefineAITriggers(this);
-            if (attachTrain is AITrain) RedefineAITriggers(attachTrain as AITrain);
+            RedefineSoundTriggers();
+            attachTrain.RedefineSoundTriggers();
             physicsUpdate(0);// Stop the wheels from moving etc
 
         }
@@ -6212,15 +6217,15 @@ namespace Orts.Simulation.AIs
                         break;
                 }
 
-                retString[7] = String.Copy(actString);
+                retString[7] = actString;
                 retString[8] = FormatStrings.FormatDistance(
                         nextActionInfo.ActivateDistanceM - PresentPosition[0].DistanceTravelledM, metric);
 
             }
 
-            retString[4] = String.Copy(movString);
-            retString[5] = String.Copy(abString);
-            retString[11] = String.Copy(nameString);
+            retString[4] = movString;
+            retString[5] = abString;
+            retString[11] = nameString;
 
             return retString;
         }

@@ -400,6 +400,8 @@ namespace Orts.Formats.Msts
         public int FuelWater = 100;		// percent
         public int FuelCoal = 100;		// percent
         public int FuelDiesel = 100;	// percent
+        public int FuelWood = 100;      // percent
+        public int FuelSand = 100;      // percent
         public string LoadStationsPopulationFile;
 
         public Tr_Activity_Header(STFReader stf) {
@@ -423,7 +425,9 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("workers", ()=>{ Workers = stf.ReadIntBlock(Workers); }),
                 new STFReader.TokenProcessor("fuelwater", ()=>{ FuelWater = stf.ReadIntBlock(FuelWater); }),
                 new STFReader.TokenProcessor("fuelcoal", ()=>{ FuelCoal = stf.ReadIntBlock(FuelCoal); }),
+                new STFReader.TokenProcessor("fuelwood", ()=>{ FuelWood = stf.ReadIntBlock(FuelWood); }),
                 new STFReader.TokenProcessor("fueldiesel", ()=>{ FuelDiesel = stf.ReadIntBlock(FuelDiesel); }),
+                new STFReader.TokenProcessor("fuelsand", ()=>{ FuelSand = stf.ReadIntBlock(FuelSand); }),
                 new STFReader.TokenProcessor("ortsloadstationspopulation", ()=>{ LoadStationsPopulationFile = stf.ReadStringBlock(null); }),
             });
         }
@@ -865,20 +869,6 @@ namespace Orts.Formats.Msts
                     setting.ActWeatherRandomizationLevel = ORTSOptionsActivityWeatherRandomization;
                     setting.ActWeatherRandomizationLevel = (int) MathHelper.Clamp(setting.ActWeatherRandomizationLevel, 0, 3);
                     Trace.Write("\nActivity Weather Randomization   =   " + setting.ActWeatherRandomizationLevel.ToString());
-                }
-
-                if (ORTSOptionsSuperElevationLevel > 0)
-                {
-                    setting.UseSuperElevation = ORTSOptionsSuperElevationLevel;
-                    setting.UseSuperElevation = (int) MathHelper.Clamp(setting.UseSuperElevation, 0, 10);
-                    Trace.Write("\nSuper elevation - level          =   " + setting.UseSuperElevation.ToString());
-                }
-
-                if (ORTSOptionsSuperElevationMinimumLength > 0)
-                {
-                    setting.SuperElevationMinLen = ORTSOptionsSuperElevationMinimumLength;
-                    setting.SuperElevationMinLen = (int) MathHelper.Clamp(setting.SuperElevationMinLen, 50, 1000000);
-                    Trace.Write("\nSuper elevation - minimum length =   " + setting.SuperElevationMinLen.ToString());
                 }
 
                 if (ORTSOptionsSuperElevationGauge > 0)
@@ -1643,7 +1633,6 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("engine", ()=>{ WagonList.Add(new Wagon(stf)); }),
                 new STFReader.TokenProcessor("ortseot", ()=>{ WagonList.Add(new Wagon(stf)); }),
                 new STFReader.TokenProcessor("ortstraincontrolsystemparameters", () => TcsParametersFileName = stf.ReadStringBlock(null)),
-                new STFReader.TokenProcessor("ortseot", ()=>{ WagonList.Add(new Wagon(stf)); }),
             });
         }
     }

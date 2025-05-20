@@ -101,7 +101,7 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
 
                     for (int i = 0; i < train.Cars.Count; i++)
                     {
-                        if ((train.Cars[i] as MSTSWagon).HandBrakePresent)
+                        if ((train.Cars[i] as MSTSWagon).MSTSBrakeSystem.HandBrakePresent)
                             handBrakeCount++;
                     }
 
@@ -199,7 +199,7 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
                 case ORTS.Common.Input.UserCommand.DisplaySwitchWindow:
                     description = Viewer.Catalog.GetParticularString("SwitchPanel", "Switch");
                     break;
-                case ORTS.Common.Input.UserCommand.DisplayTrainOperationsWindow:
+                case ORTS.Common.Input.UserCommand.DisplayTrainCarOperationsWindow:
                     description = Viewer.Catalog.GetParticularString("SwitchPanel", "Train Operations");
                     break;
                 case ORTS.Common.Input.UserCommand.DisplayTrainDpuWindow:

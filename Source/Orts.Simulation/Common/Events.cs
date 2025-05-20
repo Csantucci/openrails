@@ -31,6 +31,10 @@ namespace Orts.Common
         AITrainHelperLoco,
         AITrainLeadLoco,
         AITrainLeavingStation,
+        PlayerTrainHelperLoco,
+        PlayerTrainLeadLoco,
+        StaticTrainLoco,
+        EndAITrainLeadLoco,
         BatteryOff,
         BatteryOn,
         BatterySwitchOff,
@@ -131,10 +135,14 @@ namespace Orts.Common
         PermissionDenied,
         PermissionGranted,
         PermissionToDepart,
-        PlayerTrainHelperLoco,
-        PlayerTrainLeadLoco,
         PowerKeyOff,
         PowerKeyOn,
+        VoltageSelectorDecrease,
+        VoltageSelectorIncrease,
+        PantographSelectorDecrease,
+        PantographSelectorIncrease,
+        PowerLimitationSelectorDecrease,
+        PowerLimitationSelectorIncrease,
         ReverserChange,
         ReverserToForwardBackward,
         ReverserToNeutral,
@@ -151,6 +159,10 @@ namespace Orts.Common
         WaterInjector1On,
         WaterInjector2Off,
         WaterInjector2On,
+        WaterMotionPump1Off,
+        WaterMotionPump1On,
+        WaterMotionPump2Off,
+        WaterMotionPump2On,
         BlowdownValveToggle,
         SteamHeatChange, 
         SteamPulse1,
@@ -382,7 +394,13 @@ namespace Orts.Common
                         case 66: return Event.Pantograph2Up;
                         case 67: return Event.Pantograph2Down;
 
+
                         // ORTS only Events
+                        case 90: return Event.WaterMotionPump1On;
+                        case 91: return Event.WaterMotionPump1Off;
+                        case 92: return Event.WaterMotionPump2On;
+                        case 93: return Event.WaterMotionPump2Off;
+
                         case 101: return Event.GearUp; // for gearbox based engines
                         case 102: return Event.GearDown; // for gearbox based engines
                         case 103: return Event.ReverserToForwardBackward; // reverser moved to forward or backward position
@@ -547,6 +565,13 @@ namespace Orts.Common
                         case 251: return Event.OverchargeBrakingOff;
                         case 252: return Event.EmergencyVentValveOn;
 
+                        case 253: return Event.VoltageSelectorDecrease;
+                        case 254: return Event.VoltageSelectorIncrease;
+                        case 255: return Event.PantographSelectorDecrease;
+                        case 256: return Event.PantographSelectorIncrease;
+                        case 257: return Event.PowerLimitationSelectorDecrease;
+                        case 258: return Event.PowerLimitationSelectorIncrease;
+
                         case 260: return Event.WindowClosing;
                         case 261: return Event.WindowOpening;
                         case 262: return Event.WindowsClosed;
@@ -573,7 +598,8 @@ namespace Orts.Common
                         case 333: return Event.PlayerTrainHelperLoco;
                         case 334: return Event.AITrainApproachingStation;
                         case 335: return Event.AITrainLeavingStation;
-
+                        case 336: return Event.StaticTrainLoco;
+                        case 337: return Event.EndAITrainLeadLoco;
                         default: return 0;
                     }
                 case Source.MSTSCrossing:

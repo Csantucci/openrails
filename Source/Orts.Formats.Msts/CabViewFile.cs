@@ -81,6 +81,9 @@ namespace Orts.Formats.Msts
         BRAKE_CYL,
         BRAKE_PIPE,
         LINE_VOLTAGE,
+        ORTS_PANTOGRAPH_VOLTAGE_AC,
+        ORTS_PANTOGRAPH_VOLTAGE_DC,
+        ORTS_BATTERY_VOLTAGE,
         AMMETER,
         AMMETER_ABS,
         LOAD_METER,
@@ -161,6 +164,10 @@ namespace Orts.Formats.Msts
         ORTS_CYL_COMP,
         GEARS_DISPLAY,
         DYNAMIC_BRAKE_FORCE,
+        ORTS_POWER_SUPPLY,
+        ORTS_VOLTAGE_SELECTOR,
+        ORTS_PANTOGRAPH_SELECTOR,
+        ORTS_POWER_LIMITATION_SELECTOR,
         ORTS_CIRCUIT_BREAKER_DRIVER_CLOSING_ORDER,
         ORTS_CIRCUIT_BREAKER_DRIVER_OPENING_ORDER,
         ORTS_CIRCUIT_BREAKER_DRIVER_CLOSING_AUTHORIZATION,
@@ -326,6 +333,8 @@ namespace Orts.Formats.Msts
         METRES_SEC_SEC,
         KMµHOURµHOUR,
         KM_HOUR_HOUR,
+        KMµHOURµMIN,
+        KM_HOUR_MIN,
         KMµHOURµSEC,
         KM_HOUR_SEC,
         METRESµSECµHOUR,
@@ -391,11 +400,18 @@ namespace Orts.Formats.Msts
                     Type = CABViewControlTypes.ORTS_TCS;
                 }
             }
+            else if (name != null && name.ToUpperInvariant().StartsWith("ORTS_POWER_SUPPLY"))
+            {
+                if (int.TryParse(name.Substring(17), out Id))
+                {
+                    Type = CABViewControlTypes.ORTS_POWER_SUPPLY;
+                }
+            }
             else Enum.TryParse(name, true, out Type);
         }
         public override string ToString()
         {
-            if (Type == CABViewControlTypes.ORTS_TCS) return Type.ToString() + Id;
+            if (Type == CABViewControlTypes.ORTS_TCS || Type == CABViewControlTypes.ORTS_POWER_SUPPLY) return Type.ToString() + Id;
             return Type.ToString();
         }
     }
@@ -476,6 +492,10 @@ namespace Orts.Formats.Msts
         public CabViewControlType ControlType;
         public CABViewControlStyles ControlStyle = CABViewControlStyles.NONE;
         public CABViewControlUnits Units = CABViewControlUnits.NONE;
+
+        public double UnitsExponent = 1.0f;
+        public float UnitsScale = 1.0f;
+        public float UnitsOffset;
 
         public bool DisabledIfLowVoltagePowerSupplyOff { get; private set; } = false;
         public bool DisabledIfCabPowerSupplyOff { get; private set; } = false;
@@ -721,6 +741,9 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
     }
@@ -822,6 +845,9 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
     }
@@ -976,6 +1002,9 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
 
@@ -1060,6 +1089,7 @@ namespace Orts.Formats.Msts
         public bool MouseControl;
         public int Orientation;
         public int Direction;
+        public bool Reversed { get; protected set; } = false;
 
         public List<double> Values 
         {
@@ -1075,8 +1105,8 @@ namespace Orts.Formats.Msts
         public List<int> Positions = new List<int>();
 
         private int _ValuesRead;
-        private int numPositions;
-        private bool canFill = true;
+        private int NumPositions;
+        private bool CanFill = true;
 
         public struct NewScreenData
         {
@@ -1129,7 +1159,7 @@ namespace Orts.Formats.Msts
                         stf.MustMatch("(");
                         // If Positions are not filled before by Values
                         bool shouldFill = (Positions.Count == 0);
-                        numPositions = stf.ReadInt(null); // Number of Positions
+                        NumPositions = stf.ReadInt(null); // Number of Positions
 
                         var minPosition = 0;
                         var positionsRead = 0;
@@ -1168,22 +1198,33 @@ namespace Orts.Formats.Msts
                                 Positions[i] = i;
                         }
 
-                        // Check if eligible for filling
-
-                        if (Positions.Count > 1 && Positions[0] != 0) canFill = false;
-                        else
+                        // Possible that positions were defined in reverse, eg: 3DTrains Surfliner trains
+                        // Ensure positions are sorted from least to greatest before proceeding
+                        if (Positions.Count > 0 && Positions[0] > Positions[Positions.Count - 1])
                         {
+                            Reversed ^= true;
+                            // Recalculate positions in reverse
+                            for (int i = 0; i < Positions.Count; i++)
+                                Positions[i] = (FramesCount - 1) - Positions[i];
+                        }
+
+                        // Check if eligible for filling
+                        if (Positions.Count > 1 && Positions[0] != 0)
+                            CanFill = false;
+                        else 
+                        { 
                             for (var iPos = 1; iPos <= Positions.Count - 1; iPos++)
                             {
-                                if (Positions[iPos] > Positions[iPos-1]) continue;
-                                canFill = false;
+                                if (Positions[iPos] > Positions[iPos-1])
+                                    continue;
+                                CanFill = false;
                                 break;
                             }
                         }
 
                         // This is a protection against GP40 locomotives that erroneously have positions pointing beyond frame count limit.
 
-                        if (Positions.Count > 1 && canFill && Positions.Count < FramesCount && Positions[Positions.Count-1] >= FramesCount && Positions[0] == 0)
+                        if (Positions.Count > 1 && CanFill && Positions.Count < FramesCount && Positions[Positions.Count-1] >= FramesCount && Positions[0] == 0)
                         {
                             STFException.TraceInformation(stf, "Some NumPositions entries refer to non-exisiting frames, trying to renumber");
                             Positions[Positions.Count - 1] = FramesCount - 1;
@@ -1208,8 +1249,8 @@ namespace Orts.Formats.Msts
                             }
                             // Avoid later repositioning, put every value to its Position
                             // But before resize Values if needed
-                            if (numValues != numPositions)
-                            {
+                            if (numValues != NumPositions)
+                            { 
                                 while (Values.Count <= Positions[_ValuesRead])
                                 {
                                     Values.Add(0);
@@ -1237,6 +1278,9 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsnewscreenpage", () => {ParseNewScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
                 new STFReader.TokenProcessor("ortsparameter1", ()=>{ Parameter1 = stf.ReadFloatBlock(STFReader.UNITS.Any, 0); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
                 });
 
                 // If no ACE, just don't need any fixup
@@ -1272,7 +1316,7 @@ namespace Orts.Formats.Msts
 
                     // Only shuffle data in following cases
 
-                    if (Values.Count != Positions.Count || (Values.Count < FramesCount & canFill)|| ( Values.Count > 0 && Values[0] == Values[Values.Count - 1] && Values[0] == 0))
+                    if (Values.Count != Positions.Count || (Values.Count < FramesCount & CanFill)|| ( Values.Count > 0 && Values[0] == Values[Values.Count - 1] && Values[0] == 0))
                     {
 
                         // Fixup Positions and Values collections first
@@ -1310,42 +1354,52 @@ namespace Orts.Formats.Msts
                             Positions.Add(0);
                             // We will need the FramesCount later!
                             // We use Positions only here
-                            Positions.Add(FramesCount);
+                            Positions.Add(FramesCount - 1);
 
                             // Fill empty Values
-                            for (int i = 0; i < FramesCount; i++)
+                            for (int i = 0; i < (FramesCount - 1); i++)
                                 Values.Add(0);
-                            Values[0] = MinValue;
+                            // Offset for min and max values to achieve equal frame spacing
+                            double offset = 1.0 / (2.0 * FramesCount);
+                            // Some dummy controls will have only one frame
+                            if (Values.Count > 0)
+                                Values[0] = MinValue + offset;
+                            else
+                                Values.Add(MinValue + offset);
 
-                            Values.Add(MaxValue);
+                            // Add maximum value to the end
+                            Values.Add(MaxValue - offset);
                         }
                         else if (Values.Count == 2 && Values[0] == 0 && Values[1] < MaxValue && Positions[0] == 0 && Positions[1] == 1 && Values.Count < FramesCount)
                         {
                             //This if clause covers among others following cases:
                             // Case 1 (e.g. engine brake lever of gp38):
-			                //NumFrames ( 18 2 9 )
-			                //NumPositions ( 2 0 1 )
-			                //NumValues ( 2 0 0.3 )
-			                //Orientation ( 0 )
-			                //DirIncrease ( 0 )
-			                //ScaleRange ( 0 1 )
-                            Positions.Add(FramesCount);
+                            //NumFrames ( 18 2 9 )
+                            //NumPositions ( 2 0 1 )
+                            //NumValues ( 2 0 0.3 )
+                            //Orientation ( 0 )
+                            //DirIncrease ( 0 )
+                            //ScaleRange ( 0 1 )
+                            // Add missing positions
+                            Positions.Add(FramesCount - 1);
                             // Fill empty Values
-                            for (int i = Values.Count; i < FramesCount; i++)
-                                Values.Add(Values[1]);
-                            Values.Add(MaxValue);                            
+                            for (int i = Values.Count; i < (FramesCount - 1); i++)
+                                Values.Add(0);
+                            // Offset for min and max values to achieve equal frame spacing
+                            double offset = 1.0 / (2.0 * FramesCount);
+                            // Add maximum value to the end
+                            Values.Add(MaxValue - offset);                            
                         }
-
                         else
                         {
                             //This if clause covers among others following cases:
                             // Case 1 (e.g. train brake lever of Acela): 
-			                //NumFrames ( 12 4 3 )
-			                //NumPositions ( 5 0 1 9 10 11 )
-			                //NumValues ( 5 0 0.2 0.85 0.9 0.95 )
-			                //Orientation ( 1 )
-			                //DirIncrease ( 1 )
-			                //ScaleRange ( 0 1 )
+                            //NumFrames ( 12 4 3 )
+                            //NumPositions ( 5 0 1 9 10 11 )
+                            //NumValues ( 5 0 0.2 0.85 0.9 0.95 )
+                            //Orientation ( 1 )
+                            //DirIncrease ( 1 )
+                            //ScaleRange ( 0 1 )
                             //
                             // Fill empty Values
                             int iValues = 1;
@@ -1361,11 +1415,6 @@ namespace Orts.Formats.Msts
                                 }
                                 iValues++;
                             }
-
-                            // Add the maximums to the end, the Value will be removed
-                            // We use Positions only here
-                            if (Values.Count > 0 && Values[0] <= Values[Values.Count - 1]) Values.Add(MaxValue);
-                            else if (Values.Count > 0 && Values[0] > Values[Values.Count - 1]) Values.Add(MinValue);
                         }
 
                         // OK, we have a valid size of Positions and Values
@@ -1391,9 +1440,6 @@ namespace Orts.Formats.Msts
                                 p = Positions[i];
                             }
                         }
-
-                        // Don't need the MaxValue added before, remove it
-                        Values.RemoveAt(Values.Count - 1);
                     }
                 }
 
@@ -1418,13 +1464,21 @@ namespace Orts.Formats.Msts
                         break;
                 }
             }
-//            catch (Exception error)
-//            {
-//                if (error is STFException) // Parsing error, so pass it on
-//                    throw;
-//                else                       // Unexpected error, so provide a hint
-//                    throw new STFException(stf, "Problem with NumPositions/NumValues/NumFrames/ScaleRange");
-//            } // End of Need check the Values collection for validity
+            //            catch (Exception error)
+            //            {
+            //                if (error is STFException) // Parsing error, so pass it on
+            //                    throw;
+            //                else                       // Unexpected error, so provide a hint
+            //                    throw new STFException(stf, "Problem with NumPositions/NumValues/NumFrames/ScaleRange");
+            //            } // End of Need check the Values collection for validity
+
+            // Ensure resulting set of values has the correct format (sorted least to greatest) and resort
+            // Assume values have been entered in reverse order if final value is less than initial value
+            if (Values.Count > 0 && Values[0] > Values[Values.Count - 1])
+                Reversed ^= true;
+            // Force sort values from least to greatest
+            Values.Sort();
+
         } // End of Constructor
 
         protected void ParseNewScreen(STFReader stf)
@@ -1472,18 +1526,30 @@ namespace Orts.Formats.Msts
                             stf.ParseBlock( new STFReader.TokenProcessor[] {
                                 new STFReader.TokenProcessor("style", ()=>{ MSStyles.Add(ParseNumStyle(stf));
                                 }),
-                                new STFReader.TokenProcessor("switchval", ()=>{ Values.Add(stf.ReadFloatBlock(STFReader.UNITS.None, null))
+                                new STFReader.TokenProcessor("switchval", ()=>{ Values.Add(stf.ReadDoubleBlock(null))
                                 ; }),
                         });}),
                     });
-                    if (Values.Count > 0) MaxValue = Values.Last();
-                    for (int i = Values.Count; i < FramesCount; i++)
-                        Values.Add(-10000);
+                    if (Values.Count > 0)
+                        MaxValue = Values.Max();
                 }),
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
+
+            // Ensure resulting set of values has the correct format (sorted least to greatest) and resort
+            // Assume values have been entered in reverse order if final value is less than initial value
+            if (Values.Count > 0 && Values[0] > Values[Values.Count - 1])
+                Reversed ^= true;
+            // Fill in missing values 
+            for (int i = Values.Count; i < FramesCount; i++)
+                Values.Add(Values[Values.Count - 1]);
+            // Force sort values from least to greatest
+            Values.Sort();
         }
         protected int ParseNumStyle(STFReader stf)
         {
@@ -1522,16 +1588,28 @@ namespace Orts.Formats.Msts
                             stf.ParseBlock( new STFReader.TokenProcessor[] {
                                 new STFReader.TokenProcessor("style", ()=>{ MSStyles.Add(ParseNumStyle(stf));
                                 }),
-                                new STFReader.TokenProcessor("switchval", ()=>{ Values.Add(stf.ReadFloatBlock(STFReader.UNITS.None, null))
+                                new STFReader.TokenProcessor("switchval", ()=>{ Values.Add(stf.ReadDoubleBlock(null))
                                 ; }),
                         });}),
                     });
-                    if (Values.Count > 0) MaxValue = Values.Last();
-                    for (int i = Values.Count; i < FramesCount; i++)
-                        Values.Add(-10000);
+                    if (Values.Count > 0)
+                        MaxValue = Values.Max();
                 }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
+
+            // Ensure resulting set of values has the correct format (sorted least to greatest) and resort
+            // Assume values have been entered in reverse order if final value is less than initial value
+            if (Values.Count > 0 && Values[0] > Values[Values.Count - 1])
+                Reversed ^= true;
+            // Fill in missing values 
+            for (int i = Values.Count; i < FramesCount; i++)
+                Values.Add(Values[Values.Count - 1]);
+            // Force sort values from least to greatest
+            Values.Sort();
         }
         protected int ParseNumStyle(STFReader stf)
         {
@@ -1577,6 +1655,9 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("ortsdisplay", ()=>{ParseDisplay(stf); }),
                 new STFReader.TokenProcessor("ortsscreenpage", () => {ParseScreen(stf); }),
                 new STFReader.TokenProcessor("ortscabviewpoint", ()=>{ParseCabViewpoint(stf); }),
+                new STFReader.TokenProcessor("ortsunitsexponent", ()=>{ UnitsExponent = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsscalefactor", ()=>{ UnitsScale = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
+                new STFReader.TokenProcessor("ortsunitsoffset", ()=>{ UnitsOffset = stf.ReadFloatBlock(STFReader.UNITS.None, null); }),
             });
         }
         protected void ParseCustomParameters(STFReader stf)

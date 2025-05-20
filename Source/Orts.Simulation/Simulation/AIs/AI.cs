@@ -351,6 +351,7 @@ namespace Orts.Simulation.AIs
         private void PrerunAI(int playerTrainOriginalTrain, TTTrain.FormCommand playerTrainFormedOfType, TTTrain playerTrain, CancellationToken cancellation)
         {
             bool endPreRun = false;
+            bool activeTrains = false;
 
             float firstAITime = StartList.GetNextTime();
             if (firstAITime > 0 && firstAITime < Simulator.ClockTime)
@@ -361,10 +362,9 @@ namespace Orts.Simulation.AIs
                 clockTime = firstAITime - 1.0f;
                 localTime = true;
                 Simulator.PreUpdate = true;
-                bool activeTrains = false;
                 for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
                 {
-                    var loaderSpan = (float)TimetableInfo.PlayerTrainOriginalStartTime - firstAITime;
+                    var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.TTWatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
                     Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
 
                     int fullsec = Convert.ToInt32(runTime);
@@ -613,6 +613,43 @@ namespace Orts.Simulation.AIs
 
                 clockTime = Simulator.ClockTime = playerTTTrain.StartTime.Value;
             }
+
+            if (Simulator.Settings.TTWatchMode)
+            {
+                if (Simulator.ClockTime > Simulator.TTWatchStartTime)
+                {
+                    Simulator.TTWatchStartTime = (int)Simulator.ClockTime + 1;
+                    Trace.TraceWarning("Watch mode delayed due to delayed start of player train");
+                }
+
+                if (Simulator.Trains.Count > 0 && Simulator.Trains[0].TrainType == Train.TRAINTYPE.PLAYER)
+                {
+                    ((TTTrain)Simulator.Trains[0]).CalculatePositionOfCars(); // calculate position of player train cars
+                    ((TTTrain)Simulator.Trains[0]).PostInit();               // place player train after pre-running of AI trains
+                    ((TTTrain)Simulator.Trains[0]).SwitchToAutopilotControl();
+                }
+                clockTime = Simulator.ClockTime = Simulator.TTWatchStartTime;
+                for (double runTime = firstAITime; runTime < Simulator.ClockTime && !endPreRun; runTime += 5.0) // Update with 5 secs interval
+                {
+                    var loaderSpan = (Simulator.Settings.TTWatchMode ? (float)Simulator.TTWatchStartTime : (float)TimetableInfo.PlayerTrainOriginalStartTime) - firstAITime;
+                    Simulator.TimetableLoadedFraction = ((float)runTime - firstAITime) / loaderSpan;
+
+                    int fullsec = Convert.ToInt32(runTime);
+                    if (fullsec % 3600 < 5) Trace.Write(" " + (fullsec / 3600).ToString("00") + ":00 ");
+
+                    endPreRun = AITTUpdate((float)(runTime - clockTime), Simulator.PreUpdate, ref activeTrains);
+
+                    if (activeTrains)
+                    {
+                        Simulator.Signals.Update(true);
+                    }
+
+                    clockTime = runTime;
+                    if (cancellation.IsCancellationRequested) return; // Ping watchdog process
+                }
+            }
+
+
 
             Trace.Write("\n");
             Simulator.PreUpdate = false;
@@ -929,16 +966,32 @@ namespace Orts.Simulation.AIs
 
                         if (Simulator.Activity != null && car is MSTSSteamLocomotive mstsSteamLocomotive)
                         {
+                            
                             mstsSteamLocomotive.CombinedTenderWaterVolumeUKG = ORTS.Common.Kg.ToLb(mstsSteamLocomotive.MaxLocoTenderWaterMassKG) / 10.0f * Simulator.Activity.Tr_Activity.Tr_Activity_Header.FuelWater / 100.0f;
-                            mstsSteamLocomotive.TenderCoalMassKG = mstsSteamLocomotive.MaxTenderCoalMassKG * Simulator.Activity.Tr_Activity.Tr_Activity_Header.FuelCoal / 100.0f;
+
+                            // Adjust fuel stocks depending upon fuel used - in Activity mode
+                            if (mstsSteamLocomotive.SteamLocomotiveFuelType == MSTSSteamLocomotive.SteamLocomotiveFuelTypes.Wood)
+                            {
+                                mstsSteamLocomotive.TenderFuelMassKG = mstsSteamLocomotive.MaxTenderFuelMassKG * Simulator.Activity.Tr_Activity.Tr_Activity_Header.FuelWood / 100.0f;
+                            }
+                            else if (mstsSteamLocomotive.SteamLocomotiveFuelType == MSTSSteamLocomotive.SteamLocomotiveFuelTypes.Oil)
+                            {
+                                mstsSteamLocomotive.TenderFuelMassKG = mstsSteamLocomotive.MaxTenderFuelMassKG * Simulator.Activity.Tr_Activity.Tr_Activity_Header.FuelDiesel / 100.0f;
+                            }
+                            else // defaults to coal fired
+                            {
+                                mstsSteamLocomotive.TenderFuelMassKG = mstsSteamLocomotive.MaxTenderFuelMassKG * Simulator.Activity.Tr_Activity.Tr_Activity_Header.FuelCoal / 100.0f;
+                            }
                         }
 
-                        if (train.InitialSpeed != 0)
-                            car.SignalEvent(PowerSupplyEvent.RaisePantograph, 1);
+                        if (train.InitialSpeed != 0 && car is MSTSLocomotive loco)
+                            loco.SetPower(true);
                     }
                     else
                     {
-                        car.SignalEvent(PowerSupplyEvent.RaisePantograph, 1);
+                        if (car is MSTSLocomotive loco)
+                            loco.SetPower(true);
+
                         car.CarID = "AI" + train.Number.ToString() + " - " + (train.Cars.Count - 1).ToString();
                     }
 
@@ -1321,7 +1374,7 @@ namespace Orts.Simulation.AIs
                 Simulator.NameDictionary.Add(train.Name.ToLower(), train);
                 if (train.TrainType == Train.TRAINTYPE.PLAYER || train.TrainType == Train.TRAINTYPE.INTENDED_PLAYER)
                 {
-                    if (AITrains[0].TrainType == Train.TRAINTYPE.PLAYER)
+                    if (AITrains.Count > 0 && AITrains[0].TrainType == Train.TRAINTYPE.PLAYER)
                         AITrains.RemoveAt(0);
                     AITrains.Insert(0, train);
                 }

@@ -815,6 +815,12 @@ namespace Orts.Parsers.Msts
             /// </summary>            
             Angle = 1 << 28,
 
+            /// <summary>
+            /// Valid Units: J, kJ, MJ, Wh, kWh
+            /// <para>Scaled to J.</para>
+            /// </summary>            
+            Energy = 1 << 29,
+
             // "Any" is used where units cannot easily be specified, such as generic routines for interpolating continuous data from point values.
             // or interpreting locomotive cab attributes from the ORTSExtendedCVF experimental mechanism.
             // "Any" should not be used where the dimensions of a unit are predictable.
@@ -996,7 +1002,11 @@ namespace Orts.Parsers.Msts
                 {
                     case "": return 1.0;
                     case "m/s": return 1.0;
+                    case "cm/s": return 0.01;
+                    case "mm/s": return 0.001;
                     case "mph": return 0.44704;
+                    case "ft/s": return 0.3048;
+                    case "in/s": return 0.0254;
                     case "kph": return 0.27777778;
                     case "km/h": return 0.27777778;
                     case "kmph": return 0.27777778;
@@ -1008,7 +1018,11 @@ namespace Orts.Parsers.Msts
                 {
                     case "": return 0.44704;
                     case "m/s": return 1.0;
+                    case "cm/s": return 0.01;
+                    case "mm/s": return 0.001;
                     case "mph": return 0.44704;
+                    case "ft/s": return 0.3048;
+                    case "in/s": return 0.0254;
                     case "kph": return 0.27777778;
                     case "km/h": return 0.27777778;
                     case "kmph": return 0.27777778;
@@ -1144,6 +1158,17 @@ namespace Orts.Parsers.Msts
                     case "": return 1.0;
                     case "rad": return 1;
                     case "deg": return 0.0174533;  // 1 deg = 0.0174533 radians
+                }
+            
+            if ((validUnits & UNITS.Energy) > 0)
+                switch (suffix)
+                {
+                    case "": return 1.0f;
+                    case "j": return 1;
+                    case "kj": return 1000;
+                    case "mj": return 1e6f;
+                    case "wh": return 3.6e3f;
+                    case "kwh": return 3.6e6f;
                 }
             STFException.TraceWarning(this, "Found a suffix '" + suffix + "' which could not be parsed as a " + validUnits.ToString() + " unit");
             return 1;

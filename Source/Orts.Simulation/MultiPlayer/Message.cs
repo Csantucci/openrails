@@ -1,4 +1,4 @@
-﻿// COPYRIGHT 2012, 2013 by the Open Rails project.
+// COPYRIGHT 2012, 2013 by the Open Rails project.
 // 
 // This file is part of Open Rails.
 // 
@@ -473,7 +473,7 @@ namespace Orts.MultiPlayer
                 }
                 else
                 {
-                    System.Console.WriteLine("Wrong version of protocol, will play in single mode, please update to version " + MPManager.Instance().version);
+                    Trace.TraceWarning("Wrong version of protocol, will play in single mode, please update to version " + MPManager.Instance().version);
                     throw new MultiPlayerError();//client, close the connection
                 }
             }
@@ -1385,7 +1385,7 @@ namespace Orts.MultiPlayer
                 }
                 catch (Exception error)
                 {
-                    Console.WriteLine(wagonFilePath + " " + error);
+                    Trace.WriteLine(new FileLoadException(wagonFilePath, error));
                     car = MPManager.Instance().SubCar(train, wagonFilePath, lengths[i]);
                 }
 
@@ -1614,7 +1614,7 @@ namespace Orts.MultiPlayer
                     }
                     catch (Exception error)
                     {
-                        Console.WriteLine(wagonFilePath + " " + error);
+                        Trace.WriteLine(new FileLoadException(wagonFilePath, error));
                         car = MPManager.Instance().SubCar(train, wagonFilePath, lengths[i]);
                     }
 
@@ -1664,7 +1664,7 @@ namespace Orts.MultiPlayer
                     }
                     catch (Exception error)
                     {
-                        Console.WriteLine(wagonFilePath + " " + error);
+                        Trace.WriteLine(new FileLoadException(wagonFilePath, error));
                         car = MPManager.Instance().SubCar(train, wagonFilePath, lengths[i]);
                     }
 
@@ -2146,15 +2146,18 @@ namespace Orts.MultiPlayer
         public string user;
         public string EventName;
         public int EventState;
+        public int CarIdx;
 
         public MSGEvent(string m)
         {
             string[] tmp = m.Split(' ');
-            if (tmp.Length != 3) throw new Exception("Parsing error " + m);
+            if (tmp.Length != 4) throw new Exception("Parsing error " + m);
             user = tmp[0].Trim();
             EventName = tmp[1].Trim();
-            EventState = int.Parse(tmp[2]);
+            CarIdx= int.Parse(tmp[2].Trim());
+            EventState = int.Parse(tmp[3]);
         }
+
 
         public MSGEvent(string m, string e, int ID)
         {
@@ -2163,10 +2166,17 @@ namespace Orts.MultiPlayer
             EventState = ID;
         }
 
+        public MSGEvent(string m, string e, int carIdx, int ID)
+        {
+            user = m.Trim();
+            EventName = e;
+            CarIdx = carIdx;
+            EventState = ID;
+        }
+
         public override string ToString()
         {
-
-            string tmp = "EVENT " + user + " " + EventName + " " + EventState;
+            string tmp = "EVENT " + user + " " + EventName + " " + CarIdx + " " + EventState;
             return " " + tmp.Length + ": " + tmp;
         }
 
@@ -2243,6 +2253,15 @@ namespace Orts.MultiPlayer
                 if (t.LeadLocomotive != null && EventState == 1) t.LeadLocomotive.SignalEvent(Event._HeadlightDim);
                 if (t.LeadLocomotive != null && EventState == 2) t.LeadLocomotive.SignalEvent(Event._HeadlightOn);
                 MPManager.BroadCast(this.ToString()); //if the server, will broadcast
+            }
+            else if (EventName == "ENGINE")
+            {
+                if (CarIdx >= 0 && CarIdx < t.Cars.Count)
+                {
+                    if (t.Cars[CarIdx] is MSTSDieselLocomotive && EventState == 0) t.Cars[CarIdx].SignalEvent(Event.EnginePowerOff);
+                    else if (t.Cars[CarIdx] is MSTSDieselLocomotive && EventState == 1) t.Cars[CarIdx].SignalEvent(Event.EnginePowerOn);
+                    MPManager.BroadCast(this.ToString()); //if the server, will broadcast
+                }
             }
             else return;
         }
@@ -2756,7 +2775,7 @@ namespace Orts.MultiPlayer
                 }
                 if (tmpcars2.Count == 0) return;
                 train2.Cars = tmpcars2;
-                train2.Name = String.Concat(String.Copy(train.Name), Train.TotalNumber.ToString());
+                train2.Name = String.Concat(train.Name, Train.TotalNumber.ToString());
                 train2.LeadLocomotive = null;
                 train2.LeadNextLocomotive();
                 train2.CheckFreight();
@@ -2840,7 +2859,7 @@ namespace Orts.MultiPlayer
                     train2.TrainType = Train.TRAINTYPE.STATIC;
                     this.oldTrainNumber = train.Number;
                     train2.LastReportedSpeed = 1;
-                    if (train2.Name.Length < 4) train2.Name = String.Concat("STATIC-", String.Copy(train2.Name));
+                    if (train2.Name.Length < 4) train2.Name = String.Concat("STATIC-", train2.Name);
                     MPManager.Simulator.AI.aiListChanged = true;
                     MPManager.Instance().AddOrRemoveLocomotives(user, train, true);
                     MPManager.Instance().AddOrRemoveLocomotives(user, train2, true);

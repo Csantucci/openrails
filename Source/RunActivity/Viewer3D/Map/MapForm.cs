@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using GNU.Gettext;
@@ -155,6 +156,8 @@ namespace Orts.Viewer3D.Debugging
         private double lastUpdateTime;
 
         private bool MapCustomizationVisible = false;
+
+        private Form GameForm;
         #endregion
 
         public MapViewer(Simulator simulator, Viewer viewer)
@@ -172,9 +175,9 @@ namespace Orts.Viewer3D.Debugging
             MapThemeProvider = new MapThemeProvider();
             nodes = simulator.TDB.TrackDB.TrackNodes;
 
+            ViewWindow = new RectangleF(0, 0, 5000f, 5000f);
             InitializeForm();
 
-            ViewWindow = new RectangleF(0, 0, 5000f, 5000f);
             mapResolutionUpDown.Accelerations.Add(new NumericUpDownAcceleration(1, 100));
             selectedTrainList = new List<Train>();
 
@@ -190,6 +193,8 @@ namespace Orts.Viewer3D.Debugging
             {
                 AddNewMessage(e.Time, e.Message);
             };
+
+            GameForm = (Form)System.Windows.Forms.Control.FromHandle(Viewer.Game.Window.Handle);
 
             // Initialise the timer used to handle user input
             UITimer = new Timer();
@@ -232,6 +237,116 @@ namespace Orts.Viewer3D.Debugging
             float[] dashPattern = { 4, 2 };
             ZoomTargetPen.DashPattern = dashPattern;
             pathPen.DashPattern = dashPattern;
+
+            setDefaults(this);
+        }
+
+        //
+        // set the defaults for all the map controls which have a property in UserSettings.c
+        // properties are stored in the registry or in a .ini file
+        //
+        private void setDefaults(System.Windows.Forms.Control controlToSet)
+        {
+            foreach (System.Windows.Forms.Control control in controlToSet.Controls)
+            {
+                // recursive call to find deeper controls
+                setDefaults(control);
+            }
+
+            string name = "Map_" + controlToSet.Name;
+            PropertyInfo property = Viewer.Settings.GetProperty(name);
+            if (property != null)
+            {
+                if (controlToSet is CheckBox checkBox)
+                {
+                    checkBox.Checked = (bool)property.GetValue(Viewer.Settings);
+                    checkBox.CheckedChanged += c_ControlChanged;
+                }
+                if (controlToSet is NumericUpDown numericUpDown)
+                {
+                    // in a specific case the value of the property is = 0, which is below the accepted range
+                    var mapResolutionUpDown = (int)property.GetValue(Viewer.Settings, null);
+                    if (mapResolutionUpDown < numericUpDown.Minimum)
+                        mapResolutionUpDown = (int)numericUpDown.Minimum;
+                    numericUpDown.Value = mapResolutionUpDown;
+//                    numericUpDown.Value = (int)property.GetValue(Viewer.Settings, null);
+                    numericUpDown.ValueChanged += c_ControlChanged;
+                }
+                if (controlToSet is Button button)
+                {
+                    if (name.Equals("Map_rotateThemesButton"))
+                    {
+                        ThemeName = (string)property.GetValue(Viewer.Settings, null);
+                        Theme = MapThemeProvider.GetTheme(ThemeName);
+
+                        ApplyThemeRecursively(this);
+                        MapCanvasColor = Theme.MapCanvasColor;
+                        TrackPen.Color = Theme.TrackColor;
+                    }
+                    button.Click += c_ControlChanged;
+                }
+                if (controlToSet is RadioButton radioButton)
+                {
+                    radioButton.Checked = (bool)property.GetValue(Viewer.Settings);
+                    radioButton.CheckedChanged += c_ControlChanged;
+                }
+                if (controlToSet is MapViewer mapViewer)
+                {
+                    Size size = new Size(
+                        ((int[])property.GetValue(Viewer.Settings, null))[2],
+                        ((int[])property.GetValue(Viewer.Settings, null))[3]);
+                    Size = size;
+
+                    StartPosition = FormStartPosition.Manual;
+                    this.Location = new System.Drawing.Point(
+                        ((int[])property.GetValue(Viewer.Settings, null))[0], 
+                        ((int[])property.GetValue(Viewer.Settings, null))[1]);
+
+                    mapViewer.Resize += c_ControlChanged;
+                    mapViewer.Move += c_ControlChanged;
+                }
+            }
+        }
+
+        //
+        // save the setting of a map control
+        //
+        void c_ControlChanged(object sender, EventArgs e)
+        {
+            if (sender is CheckBox checkBox)
+            {
+                string name = "Map_" + checkBox.Name;
+                Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, checkBox.CheckState == CheckState.Checked, null);
+                Viewer.Settings.Save(name);
+            }
+            if (sender is NumericUpDown numericUpDown)
+            {
+                string name = "Map_" + numericUpDown.Name;
+                Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, (int)numericUpDown.Value, null);
+                Viewer.Settings.Save(name);
+            }
+            if (sender is Button button)
+            {
+                string name = "Map_" + button.Name;
+                Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, ThemeName, null);
+                Viewer.Settings.Save(name);
+            }
+            if (sender is RadioButton radioButton)
+            {
+                string name = "Map_" + radioButton.Name;
+                Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, radioButton.Checked, null);
+                Viewer.Settings.Save(name);
+            }
+            if (sender is MapViewer mapViewer)
+            {
+                string name = "Map_" + mapViewer.Name;
+
+                int X = this.Bounds.X;
+                int Y = this.Bounds.Y;
+                Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, new int[] { X, Y, Size.Width, Size.Height }, null);
+                if (!(X == -32000 && Y == -32000))
+                    Viewer.Settings.Save(name);
+            }
         }
 
         #region initData
@@ -294,7 +409,11 @@ namespace Orts.Viewer3D.Debugging
             var maxsize = maxX - minX > maxY - minY ? maxX - minX : maxY - minY;
             // Take up to next 500
             maxsize = (int)((maxsize / 100) + 1) * 500;
-            mapResolutionUpDown.Maximum = (decimal)maxsize;
+            if ((decimal)maxsize < mapResolutionUpDown.Maximum)
+            {
+                // do not make maximum larger then the maximum defined in the Designer
+                mapResolutionUpDown.Maximum = (decimal)maxsize;
+            }
             Inited = true;
 
             if (simulator.TDB == null || simulator.TDB.TrackDB == null || simulator.TDB.TrackDB.TrItemTable == null)
@@ -1272,12 +1391,43 @@ namespace Orts.Viewer3D.Debugging
             }
             Visible = true;
 
+            if (Viewer.MapViewerEnabledSetToTrue)
+            {
+                GenerateView();
+                if (!mapBehindGameForm())
+                {
+                    // do not return focus to the main OR game window
+                    // when map is (partially) overlapping the game window
+                    GameForm.Focus();
+                }
+                Viewer.MapViewerEnabledSetToTrue = false;
+            }
+
             if (Program.Simulator.GameTime - lastUpdateTime < 1)
                 return;
 
             lastUpdateTime = Program.Simulator.GameTime;
 
             GenerateView();
+        }
+
+        private bool mapBehindGameForm()
+        {        
+            int mapX0 = Bounds.X;
+            int mapY0 = Bounds.Y;
+            int mapX1 = mapX0 + Size.Width;
+            int mapY1 = mapY0 + Size.Height;
+
+            int gameX0 = GameForm.Bounds.X;
+            int gameY0 = GameForm.Bounds.Y;
+            int gameX1 = gameX0 + GameForm.Size.Width;
+            int gameY1 = gameY0 + GameForm.Size.Height;
+
+            return
+                (((mapX0 > gameX0) && (mapX0 < gameX1)) && ((mapY0 > gameY0) && (mapY0 < gameY1))) ||
+                (((mapX0 > gameX0) && (mapX0 < gameX1)) && ((mapY1 > gameY0) && (mapY1 < gameY1))) ||
+                (((mapX1 > gameX0) && (mapX1 < gameX1)) && ((mapY0 > gameY0) && (mapY0 < gameY1))) ||
+                (((mapX1 > gameX0) && (mapX1 < gameX1)) && ((mapY1 > gameY0) && (mapY1 < gameY1)));
         }
 
         private void allowJoiningCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -1519,6 +1669,7 @@ namespace Orts.Viewer3D.Debugging
                     break;
             }
 
+            mapCanvas.Invalidate(); // Triggers a re-paint
             UnHandleItemPick();
         }
 
@@ -1563,6 +1714,7 @@ namespace Orts.Viewer3D.Debugging
                         break;
                 }
             }
+            mapCanvas.Invalidate(); // Triggers a re-paint
             UnHandleItemPick();
         }
 
@@ -1865,11 +2017,21 @@ namespace Orts.Viewer3D.Debugging
                     break;
 
                 case "kick":
-                    if (!MPManager.IsServer() || !MPManager.OnlineTrains.Players.ContainsKey(player)) return;
-
-                    MPManager.OnlineTrains.Players[player].status = OnlinePlayer.Status.Removed;
-                    MPManager.BroadCast(new MSGMessage(player, "Error", "Sorry the server has removed you").ToString());
-
+                    if (!MPManager.IsServer()) return;
+                    if (MPManager.OnlineTrains.Players.ContainsKey(player))
+                    {
+                        //MPManager.IsServer() && MPManager.Instance().lostPlayer != null && MPManager.Instance().lostPlayer.ContainsKey(player))
+                        MPManager.OnlineTrains.Players[player].status = OnlinePlayer.Status.Removed;
+                        MPManager.BroadCast(new MSGMessage(player, "Error", "Sorry the server has removed you").ToString());
+                        return;
+                    }
+                    lock (MPManager.Instance().lostPlayer)
+                    {
+                        if (MPManager.Instance().lostPlayer != null && MPManager.Instance().lostPlayer.ContainsKey(player))
+                        {
+                            MPManager.Instance().lostPlayer[player].quitTime = MPManager.Simulator.GameTime - 700;
+                        }
+                    }
                     break;
             }
         }

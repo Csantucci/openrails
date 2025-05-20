@@ -343,6 +343,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                     axle.AxleSpeedMpS = axle.TrainSpeedMpS; // So the transition doesn't cause a wheelslip
                 }
                 axle.Update(elapsedSeconds);
+                if (axle.RecoverToSimpleAdhesion)
+                {
+                    AxleList[0].RecoverToSimpleAdhesion = true;
+                    break;
+                }
             }
             PreviousUsePolachAdhesion = UsePolachAdhesion;
         }
@@ -708,6 +713,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
         /// Read/Write train speed parameter in metric meters per second
         /// </summary>
         public float TrainSpeedMpS;
+
+        /// <summary>
+        /// Falls back to Simple adhesion if true (when NaN occurs)
+        /// </summary>
+        public bool RecoverToSimpleAdhesion;
 
         /// <summary>
         /// Wheel slip indicator
@@ -1117,7 +1127,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
                         dt = elapsedClockSeconds / NumOfSubstepsPS;
                         hdt = dt / 2;
                     }
-
+                    if (Double.IsNaN(AxleSpeedMpS) || Double.IsNaN(k1.Item1))
+                    {
+                        Trace.TraceError("AxleSpeedMpS = {0}, k1.Item1 = {1}", AxleSpeedMpS, k1.Item1);
+                        RecoverToSimpleAdhesion = true;
+                        return;
+                    }
                     if (Math.Sign(AxleSpeedMpS + k1.Item1 * dt) != Math.Sign(AxleSpeedMpS) && BrakeRetardForceN + frictionN > Math.Abs(driveForceN - k1.Item3))
                     {
                         AxlePositionRad += AxleSpeedMpS * hdt;
@@ -1169,6 +1184,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
             }
             else
             {
+                RecoverToSimpleAdhesion = false;
                 // Set values for Pacha adhesion
                 WheelSlipThresholdMpS = MpS.FromKpH(AdhesionK / AdhesionLimit);
                 WheelAdhesion = 0.99f;
@@ -1203,6 +1219,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions
             motor?.Update(elapsedSeconds);
 
             Integrate(elapsedSeconds);
+            if (RecoverToSimpleAdhesion)
+                return;
             // TODO: We should calculate brake force here
             // Adding and substracting the brake force is correct for normal operation,
             // but during wheelslip this will produce wrong results.

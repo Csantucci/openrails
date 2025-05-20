@@ -26,6 +26,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Orts.Viewer3D.Processes;
 using ORTS.Common;
 using ORTS.Common.Input;
+using static Swan.Terminal;
 using Game = Orts.Viewer3D.Processes.Game;
 
 namespace Orts.Viewer3D
@@ -397,6 +398,15 @@ namespace Orts.Viewer3D
         Matrix XNACameraView;
         Matrix XNACameraProjection;
 
+        // variables for extended performance log dump
+        public bool ExtendedPerformanceDump;
+        public long DrawShadowsElapsedMicroS;
+        public long DrawSequencesDistantMountainsElapsedMicroS;
+        public long DrawSequencesElapsedMicroS;
+
+
+        public Stopwatch Watch = new Stopwatch();
+
         public RenderFrame(Game game)
         {
             Game = game;
@@ -437,6 +447,8 @@ namespace Orts.Viewer3D
 
             XNACameraView = Matrix.Identity;
             XNACameraProjection = Matrix.CreateOrthographic(game.RenderProcess.DisplaySize.X, game.RenderProcess.DisplaySize.Y, 1, 100);
+
+            ExtendedPerformanceDump = Game.Settings.ExtendedPerformanceDump;
         }
 
         public void Clear()
@@ -691,9 +703,18 @@ namespace Orts.Viewer3D
                 Console.WriteLine("Draw {");
             }
 
+            if (ExtendedPerformanceDump)
+            {
+                Watch = Stopwatch.StartNew();
+            }
             if (Game.Settings.DynamicShadows && (RenderProcess.ShadowMapCount > 0) && ShadowMapMaterial != null)
                 DrawShadows(graphicsDevice, logging);
-
+            if (ExtendedPerformanceDump)
+            {
+                Watch.Stop();
+                DrawShadowsElapsedMicroS = Watch.ElapsedTicks / 10;
+                Watch = Stopwatch.StartNew();
+            }
             DrawSimple(graphicsDevice, logging);
 
             for (var i = 0; i < (int)RenderPrimitiveSequence.Sentinel; i++)
@@ -780,18 +801,35 @@ namespace Orts.Viewer3D
                 if (logging) Console.WriteLine("  DrawSimple (Distant Mountains) {");
                 graphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer | ClearOptions.Stencil, Color.Transparent, 1, 0);
                 DrawSequencesDistantMountains(graphicsDevice, logging);
+                if (ExtendedPerformanceDump)
+                {
+                    Watch.Stop();
+                    DrawSequencesDistantMountainsElapsedMicroS = Watch.ElapsedTicks / 10;
+                    Watch = Stopwatch.StartNew();
+                }
                 if (logging) Console.WriteLine("  }");
                 if (logging) Console.WriteLine("  DrawSimple {");
                 graphicsDevice.Clear(ClearOptions.DepthBuffer, Color.Transparent, 1, 0);
                 DrawSequences(graphicsDevice, logging);
                 if (logging) Console.WriteLine("  }");
+                if (ExtendedPerformanceDump)
+                {
+                    Watch.Stop();
+                    DrawSequencesElapsedMicroS = Watch.ElapsedTicks / 10;
+                }
             }
             else
             {
+                DrawSequencesDistantMountainsElapsedMicroS = 0;
                 if (logging) Console.WriteLine("  DrawSimple {");
                 graphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer | ClearOptions.Stencil, Color.Transparent, 1, 0);
                 DrawSequences(graphicsDevice, logging);
                 if (logging) Console.WriteLine("  }");
+                if (ExtendedPerformanceDump)
+                {
+                    Watch.Stop();
+                    DrawSequencesElapsedMicroS = Watch.ElapsedTicks / 10;
+                }
             }
         }
 

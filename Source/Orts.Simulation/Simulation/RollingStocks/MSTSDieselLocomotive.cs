@@ -146,11 +146,10 @@ namespace Orts.Simulation.RollingStocks
                 case "engine(ortspowerondelay":
                 case "engine(ortsauxpowerondelay":
                 case "engine(ortspowersupply":
+                case "engine(ortspowersupplyparameters":
                 case "engine(ortstractioncutoffrelay":
                 case "engine(ortstractioncutoffrelayclosingdelay":
-                case "engine(ortsbattery(mode":
-                case "engine(ortsbattery(delay":
-                case "engine(ortsbattery(defaulton":
+                case "engine(ortsbattery":
                 case "engine(ortsmasterkey(mode":
                 case "engine(ortsmasterkey(delayoff":
                 case "engine(ortsmasterkey(headlightcontrol":
@@ -504,7 +503,7 @@ namespace Orts.Simulation.RollingStocks
                     Trace.TraceInformation("===================================================================================================================\n\n");
                 }
             }
-
+            if (!Simulator.Settings.NoDieselEngineStart) SetPower(true);
         }
 
         /// <summary>
@@ -681,29 +680,37 @@ namespace Orts.Simulation.RollingStocks
                     }
                 }
 
+                float supplyPowerLimitW = float.MaxValue;
+                if (!DieselEngines.HasGearBox)
+                {
+                    supplyPowerLimitW = DieselPowerSupply.AvailableTractionPowerW;
+                    if (DieselPowerSupply.MaximumPowerW > 0)
+                        supplyPowerLimitW = Math.Min(supplyPowerLimitW, DieselPowerSupply.MaximumPowerW * t);
+                }
                 if (TractiveForceCurves == null)
                 {
-                    // This sets the maximum force of the locomotive, it will be adjusted down if it exceeds the max power of the locomotive.
-                    float maxForceN = Math.Min(t * MaxForceN * (1 - PowerReduction), AbsTractionSpeedMpS == 0.0f ? (t * MaxForceN * (1 - PowerReduction)) : (t * LocomotiveMaxRailOutputPowerW / AbsTractionSpeedMpS));
-
-                    // Maximum rail power is reduced by apparent throttle factor and the number of engines running (power ratio)
-                    float maxPowerW = LocomotiveMaxRailOutputPowerW * DieselEngineFractionPower * LocomotiveApparentThrottleSetting;
-
-                    // If unloading speed is in ENG file, and locomotive speed is greater then unloading speed, and less then max speed, then apply a decay factor to the power/force
-                    if (UnloadingSpeedMpS != 0 && AbsTractionSpeedMpS > UnloadingSpeedMpS && AbsTractionSpeedMpS < MaxSpeedMpS && !WheelSlip)
-                    {
-                        // use straight line curve to decay power to zero by 2 x unloading speed
-                        float unloadingspeeddecay = 1.0f - (1.0f / UnloadingSpeedMpS) * (AbsTractionSpeedMpS - UnloadingSpeedMpS);
-                        unloadingspeeddecay = MathHelper.Clamp(unloadingspeeddecay, 0.0f, 1.0f);  // Clamp decay within bounds
-                        maxPowerW *= unloadingspeeddecay;
-                    }
-
                     if (DieselEngines.HasGearBox)
                     {
                         TractiveForceN = DieselEngines.TractiveForceN;
                     }
                     else
                     {
+                        // This sets the maximum force of the locomotive, it will be adjusted down if it exceeds the max power of the locomotive.
+                        float maxForceN = Math.Min(t * MaxForceN * (1 - PowerReduction), AbsTractionSpeedMpS == 0.0f ? (t * MaxForceN * (1 - PowerReduction)) : (t * LocomotiveMaxRailOutputPowerW / AbsTractionSpeedMpS));
+
+                        // Maximum rail power is reduced by apparent throttle factor and the number of engines running (power ratio)
+                        float maxPowerW = LocomotiveMaxRailOutputPowerW * DieselEngineFractionPower * LocomotiveApparentThrottleSetting;
+
+                        maxPowerW = Math.Min(maxPowerW, supplyPowerLimitW);
+
+                        // If unloading speed is in ENG file, and locomotive speed is greater then unloading speed, and less then max speed, then apply a decay factor to the power/force
+                        if (UnloadingSpeedMpS != 0 && AbsTractionSpeedMpS > UnloadingSpeedMpS && AbsTractionSpeedMpS < MaxSpeedMpS && !WheelSlip)
+                        {
+                            // use straight line curve to decay power to zero by 2 x unloading speed
+                            float unloadingspeeddecay = 1.0f - (1.0f / UnloadingSpeedMpS) * (AbsTractionSpeedMpS - UnloadingSpeedMpS);
+                            unloadingspeeddecay = MathHelper.Clamp(unloadingspeeddecay, 0.0f, 1.0f);  // Clamp decay within bounds
+                            maxPowerW *= unloadingspeeddecay;
+                        }
                         if (maxForceN * AbsSpeedMpS > maxPowerW)
                             maxForceN = maxPowerW / AbsTractionSpeedMpS;
 
@@ -722,7 +729,9 @@ namespace Orts.Simulation.RollingStocks
                     else
                     {
                         // Tractive force is read from Table using the apparent throttle setting, and then reduced by the number of engines running (power ratio)
-                        TractiveForceN = TractiveForceCurves.Get(LocomotiveApparentThrottleSetting, AbsTractionSpeedMpS) * DieselEngineFractionPower * (1 - PowerReduction);
+                        TractiveForceN = TractiveForceCurves.Get(LocomotiveApparentThrottleSetting, AbsTractionSpeedMpS) * DieselEngineFractionPower * (1 - PowerReduction);  
+                        if (TractiveForceN * AbsTractionSpeedMpS > supplyPowerLimitW)
+                            TractiveForceN = supplyPowerLimitW / AbsTractionSpeedMpS;
                     }
 
                     if (TractiveForceN < 0 && !TractiveForceCurves.AcceptsNegativeValues())
@@ -774,6 +783,12 @@ namespace Orts.Simulation.RollingStocks
                 if (f > 0 && LocomotivePowerSupply.DynamicBrakeAvailable)
                 {
                     DynamicBrakeForceN = f * (1 - PowerReduction);
+                    if (LocomotivePowerSupply.MaximumDynamicBrakePowerW > 0)
+                    {
+                        float maxPowerW = LocomotivePowerSupply.MaximumDynamicBrakePowerW * DynamicBrakePercent / 100 * (1 - PowerReduction);
+                        if (DynamicBrakeForceN * AbsTractionSpeedMpS > maxPowerW)
+                            DynamicBrakeForceN = maxPowerW / AbsTractionSpeedMpS;
+                    }
                     TractiveForceN -= (SpeedMpS > 0 ? 1 : SpeedMpS < 0 ? -1 : Direction == Direction.Reverse ? -1 : 1) * DynamicBrakeForceN;                 
                 }
                 else
@@ -1083,7 +1098,7 @@ namespace Orts.Simulation.RollingStocks
             status.AppendFormat("{0} {1}\t", GetStringAttribute.GetPrettyName(Direction), Flipped ? Simulator.Catalog.GetString("(flipped)") : "");
             status.AppendFormat("{0}\t", IsLeadLocomotive() || RemoteControlGroup < 0 ? "———" : RemoteControlGroup == 0 ? Simulator.Catalog.GetString("Sync") : Simulator.Catalog.GetString("Async"));
             status.AppendFormat("{0}\t", FormatStrings.FormatFuelVolume(DieselLevelL, IsMetric, IsUK));
-            status.AppendFormat("{0}{1}", FormatStrings.FormatForce(MotiveForceN, IsMetric), CouplerOverloaded ? "???" : "");
+            status.AppendFormat("{0}{1}", FormatStrings.FormatForce(TractiveForceN, IsMetric), CouplerOverloaded ? "???" : "");
             status.Append(DieselEngines.GetDPStatus());
             return status.ToString();
         }
@@ -1128,8 +1143,8 @@ namespace Orts.Simulation.RollingStocks
 
             // Load
             var data = 0f;
-            if (FilteredMotiveForceN != 0)
-                data = Math.Abs(this.FilteredMotiveForceN);
+            if (FilteredTractiveForceN != 0)
+                data = Math.Abs(this.FilteredTractiveForceN);
             else
                 data = Math.Abs(TractiveForceN);
             if (DynamicBrakePercent > 0)
@@ -1451,7 +1466,7 @@ namespace Orts.Simulation.RollingStocks
         public override void SwitchToAutopilotControl()
         {
             SetDirection(Direction.Forward);
-            if (!LocomotivePowerSupply.MainPowerSupplyOn)
+            if (!LocomotivePowerSupply.MainPowerSupplyOn || !LocomotivePowerSupply.BatteryOn || !LocomotivePowerSupply.MasterKey.On)
             {
                 LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.QuickPowerOn);
             }

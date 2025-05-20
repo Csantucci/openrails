@@ -746,7 +746,7 @@ namespace Orts.Viewer3D.Popups
 
                 foreach (var axle in car.WheelAxles)
                 {
-                    if (!axle.Part.bogie) // if not a bogie then check for the number of axles.
+                    if (!axle.Part.Bogie) // if not a bogie then check for the number of axles.
                     {
                         if (currentBogie != axle.BogieIndex && currentCount != 0)
                         {
@@ -770,7 +770,7 @@ namespace Orts.Viewer3D.Popups
                             }
                         }
                     }
-                    else if (axle.Part.bogie) // this is a bogie
+                    else if (axle.Part.Bogie) // this is a bogie
                     {
                         if ( PreviousAxlePart)
                         {
@@ -786,7 +786,7 @@ namespace Orts.Viewer3D.Popups
                         currentCount += 2;
                     }
 
-                    if (axle.Part.bogie)
+                    if (axle.Part.Bogie)
                     {
                         PreviousAxlePart = true;
                     }
@@ -1242,7 +1242,7 @@ namespace Orts.Viewer3D.Popups
                     tractionCutOffRelayState,
                     mainPowerSupplyState,
                     auxiliaryPowerSupplyState,
-                    Viewer.Catalog.GetParticularString("PowerSupply", GetStringAttribute.GetPrettyName(car.PowerSupply.BatteryState)),
+                    String.Format("{0} {1}", Viewer.Catalog.GetParticularString("PowerSupply", GetStringAttribute.GetPrettyName(car.PowerSupply.BatteryState)), FormatStrings.FormatVoltage(car.PowerSupply.BatteryVoltageV)),
                     Viewer.Catalog.GetParticularString("PowerSupply", GetStringAttribute.GetPrettyName(car.PowerSupply.LowVoltagePowerSupplyState)),
                     locomotivePowerSupply != null ? Viewer.Catalog.GetParticularString("PowerSupply", GetStringAttribute.GetPrettyName(locomotivePowerSupply.CabPowerSupplyState)) : string.Empty,
                     electricTrainSupplyState,
@@ -1762,30 +1762,19 @@ namespace Orts.Viewer3D.Popups
 
                 if (train.TrainWindResistanceDependent) // Only show this information if wind resistance is selected
                 {
-                    var status = new StringBuilder();
-                    if (hudWindowColumnsActualPage > 0)
-                    {
-                        status.AppendFormat($"{SymbolType.ArrowLeft}" + "{0}\t{1:N2} mph\t{2}\t{3:N2} mph",
-                        Viewer.Catalog.GetString("ResWind:"), train.ResultantWindComponentDeg,
-                        Viewer.Catalog.GetString("ResSpeed:"), Me.ToMi(pS.TopH(train.WindResultantSpeedMpS)));
-                    }
-                    else
-                    {
-                        status.AppendFormat("{0} {1:N2} mph\t\t\t{2} {3:N2} Deg\t\t\t{4} {5:N2} Deg\t\t\t{6} {7:N2} mph\t\t\t{8} {9:N2} mph",
-                        Viewer.Catalog.GetString("Wind Speed:"), Me.ToMi(pS.TopH(train.PhysicsWindSpeedMpS)).ToString("000.00"),
-                        Viewer.Catalog.GetString("Wind Direction:"), train.PhysicsWindDirectionDeg.ToString("000.00"),
-                        Viewer.Catalog.GetString("Train Direction:"), train.PhysicsTrainLocoDirectionDeg.ToString("000.00"),
-                        Viewer.Catalog.GetString("ResWind:"), train.ResultantWindComponentDeg.ToString("000.00"),
-                        Viewer.Catalog.GetString("ResSpeed:"), Me.ToMi(pS.TopH(train.WindResultantSpeedMpS)).ToString("000.00")
-                        //Add new header + data here, if required.
-                        );
-                    }
-                    TableAddLines(table, status.ToString());
+
+                    TableAddLine(table);
+
+                    TableSetCells(table, 0, Viewer.Catalog.GetString("Wind"), string.Empty, FormatStrings.FormatSpeedDisplay(train.PhysicsWindSpeedMpS, mstsLocomotive.IsMetric), FormatStrings.FormatAngleDeg(train.PhysicsWindDirectionDeg));
+                    TableSetCells(table, 4, Viewer.Catalog.GetString("Train"), FormatStrings.FormatAngleDeg(train.PhysicsTrainLocoDirectionDeg));
+                    TableSetCells(table, 6, Viewer.Catalog.GetString("Result"), FormatStrings.FormatSpeedDisplay(train.WindResultantSpeedMpS, mstsLocomotive.IsMetric), FormatStrings.FormatAngleDeg(train.ResultantWindComponentDeg));
+                    TableAddLine(table);
+                    TableAddLine(table);
                 }
             }
 
             //Normal view
-            statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}\t{16}\t{17}\t{18}\t{19}\t",
+            statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}\t{16}\t{17}\t{18}\t{19}\t{20}\t{21}\t{22}\t",
             Viewer.Catalog.GetString("Car"),
             Viewer.Catalog.GetString("Total"),
             Viewer.Catalog.GetString("Motive"),
@@ -1801,11 +1790,14 @@ namespace Orts.Viewer3D.Popups
             Viewer.Catalog.GetString("Mass"),
             Viewer.Catalog.GetString("Gradient"),
             Viewer.Catalog.GetString("Curve"),
+            Viewer.Catalog.GetString("Superelev"),
             Viewer.Catalog.GetString("Brk Frict."),
             Viewer.Catalog.GetString("Brk Slide"),
             Viewer.Catalog.GetString("Bear Temp"),
             Viewer.Catalog.GetString(" "),
-            Viewer.Catalog.GetString("DerailCoeff")
+            Viewer.Catalog.GetString("DerailCoeff"),
+            Viewer.Catalog.GetString(" "),
+            Viewer.Catalog.GetString("AoA")
             ));
 
             TableAddLine(table);
@@ -1821,7 +1813,7 @@ namespace Orts.Viewer3D.Popups
             {
                 var j = (i == 0) ? 0 : i;
                 var car = train.Cars[j];
-                statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13:F2} %\t{14}\t{15:F0} %\t{16}\t{17}\t{18}\t{19:F2}\t",
+                    statusForce.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13:F2} %\t{14}\t{15}\t{16:F0} %\t{17}\t{18}\t{19}\t{20}\t{21}\t{22:F2}\t",
                     car.CarID,
                     FormatStrings.FormatForce(car.TotalForceN, car.IsMetric),
                     FormatStrings.FormatForce(car.MotiveForceN, car.IsMetric) + (car.WheelSlip ? "!!!" : car.WheelSlipWarning ? "???" : ""),
@@ -1837,11 +1829,14 @@ namespace Orts.Viewer3D.Popups
                     FormatStrings.FormatLargeMass(car.MassKG, car.IsMetric, car.IsUK),
                     -car.CurrentElevationPercent,
                     FormatStrings.FormatDistance(car.CurrentCurveRadiusM, car.IsMetric),
+                    FormatStrings.FormatMillimeterDistanceDisplay(car.SuperElevationM, car.IsMetric),
                     car.HuDBrakeShoeFriction * 100.0f,//15
                     (car.HUDBrakeSkid ? Viewer.Catalog.GetString("Yes") : Viewer.Catalog.GetString("No")),
                     FormatStrings.FormatTemperature(car.WheelBearingTemperatureDegC, car.IsMetric, false) + " " + car.DisplayWheelBearingTemperatureStatus,
+                    " ",
+                    car.DerailmentCoefficient.ToString("0.00") + (car.DerailExpected ? "!!!" : car.DerailPossible ? "???" : ""),
                     car.Flipped ? Viewer.Catalog.GetString("Flipped") : "",
-                    car.DerailmentCoefficient.ToString("0.00") + (car.DerailExpected ? "!!!" : car.DerailPossible ? "???" : "")
+                    car.AngleOfAttackmRad.ToString("0.00")
                     ));
             }
             TableAddLine(table);
@@ -2132,9 +2127,10 @@ namespace Orts.Viewer3D.Popups
 
             TableAddLabelValue(table, Viewer.Catalog.GetString("Visibility"), Viewer.Catalog.GetStringFmt("{0:N0} m", Viewer.Simulator.Weather.SceneryFogDistance_Mix));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Cloud cover"), Viewer.Catalog.GetStringFmt("{0:F0} %", Viewer.Simulator.Weather.OvercastFactor * 100));
-            TableAddLabelValue(table, Viewer.Catalog.GetString("Intensity"), Viewer.Catalog.GetStringFmt("{0:F4} p/s/m^2", Viewer.Simulator.Weather.PricipitationIntensityPPSPM2));
+            TableAddLabelValue(table, Viewer.Catalog.GetString("Intensity"), Viewer.Catalog.GetStringFmt("{0:F4} p/s/m^2", Viewer.Simulator.Weather.PrecipitationIntensityPPSPM2));
             TableAddLabelValue(table, Viewer.Catalog.GetString("Liquidity"), Viewer.Catalog.GetStringFmt("{0:F0} %", Viewer.Simulator.Weather.PrecipitationLiquidity * 100));
-            TableAddLabelValue(table, Viewer.Catalog.GetString("Wind"), Viewer.Catalog.GetStringFmt("{0:F1},{1:F1} m/s", Viewer.Simulator.Weather.WindSpeedMpS.X, Viewer.Simulator.Weather.WindSpeedMpS.Y));
+            TableAddLabelValue(table, Viewer.Catalog.GetString("Wind"), Viewer.Catalog.GetStringFmt("{0:F0} ° / {1:F1} m/s ({2:F0} ° / {3:F1} m/s gusts)", MathHelper.ToDegrees(Viewer.Simulator.Weather.WindAverageDirectionRad), Viewer.Simulator.Weather.WindAverageSpeedMpS, MathHelper.ToDegrees(Viewer.Simulator.Weather.WindInstantaneousDirectionRad), Viewer.Simulator.Weather.WindInstantaneousSpeedMpS));
+            // TODO: Move ambient temperature into Orts.Simulation.Weather
             TableAddLabelValue(table, Viewer.Catalog.GetString("Amb Temp"), FormatStrings.FormatTemperature(Viewer.PlayerLocomotive.CarOutsideTempC, Viewer.PlayerLocomotive.IsMetric, false));
 
             TextLineNumber(6, table.CurrentRow + 6, 2);//HudScroll

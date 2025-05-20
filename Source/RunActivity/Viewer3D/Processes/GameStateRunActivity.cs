@@ -141,7 +141,7 @@ namespace Orts.Viewer3D.Processes
 
             // Look for required type of action
             var acttype = "";
-            var acttypes = new[] { "activity", "explorer", "exploreactivity", "timetable" };
+            var acttypes = new[] { "activity", "explorer", "exploreactivity", "timetable", "watchtimetable" };
             foreach (var possibleActType in acttypes)
                 if (args.Contains("-" + possibleActType) || args.Contains("/" + possibleActType, StringComparer.OrdinalIgnoreCase))
                     acttype = possibleActType;
@@ -249,8 +249,10 @@ namespace Orts.Viewer3D.Processes
                                 String.Join("\n", data.Select(d => "\u2022 " + d).ToArray())),
                                 Application.ProductName + " " + VersionInfo.VersionOrBuild, MessageBoxButtons.OK, MessageBoxIcon.Error);
                         else if (error is Traveller.MissingTrackNodeException)
-                            MessageBox.Show(String.Format("Open Rails detected a track section which is not present in tsection.dat and cannot continue.\n\n" +
-                                "Most likely you don't have the XTracks or Ytracks version needed for this route."));
+                            MessageBox.Show(String.Format("Open Rails detected a track shape index {0} which is not present in tsection.dat and cannot continue.\n\n" +
+                                "The version of standard tsection.dat may be out of date, or this route requires a custom tsection.dat.\n" +
+                                "Please check the route installation instructions to verify the required tsection.dat.",
+                                ((Traveller.MissingTrackNodeException)error).Index));
                         else if (error is FileNotFoundException)
                         {
                             MessageBox.Show(String.Format(
@@ -307,6 +309,7 @@ namespace Orts.Viewer3D.Processes
             switch (acttype)
             {
                 case "timetable":
+                case "watchtimetable":
                     Simulator.StartTimetable(args, Game.LoaderProcess.CancellationToken);
                     break;
 
@@ -438,9 +441,24 @@ namespace Orts.Viewer3D.Processes
                     outf.Write(Simulator.PlayerLocomotive.DistanceM + Popups.HelpWindow.DbfEvalDistanceTravelled);
                 }
             }
+            LogLocation();
         }
 
+
         /// <summary>
+        /// Append time and location to the log for potential use in an ACT file. E.g.:
+        /// "Location ( -6112 15146 78.15 -672.81 10 )"
+        /// </summary>
+        private static void LogLocation()
+        {
+            var t = Simulator.Trains[0].FrontTDBTraveller;
+            var location = $"Location ( {t.TileX} {t.TileZ} {t.X:F2} {t.Z:F2}";
+            location += $" 10 )"; // Matches location if within this 10 meter radius
+            var clockTime = FormatStrings.FormatTime(Simulator.ClockTime);
+            Console.WriteLine($"\nSave after {(int)Simulator.GameTime} secs at {clockTime}, EventCategoryLocation = {location}");
+        }        
+
+         /// <summary>
         /// Resume a saved game.
         /// </summary>
         void Resume(UserSettings settings, string[] args)
@@ -801,7 +819,7 @@ namespace Orts.Viewer3D.Processes
                 Console.WriteLine("Build      = {0}", VersionInfo.Build);
                 if (logFileName.Length > 0)
                     Console.WriteLine("Logfile    = {0}", logFileName);
-                Console.WriteLine("Executable = {0}", Path.GetFileName(Application.ExecutablePath));
+                Console.WriteLine("Executable = {0}", Path.GetFileName(ApplicationInfo.ProcessFile));
                 foreach (var arg in args)
                     Console.WriteLine("Argument   = {0}", arg);
                 string debugArgline = "";
@@ -1027,6 +1045,17 @@ namespace Orts.Viewer3D.Processes
                     Console.WriteLine("Weather    = {0} ({1})", GetWeather(args[4]), args[4]);
                     break;
 
+                case "watchtimetable":
+                    if (args.Length < 7) throw new InvalidCommandLine("Mode 'timetable' needs 5 arguments: timetable set file, timetable file, location,  time (hh[:mm[:ss]]), day (???), season (0-3), weather (0-2).");
+                    Console.WriteLine("Set file   = {0}", args[0]);
+                    Console.WriteLine("File       = {0}", args[1]);
+                    Console.WriteLine("Location   = {0}", args[2]);
+                    Console.WriteLine("Time       = {0} ({1})", GetTime(args[3]), args[3]);
+                    Console.WriteLine("Day        = {0}", args[4]);
+                    Console.WriteLine("Season     = {0} ({1})", GetSeason(args[5]), args[5]);
+                    Console.WriteLine("Weather    = {0} ({1})", GetWeather(args[6]), args[6]);
+                    break;
+
                 default:
                     throw new InvalidCommandLine("Unexpected mode '" + acttype + "' with argument count " + args.Length);
             }
@@ -1071,6 +1100,7 @@ namespace Orts.Viewer3D.Processes
                     break;
 
                 case "timetable":
+                case "watchtimetable":
                     Simulator = new Simulator(settings, args[0], true);
                     if (LoadingScreen == null)
                         LoadingScreen = new LoadingScreenPrimitive(Game);
@@ -1078,7 +1108,7 @@ namespace Orts.Viewer3D.Processes
                     {
                         // for resume and replay : set timetable file and selected train info
                         Simulator.TimetableFileName = System.IO.Path.GetFileNameWithoutExtension(args[0]);
-                        Simulator.PathName = String.Copy(args[1]);
+                        Simulator.PathName = args[1];
                         Simulator.IsAutopilotMode = true;
                     }
                     break;
@@ -1098,7 +1128,7 @@ namespace Orts.Viewer3D.Processes
                 catch (Exception error)
                 {
                     Trace.WriteLine(error);
-                    Console.WriteLine("Connection error - will play in single mode.");
+                    Trace.TraceWarning("Connection error - will play in single mode.");
                     Server = null;
                 }
             }
@@ -1117,7 +1147,7 @@ namespace Orts.Viewer3D.Processes
                 catch (Exception error)
                 {
                     Trace.WriteLine(error);
-                    Console.WriteLine("Connection error - will play in single mode.");
+                    Trace.TraceWarning("Connection error - will play in single mode.");
                     Client = null;
                 }
             }

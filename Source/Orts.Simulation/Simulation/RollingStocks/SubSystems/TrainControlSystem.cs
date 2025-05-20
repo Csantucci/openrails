@@ -22,6 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using Orts.Common;
 using Orts.Formats.Msts;
 using Orts.Parsers.Msts;
@@ -114,8 +115,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public bool Activated = false;
         public bool CustomTCSScript = false;
 
-        readonly MSTSLocomotive Locomotive;
-        readonly Simulator Simulator;
+        public readonly MSTSLocomotive Locomotive;
+        public readonly Simulator Simulator;
 
         float ItemSpeedLimit;
         Aspect ItemAspect;
@@ -264,6 +265,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 }
 
                 // AbstractScriptClass
+                Script.Car = Locomotive;
                 Script.ClockTime = () => (float)Simulator.ClockTime;
                 Script.GameTime = () => (float)Simulator.GameTime;
                 Script.PreUpdate = () => Simulator.PreUpdate;
@@ -332,7 +334,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     return new MilepostInfo(list[value].DistanceToTrainM, float.Parse(list[value].ThisMile));
                 };
                 Script.EOADistanceM = (value) => Locomotive.Train.DistanceToEndNodeAuthorityM[value];
-                Script.TrainLengthM = () => Locomotive.Train != null ? Locomotive.Train.Length : 0f;
                 Script.SpeedMpS = () => Math.Abs(Locomotive.SpeedMpS);
                 Script.CurrentDirection = () => Locomotive.Direction; // Direction of locomotive, may be different from direction of train
                 Script.IsDirectionForward = () => Locomotive.Direction == Direction.Forward;
@@ -429,14 +430,13 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 Script.SetDynamicBrakeController = (value) =>
                 {
                 if (Locomotive.DynamicBrakeController == null) return;
-                Locomotive.DynamicBrakeChangeActiveState(value > 0);
                 Locomotive.DynamicBrakeController.SetValue(value);
                 };
                 Script.SetPantographsDown = () =>
                 {
                     if (Locomotive.Pantographs.State == PantographState.Up)
                     {
-                        Locomotive.Train.SignalEvent(PowerSupplyEvent.LowerPantograph);
+                        Locomotive.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.LowerPantograph);
                     }
                 };
                 Script.SetPantographUp = (pantoID) =>
@@ -446,7 +446,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         Trace.TraceError($"TCS script used bad pantograph ID {pantoID}");
                         return;
                     }
-                    Locomotive.Train.SignalEvent(PowerSupplyEvent.RaisePantograph, pantoID);
+                    Locomotive.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.RaisePantograph, pantoID);
                 };               
                 Script.SetPantographDown = (pantoID) =>
                 {
@@ -455,7 +455,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         Trace.TraceError($"TCS script used bad pantograph ID {pantoID}");
                         return;
                     }
-                    Locomotive.Train.SignalEvent(PowerSupplyEvent.LowerPantograph, pantoID);
+                    Locomotive.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.LowerPantograph, pantoID);
                 };
                 Script.SetPowerAuthorization = (value) => PowerAuthorization = value;
                 Script.SetCircuitBreakerClosingOrder = (value) => CircuitBreakerClosingOrder = value;
@@ -556,6 +556,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 Script.GetFloatParameter = (arg1, arg2, arg3) => LoadParameter<float>(arg1, arg2, arg3);
                 Script.GetStringParameter = (arg1, arg2, arg3) => LoadParameter<string>(arg1, arg2, arg3);
 
+                Script.AttachToHost(this);
                 Script.Initialize();
                 Activated = true;
             }
@@ -672,36 +673,32 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         aspect = (Aspect)Locomotive.Train.signalRef.TranslateToTCSAspect(trainSignal.SignalObject.this_sig_lr(function));
                     }
 
-                    var functionHead = default(SignalHead);
-                    foreach (var head in trainSignal.SignalObject.SignalHeads)
-                        if (head.Function == function)
-                            functionHead = head;
+                    var functionHead = trainSignal.SignalObject.SignalHeads.Find(head => head.Function == function);
                     signalTypeName = functionHead.SignalTypeName;
-                    foreach (var key in functionHead.signalType.DrawStates.Keys)
+                    if (functionHead?.signalType?.DrawStates != null)
                     {
-                        if (functionHead.signalType.DrawStates[key].Index == functionHead.draw_state)
-                            drawStateName = functionHead.signalType.DrawStates[key].Name;
-                        break;
+                        foreach (var key in functionHead.signalType.DrawStates.Keys)
+                        {
+                            if (functionHead.signalType.DrawStates[key].Index == functionHead.draw_state)
+                            {
+                                drawStateName = functionHead.signalType.DrawStates[key].Name;
+                                break;
+                            }
+                        }
                     }
                     textAspect = functionHead?.TextSignalAspect ?? "";
                     break;
                 case Train.TrainObjectItem.TRAINOBJECTTYPE.SPEEDPOST:
-                    var j = 0;
-                    for (var i = 0; i < Locomotive.Train.PlayerTrainSpeedposts[dir].Count; i++)
-                    {
-                        if (Locomotive.Train.PlayerTrainSpeedposts[dir][i].IsWarning)
-                            continue;
-                        if (itemSequenceIndex == j++)
-                        {
-                            var trainSpeedpost = Locomotive.Train.PlayerTrainSpeedposts[dir][i];
-                            if (trainSpeedpost.DistanceToTrainM <= maxDistanceM)
-                            {
-                                distanceM = trainSpeedpost.DistanceToTrainM;
-                                speedLimitMpS = trainSpeedpost.AllowedSpeedMpS;
-                            }
-                            break;
-                        }
-                    }
+                    var playerTrainSpeedpostList = Locomotive.Train.PlayerTrainSpeedposts[dir].Where(x => !x.IsWarning).ToList();
+                    if (itemSequenceIndex > playerTrainSpeedpostList.Count - 1)
+                        goto Exit; // no n-th speedpost available
+                    var trainSpeedpost = playerTrainSpeedpostList[itemSequenceIndex];
+                    if (trainSpeedpost.DistanceToTrainM > maxDistanceM)
+                        goto Exit; // the requested speedpost is too distant
+
+                    // All OK, we can retrieve the data for the required speedpost;
+                    distanceM = trainSpeedpost.DistanceToTrainM;
+                    speedLimitMpS = trainSpeedpost.AllowedSpeedMpS;
                     break;
             }
 
@@ -899,12 +896,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             HandleEvent(evt, message);
         }
 
-        public void HandleEvent(PowerSupplyEvent evt)
-        {
-            HandleEvent(evt, String.Empty);
-        }
-
-        public void HandleEvent(PowerSupplyEvent evt, string message)
+        public void HandleEvent(PowerSupplyEvent evt, string message="")
         {
             Script?.HandleEvent(evt, message);
         }

@@ -178,6 +178,18 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
             }
         }
 
+        private static void getStatusControlAlerterPushButton(ref SwitchOnPanelStatus switchOnPanelStatus)
+        {
+            MSTSLocomotive locomotive = Viewer.PlayerLocomotive as MSTSLocomotive;
+
+            if (locomotive.AlerterSnd)
+            {
+                switchOnPanelStatus.Status = "Alerter";
+                switchOnPanelStatus.Color = "red";
+                switchOnPanelStatus.Blinking = true;
+            }
+        }
+
         private static void getStatusGameControlMode(ref SwitchOnPanelStatus switchOnPanelStatus)
         {
             switch (Viewer.PlayerTrain.ControlMode)
@@ -382,7 +394,7 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
 
             for (int i = 0; i < train.Cars.Count; i++)
             {
-                if ((train.Cars[i] as MSTSWagon).HandBrakePresent)
+                if ((train.Cars[i] as MSTSWagon).MSTSBrakeSystem.HandBrakePresent)
                 {
                     handBrakeCount++;
                     if ((train.Cars[i] as MSTSWagon).GetTrainHandbrakeStatus())
@@ -505,6 +517,9 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
                     case UserCommand.ControlEmergencyPushButton:
                         getStatusControlEmergencyPushButton(ref switchOnPanelStatus);
                         break;
+                    case UserCommand.ControlAlerter:
+                        getStatusControlAlerterPushButton(ref switchOnPanelStatus);
+                        break;
                     case UserCommand.GameSwitchManualMode:
                         getStatusGameControlMode(ref switchOnPanelStatus);
                         break;
@@ -550,7 +565,7 @@ namespace Orts.Viewer3D.WebServices.SwitchPanel
                     // exception not yet logged
                     ExceptionForCommand.Add(userCommand);
 
-                    Trace.Write("Error in Switch Panel function \"getStatus\" getting status for " + userCommand + ":");
+                    Trace.WriteLine("Error in Switch Panel function \"getStatus\" getting status for " + userCommand + ":");
                     Trace.WriteLine(ex);
                 }
             }

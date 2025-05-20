@@ -2301,6 +2301,7 @@ namespace Orts.Simulation.Timetables
                     AIActionItem newAction = new AIActionItem(null, AIActionItem.AI_ACTION_TYPE.STATION_STOP);
                     newAction.SetParam(distancesM[1], 0.0f, distancesM[0], DistanceTravelledM);
                     requiredActions.InsertAction(newAction);
+                    ApproachTriggerSet = false;
 
 #if DEBUG_REPORTS
                     if (StationStops[0].ActualStopType == StationStop.STOPTYPE.STATION_STOP)
@@ -2719,7 +2720,7 @@ namespace Orts.Simulation.Timetables
             }
             else if (TrainType == TRAINTYPE.PLAYER && ControlMode == TRAIN_CONTROL.TURNTABLE) // Turntable mode
             {
-                string infoString = String.Copy("Do NOT move the train");
+                string infoString = "Do NOT move the train";
 
                 if (LeadLocomotive.ThrottlePercent > 1)
                 {
@@ -3015,6 +3016,7 @@ namespace Orts.Simulation.Timetables
 
                     TrainType = TRAINTYPE.PLAYER;
                     PostInit(true);
+                    RedefinePlayerTrainTriggers();
                 }
                 // AI train
                 else if (TrainType != TRAINTYPE.PLAYER)
@@ -3629,13 +3631,13 @@ namespace Orts.Simulation.Timetables
 #endif
                 }
 
-                if (!IsFreight && Simulator.OpenDoorsInAITrains)
+                if (!IsFreight && Simulator.OpenDoorsInAITrains && thisStation.RouteIndex >= 0 && ValidRoute[0].Count >  thisStation.RouteIndex)
                 {
                     // door management
                     TCRouteElement statRouteElement = ValidRoute[0][thisStation.RouteIndex];
                     var frontIsFront = statRouteElement.Direction == 1 ^ thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
  //                   var frontIsFront = thisStation.PlatformReference == thisStation.PlatformItem.PlatformFrontUiD;
-                    if (DoorOpenTimer > 0)
+                    if (DoorOpenTimer >= 0)
                     {
                         DoorOpenTimer -= elapsedClockSeconds;
                         if (DoorOpenTimer < 0)
@@ -3652,7 +3654,7 @@ namespace Orts.Simulation.Timetables
                             }
                         }
                     }
-                    if (DoorCloseTimer > 0)
+                    if (DoorCloseTimer >= 0)
                     {
                         DoorCloseTimer -= elapsedClockSeconds;
                         if (DoorCloseTimer < 0)
@@ -4018,6 +4020,9 @@ namespace Orts.Simulation.Timetables
 
                         // Reverse formation
                         ReverseFormation(false);
+                        RedefineSoundTriggers();
+
+
 
                         // Get new route list indices from new route
                         DistanceTravelledM = 0;
@@ -4125,6 +4130,7 @@ namespace Orts.Simulation.Timetables
                     Delay = TimeSpan.FromSeconds((presentTime - thisStation.DepartTime) % (24 * 3600));
                 }
             }
+            if (Cars[0] is MSTSLocomotive) Cars[0].SignalEvent(Event.AITrainLeavingStation);
 
 #if DEBUG_REPORTS
             baseDTd = new DateTime();
@@ -4666,7 +4672,7 @@ namespace Orts.Simulation.Timetables
                 }               
                 else if (nextActionInfo.RequiredSpeedMpS == 0)
                 {
-					// Check if stopped at signal
+                    // Check if stopped at signal
                     NextStopDistanceM = distanceToGoM;
                     float stopDistanceM = signalApproachDistanceM;
 
@@ -4734,6 +4740,13 @@ namespace Orts.Simulation.Timetables
                         }
                     }
                 }
+            }
+
+            if (nextActionInfo != null && nextActionInfo.NextAction == AIActionItem.AI_ACTION_TYPE.STATION_STOP &&
+                distanceToGoM < 150 + StationStops[0].PlatformItem.Length && !ApproachTriggerSet)
+            {
+                if (Cars[0] is MSTSLocomotive) Cars[0].SignalEvent(Event.AITrainApproachingStation);
+                ApproachTriggerSet = true;
             }
 
             // Keep speed within required speed band
@@ -6566,6 +6579,19 @@ namespace Orts.Simulation.Timetables
         {
             TrainType = TRAINTYPE.PLAYER;
             InitializeBrakes();
+
+            foreach (var tcar in Cars)
+            {
+                if (tcar is MSTSLocomotive)
+                {
+                    MSTSLocomotive loco = tcar as MSTSLocomotive;
+                    loco.SetPower(true);
+                    loco.AntiSlip = leadLocoAntiSlip;
+                }
+            }
+
+            PowerState = true;
+            RedefinePlayerTrainTriggers();
         }
 
         //================================================================================================//
@@ -7748,7 +7774,7 @@ namespace Orts.Simulation.Timetables
                         newWaitItem.startSectionIndex = sectionIndex < 0 ? TCRoute.TCRouteSubpaths[subrouteIndex][0].TCSectionIndex : sectionIndex;
                         newWaitItem.startSubrouteIndex = subrouteIndex;
 
-                        newWaitItem.referencedTrainName = String.Copy(reqReferenceTrain);
+                        newWaitItem.referencedTrainName = reqReferenceTrain;
 
                         // Check if name is full name, otherwise add timetable file info from this train
                         if (!newWaitItem.referencedTrainName.Contains(':'))
@@ -7854,7 +7880,7 @@ namespace Orts.Simulation.Timetables
                         newWaitItem.startSectionIndex = sectionIndex < 0 ? TCRoute.TCRouteSubpaths[subrouteIndex][0].TCSectionIndex : sectionIndex;
                         newWaitItem.startSubrouteIndex = subrouteIndex;
 
-                        newWaitItem.referencedTrainName = String.Copy(reqReferenceTrain);
+                        newWaitItem.referencedTrainName = reqReferenceTrain;
 
                         // Check if name is full name, otherwise add timetable file info from this train
                         if (!newWaitItem.referencedTrainName.Contains(':'))
@@ -7959,7 +7985,7 @@ namespace Orts.Simulation.Timetables
                             newWaitItem.startSubrouteIndex = subrouteIndex;
                             newWaitItem.stationIndex = stationIndex;
 
-                            newWaitItem.referencedTrainName = String.Copy(reqReferenceTrain);
+                            newWaitItem.referencedTrainName = reqReferenceTrain;
 
                             // Check if name is full name, otherwise add timetable file info from this train
                             if (!newWaitItem.referencedTrainName.Contains(':'))
@@ -9778,7 +9804,7 @@ namespace Orts.Simulation.Timetables
                         if (StationStops[0].PlatformReference == formedTrain.StationStops[0].PlatformReference)
                         {
                             formedTrain.AtStation = true;
-                            formedTrain.StationStops[0].ActualArrival = StationStops[0].ActualArrival;
+//                            formedTrain.StationStops[0].ActualArrival = StationStops[0].ActualArrival;
                             formedTrain.StationStops[0].arrivalDT = StationStops[0].arrivalDT;
                             formedTrain.StationStops[0].ArrivalTime = StationStops[0].ArrivalTime;
                             formedTrain.StationStops[0].CalculateDepartTime(presentTime, this);
@@ -9790,6 +9816,8 @@ namespace Orts.Simulation.Timetables
                     // Reinstate as to be started (note : train is not yet removed from reference)
                     AI.StartList.InsertTrain(formedTrain);
                 }
+
+                RedefineSoundTriggers();
             }
         }
 
@@ -10454,14 +10482,14 @@ namespace Orts.Simulation.Timetables
                         break;
                 }
 
-                retString[7] = String.Copy(actString);
+                retString[7] = actString;
                 retString[8] = FormatStrings.FormatDistance(
                         nextActionInfo.ActivateDistanceM - PresentPosition[0].DistanceTravelledM, metric);
             }
 
-            retString[4] = String.Copy(movString);
-            retString[5] = String.Copy(abString);
-            retString[11] = String.Copy(nameString);
+            retString[4] = movString;
+            retString[5] = abString;
+            retString[11] = nameString;
 
             return retString;
         }
@@ -11557,7 +11585,7 @@ namespace Orts.Simulation.Timetables
                     if (AtStation && formedTrain.AtStation && StationStops[0].PlatformReference == formedTrain.StationStops[0].PlatformReference)
                     {
                         formedTrain.MovementState = AI_MOVEMENT_STATE.STATION_STOP;
-                        formedTrain.StationStops[0].ActualArrival = StationStops[0].ActualArrival;
+//                        formedTrain.StationStops[0].ActualArrival = StationStops[0].ActualArrival;
                         formedTrain.StationStops[0].arrivalDT = StationStops[0].arrivalDT;
                         formedTrain.StationStops[0].ArrivalTime = StationStops[0].ArrivalTime;
                         formedTrain.StationStops[0].CalculateDepartTime(presentTime, this);
@@ -12398,6 +12426,7 @@ namespace Orts.Simulation.Timetables
             {
                 attachTrain.InitializeBrakes();
             }
+            attachTrain.RedefineSoundTriggers();
 
             // Update route positions if required
             int trainRearPositionIndex = attachTrain.ValidRoute[0].GetRouteIndex(tempRoute.First().TCSectionIndex, 0);
@@ -12669,7 +12698,14 @@ namespace Orts.Simulation.Timetables
             if (newTrain.ValidRoute[0] == null)
             {
                 newTrain.ValidRoute[0] = new Train.TCSubpathRoute(tempRouteNewTrain);
-                newTrain.TCRoute.TCRouteSubpaths.Add(new Train.TCSubpathRoute(tempRouteNewTrain));
+                if (newTrain.TCRoute == null)
+                {
+                    newTrain.TCRoute = new TCRoutePath(newTrain.ValidRoute[0]);
+                }
+                else
+                {
+                    newTrain.TCRoute.TCRouteSubpaths.Add(newTrain.ValidRoute[0]);
+                }
                 newTrain.PresentPosition[0].RouteListIndex = newTrain.ValidRoute[0].GetRouteIndex(newTrain.PresentPosition[0].TCSectionIndex, 0);
                 newTrain.PresentPosition[0].CopyTo(ref newTrain.PreviousPosition[0]);
                 newTrain.PresentPosition[1].RouteListIndex = newTrain.ValidRoute[0].GetRouteIndex(newTrain.PresentPosition[1].TCSectionIndex, 0);
@@ -12701,6 +12737,9 @@ namespace Orts.Simulation.Timetables
                 DelayedStart = true;
                 DelayedStartState = AI_START_MOVEMENT.PATH_ACTION;
             }
+
+            // redefine sound triggers
+            RedefineSoundTriggers();
 
             // Return new lead locomotive position
             return newLeadLocomotiveIndex;
@@ -13062,7 +13101,7 @@ namespace Orts.Simulation.Timetables
             formedTrain.AITrainDirectionForward = true;
             formedTrain.Name = String.IsNullOrEmpty(reqName)
                 ? String.Concat("D_", train.Number.ToString("0000"), "_", formedTrain.Number.ToString("00"))
-                : String.Copy(reqName);
+                : reqName;
             formedTrain.FormedOf = train.Number;
             formedTrain.FormedOfType = TTTrain.FormCommand.Detached;
             formedTrain.TrainType = Train.TRAINTYPE.AI_AUTOGENERATE;
@@ -13074,6 +13113,7 @@ namespace Orts.Simulation.Timetables
             formedTrain.AI = train.AI;
 
             trainList.Add(formedTrain);
+            formedTrain.RedefineStaticTrainTriggers();
             return formedTrain.Number;
         }
 
@@ -14429,7 +14469,7 @@ namespace Orts.Simulation.Timetables
                 // If train is player or intended player, determine new loco lead index
                 if (train.TrainType == Train.TRAINTYPE.PLAYER || train.TrainType == Train.TRAINTYPE.INTENDED_PLAYER)
                 {
-                    if (train.LeadLocomotiveIndex >= 0)
+                    if (train.LeadLocomotiveIndex >= 0 && train.Cars.Count > train.LeadLocomotiveIndex)
                     {
                         train.LeadLocomotive = train.Simulator.PlayerLocomotive = train.Cars[train.LeadLocomotiveIndex];
                     }
@@ -14479,6 +14519,8 @@ namespace Orts.Simulation.Timetables
                         }
                     }
                 }
+                train.RedefineSoundTriggers();
+                newTrain.RedefineSoundTriggers();
             }
 
             return true;
@@ -14580,6 +14622,9 @@ namespace Orts.Simulation.Timetables
                 train.Simulator.Confirmer?.Information("Player switched to train : " + newTrain.Name);
                 Trace.TraceInformation("Player switched to train : " + newTrain.Name);
             }
+
+            train.RedefineSoundTriggers();
+            newTrain.RedefineSoundTriggers();
 
             train.DetachPending = false; // Detach completed
         }
@@ -14867,7 +14912,7 @@ namespace Orts.Simulation.Timetables
                 return;
             }
 
-            AttachTrainName = String.Copy(thisCommand.CommandValues[0]);
+            AttachTrainName = thisCommand.CommandValues[0];
             if (!AttachTrainName.Contains(":"))
             {
                 int seppos = thisTrain.Name.IndexOf(':');
@@ -14977,7 +15022,7 @@ namespace Orts.Simulation.Timetables
         public AttachInfo(TTTrain rrtrain)
         {
             AttachTrain = rrtrain.Number;
-            AttachTrainName = String.Copy(rrtrain.Name);
+            AttachTrainName = rrtrain.Name;
             StationPlatformReference = -1;
             FirstIn = false;
             SetBack = false;
@@ -15192,7 +15237,7 @@ namespace Orts.Simulation.Timetables
 
             if (thisCommand.CommandValues != null && thisCommand.CommandValues.Count > 0)
             {
-                PickUpTrainName = String.Copy(thisCommand.CommandValues[0]);
+                PickUpTrainName = thisCommand.CommandValues[0];
                 if (!PickUpTrainName.Contains(":"))
                 {
                     int seppos = thisTrain.Name.IndexOf(':');
@@ -15404,7 +15449,7 @@ namespace Orts.Simulation.Timetables
             // Set transfer train name
             if (thisCommand.CommandValues != null && thisCommand.CommandValues.Count > 0)
             {
-                TransferTrainName = String.Copy(thisCommand.CommandValues[0]);
+                TransferTrainName = thisCommand.CommandValues[0];
                 if (!TransferTrainName.Contains(":"))
                 {
                     int seppos = thisTrain.Name.IndexOf(':');
