@@ -70,7 +70,7 @@ namespace Orts.Viewer3D.Popups
        
         public WeatherEditorWindow(WindowManager owner)
             : base(owner, Window.DecorationSize.X + owner.TextFontDefault.Height * 36
-                  , Window.DecorationSize.Y + owner.TextFontDefault.Height * 32 + ControlLayout.SeparatorSize * 3, Viewer.Catalog.GetString("Weather Editor 3.3"))
+                  , Window.DecorationSize.Y + owner.TextFontDefault.Height * 32 + ControlLayout.SeparatorSize * 9, Viewer.Catalog.GetString("Weather Editor 3.3"))
         {
         }
 
@@ -91,8 +91,8 @@ namespace Orts.Viewer3D.Popups
             vbox.AddHorizontalSeparator();
 
             hbox = vbox.AddLayoutHorizontalLineOfText();
-            hbox.Add(              new Label(145, hbox.RemainingHeight," Simulation Time: ",LabelAlignment.Left, Color.Azure));
-            hbox.Add(CurrentTime = new Label(100, hbox.RemainingHeight,"----------",LabelAlignment.Left, Color.Azure));
+            hbox.Add(              new Label(120, hbox.RemainingHeight," Simulation Time: ",LabelAlignment.Left, Color.Azure));
+            hbox.Add(CurrentTime = new Label(70, hbox.RemainingHeight,"----------",LabelAlignment.Left, Color.Azure));
         
             hbox.Add(              new Label(122, hbox.RemainingHeight," Weather Type: ",LabelAlignment.Left, Color.Azure));
             hbox.Add(WeatherType = new Label(100, hbox.RemainingHeight,"----------",LabelAlignment.Left, Color.Azure));

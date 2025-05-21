@@ -106,9 +106,6 @@ namespace Menu
             this.testingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripTools = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStripDocuments = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.lblNotificationCount = new System.Windows.Forms.Label();
-            this.pbNotificationsSome = new System.Windows.Forms.PictureBox();
-            this.pbNotificationsNone = new System.Windows.Forms.PictureBox();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.ttNotifications = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox1.SuspendLayout();
@@ -117,8 +114,6 @@ namespace Menu
             this.panelModeActivity.SuspendLayout();
             this.panelModeTimetable.SuspendLayout();
             this.contextMenuStripTools.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbNotificationsSome)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbNotificationsNone)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).BeginInit();
             this.SuspendLayout();
             // 
@@ -964,44 +959,6 @@ namespace Menu
             this.contextMenuStripDocuments.Name = "contextMenuStripDocuments";
             this.contextMenuStripDocuments.Size = new System.Drawing.Size(61, 4);
             // 
-            // lblNotificationCount
-            // 
-            this.lblNotificationCount.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(0)))), ((int)(((byte)(6)))));
-            this.lblNotificationCount.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotificationCount.ForeColor = System.Drawing.Color.White;
-            this.lblNotificationCount.Location = new System.Drawing.Point(827, 3);
-            this.lblNotificationCount.Name = "lblNotificationCount";
-            this.lblNotificationCount.Size = new System.Drawing.Size(8, 8);
-            this.lblNotificationCount.TabIndex = 42;
-            this.lblNotificationCount.Text = "1";
-            this.lblNotificationCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblNotificationCount.Visible = false;
-            this.lblNotificationCount.Click += new System.EventHandler(this.lblNotificationCount_Click);
-            // 
-            // pbNotificationsSome
-            // 
-            this.pbNotificationsSome.BackColor = System.Drawing.Color.Transparent;
-            this.pbNotificationsSome.Image = global::Menu.Properties.Resources.chat_icon_new_message_transparent;
-            this.pbNotificationsSome.Location = new System.Drawing.Point(805, 0);
-            this.pbNotificationsSome.Name = "pbNotificationsSome";
-            this.pbNotificationsSome.Size = new System.Drawing.Size(37, 31);
-            this.pbNotificationsSome.TabIndex = 41;
-            this.pbNotificationsSome.TabStop = false;
-            this.ttNotifications.SetToolTip(this.pbNotificationsSome, "Notifications published by Open Rails");
-            this.pbNotificationsSome.Click += new System.EventHandler(this.pbNotificationsSome_Click);
-            // 
-            // pbNotificationsNone
-            // 
-            this.pbNotificationsNone.Image = global::Menu.Properties.Resources.chat_icon_no_message_transparent;
-            this.pbNotificationsNone.InitialImage = ((System.Drawing.Image)(resources.GetObject("pbNotificationsNone.InitialImage")));
-            this.pbNotificationsNone.Location = new System.Drawing.Point(805, 0);
-            this.pbNotificationsNone.Name = "pbNotificationsNone";
-            this.pbNotificationsNone.Size = new System.Drawing.Size(37, 31);
-            this.pbNotificationsNone.TabIndex = 40;
-            this.pbNotificationsNone.TabStop = false;
-            this.ttNotifications.SetToolTip(this.pbNotificationsNone, "Notifications published by Open Rails");
-            this.pbNotificationsNone.Click += new System.EventHandler(this.pbNotificationsNone_Click);
-            // 
             // pictureBoxLogo
             // 
             this.pictureBoxLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1018,7 +975,6 @@ namespace Menu
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(918, 623);
-            this.Controls.Add(this.lblNotificationCount);
             this.Controls.Add(this.panelModeTimetable);
             this.Controls.Add(this.labelLogo);
             this.Controls.Add(this.panelModeActivity);
@@ -1034,8 +990,6 @@ namespace Menu
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pictureBoxLogo);
             this.Controls.Add(this.label2);
-            this.Controls.Add(this.pbNotificationsSome);
-            this.Controls.Add(this.pbNotificationsNone);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
@@ -1054,8 +1008,6 @@ namespace Menu
             this.panelModeTimetable.ResumeLayout(false);
             this.panelModeTimetable.PerformLayout();
             this.contextMenuStripTools.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pbNotificationsSome)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbNotificationsNone)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1126,9 +1078,6 @@ namespace Menu
         private System.Windows.Forms.RadioButton radioButtonMPClient;
         private System.Windows.Forms.Button buttonStartMP;
         private System.Windows.Forms.CheckBox checkDebriefActivityEval;
-        private System.Windows.Forms.PictureBox pbNotificationsNone;
-        private System.Windows.Forms.PictureBox pbNotificationsSome;
-        private System.Windows.Forms.Label lblNotificationCount;
         private System.Windows.Forms.ToolTip ttNotifications;
         private System.Windows.Forms.CheckBox checkBoxTTWatchMode;
         private System.Windows.Forms.Label labelTimetableWeatherFile;

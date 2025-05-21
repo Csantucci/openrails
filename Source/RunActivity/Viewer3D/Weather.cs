@@ -2531,9 +2531,9 @@ namespace Orts.Viewer3D
                                 Weather.WindSpeed = 3.0f;
                                 Weather.WindDirectionSky = 3.0f;
                                 // -----------------------------------------------
-                                Weather.OvercastFactor  = 0.00f;
-                                Weather.OvercastFactor2 = 0.00f; 
-                                Weather.OvercastFactor3 = 0.01f; 
+                                Weather.OvercastFactor  = 0.08f;
+                                Weather.OvercastFactor2 = 0.12f; 
+                                Weather.OvercastFactor3 = 0.15f; 
                                 // -----------------------------------------------
                                 Weather.PrecipWind1 = new Vector3( 0.0f, 0.0f, 0.0f);
                                 Weather.PrecipWind2 = new Vector3( 0.0f, 0.0f, 0.0f);

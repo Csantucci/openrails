@@ -349,7 +349,7 @@ namespace Menu
             }, _ =>
             {
                 NotificationManager.CheckNotifications();
-                UpdateNotificationPageAlert();
+//                UpdateNotificationPageAlert();
             });
         }
 
@@ -1760,12 +1760,12 @@ namespace Menu
             Win32.LockWindowUpdate(Handle);
             ClearPanel();
             NotificationManager.PopulatePage();
-            UpdateNotificationPageAlert();
+//            UpdateNotificationPageAlert();
             NotificationManager.Page.FlowNDetails();
             Win32.LockWindowUpdate(IntPtr.Zero);
         }
 
-        public void UpdateNotificationPageAlert()
+/*        public void UpdateNotificationPageAlert()
         {
             if (NotificationManager.NewPages.Viewed < NotificationManager.NewPages.Count)
             {
@@ -1787,7 +1787,7 @@ namespace Menu
                 pbNotificationsSome.Visible = false;
                 lblNotificationCount.Visible = false;
             }
-        }
+        }*/
 
         // 3 should be enough, but is there a way to get unlimited buttons?
         public void Button0_Click(object sender, EventArgs e)
