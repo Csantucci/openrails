@@ -39,7 +39,6 @@
             this.checkAutoSaveActive = new System.Windows.Forms.CheckBox();
             this.pbViewingFOV = new System.Windows.Forms.PictureBox();
             this.labelDefaultDetail = new System.Windows.Forms.Label();
-            this.pbUpdateMode = new System.Windows.Forms.PictureBox();
             this.pbWindowGlass = new System.Windows.Forms.PictureBox();
             this.pbWebServerPort = new System.Windows.Forms.PictureBox();
             this.pbPerformanceTuner = new System.Windows.Forms.PictureBox();
@@ -120,7 +119,6 @@
             this.comboWindowSize = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.checkWindowGlass = new System.Windows.Forms.CheckBox();
-            this.labelUpdateMode = new System.Windows.Forms.Label();
             this.tabPageEvaluate = new System.Windows.Forms.TabPage();
             this.checkListDataLogTSContents = new System.Windows.Forms.CheckedListBox();
             this.labelDataLogTSInterval = new System.Windows.Forms.Label();
@@ -217,6 +215,7 @@
             this.checkAlerter = new System.Windows.Forms.CheckBox();
             this.tabOptions = new System.Windows.Forms.TabControl();
             this.tabPageORNYMG = new System.Windows.Forms.TabPage();
+            this.checkExtendedPerformanceDump = new System.Windows.Forms.CheckBox();
             this.label25 = new System.Windows.Forms.Label();
             this.precipitationBoxLength = new System.Windows.Forms.NumericUpDown();
             this.label24 = new System.Windows.Forms.Label();
@@ -236,10 +235,8 @@
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
             this.label29 = new System.Windows.Forms.Label();
             this.windVariabilityValueLabel = new System.Windows.Forms.Label();
-            this.checkExtendedPerformanceDump = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbUpdateMode)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWindowGlass)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWebServerPort)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPerformanceTuner)).BeginInit();
@@ -422,18 +419,6 @@
             this.labelDefaultDetail.TabIndex = 44;
             this.labelDefaultDetail.Text = "Default detail (+0%)";
             this.labelDefaultDetail.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // pbUpdateMode
-            // 
-            this.pbUpdateMode.Image = global::Menu.Properties.Resources.info_18;
-            this.pbUpdateMode.Location = new System.Drawing.Point(11, 52);
-            this.pbUpdateMode.Name = "pbUpdateMode";
-            this.pbUpdateMode.Size = new System.Drawing.Size(18, 18);
-            this.pbUpdateMode.TabIndex = 30;
-            this.pbUpdateMode.TabStop = false;
-            this.pbUpdateMode.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbUpdateMode.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbUpdateMode.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // pbWindowGlass
             // 
@@ -1323,8 +1308,6 @@
             this.tabPageSystem.Controls.Add(this.labelWebServerPort);
             this.tabPageSystem.Controls.Add(this.pbWindowGlass);
             this.tabPageSystem.Controls.Add(this.labelWindowSize);
-            this.tabPageSystem.Controls.Add(this.pbUpdateMode);
-            this.tabPageSystem.Controls.Add(this.labelUpdateMode);
             this.tabPageSystem.Location = new System.Drawing.Point(4, 22);
             this.tabPageSystem.Name = "tabPageSystem";
             this.tabPageSystem.Padding = new System.Windows.Forms.Padding(3);
@@ -1473,17 +1456,6 @@
             this.checkWindowGlass.TabIndex = 49;
             this.checkWindowGlass.Text = "Use glass on in-game windows";
             this.checkWindowGlass.UseVisualStyleBackColor = true;
-            // 
-            // labelUpdateMode
-            // 
-            this.labelUpdateMode.Location = new System.Drawing.Point(36, 53);
-            this.labelUpdateMode.Margin = new System.Windows.Forms.Padding(3);
-            this.labelUpdateMode.Name = "labelUpdateMode";
-            this.labelUpdateMode.Size = new System.Drawing.Size(285, 13);
-            this.labelUpdateMode.TabIndex = 0;
-            this.labelUpdateMode.Text = "Update mode:";
-            this.labelUpdateMode.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelUpdateMode.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
             // 
             // tabPageEvaluate
             // 
@@ -2724,6 +2696,17 @@
             this.tabPageORNYMG.Text = "ORNYMG Only";
             this.tabPageORNYMG.UseVisualStyleBackColor = true;
             // 
+            // checkExtendedPerformanceDump
+            // 
+            this.checkExtendedPerformanceDump.AutoSize = true;
+            this.checkExtendedPerformanceDump.Location = new System.Drawing.Point(15, 106);
+            this.checkExtendedPerformanceDump.Name = "checkExtendedPerformanceDump";
+            this.checkExtendedPerformanceDump.Size = new System.Drawing.Size(165, 17);
+            this.checkExtendedPerformanceDump.TabIndex = 49;
+            this.checkExtendedPerformanceDump.Text = "Extended Performance Dump";
+            this.checkExtendedPerformanceDump.UseVisualStyleBackColor = true;
+            this.checkExtendedPerformanceDump.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
             // label25
             // 
             this.label25.AutoSize = true;
@@ -2967,17 +2950,6 @@
             this.windVariabilityValueLabel.TabIndex = 31;
             this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
-            // checkExtendedPerformanceDump
-            // 
-            this.checkExtendedPerformanceDump.AutoSize = true;
-            this.checkExtendedPerformanceDump.Location = new System.Drawing.Point(15, 106);
-            this.checkExtendedPerformanceDump.Name = "checkExtendedPerformanceDump";
-            this.checkExtendedPerformanceDump.Size = new System.Drawing.Size(165, 17);
-            this.checkExtendedPerformanceDump.TabIndex = 49;
-            this.checkExtendedPerformanceDump.Text = "Extended Performance Dump";
-            this.checkExtendedPerformanceDump.UseVisualStyleBackColor = true;
-            this.checkExtendedPerformanceDump.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
             // OptionsForm
             // 
             this.AcceptButton = this.buttonOK;
@@ -2997,7 +2969,6 @@
             this.Load += new System.EventHandler(this.OptionsForm_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbUpdateMode)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWindowGlass)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWebServerPort)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbPerformanceTuner)).EndInit();
@@ -3256,12 +3227,10 @@
         private System.Windows.Forms.NumericUpDown precipitationBoxWidth;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.NumericUpDown precipitationBoxHeight;
-        private System.Windows.Forms.Label labelUpdateMode;
         private System.Windows.Forms.Label labelWindowSize;
         private System.Windows.Forms.Label labelWebServerPort;
         private System.Windows.Forms.Label labelWorldObjectDensity;
         private System.Windows.Forms.Label labelViewingVerticalFOV;
-        private System.Windows.Forms.PictureBox pbUpdateMode;
         private System.Windows.Forms.PictureBox pbWindowGlass;
         private System.Windows.Forms.PictureBox pbWebServerPort;
         private System.Windows.Forms.PictureBox pbPerformanceTuner;

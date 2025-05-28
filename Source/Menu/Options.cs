@@ -259,46 +259,6 @@ namespace Menu
             checkDataLogStationStops.Checked = Settings.DataLogStationStops;
 
             // System tab
-            var updateChannelNames = new Dictionary<string, string> {
-                { "stable", catalog.GetString("Stable (recommended)") },
-                { "testing", catalog.GetString("Testing") },
-                { "unstable", catalog.GetString("Unstable") },
-                { "", catalog.GetString("None") },
-            };
-            var updateChannelDescriptions = new Dictionary<string, string> {
-                { "stable", catalog.GetString("Infrequent updates to official, hand-picked versions. Recommended for most users.") },
-                { "testing", catalog.GetString("Weekly updates which may contain noticable defects. For project supporters.") },
-                { "unstable", catalog.GetString("Daily updates which may contain serious defects. For developers only.") },
-                { "", catalog.GetString("No updates.") },
-            };
-            var spacing = labelUpdateMode.Margin.Size;
-            var indent = 180;
-            var top = labelUpdateMode.Bottom + spacing.Height;
-            foreach (var channel in UpdateManager.GetChannels())
-            {
-                var radio = new RadioButton()
-                {
-                    Text = updateChannelNames[channel.ToLowerInvariant()],
-                    Margin = labelUpdateMode.Margin,
-                    Left = spacing.Width + 32, // to leave room for HelpIcon
-                    Top = top,
-                    Checked = updateManager.ChannelName.Equals(channel, StringComparison.InvariantCultureIgnoreCase),
-                    AutoSize = true,
-                    Tag = channel,
-                };
-                tabPageSystem.Controls.Add(radio);
-                var label = new Label()
-                {
-                    Text = updateChannelDescriptions[channel.ToLowerInvariant()],
-                    Margin = labelUpdateMode.Margin,
-                    Left = spacing.Width + indent,
-                    Top = top + 2, // Offset to align with radio button text
-                    Width = tabPageSystem.ClientSize.Width - indent - spacing.Width * 2,
-                    AutoSize = true,
-                };
-                tabPageSystem.Controls.Add(label);
-                top += label.Height + spacing.Height - 3; // -3 to close them up a bit
-            }
 
             // Experimental tab
             checkUseSuperElevation.Checked = Settings.UseSuperElevation;
@@ -855,7 +815,6 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
 
                 // System
                 (pbLanguage, new Control[] { labelLanguage, comboLanguage }),
-                (pbUpdateMode, new Control[] { labelUpdateMode }),
                 (pbWindowGlass, new[] { checkWindowGlass }),
                 (pbControlConfirmations, new Control[] { labelControlConfirmations, comboControlConfirmations }),
                 (pbWebServerPort, new Control[] { labelWebServerPort }),
@@ -1004,10 +963,6 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                 {
                     pbLanguage,
                     BaseDocumentationUrl + "/options.html#language"
-                },
-                {
-                    pbUpdateMode,
-                    BaseDocumentationUrl + "/options.html#update-mode"
                 },
                 {
                     pbWindowGlass,
