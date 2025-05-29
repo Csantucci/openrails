@@ -10863,6 +10863,12 @@ namespace Orts.Simulation.Timetables
                 // Get time
                 int eightHundredHours = 8 * 3600;
                 int sixteenHundredHours = 16 * 3600;
+				
+				// Update delay if train might be running late, do not update if train is early and waiting at station 
+				if (presentTime > StationStops[0].DepartTime)
+				{
+					Delay = TimeSpan.FromSeconds((presentTime - StationStops[0].DepartTime) % (24 * 3600));
+				}
 
                 // If moving, set departed
                 if (Math.Abs(SpeedMpS) > 1.0f)
@@ -10874,6 +10880,7 @@ namespace Orts.Simulation.Timetables
                     DisplayMessage = "";
                     if (StationStops[0].ArrivalTime >= 0)
                     {
+                        // Update delay when departing, train may now be early
                         Delay = TimeSpan.FromSeconds((presentTime - StationStops[0].DepartTime) % (24 * 3600));
                     }
 
