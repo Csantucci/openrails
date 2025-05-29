@@ -3602,6 +3602,7 @@ namespace Orts.Simulation.RollingStocks
         public int GetWagonNumAxles() { return WagonNumAxles; }
 
         public float GetGravitationalAccelerationMpS2() { return GravitationalAccelerationMpS2; }
+
         /// <summary>
         /// Update the gravity force and % gradient of this train car at the current position
         /// </summary>
