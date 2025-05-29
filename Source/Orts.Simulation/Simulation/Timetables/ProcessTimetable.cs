@@ -775,7 +775,7 @@ namespace Orts.Simulation.Timetables
 
             // loop through all trains to find player train
             int playerIndex = -1;
-            int stopTime = -1;
+            int? stopTime = -1;
 
             for (int iTrain = 0; iTrain <= allTrains.Count - 1; iTrain++)
             {
@@ -1629,10 +1629,6 @@ namespace Orts.Simulation.Timetables
                                 if (Stops.ContainsKey(stationDetails.StationName))
                                 {
                                     Trace.TraceInformation("Double station reference : train " + Name + " ; station : " + stationDetails.StationName);
-                                }
-                                else if (fileStrings[iRow][columnIndex].StartsWith("P"))
-                                {
-                                    // Allowed in timetable but not yet implemented
                                 }
                                 else
                                 {
@@ -2654,7 +2650,7 @@ namespace Orts.Simulation.Timetables
                 {
                     int commandseparator = stationInfo.IndexOf('$');
                     fullCommandString = stationInfo.Substring(commandseparator + 1);
-                    stationInfo = stationInfo.Substring(0, commandseparator);
+                    stationInfo = stationInfo.Substring(0, commandseparator).Trim();
                 }
 
                 if (!String.IsNullOrEmpty(stationInfo))
@@ -2761,6 +2757,19 @@ namespace Orts.Simulation.Timetables
                     }
 
                     newStop.Commands.Add(new TTTrainCommands("extendplatformtosignal"));
+                }
+
+                // copy req stop defaults if set
+                if (newStop.reqStop)
+                {
+                    if (stationDetails.ReqStopDetails != null)
+                    {
+                        newStop.reqStopDetails = stationDetails.ReqStopDetails.CreateCopy();
+                    }
+                    else
+                    {
+                        newStop.reqStopDetails = new RequestStop();
+                    }
                 }
 
                 return newStop;
@@ -3359,21 +3368,21 @@ namespace Orts.Simulation.Timetables
             }
 
             public string StopName;
-            public int arrivalTime;
-            public int departureTime;
-            public int passTime;
-            public DateTime arrivalDT;
-            public DateTime departureDT;
-            public DateTime passDT;
+            public int? arrivalTime;
+            public int? departureTime;
+            public int? passTime;
+            public DateTime? arrivalDT;
+            public DateTime? departureDT;
+            public DateTime? passDT;
             public bool arrdeppassvalid;
+            public bool allowDepartEarly;
+            public bool reqStop;
             public SignalHoldType holdState;
             public bool noWaitSignal;
-            // TODO
-            // public int passageTime; // not yet implemented
-            // public bool passvalid;  // not yet implemented
             public List<TTTrainCommands> Commands;
 
             public TimetableInfo refTTInfo;
+            public RequestStop reqStopDetails;
 
             //================================================================================================//
             /// <summary>
@@ -3387,15 +3396,46 @@ namespace Orts.Simulation.Timetables
                 refTTInfo = ttinfo;
                 arrivalTime = -1;
                 departureTime = -1;
-                passTime = -1;
+                passTime = null;
                 Commands = null;
+                allowDepartEarly = false;
+                reqStop = false;
+                reqStopDetails = null;
 
                 TimeSpan atime;
                 bool validArrTime = false;
                 bool validDepTime = false;
                 bool validPassTime = false;
 
-                if (arrTime.Contains("P"))
+                if (arrTime.Length == 1)
+                {
+                    if (arrTime == "*")
+                    {
+                        allowDepartEarly = true;
+                        validArrTime = true;
+                        departureTime = arrivalTime = null;
+                        departureDT = arrivalDT = null;
+                    }
+                    else if (arrTime == "x")
+                    {
+                        reqStop = true;
+                        allowDepartEarly = true;
+                        validArrTime = true;
+                        departureTime = arrivalTime = null;
+                    }
+                }
+                else if (arrTime.StartsWith("P"))
+                {
+                    string passingTime = arrTime.Substring(1);
+                    validPassTime = TimeSpan.TryParse(passingTime, out atime);
+
+                    if (validPassTime)
+                    {
+                        passTime = Convert.ToInt32(atime.TotalSeconds);
+                        passDT = new DateTime(atime.Ticks);
+                    }
+                }
+                else if (arrTime.Contains("P"))
                 {
                     string passingTime = arrTime.Replace('P', ':');
                     validPassTime = TimeSpan.TryParse(passingTime, out atime);
@@ -3404,6 +3444,28 @@ namespace Orts.Simulation.Timetables
                     {
                         passTime = Convert.ToInt32(atime.TotalSeconds);
                         passDT = new DateTime(atime.Ticks);
+                    }
+                }
+                else if (arrTime.Contains("*"))
+                {
+                    allowDepartEarly = true;
+                    string arrivTime = arrTime.Replace('*', ':');
+                    validArrTime = TimeSpan.TryParse(arrivTime, out atime);
+                    if (validArrTime)
+                    {
+                        departureTime = arrivalTime = Convert.ToInt32(atime.TotalSeconds);
+                        departureDT = arrivalDT = new DateTime(atime.Ticks);
+                    }
+                }
+                else if (arrTime.Contains("x"))
+                {
+                    reqStop = true;
+                    string arrivTime = arrTime.Replace('x', ':');
+                    validArrTime = TimeSpan.TryParse(arrivTime, out atime);
+                    if (validArrTime)
+                    {
+                        departureTime = arrivalTime = Convert.ToInt32(atime.TotalSeconds);
+                        departureDT = arrivalDT = new DateTime(atime.Ticks);
                     }
                 }
                 else
@@ -3415,13 +3477,13 @@ namespace Orts.Simulation.Timetables
                         arrivalTime = Convert.ToInt32(atime.TotalSeconds);
                         arrivalDT = new DateTime(atime.Ticks);
                     }
-				}
 
-                validDepTime = TimeSpan.TryParse(depTime, out atime);
-                if (validDepTime)
-                {
-                    departureTime = Convert.ToInt32(atime.TotalSeconds);
-                    departureDT = new DateTime(atime.Ticks);
+                    validDepTime = TimeSpan.TryParse(depTime, out atime);
+                    if (validDepTime)
+                    {
+                        departureTime = Convert.ToInt32(atime.TotalSeconds);
+                        departureDT = new DateTime(atime.Ticks);
+                    }
                 }
 
                 arrdeppassvalid = validArrTime || validDepTime;
@@ -3442,7 +3504,7 @@ namespace Orts.Simulation.Timetables
                 bool validStop = false;
 
                 // Valid stop and not passing
-                if (arrdeppassvalid && passTime < 0)
+                if (arrdeppassvalid && !passTime.HasValue)
                 {
                     // Check for station flags
                     bool terminal = false;
@@ -3600,7 +3662,8 @@ namespace Orts.Simulation.Timetables
 
                     // Create station stop info
                     validStop = actTrain.CreateStationStop(actPlatformID, arrivalTime, departureTime, arrivalDT, departureDT, AITrain.clearingDistanceM,
-                        AITrain.minStopDistanceM, terminal, actMinStopTime, keepClearFront, keepClearRear, forcePosition, closeupSignal, closeup, restrictPlatformToSignal, extendPlatformToSignal, endStop);
+                        AITrain.minStopDistanceM, terminal, actMinStopTime, keepClearFront, keepClearRear, forcePosition, closeupSignal, closeup,
+                        restrictPlatformToSignal, extendPlatformToSignal, endStop, allowDepartEarly);
 
                     // Override holdstate using stop info - but only if exit signal is defined
                     int exitSignal = actTrain.StationStops[actTrain.StationStops.Count - 1].ExitSignal;
@@ -3624,6 +3687,23 @@ namespace Orts.Simulation.Timetables
                         holdSignal = actTrain.StationStops[actTrain.StationStops.Count - 1].HoldSignal;
                     }
 
+                    // check for request stop
+                    if (reqStop)
+                    {
+                        actTrain.StationStops[actTrain.StationStops.Count - 1].ReqStopDetails = reqStopDetails.CreateCopy();
+                        foreach (TTTrainCommands thisCommand in Commands)
+                        {
+                            if (thisCommand.CommandToken == "req")
+                            {
+                                string infoString = String.Concat("Train : ", actTrain.Name, " , at Station : ",
+                                    actTrain.StationStops[actTrain.StationStops.Count - 1].PlatformItem.Name);
+                                actTrain.StationStops[actTrain.StationStops.Count - 1].ReqStopDetails.ProcessCommands(thisCommand.CommandQualifiers, infoString);
+                                continue;
+                            }
+                        }
+                        actTrain.StationStops[actTrain.StationStops.Count - 1].ReqStopDetails.SetStopDetails(actTrain.Name, actTrain.StationStops[actTrain.StationStops.Count - 1].PlatformItem.Name);
+                    }
+
                     // Check holdsignal list
                     if (holdSignal)
                     {
@@ -3642,7 +3722,7 @@ namespace Orts.Simulation.Timetables
                 }
 
                 // Stop used to define command only - find related section in route
-                else if (Commands != null)
+                else if (Commands != null && !passTime.HasValue)
                 {
                     // Get platform details
                     int platformIndex;
@@ -3691,9 +3771,10 @@ namespace Orts.Simulation.Timetables
                 }
 
                 // Pass time only - valid condition but not yet processed
-                if (!validStop && passTime >= 0)
+                if (!validStop && passTime.HasValue)
                 {
-                    validStop = true;
+                    validStop = actTrain.CreateStationStop(actPlatformID, null, null, arrivalDT, departureDT, 0,
+                        0, false, null, null, null, false, false, false, false, false, false, false, passTime, passDT);
                 }
 
                 return validStop;
@@ -3726,6 +3807,7 @@ namespace Orts.Simulation.Timetables
             public bool CloseupSignal;            // Train may close up to signal
             public bool RestrictPlatformToSignal; // Restrict platform end to signal position
             public bool ExtendPlatformToSignal;   // Extend platform end to next signal position
+            public RequestStop ReqStopDetails;  // request stop details
 
             //================================================================================================//
             /// <summary>
@@ -3743,6 +3825,7 @@ namespace Orts.Simulation.Timetables
                 CloseupSignal = false;
                 RestrictPlatformToSignal = false;
                 ExtendPlatformToSignal = false;
+                ReqStopDetails = null;
 
                 if (stationString.Contains("$"))
                 {
@@ -3828,11 +3911,37 @@ namespace Orts.Simulation.Timetables
                             }
                             break;
 
+                        // request stop details
+                        case "req":
+                            if (thisCommand.CommandQualifiers != null && thisCommand.CommandQualifiers.Count > 0)
+                            {
+                                ReqStopDetails = ProcessReqStopDetails(thisCommand.CommandQualifiers);
+                            }
+                            else
+                            {
+                                Trace.TraceInformation("Station stop {0} : missing details for request stop", commands[0]);
+                            }
+                            break;
+
                         // Other commands not yet implemented
                         default:
                             break;
                     }
                 }
+            }
+
+            //================================================================================================//
+            /// <summary>
+            /// Process RequestStop details
+            /// </summary>
+            /// <param name="commands"></param>
+            public RequestStop ProcessReqStopDetails(List<TTTrainCommands.TTTrainComQualifiers> commands)
+            {
+                RequestStop reqDetails = new RequestStop();
+
+                string infoString = String.Concat("Station stop : " + StationName);
+                reqDetails.ProcessCommands(commands, infoString);
+                return reqDetails;
             }
         }
 
