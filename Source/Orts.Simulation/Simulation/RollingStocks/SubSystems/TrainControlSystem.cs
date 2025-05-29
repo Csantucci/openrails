@@ -673,7 +673,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         aspect = (Aspect)Locomotive.Train.signalRef.TranslateToTCSAspect(trainSignal.SignalObject.this_sig_lr(function));
                     }
 
-                    var functionHead = trainSignal.SignalObject.SignalHeads.Find(head => head.Function == function);
+                    var functionHead = default(SignalHead);
+                    foreach (var head in trainSignal.SignalObject.SignalHeads)
+                        if (head.Function == function)
+                            functionHead = head;
+                    if (functionHead == null)
+                        goto Exit;
                     signalTypeName = functionHead.SignalTypeName;
                     if (functionHead?.signalType?.DrawStates != null)
                     {
