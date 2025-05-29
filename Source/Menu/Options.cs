@@ -261,7 +261,7 @@ namespace Menu
             // System tab
 
             // Experimental tab
-            checkUseSuperElevation.Checked = Settings.UseSuperElevation;
+            checkUseSuperElevation.Checked = Settings.LegacySuperElevation;
             numericSuperElevationGauge.Value = Settings.SuperElevationGauge;
             checkPerformanceTuner.Checked = Settings.PerformanceTuner;
             labelPerformanceTunerTarget.Enabled = checkPerformanceTuner.Checked;
@@ -478,7 +478,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
                     UpdateManager.SetChannel((string)control.Tag);
 
             // Experimental tab
-            Settings.UseSuperElevation = checkUseSuperElevation.Checked;
+            Settings.LegacySuperElevation = checkUseSuperElevation.Checked;
             Settings.SuperElevationGauge = (int)numericSuperElevationGauge.Value;
             Settings.PerformanceTuner = checkPerformanceTuner.Checked;
             Settings.PerformanceTunerTarget = (int)numericPerformanceTunerTarget.Value;
