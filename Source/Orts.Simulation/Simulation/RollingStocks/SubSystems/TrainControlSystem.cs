@@ -436,7 +436,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 {
                     if (Locomotive.Pantographs.State == PantographState.Up)
                     {
-                        Locomotive.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.LowerPantograph);
+                        Locomotive.LocomotivePowerSupply.HandleEventFromTcs(PowerSupplyEvent.LowerPantograph);
                     }
                 };
                 Script.SetPantographUp = (pantoID) =>
@@ -446,7 +446,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         Trace.TraceError($"TCS script used bad pantograph ID {pantoID}");
                         return;
                     }
-                    Locomotive.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.RaisePantograph, pantoID);
+                    Locomotive.LocomotivePowerSupply.HandleEventFromTcs(PowerSupplyEvent.RaisePantograph, pantoID);
                 };               
                 Script.SetPantographDown = (pantoID) =>
                 {
@@ -455,7 +455,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         Trace.TraceError($"TCS script used bad pantograph ID {pantoID}");
                         return;
                     }
-                    Locomotive.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.LowerPantograph, pantoID);
+                    Locomotive.LocomotivePowerSupply.HandleEventFromTcs(PowerSupplyEvent.LowerPantograph, pantoID);
                 };
                 Script.SetPowerAuthorization = (value) => PowerAuthorization = value;
                 Script.SetCircuitBreakerClosingOrder = (value) => CircuitBreakerClosingOrder = value;
@@ -673,7 +673,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                         aspect = (Aspect)Locomotive.Train.signalRef.TranslateToTCSAspect(trainSignal.SignalObject.this_sig_lr(function));
                     }
 
-                    var functionHead = trainSignal.SignalObject.SignalHeads.Find(head => head.Function == function);
+                    var functionHead = default(SignalHead);
+                    foreach (var head in trainSignal.SignalObject.SignalHeads)
+                        if (head.Function == function)
+                            functionHead = head;
+                    if (functionHead == null)
+                        goto Exit;
                     signalTypeName = functionHead.SignalTypeName;
                     if (functionHead?.signalType?.DrawStates != null)
                     {

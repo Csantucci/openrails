@@ -2237,39 +2237,17 @@ namespace Orts.Viewer3D.RollingStock
                 case CABViewControlTypes.FIREHOLE:
                 case CABViewControlTypes.THROTTLE:
                 case CABViewControlTypes.THROTTLE_DISPLAY:
+                case CABViewControlTypes.DYNAMIC_BRAKE_DISPLAY:
                     index = PercentToIndex(data);
                     break;
                 case CABViewControlTypes.FRICTION_BRAKING:
                     index = data > 0.001 ? 1 : 0;
                     break;
                 case CABViewControlTypes.DYNAMIC_BRAKE:
-                case CABViewControlTypes.DYNAMIC_BRAKE_DISPLAY:
-                    var dynBrakePercent = (Locomotive.Train.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING || Locomotive.Train.Autopilot) ?
-                        Locomotive.DynamicBrakePercent : Locomotive.LocalDynamicBrakePercent;
-                    if (dynBrakePercent <= 0)
-                        index = 0;
-                    else if (Locomotive.DynamicBrakeController != null)
-                    {
-                        if (!Locomotive.HasSmoothStruc)
-                            index = Locomotive.DynamicBrakeController.CurrentNotch;
-                        else
-                        {
-                            if (Locomotive.CruiseControl != null)
-                            {
-                                if (Locomotive.CruiseControl.SpeedRegMode == Simulation.RollingStocks.SubSystems.CruiseControl.SpeedRegulatorMode.Auto && !Locomotive.CruiseControl.DynamicBrakePriority ||
-                                    Locomotive.DynamicBrakeIntervention > 0 && ControlDiscrete.ControlType.Type == CABViewControlTypes.DYNAMIC_BRAKE)
-                                {
-                                    index = 0;
-                                }
-                                else
-                                    index = PercentToIndex(Locomotive.DynamicBrakeController.CurrentValue);
-                            }
-                            else
-                                index = PercentToIndex(Locomotive.DynamicBrakeController.CurrentValue);
-                        }
-                    }
+                    if (Locomotive.DynamicBrakeController != null && !Locomotive.HasSmoothStruc)
+                        index = Locomotive.DynamicBrakeController.CurrentNotch;
                     else
-                        index = PercentToIndex(dynBrakePercent);
+                        index = PercentToIndex(data);
                     break;
                 case CABViewControlTypes.CPH_DISPLAY:
                 case CABViewControlTypes.CP_HANDLE:
@@ -2456,9 +2434,10 @@ namespace Orts.Viewer3D.RollingStock
         /// </summary>
         float NormalizedMouseMovement()
         {
+            var mouseWheelChange = (UserInput.IsDown(UserCommand.GameSwitchWithMouse) ? UserInput.MouseWheelChange : 0) / 10;
             return (ControlDiscrete.Orientation > 0
-                ? (float)(UserInput.MouseMoveY + UserInput.MouseWheelChange) / (float)Control.Height
-                : (float)(UserInput.MouseMoveX + UserInput.MouseWheelChange) / (float)Control.Width)
+                ? (float)(UserInput.MouseMoveY + mouseWheelChange) / (float)Control.Height
+                : (float)(UserInput.MouseMoveX + mouseWheelChange) / (float)Control.Width)
                 * (ControlDiscrete.Direction > 0 ? -1 : 1);
         }
 

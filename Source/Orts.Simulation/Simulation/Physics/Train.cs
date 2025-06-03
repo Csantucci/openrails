@@ -4136,7 +4136,7 @@ namespace Orts.Simulation.Physics
                     fullServPressurePSI = lead.BrakeSystem is VacuumSinglePipe ? 16 : maxPressurePSI - lead.TrainBrakeController.FullServReductionPSI;
                     EqualReservoirPressurePSIorInHg = Math.Min(maxPressurePSI, EqualReservoirPressurePSIorInHg);
                     lead.TrainBrakeController.UpdatePressure(ref EqualReservoirPressurePSIorInHg, 1000, ref BrakeLine4);
-                    if (!(lead.BrakeSystem is EPBrakeSystem))
+                    if (!(lead.BrakeSystem is EPBrakeSystem) && !(lead.BrakeSystem is SMEBrakeSystem))
                         BrakeLine4 = -1;
                     EqualReservoirPressurePSIorInHg =
                             MathHelper.Max(EqualReservoirPressurePSIorInHg, fullServPressurePSI);
@@ -4468,7 +4468,7 @@ namespace Orts.Simulation.Physics
                 if (lead.TrainBrakeController != null)
                 {
                     lead.TrainBrakeController.UpdatePressure(ref EqualReservoirPressurePSIorInHg, elapsedClockSeconds, ref BrakeLine4);
-                    if (!(lead.BrakeSystem is EPBrakeSystem))
+                    if (!(lead.BrakeSystem is EPBrakeSystem) && !(lead.BrakeSystem is SMEBrakeSystem))
                         BrakeLine4 = -1;
                 }
                 if (lead.EngineBrakeController != null)
@@ -4522,25 +4522,27 @@ namespace Orts.Simulation.Physics
                     car.ComputePosition(traveller, false, 0, 0, SpeedMpS);
                 }
                 else
-                {
+                { 
                     // traveller is positioned at the front of the car
                     // advance to the first bogie 
                     traveller.Move((car.CarLengthM - car.CarBogieCentreLengthM) / 2.0f);
+                    Vector3 frontLoc = traveller.CalcElevationPositionOffset(0.0f, Simulator.UseSuperElevation, out float rearRoll);
+                    frontLoc += traveller.Location;
+
                     var tileX = traveller.TileX;
                     var tileZ = traveller.TileZ;
-                    var x = traveller.X;
-                    var y = traveller.Y;
-                    var z = traveller.Z;
 
                     // Update car's curve radius and superelevation based on bogie position and move traveller to front bogie
-                    // Also determine roll angle for superelevation by averaging both bogies
-                    float roll = traveller.GetVisualElevation(Simulator.Settings.UseSuperElevation);
+                    // Outputs rotation angle for superelevation, used below
                     car.UpdateCurvePhys(traveller, new[] { 0, car.CarBogieCentreLengthM });
-                    roll = (roll + traveller.GetVisualElevation(Simulator.Settings.UseSuperElevation)) / 2.0f;
+                    Vector3 rearLoc = traveller.CalcElevationPositionOffset(0.0f, Simulator.UseSuperElevation, out float frontRoll);
+                    rearLoc += traveller.Location;
+
+                    float roll = (rearRoll + frontRoll) / 2.0f;
 
                     // Normalize across tile boundaries
-                    x += 2048 * (tileX - traveller.TileX);
-                    z += 2048 * (tileZ - traveller.TileZ);
+                    frontLoc.X += 2048 * (tileX - traveller.TileX);
+                    frontLoc.Z += 2048 * (tileZ - traveller.TileZ);
 
                     car.WorldPosition.XNAMatrix = Matrix.Identity;
                     if (!car.Flipped)
@@ -4551,16 +4553,14 @@ namespace Orts.Simulation.Physics
                     }
 
                     // Position car based on position of the front and rear of the car
-                    car.WorldPosition.XNAMatrix *= Simulator.XNAMatrixFromMSTSCoordinates(traveller.X, traveller.Y, traveller.Z, x, y, z);
+                    car.WorldPosition.XNAMatrix *= Simulator.XNAMatrixFromMSTSCoordinates(rearLoc.X, rearLoc.Y, rearLoc.Z, frontLoc.X, frontLoc.Y, frontLoc.Z);
 
                     // Update gravity force when position is updated, but before any secondary motion is added
                     car.UpdateGravity();
 
                     // Apply superelevation to car
-                    car.WorldPosition.XNAMatrix = Matrix.CreateRotationZ((car.Flipped ? -1.0f : 1.0f) * roll) * car.WorldPosition.XNAMatrix;
-
-                    // note the railcar sits 0.275meters above the track database path  TODO - is this always consistent?
-                    car.WorldPosition.XNAMatrix.Translation += car.WorldPosition.XNAMatrix.Up * 0.275f;
+                    if (roll != 0)
+                        car.WorldPosition.XNAMatrix = Matrix.CreateRotationZ((car.Flipped ? -1.0f : 1.0f) * roll) * car.WorldPosition.XNAMatrix;
 
                     car.WorldPosition.TileX = traveller.TileX;
                     car.WorldPosition.TileZ = traveller.TileZ;
@@ -4645,21 +4645,23 @@ namespace Orts.Simulation.Physics
                     // traveller is positioned at the back of the car
                     // advance to the first bogie 
                     traveller.Move((car.CarLengthM - car.CarBogieCentreLengthM) / 2.0f);
+                    Vector3 rearLoc = traveller.CalcElevationPositionOffset(0.0f, Simulator.UseSuperElevation, out float rearRoll);
+                    rearLoc += traveller.Location;
+
                     var tileX = traveller.TileX;
                     var tileZ = traveller.TileZ;
-                    var x = traveller.X;
-                    var y = traveller.Y;
-                    var z = traveller.Z;
 
                     // Update car's curve radius and superelevation based on bogie position and move traveller to front bogie
                     // Outputs rotation angle for superelevation, used below
-                    float roll = traveller.GetVisualElevation(Simulator.Settings.UseSuperElevation);
                     car.UpdateCurvePhys(traveller, new[] { 0, car.CarBogieCentreLengthM });
-                    roll = (roll + traveller.GetVisualElevation(Simulator.Settings.UseSuperElevation)) / 2.0f;
+                    Vector3 frontLoc = traveller.CalcElevationPositionOffset(0.0f, Simulator.UseSuperElevation, out float frontRoll);
+                    frontLoc += traveller.Location;
+
+                    float roll = (rearRoll + frontRoll) / 2.0f;
 
                     // Normalize across tile boundaries
-                    x += 2048 * (tileX - traveller.TileX);
-                    z += 2048 * (tileZ - traveller.TileZ);
+                    rearLoc.X += 2048 * (tileX - traveller.TileX);
+                    rearLoc.Z += 2048 * (tileZ - traveller.TileZ);
 
                     car.WorldPosition.XNAMatrix = Matrix.Identity;
                     if (car.Flipped)
@@ -4670,16 +4672,14 @@ namespace Orts.Simulation.Physics
                     }
 
                     // Position car based on position of the front and rear of the car
-                    car.WorldPosition.XNAMatrix *= Simulator.XNAMatrixFromMSTSCoordinates(traveller.X, traveller.Y, traveller.Z, x, y, z);
+                    car.WorldPosition.XNAMatrix *= Simulator.XNAMatrixFromMSTSCoordinates(frontLoc.X, frontLoc.Y, frontLoc.Z, rearLoc.X, rearLoc.Y, rearLoc.Z);
 
                     // Update gravity force when position is updated, but before any secondary motion is added
                     car.UpdateGravity();
 
                     // Apply superelevation to car
-                    car.WorldPosition.XNAMatrix = Matrix.CreateRotationZ((car.Flipped ? -1.0f : 1.0f) * roll) * car.WorldPosition.XNAMatrix;
-
-                    // note the railcar sits 0.275meters above the track database path  TODO - is this always consistent?
-                    car.WorldPosition.XNAMatrix.Translation += car.WorldPosition.XNAMatrix.Up * 0.275f;
+                    if (roll != 0)
+                        car.WorldPosition.XNAMatrix = Matrix.CreateRotationZ((car.Flipped ? -1.0f : 1.0f) * roll) * car.WorldPosition.XNAMatrix;
 
                     car.WorldPosition.TileX = traveller.TileX;
                     car.WorldPosition.TileZ = traveller.TileZ;
@@ -4724,21 +4724,23 @@ namespace Orts.Simulation.Physics
                 // traveller is positioned at the back of the car
                 // advance to the first bogie 
                 traveller.Move((car.CarLengthM - car.CarBogieCentreLengthM) / 2.0f);
+                Vector3 rearLoc = traveller.CalcElevationPositionOffset(0.0f, Simulator.UseSuperElevation, out float rearRoll);
+                rearLoc += traveller.Location;
+
                 var tileX = traveller.TileX;
                 var tileZ = traveller.TileZ;
-                var x = traveller.X;
-                var y = traveller.Y;
-                var z = traveller.Z;
 
                 // Update car's curve radius and superelevation based on bogie position and move traveller to front bogie
                 // Outputs rotation angle for superelevation, used below
-                float roll = traveller.GetVisualElevation(Simulator.Settings.UseSuperElevation);
                 car.UpdateCurvePhys(traveller, new[] { 0, car.CarBogieCentreLengthM });
-                roll = (roll + traveller.GetVisualElevation(Simulator.Settings.UseSuperElevation)) / 2.0f;
+                Vector3 frontLoc = traveller.CalcElevationPositionOffset(0.0f, Simulator.UseSuperElevation, out float frontRoll);
+                frontLoc += traveller.Location;
+
+                float roll = (rearRoll + frontRoll) / 2.0f;
 
                 // Normalize across tile boundaries
-                x += 2048 * (tileX - traveller.TileX);
-                z += 2048 * (tileZ - traveller.TileZ);
+                rearLoc.X += 2048 * (tileX - traveller.TileX);
+                rearLoc.Z += 2048 * (tileZ - traveller.TileZ);
 
                 car.WorldPosition.XNAMatrix = Matrix.Identity;
                 if (car.Flipped)
@@ -4749,16 +4751,14 @@ namespace Orts.Simulation.Physics
                 }
 
                 // Position car based on position of the front and rear of the car
-                car.WorldPosition.XNAMatrix *= Simulator.XNAMatrixFromMSTSCoordinates(traveller.X, traveller.Y, traveller.Z, x, y, z);
+                car.WorldPosition.XNAMatrix *= Simulator.XNAMatrixFromMSTSCoordinates(frontLoc.X, frontLoc.Y, frontLoc.Z, rearLoc.X, rearLoc.Y, rearLoc.Z);
 
                 // Update gravity force when position is updated, but before any secondary motion is added
                 car.UpdateGravity();
 
                 // Apply superelevation to car
-                car.WorldPosition.XNAMatrix = Matrix.CreateRotationZ((car.Flipped ? -1.0f : 1.0f) * roll) * car.WorldPosition.XNAMatrix;
-
-                // note the railcar sits 0.275meters above the track database path  TODO - is this always consistent?
-                car.WorldPosition.XNAMatrix.Translation += car.WorldPosition.XNAMatrix.Up * 0.275f;
+                if (roll != 0)
+                    car.WorldPosition.XNAMatrix = Matrix.CreateRotationZ((car.Flipped ? -1.0f : 1.0f) * roll) * car.WorldPosition.XNAMatrix;
 
                 car.WorldPosition.TileX = traveller.TileX;
                 car.WorldPosition.TileZ = traveller.TileZ;
@@ -13568,6 +13568,7 @@ namespace Orts.Simulation.Physics
                         false,
                         false,
                         false,
+                        false,
                         StationStop.STOPTYPE.STATION_STOP);
 
                 thisStation.arrivalDT = arrivalDT;
@@ -16473,6 +16474,7 @@ namespace Orts.Simulation.Physics
                         null,
                         null,
                         null,
+                        false,
                         false,
                         false,
                         false,
@@ -20979,9 +20981,14 @@ namespace Orts.Simulation.Physics
             public bool RestrictPlatformToSignal = false;                                         // restrict end of platform to signal position
             public bool ExtendPlatformToSignal = false;                                           // extend end of platform to next signal position
             public bool EndStop = false;                                                          // train terminates at station
+            public bool AllowDepartEarly = false;                                                 // train is allowed to depart early
             public List<int> ConnectionsWaiting = new List<int>();                                // List of trains waiting
             public Dictionary<int, int> ConnectionsAwaited = new Dictionary<int, int>();          // List of awaited trains : key = trainno., value = arr time
             public Dictionary<int, WaitInfo> ConnectionDetails = new Dictionary<int, WaitInfo>(); // Details of connection : key = trainno., value = wait info
+            public RequestStop ReqStopDetails = null;                                             // Request stop details
+            public int PassTime;                                                                  // Passing time (int)
+            public DateTime passDT;                                                               // Passing time (DateTime)
+            public bool PassingOnly;
 
             //================================================================================================//
             //
@@ -20990,9 +20997,9 @@ namespace Orts.Simulation.Physics
 
             public StationStop(int platformReference, PlatformDetails platformItem, int subrouteIndex, int routeIndex,
                 int tcSectionIndex, int direction, int exitSignal, bool holdSignal, bool noWaitSignal, bool noClaimAllowed, float stopOffset,
-                int arrivalTime, int departTime, bool terminal, int? actualMinStopTime, float? keepClearFront, float? keepClearRear, 
+                int? arrivalTime, int? departTime, bool terminal, int? actualMinStopTime, float? keepClearFront, float? keepClearRear, 
                 bool forcePosition, bool closeupSignal, bool closeup,
-                bool restrictPlatformToSignal, bool extendPlatformToSignal, bool endStop, STOPTYPE actualStopType)
+                bool restrictPlatformToSignal, bool extendPlatformToSignal, bool endStop, bool allowdepartearly, STOPTYPE actualStopType)
             {
                 ActualStopType = actualStopType;
                 PlatformReference = platformReference;
@@ -21008,14 +21015,21 @@ namespace Orts.Simulation.Physics
                 StopOffset = stopOffset;
                 if (actualStopType == STOPTYPE.STATION_STOP)
                 {
-                    ArrivalTime = Math.Max(0, arrivalTime);
-                    DepartTime = Math.Max(0, departTime);
+                    if (arrivalTime.HasValue)
+                    {
+                        ArrivalTime = Math.Max(0, arrivalTime.Value);
+                        DepartTime = Math.Max(0, departTime.Value);
+                    }
+                    else
+                    {
+                        ArrivalTime = DepartTime = -1;
+                    }
                 }
                 else
                 // times may be <0 for waiting point
                 {
-                    ArrivalTime = arrivalTime;
-                    DepartTime = departTime;
+                    ArrivalTime = arrivalTime.Value;
+                    DepartTime = departTime.Value;
                 }
                 ActualArrival = -1;
                 ActualDepart = -1;
@@ -21032,8 +21046,10 @@ namespace Orts.Simulation.Physics
                 RestrictPlatformToSignal = restrictPlatformToSignal;
                 ExtendPlatformToSignal = extendPlatformToSignal;
                 EndStop = endStop;
+                AllowDepartEarly = allowdepartearly;
 
                 CallOnAllowed = false;
+                PassingOnly = false;
             }
 
             //================================================================================================//
@@ -21146,6 +21162,16 @@ namespace Orts.Simulation.Physics
                 RestrictPlatformToSignal = inf.ReadBoolean();
                 ExtendPlatformToSignal = inf.ReadBoolean();
                 EndStop = inf.ReadBoolean();
+                AllowDepartEarly = inf.ReadBoolean();
+
+                if (inf.ReadBoolean())
+                {
+                    ReqStopDetails = new RequestStop(inf, signalRef);
+                }
+
+                PassTime = inf.ReadInt32();
+                passDT = new DateTime(inf.ReadInt64());
+                PassingOnly = inf.ReadBoolean();
             }
 
             //================================================================================================//
@@ -21269,6 +21295,21 @@ namespace Orts.Simulation.Physics
                 outf.Write(RestrictPlatformToSignal);
                 outf.Write(ExtendPlatformToSignal);
                 outf.Write(EndStop);
+                outf.Write(AllowDepartEarly);
+
+                if (ReqStopDetails != null)
+                {
+                    outf.Write(true);
+                    ReqStopDetails.Save(outf);
+                }
+                else
+                {
+                    outf.Write(false);
+                }
+
+                outf.Write(PassTime);
+                outf.Write((Int64)passDT.Ticks);
+                outf.Write(PassingOnly);
             }
 
             /// <summary>
@@ -21291,6 +21332,21 @@ namespace Orts.Simulation.Physics
                 int eightHundredHours = 8 * 3600;
                 int sixteenHundredHours = 16 * 3600;
 
+                int stopTime = 0;
+
+                // allow to depart early if set (timetable mode only, so no need to check for valid schedule)
+                // also allow to depart after boarding time if arrival time is not set
+                if (AllowDepartEarly || ArrivalTime < 0)
+                {
+                    stoppedTrain.ComputeTrainBoardingTime(this, ref stopTime);
+                    ActualDepart = ActualArrival + stopTime;
+
+                    // correct for times around midnight
+                    if (ActualDepart > 24 * 3600) ActualDepart -= 24 * 3600;
+                    if (DepartTime == 0) DepartTime = ActualDepart;
+                    return stopTime;
+                }
+
                 // preset depart to booked time
                 ActualDepart = DepartTime;
 
@@ -21305,8 +21361,7 @@ namespace Orts.Simulation.Physics
                 }
 
                 // correct stop time for stop around midnight
-                int stopTime = DepartTime - ArrivalTime;
-                
+                stopTime = DepartTime - ArrivalTime;
                 if (DepartTime < eightHundredHours && ArrivalTime > sixteenHundredHours) // stop over midnight
                 {
                     stopTime += (24 * 3600);

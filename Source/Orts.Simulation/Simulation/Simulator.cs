@@ -260,6 +260,7 @@ namespace Orts.Simulation
         public event System.EventHandler<PlayerTrainChangedEventArgs> PlayerTrainChanged;
         public event System.EventHandler<QueryCarViewerLoadedEventArgs> QueryCarViewerLoaded;
         public event System.EventHandler RequestTTDetachWindow;
+        public event System.EventHandler TTRequestStopMessageWindow;
 
         public float TimetableLoadedFraction = 0.0f;    // Set by AI.PrerunAI(), Get by GameStateRunActivity.Update()
 
@@ -288,7 +289,7 @@ namespace Orts.Simulation
             UseAdvancedAdhesion = Settings.UseAdvancedAdhesion;
             BreakCouplers = Settings.BreakCouplers;
             CarVibrating = Settings.CarVibratingLevel; //0 no vib, 1-2 mid vib, 3 max vib
-            UseSuperElevation = Settings.UseSuperElevation;
+            UseSuperElevation = Settings.LegacySuperElevation;
             RouteTrackGaugeM = (float)Settings.SuperElevationGauge / 1000f; // Gauge in settings is given in mm, convert to m
             RoutePath = Path.GetDirectoryName(Path.GetDirectoryName(activityPath));
             if (useOpenRailsDirectory) RoutePath = Path.GetDirectoryName(RoutePath); // starting one level deeper!
@@ -315,8 +316,8 @@ namespace Orts.Simulation
                 Trace.TraceInformation("No route track gauge given in TRK, using default setting: {0}", FormatStrings.FormatVeryShortDistanceDisplay(RouteTrackGaugeM, MilepostUnitsMetric));
             if (TRK.Tr_RouteFile.SuperElevationMode >= 0)
             {
-                UseSuperElevation = TRK.Tr_RouteFile.SuperElevationMode == 1; // Perfer superelevation mode in TRK over the one in settings
-                if (UseSuperElevation != Settings.UseSuperElevation)
+                UseSuperElevation = TRK.Tr_RouteFile.SuperElevationMode == 1; // Prefer superelevation mode in TRK over the one in settings
+                if (UseSuperElevation != Settings.LegacySuperElevation)
                     Trace.TraceInformation("Superelevation graphics have been forced " + (UseSuperElevation ? "ENABLED" : "DISABLED") +
                         " by setting of ORTSForceSuperElevation in TRK file.");
             }
@@ -2506,6 +2507,12 @@ namespace Orts.Simulation
         {
             var requestTTDetachWindow = RequestTTDetachWindow;
             requestTTDetachWindow(this, EventArgs.Empty);
+        }
+
+        internal void OnTTRequestStopMessageWindow()
+        {
+            var TTRequestStopWindow = TTRequestStopMessageWindow;
+            TTRequestStopWindow(this, EventArgs.Empty);
         }
 
         bool OnQueryCarViewerLoaded(TrainCar car)

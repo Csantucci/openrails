@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.164
-April 22nd, 2025
+﻿Open Rails NewYear README - Rev.165
+May 30th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1695, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1850, 
 plus some of the features already present in the Unstable release.
 
 
@@ -76,26 +76,18 @@ This version includes some features not (yet) available in the Open Rails testin
 - Bug fix for trainset not shown if in .s file number of controllers set > 0 and controllers not present (Flirt package)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38660-crash-causing-line-in-openrailsini/ Avoids crash when Map_mapResolutionUpDown = 0
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38688-dynamic-tracks-from-routersshapes-are-not-displayed/
+- extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
+- Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
+- Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
-  *- allow for .sms sound specific for AI trains. see http://www.elvastower.com/forums/index.php?/topic/29878-specific-sound-for-ai-trains/page__view__findpost__p__295008 
-  (PR #896); event numbers changed from 32n to 33n for compatibility with Testing release
-  *- Signal Function OPP_SIG_ID_TRAINPATH, by roeter, see https://www.elvastower.com/forums/index.php?/topic/37572-proposed-new-signal-function-opp-sig-id-trainpath/page__view__findpost__p__302318 (PR #892)
-  *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919)
-  *- Add curve squeal to route, by steamer_CTN (PR Bug fix for https://www.elvastower.com/forums/index.php?/topic/38688-dynamic-tracks-from-routersshapes-are-not-displayed/#923)
-  *- (partially): ETCS DMI Updates, including 280 km/h max tacho setting and DMI in 3D cab by gpz (PR #900)
-  *- Locomotive operation from control car, by César (PR #1000)
-  *- UPDATED: Merge remote-tracking branch 'SteelFill/multi_track_profiles' (PR #1029); fixes also https://www.elvastower.com/forums/index.php?/topic/38497-incorrect-gradient-display-on-track-monitor/
-  *- Bugfix: Empty Start Time for Explore, and other issues loading from Menu Selection and Content Routes, by rwf-rr (PR #1045)
-  *- Content Manager: Add axle count, and lowest derail force, by rwf-rr (PR #1052)
-  *- Train Forces popup Window, by rwf-rr (PR #1062)
-  *- Add Train Info tab to Help window (F1), by rwf-rr (PR #1064)
-  *- NEW: Log derailment, using TraceInformation, by rwf-rr (PR #1066)
-  *- NEW: Fix a NullReferenceException in TCS scripts, by pzgulyas (PR #1070)
-- NEW: extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
-- NEW: fix for ORNYMG-only bug with EOT cab display not working
-- NEW: fix for ReShade not working when linked to OpenRails64
-- NEW: Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
-- NEW: Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
+  *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
+  *- Add curve squeal to route, by steamer_CTN (PR #923)
+  *- NEW: Timetable: Calculate Delay While Stopped at a Station, by TheGwyd (PR #1084)
+  *- NEW: Blended Braking Compatibility and Effectiveness Improvements, by SteelFill (PR #1094)
+  *- NEW: BugFix: When the OR main form does not have the focus, hovering above the main OR form makes the mouse cursor disappear, by sweiland (PR #1096)
+  *- NEW: Fix For Delayed Particle Emitter Spawning, by SteelFill (PR #1097)
+  *- NEW: Fix TCS orders not being sent to pantographs, by cesarBLG (PR #1099)
+
 
 
 Info about content of the various PR to the Unstable release can be found here
@@ -126,6 +118,7 @@ This unofficial version couldn't have been created without following contributio
 - ExRail
 - roeter
 - rwf-rr
+- TheGwyd
 - Carlo Santucci
 
 - all those who contributed with ideas and provided contents for testing and pointed to malfunctions.
