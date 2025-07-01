@@ -2313,23 +2313,13 @@ namespace Orts.Simulation.RollingStocks
                     }
 
                     // SimpleControlPhysics and if locomotive is a control car advanced adhesion will be "disabled".
-                    if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && EngineType != EngineTypes.Control) 
+                    if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && EngineType != EngineTypes.Control)
                     {
                         AdvancedAdhesion(elapsedClockSeconds); // Use advanced adhesion model
-                        if (LocomotiveAxles.AxleList[0].RecoverToSimpleAdhesion)
-                        {
-                            WheelSlip = false;
-                            WheelSpeedMpS = SpeedMpS;
-                            WheelSpeedSlipMpS = SpeedMpS;
-                            SimpleAdhesion();  // Use simple adhesion model
-                        }
                         AdvancedAdhesionModel = true;  // Set flag to advise advanced adhesion model is in use
                     }
                     else
                     {
-                        WheelSlip = false;
-                        WheelSpeedMpS = SpeedMpS;
-                        WheelSpeedSlipMpS = SpeedMpS;
                         SimpleAdhesion();  // Use simple adhesion model
                         AdvancedAdhesionModel = false; // Set flag to advise simple adhesion model is in use
                     }
@@ -2676,7 +2666,7 @@ namespace Orts.Simulation.RollingStocks
                 if (forceN < 0 && !TractiveForceCurves.AcceptsNegativeValues())
                     forceN = 0;
             }
-            if (forceN * AbsSpeedMpS > powerW) forceN = powerW / AbsSpeedMpS;
+            if (forceN * AbsTractionSpeedMpS > powerW) forceN = powerW / AbsTractionSpeedMpS;
             return forceN;
         }
         protected virtual void UpdateTractionForce(float elapsedClockSeconds)
@@ -2719,13 +2709,13 @@ namespace Orts.Simulation.RollingStocks
         public float GetAvailableDynamicBrakeForceN(float d)
         {
             float forceN = 0;
-            if (d > 0 && DynamicBrakeForceCurves != null && AbsSpeedMpS > 0)
+            if (d > 0 && DynamicBrakeForceCurves != null && AbsTractionSpeedMpS > 0)
             {
-                forceN = DynamicBrakeForceCurves.Get(d, AbsSpeedMpS) * (1 - PowerReduction);
+                forceN = DynamicBrakeForceCurves.Get(d, AbsTractionSpeedMpS) * (1 - PowerReduction);
                 if (LocomotivePowerSupply.MaximumDynamicBrakePowerW > 0)
                 {
                     float powerW = LocomotivePowerSupply.MaximumDynamicBrakePowerW * (1 - PowerReduction);
-                    if (forceN * AbsSpeedMpS > powerW) forceN = powerW / AbsSpeedMpS;
+                    if (forceN * AbsTractionSpeedMpS > powerW) forceN = powerW / AbsTractionSpeedMpS;
                 }
             }
             return forceN;
@@ -2761,7 +2751,7 @@ namespace Orts.Simulation.RollingStocks
             if (dynamicLimited) d = maxdynamic;
             d = MathHelper.Clamp(d, 0, 1);
 
-            if (maxdynamic > 0 && AbsSpeedMpS > 0)
+            if (maxdynamic > 0 && AbsTractionSpeedMpS > 0)
             {
                 float limitForceN = GetAvailableDynamicBrakeForceN(maxdynamic);
                 float targetForceN = GetAvailableDynamicBrakeForceN(d);
@@ -2772,7 +2762,7 @@ namespace Orts.Simulation.RollingStocks
             {
                 DynamicBrakeForceN = 0; // Set dynamic brake force to zero if in Notch 0 position
             }
-            TractiveForceN -= (SpeedMpS > 0 ? 1 : SpeedMpS < 0 ? -1 : Direction == Direction.Reverse ? -1 : 1) * DynamicBrakeForceN;
+            TractiveForceN -= Math.Sign(WheelSpeedMpS) * DynamicBrakeForceN;
         }
 
         /// <summary>
@@ -2787,29 +2777,15 @@ namespace Orts.Simulation.RollingStocks
             // With Simple adhesion apart from correction for rail adhesion, there is no further variation to the motive force. 
             // With Advanced adhesion the raw motive force is fed into the advanced (axle) adhesion model, and is corrected for wheel slip and rail adhesion
 
-            // For the advanced adhesion model, a rudimentary form of slip control is incorporated by using the wheel speed to calculate tractive effort.
-            // As wheel speed is increased tractive effort is decreased. Hence wheel slip is "controlled" to a certain extent.
-            // This doesn't cover all types of locomotives, for example if DC traction motors and no slip control, then the tractive effort shouldn't be reduced.
-            // This won't eliminate slip, but limits its impact. 
-            // More modern locomotive have a more sophisticated system that eliminates slip in the majority (if not all circumstances).
-            // Simple adhesion control does not have any slip control feature built into it.
-            // TODO - a full review of slip/no slip control.
+            // "AbsTractionSpeedMpS" is the reference speed used for all tractive effort/dynamic braking calculations
+            // This speed is an absolute value (Abs) and is measured in meters per second (MpS), and is set to the wheel speed of the locomotive.
+            // Why use wheel speed? The locomotive transmission (electric, hydraulic, mechanical, steam) is connected to the wheels of the locomotive,
+            // so the speed of the wheels is what will drive the transmission response (this is true whether the wheels are slipping or not;
+            // the traction motor/gearbox/steam piston does not "know" or "care" if the wheels are slipping or not, and behaves the same either way).
+            // For a locomotive to respond to ground speed or slippage, additional systems (such as wheel slip protection) are required, these are
+            // implemented elsewhere.
             PrevAbsTractionSpeedMpS = AbsTractionSpeedMpS;
-            if (TractionMotorType == TractionMotorTypes.AC)
-            {
-                AbsTractionSpeedMpS = AbsSpeedMpS;
-            }
-            else
-            {
-                if (WheelSlip && AdvancedAdhesionModel)
-                {
-                    AbsTractionSpeedMpS = AbsWheelSpeedMpS;
-                }
-                else
-                {
-                    AbsTractionSpeedMpS = AbsSpeedMpS;
-                }
-            }
+            AbsTractionSpeedMpS = AbsWheelSpeedMpS;
             UpdateTractionForce(elapsedClockSeconds);
 
             if (MaxForceN > 0 && MaxContinuousForceN > 0 && PowerReduction < 1)

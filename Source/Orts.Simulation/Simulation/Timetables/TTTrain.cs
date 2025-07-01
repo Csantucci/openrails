@@ -10878,9 +10878,9 @@ namespace Orts.Simulation.Timetables
                     AtStation = false;
                     MayDepart = false;
                     DisplayMessage = "";
+					// Update delay when departing, train may now be early
                     if (StationStops[0].ArrivalTime >= 0)
                     {
-                        // Update delay when departing, train may now be early
                         Delay = TimeSpan.FromSeconds((presentTime - StationStops[0].DepartTime) % (24 * 3600));
                     }
 
