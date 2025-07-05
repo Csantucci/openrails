@@ -374,12 +374,12 @@ namespace ORTS.Scripting.Api
         {
             get
             {
-                if (Locomotive.CruiseControl?.SpeedRegMode == CruiseControl.SpeedRegulatorMode.Auto) return Locomotive.CruiseControl.SetSpeedMpS;
+                if (Loco.CruiseControl?.SpeedRegMode == CruiseControl.SpeedRegulatorMode.Auto) return Loco.CruiseControl.SetSpeedMpS;
                 return null;
             }
             set
             {
-                if (Locomotive.CruiseControl != null) Locomotive.CruiseControl.ASCSetSpeedMpS = value;
+                if (Loco.CruiseControl != null) Loco.CruiseControl.ASCSetSpeedMpS = value;
             }
         }
         /// <summary>
@@ -389,11 +389,11 @@ namespace ORTS.Scripting.Api
         {
             get
             {
-                return Locomotive?.CruiseControl.ASCAccelerationMpSS ?? 0;
+                return Loco?.CruiseControl.ASCAccelerationMpSS ?? 0;
             }
             set
             {
-                if (Locomotive.CruiseControl != null) Locomotive.CruiseControl.ASCAccelerationMpSS = value;
+                if (Loco.CruiseControl != null) Loco.CruiseControl.ASCAccelerationMpSS = value;
             }
         }
         /// <summary>

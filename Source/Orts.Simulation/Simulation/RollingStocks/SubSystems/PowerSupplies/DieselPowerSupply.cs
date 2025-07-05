@@ -330,7 +330,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
                 // start and stop engine during preupdate
                 case PowerSupplyEvent.ForcedPowerOn:
-                    QuickPowerOn = true;
+                    QuickPowerOn = (true, true);
                     SignalEventToBatterySwitch(PowerSupplyEvent.QuickPowerOn);
                     SignalEventToMasterKey(PowerSupplyEvent.TurnOnMasterKey);
                     SignalEventToDieselEngines(PowerSupplyEvent.ForcedStartEngine);
@@ -338,7 +338,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     break;
 
                 case PowerSupplyEvent.ForcedPowerOff:
-                    QuickPowerOn = false;
+                    QuickPowerOn = (false, false);
                     SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.SwitchOffElectricTrainSupply);
                     SignalEventToTractionCutOffRelay(PowerSupplyEvent.OpenTractionCutOffRelay);
                     SignalEventToDieselEngines(PowerSupplyEvent.ForcedStopEngine);
