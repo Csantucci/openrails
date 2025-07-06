@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.165
-May 30th, 2025
+﻿Open Rails NewYear README - Rev.166
+July 6th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -82,12 +82,12 @@ This version includes some features not (yet) available in the Open Rails testin
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- NEW: Timetable: Calculate Delay While Stopped at a Station, by TheGwyd (PR #1084)
-  *- NEW: Blended Braking Compatibility and Effectiveness Improvements, by SteelFill (PR #1094)
-  *- NEW: BugFix: When the OR main form does not have the focus, hovering above the main OR form makes the mouse cursor disappear, by sweiland (PR #1096)
-  *- NEW: Fix For Delayed Particle Emitter Spawning, by SteelFill (PR #1097)
-  *- NEW: Fix TCS orders not being sent to pantographs, by cesarBLG (PR #1099)
-
+  *- NEW: Add Settings Exporter tool (copy settings to INI, etc), by rwf-rr (PR #1086)
+  *- NEW: Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
+  *- NEW: Fix Activity Runner persists after loading exception, by cjakeman (PR #1110)
+  *- NEW: Do not activate ETS switch if no suitable cars are attached, by cesarBLG (PR #1115)
+  *- NEW: Handle null control active locomotive, by cesarBLG (PR #1123)
+  *- NEW: Add missing es.po files, by cjakeman (PR #1129)  
 
 
 Info about content of the various PR to the Unstable release can be found here
@@ -97,8 +97,10 @@ The Monogame related code intentionally coincides only partly with the code of t
 
 CREDITS
 This unofficial version couldn't have been created without following contributions:
-- the whole Open Rails Development Team and Open Rails Management Team, that have generated the official Open Rails version
-- the Monogame Development Team
+- the whole Open Rails Development Team and Open Rails Management Team, that have generated the off, by cesarBLG (PR #1115)
+  *- NEW: Handle null control active locomotive, by cesarBLG (PR #1123)
+    *- NEW: Add missing es.po files, by cjakeman (PR #1129)icial Open Rails version
+- the Monogame Development Team                                                                                   #
 - Peter Gulyas, who created the first Monogame version of Open Rails
 - perpetualKid
 - Jindrich
