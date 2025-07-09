@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.166
-July 6th, 2025
+﻿Open Rails NewYear README - Rev.166.1
+July 9th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -82,12 +82,14 @@ This version includes some features not (yet) available in the Open Rails testin
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- NEW: Add Settings Exporter tool (copy settings to INI, etc), by rwf-rr (PR #1086)
+  *- NEW: Add Settings Exporter tool (copy  (PR #1132)settings to INI, etc), by rwf-rr (PR #1086)
   *- NEW: Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
   *- NEW: Fix Activity Runner persists after loading exception, by cjakeman (PR #1110)
   *- NEW: Do not activate ETS switch if no suitable cars are attached, by cesarBLG (PR #1115)
-  *- NEW: Handle null control active locomotive, by cesarBLG (PR #1123)
-  *- NEW: Add missing es.po files, by cjakeman (PR #1129)  
+  *- NEW: Fix F9 points to an incorrect car ID, by mbm-OR (PR #1130)
+  *- NEW: Fixes For Correct Questionable Braking Parameters, by steelfill (PR #1132)
+  *- NEW: Minor Fix for Brake Pipe Charging, by steelfill (PR #1133)
+  *- NEW: Fix bug in PR 1045: load any activity from JSON, by rwf-rr (PR #1135)
 
 
 Info about content of the various PR to the Unstable release can be found here
