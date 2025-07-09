@@ -1444,10 +1444,9 @@ namespace Menu
             }
             else
             {
-                // when explore-in-activity mode, try the content route info
+                // try the content route info
                 var routes = Settings.Content.ContentRouteSettings.Routes;
-                if ((SelectedActivity != null && SelectedActivity is ExploreThroughActivity) &&
-                    (SelectedFolder != null && routes.ContainsKey(SelectedFolder.Name) && routes[SelectedFolder.Name].Installed) &&
+                if ((SelectedFolder != null && routes.ContainsKey(SelectedFolder.Name) && routes[SelectedFolder.Name].Installed) &&
                     (!string.IsNullOrEmpty(routes[SelectedFolder.Name].Start.Route)))
                 {
                     var route = routes[SelectedFolder.Name];
