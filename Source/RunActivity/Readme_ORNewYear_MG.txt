@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.166.1
-July 9th, 2025
+﻿Open Rails NewYear README - Rev.166.2
+July 15th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -90,6 +90,10 @@ This version includes some features not (yet) available in the Open Rails testin
   *- NEW: Fixes For Correct Questionable Braking Parameters, by steelfill (PR #1132)
   *- NEW: Minor Fix for Brake Pipe Charging, by steelfill (PR #1133)
   *- NEW: Fix bug in PR 1045: load any activity from JSON, by rwf-rr (PR #1135)
+  *- NEW: Fix for dynamic braking not working in simple adhesion, by CesarBLG (PR #1138)
+  *- NEW: Fix curve resistance calculation, by steelfill (PR #1136)
+  *- NEW: Apply brakes at startup on minimal reduction, by CesarBLG (PR #1137)
+  *- NEW: Fix for lights wrongly automatically lit when switching to autopilot
 
 
 Info about content of the various PR to the Unstable release can be found here
