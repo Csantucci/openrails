@@ -860,13 +860,13 @@ namespace Orts.Viewer3D
         public virtual void NextCar()
         {
             var trainCars = GetCameraCars();
-            SetCameraCar(attachedCar == trainCars.First() ? attachedCar : attachedCar.Train == Viewer.SelectedTrain ? trainCars[trainCars.IndexOf(attachedCar) - 1] : trainCars.First());
+            SetCameraCar(attachedCar == trainCars.First() ? attachedCar : trainCars[trainCars.IndexOf(attachedCar) - 1]);
         }
 
         public virtual void PreviousCar()
         {
             var trainCars = GetCameraCars();
-            SetCameraCar(attachedCar == trainCars.Last() ? attachedCar : attachedCar.Train == Viewer.SelectedTrain ? trainCars[trainCars.IndexOf(attachedCar) + 1] : trainCars.Last());
+            SetCameraCar(attachedCar == trainCars.Last() ? attachedCar : trainCars[trainCars.IndexOf(attachedCar) + 1]);
         }
 
         public virtual void FirstCar()
