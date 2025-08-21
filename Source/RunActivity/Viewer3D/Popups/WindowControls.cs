@@ -590,6 +590,7 @@ namespace Orts.Viewer3D.Popups
 
         public abstract int ScrollSize { get; }
 
+        public abstract int GetScrollPosition();
         public abstract void SetScrollPosition(int position);
 
         internal RasterizerState ScissorTestEnable = new RasterizerState { ScissorTestEnable = true };
@@ -708,6 +709,11 @@ namespace Orts.Viewer3D.Popups
             {
                 return Client.CurrentLeft - Position.Width;
             }
+        }
+
+        public override int GetScrollPosition()
+        {
+            return ScrollPosition;
         }
 
         public override void SetScrollPosition(int position)
@@ -842,6 +848,11 @@ namespace Orts.Viewer3D.Popups
             {
                 return Client.CurrentTop - Position.Height;
             }
+        }
+
+        public override int GetScrollPosition()
+        {
+            return(ScrollPosition);
         }
 
         public override void SetScrollPosition(int position)
