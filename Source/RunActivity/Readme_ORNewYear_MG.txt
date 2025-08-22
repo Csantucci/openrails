@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.166.2
-July 15th, 2025
+﻿Open Rails NewYear README - Rev.167
+August 22nd, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1959, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-1993, 
 plus some of the features already present in the Unstable release.
 
 
@@ -79,21 +79,22 @@ This version includes some features not (yet) available in the Open Rails testin
 - extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
 - Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
+- NEW: Fix for ORNYMG-only bug https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__320702
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- NEW: Add Settings Exporter tool (copy  (PR #1132)settings to INI, etc), by rwf-rr (PR #1086)
-  *- NEW: Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
-  *- NEW: Fix Activity Runner persists after loading exception, by cjakeman (PR #1110)
-  *- NEW: Do not activate ETS switch if no suitable cars are attached, by cesarBLG (PR #1115)
-  *- NEW: Fix F9 points to an incorrect car ID, by mbm-OR (PR #1130)
-  *- NEW: Fixes For Correct Questionable Braking Parameters, by steelfill (PR #1132)
-  *- NEW: Minor Fix for Brake Pipe Charging, by steelfill (PR #1133)
-  *- NEW: Fix bug in PR 1045: load any activity from JSON, by rwf-rr (PR #1135)
-  *- NEW: Fix for dynamic braking not working in simple adhesion, by CesarBLG (PR #1138)
-  *- NEW: Fix curve resistance calculation, by steelfill (PR #1136)
-  *- NEW: Apply brakes at startup on minimal reduction, by CesarBLG (PR #1137)
-  *- NEW: Fix for lights wrongly automatically lit when switching to autopilot
+  *- Add Settings Exporter tool (copy settings to INI, etc), by rwf-rr (PR #1086)
+  *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
+  *- NEW: Handle simple adhesion within the axle module, by cesarBLG (PR #1104)
+  *- Do not activate ETS switch if no suitable cars are attached, by cesarBLG (PR #1115)
+  *- NEW: Automatically Calculate Friction Values if Missing, by steelfill (PR #1120)
+  *- NEW: Manually Override Articulation, by steelfill (PR #1121)
+  *- NEW: Wagon Size and Centering Controls, by steelfill (PR #1122)
+  *- Fix F9 points to an incorrect car ID, by mbm-OR (PR #1130)
+  *- NEW: Fis: Status in Work Orders popup set too fast, by sweiland (PR #1143)
+  *- NEW: fix: Clean up multiple issues with data logger, by twpol (PR #1152)
+  *- NEW: fix for illegal characters in reference to Shape file, by cjakeman (PR #1155)
+
 
 
 Info about content of the various PR to the Unstable release can be found here
