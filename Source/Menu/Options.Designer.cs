@@ -135,6 +135,7 @@
             this.tabPageDataLogger = new System.Windows.Forms.TabPage();
             this.checkDataLogSteamPowerCurve = new System.Windows.Forms.CheckBox();
             this.comboDataLogSpeedUnits = new System.Windows.Forms.ComboBox();
+            this.pbDataLoggerOptions = new System.Windows.Forms.PictureBox();
             this.comboDataLoggerSeparator = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
