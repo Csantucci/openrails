@@ -10005,7 +10005,7 @@ namespace Orts.Simulation.Timetables
                         if (StationStops[0].PlatformReference == formedTrain.StationStops[0].PlatformReference)
                         {
                             formedTrain.AtStation = true;
-//                            formedTrain.StationStops[0].ActualArrival = StationStops[0].ActualArrival;
+                            formedTrain.StationStops[0].ActualArrival = StationStops[0].ActualArrival;
                             formedTrain.StationStops[0].arrivalDT = StationStops[0].arrivalDT;
                             formedTrain.StationStops[0].ArrivalTime = StationStops[0].ArrivalTime;
                             formedTrain.StationStops[0].CalculateDepartTime(presentTime, this);
