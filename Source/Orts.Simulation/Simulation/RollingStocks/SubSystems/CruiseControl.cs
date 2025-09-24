@@ -406,8 +406,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                     case "autogeneratesforcealsoinreverse": AutoGeneratesForceAlsoInReverse = stf.ReadBoolBlock(true); break;
                     case "docomputenumberofaxles": DoComputeNumberOfAxles = stf.ReadBoolBlock(false); break;
                     case "speeddeltafunctionmode":
-                        stf.MustMatch("(");
-                        var speedDeltaMode = stf.ReadString();
+                        var speedDeltaMode = stf.ReadStringBlock("");
                         try
                         {
                             SpeedDeltaFunctionMode = (SpeedDeltaMode)Enum.Parse(typeof(SpeedDeltaMode), speedDeltaMode, true);
@@ -516,7 +515,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             else if (MaxForceSelectorController == null)
             {
                 var notches = new List<MSTSNotch>();
-                if (MaxForceSelectorIsDiscrete)
+                if (MaxForceSelectorIsDiscrete && SpeedRegulatorMaxForceSteps > 0)
                 {
                     float numNotches = SpeedRegulatorMaxForceSteps;
                     for (int i=DisableZeroForceStep ? 1 : 0; i<=numNotches; i++)
@@ -543,7 +542,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             else if (SpeedSelectorController == null)
             {
                 var notches = new List<MSTSNotch>();
-                if (SpeedSelectorIsDiscrete)
+                if (SpeedSelectorIsDiscrete && SpeedRegulatorNominalSpeedStepMpS > 0)
                 {
                     if (!DisableZeroSelectedSpeedStep) notches.Add(new MSTSNotch(0, false, 0));
                     if (MinimumSpeedForCCEffectMpS > 0) notches.Add(new MSTSNotch(float.Epsilon, false, 0));
@@ -796,7 +795,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             outf.Write(currentSelectedSpeedMpS);
             outf.Write(RestrictedRegionOdometer.Started);
             outf.Write(RestrictedRegionOdometer.RemainingValue);
-            MaxForceSelectorController.Save(outf);
+            ControllerFactory.Save(MaxForceSelectorController, outf);
             outf.Write(SelectedNumberOfAxles);
             outf.Write(SelectedSpeedMpS);
             outf.Write(DynamicBrakePriority);
@@ -813,7 +812,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             bool started = inf.ReadBoolean();
             RestrictedRegionOdometer.Setup(inf.ReadSingle());
             if (started) RestrictedRegionOdometer.Start();
-            MaxForceSelectorController.Restore(inf);
+            ControllerFactory.Restore(MaxForceSelectorController, inf);
             SelectedNumberOfAxles = inf.ReadInt32();
             SelectedSpeedMpS = inf.ReadSingle();
             DynamicBrakePriority = inf.ReadBoolean();
@@ -859,7 +858,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             }
             if (ForceRegulatorAutoWhenNonZeroSpeedSelected)
             {
-                if (zeroSelectedSpeed && (!ASCSpeedTakesPriorityOverSpeedSelector || !ASCSetSpeedMpS.HasValue))
+                if (ASCSpeedTakesPriorityOverSpeedSelector && ASCSetSpeedMpS.HasValue)
+                {
+                    SpeedRegMode = SpeedRegulatorMode.Auto;
+                }
+                else if (zeroSelectedSpeed)
                 {
                     SpeedRegMode = SpeedRegulatorMode.Manual;
                 }
