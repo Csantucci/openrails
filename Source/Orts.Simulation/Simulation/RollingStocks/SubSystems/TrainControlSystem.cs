@@ -151,6 +151,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
         public bool CircuitBreakerClosingOrder { get; private set; }
         public bool CircuitBreakerOpeningOrder { get; private set; }
         public bool TractionAuthorization { get; private set; }
+        public bool DynamicBrakingAuthorization { get; private set; }
         public float MaxThrottlePercent { get; private set; } = 100f;
         public bool FullDynamicBrakingOrder { get; private set; }
 
@@ -188,6 +189,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
             CircuitBreakerClosingOrder = false;
             CircuitBreakerOpeningOrder = false;
             TractionAuthorization = true;
+            DynamicBrakingAuthorization = true;
             FullDynamicBrakingOrder = false;
         }
 
@@ -366,6 +368,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 Script.MaxThrottlePercent = () => MaxThrottlePercent;
                 Script.DynamicBrakePercent = () => Locomotive.DynamicBrakeController == null ? 0 : Locomotive.DynamicBrakeController.CurrentValue * 100;
                 Script.TractionAuthorization = () => TractionAuthorization;
+                Script.DynamicBrakingAuthorization = () => DynamicBrakingAuthorization;
                 Script.BrakePipePressureBar = () => Locomotive.BrakeSystem != null ? Bar.FromPSI(Locomotive.BrakeSystem.BrakeLine1PressurePSI) : float.MaxValue;
                 Script.LocomotiveBrakeCylinderPressureBar = () => Locomotive.BrakeSystem != null ? Bar.FromPSI(Locomotive.BrakeSystem.GetCylPressurePSI()) : float.MaxValue;
                 Script.DoesBrakeCutPower = () => Locomotive.DoesBrakeCutPower;
@@ -461,6 +464,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 Script.SetCircuitBreakerClosingOrder = (value) => CircuitBreakerClosingOrder = value;
                 Script.SetCircuitBreakerOpeningOrder = (value) => CircuitBreakerOpeningOrder = value;
                 Script.SetTractionAuthorization = (value) => TractionAuthorization = value;
+                Script.SetDynamicBrakingAuthorization = (value) => DynamicBrakingAuthorization = value;
                 Script.SetMaxThrottlePercent = (value) =>
                 {
                     if (value >= 0 && value <= 100f)
@@ -1194,6 +1198,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems
                 }
 
                 SetTractionAuthorization(!DoesBrakeCutPower() || LocomotiveBrakeCylinderPressureBar() < BrakeCutsPowerAtBrakeCylinderPressureBar());
+                SetDynamicBrakingAuthorization(!EmergencyBrakeCutsDynamicBrake || !IsBrakeEmergency());
 
                 SetEmergencyBrake(EmergencyBrake);
                 SetFullBrake(FullBrake);
