@@ -277,7 +277,7 @@ namespace ORTS.Scripting.Api
         /// <summary>
         /// True if dynamic brake must be cut if the emergency brake is applied.
         /// </summary>
-        public bool EmergencyBrakeCutsDynamicBrake => Locomotive.EmergencyBrakeCutsDynamicBrake;
+        public bool EmergencyBrakeCutsDynamicBrake => Loco.EmergencyBrakeCutsDynamicBrake;
         /// <summary>
         /// State of the train brake controller.
         /// </summary>
