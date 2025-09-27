@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.167
-August 22nd, 2025
+﻿Open Rails NewYear README - Rev.168
+September 27th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-1993, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-2012, 
 plus some of the features already present in the Unstable release.
 
 
@@ -25,7 +25,6 @@ This version includes some features not (yet) available in the Open Rails testin
 - panto commands and animations now swapped when in rear cab
 - correction to reduce transfer flickering at short distance
 - option to skip saving commands (reduces save time on long activities), see http://www.elvastower.com/forums/index.php?/topic/33907-64-bit-openrails-consumes-more-memory/page__view__findpost__p__257687
-- skip warning messages related to ruler token, that is introduced by TSRE5
 - track gauge can be changed over the whole route, see http://www.elvastower.com/forums/index.php?/topic/34022-adjusting-track-gauge/
 - re-introduced advanced coupling, by steamer_ctn
 - bug fix for https://bugs.launchpad.net/or/+bug/1895391 Calculation of reversal point distance failing
@@ -79,21 +78,23 @@ This version includes some features not (yet) available in the Open Rails testin
 - extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
 - Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
-- NEW: Fix for ORNYMG-only bug https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__320702
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Add Settings Exporter tool (copy settings to INI, etc), by rwf-rr (PR #1086)
   *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
-  *- NEW: Handle simple adhesion within the axle module, by cesarBLG (PR #1104)
-  *- Do not activate ETS switch if no suitable cars are attached, by cesarBLG (PR #1115)
-  *- NEW: Automatically Calculate Friction Values if Missing, by steelfill (PR #1120)
-  *- NEW: Manually Override Articulation, by steelfill (PR #1121)
-  *- NEW: Wagon Size and Centering Controls, by steelfill (PR #1122)
+  *- NEW: Do not activate ETS switch if no suitable cars are attached (PR #1115); will be present in next testing release
+  *- Automatically Calculate Friction Values if Missing, by steelfill (PR #1120)
+  *- Manually Override Articulation, by steelfill (PR #1121)
+  *- Wagon Size and Centering Controls, by steelfill (PR #1122)
+  *- NEW: Built-in PBL2 brake controller, by cesarBLG (PR #1124)
   *- Fix F9 points to an incorrect car ID, by mbm-OR (PR #1130)
-  *- NEW: Fis: Status in Work Orders popup set too fast, by sweiland (PR #1143)
-  *- NEW: fix: Clean up multiple issues with data logger, by twpol (PR #1152)
-  *- NEW: fix for illegal characters in reference to Shape file, by cjakeman (PR #1155)
+  *- NEW: Fix incorrectly disabled options in train operations window, by cesarBLG (PR #1156)
+  *- NEW: Dynamic brake authorization by TCS, by cesarBLG (PR #1157)
+  *- NEW: Temporary fix for bug 2121985: F9 TCO out-of-range after resume , by rwf-rr (PR #1158)
+  *- Skip OR warnings about TSRE-specific token Ruler (PR #1159)
+  *- NEW: Fix string trim in .ini files, by cesarBLG (PR #1161)
+  *- NEW: Specifies precedence of DDS over ACE (documentation), by cjamekan (PR 1162)
+
 
 
 
