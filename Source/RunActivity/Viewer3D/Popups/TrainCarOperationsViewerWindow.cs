@@ -587,7 +587,7 @@ namespace Orts.Viewer3D.Popups
                 {
                     var validTenderPosition = CurrentCar.Flipped ? carPosition - 1 > -1 : carPosition + 1 < Viewer.PlayerTrain.Cars.Count;
                     isSteamAndHasTender = validTenderPosition && (Viewer.PlayerTrain.Cars[carPosition + (CurrentCar.Flipped ? -1 : 1)].WagonType == MSTSWagon.WagonTypes.Tender);
-                 }
+                }
                 var isTender = CurrentCar.WagonType == MSTSWagon.WagonTypes.Tender;
                 if (isSteamAndHasTender || isTender)
                 {
