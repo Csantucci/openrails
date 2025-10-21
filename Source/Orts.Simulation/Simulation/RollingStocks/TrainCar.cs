@@ -186,12 +186,11 @@ namespace Orts.Simulation.RollingStocks
         public float CarWidthM = 2.5f;
         public float CarLengthM = 40;       // derived classes must overwrite these defaults
         public float CarHeightM = 4;        // derived classes must overwrite these defaults
+        public (Vector3 Mins, Vector3 Maxes) ShapeBoundingLimits;
+        public bool AutoSize = false;       // Are the dimensions of this wagon to be calculated automatically from the shape file?
+        public Vector3 AutoSizeOffsetM;
         public int FrontArticulation = -1;  // -1: Determine front articulation automatically, 0: Force no front articulation, 1: Force front articulation
         public int RearArticulation = -1;   // -1: Determine rear articulation automatically, 0: Force no rear articulation, 1: Force rear articulation
-        public bool AutoSize = false;       // Are the dimensions of this wagon to be calculated automatically from the shape file?
-        public float AutoWidthOffsetM;
-        public float AutoLengthOffsetM;
-        public float AutoHeightOffsetM;
         public float MassKG = 10000;        // Mass in KG at runtime; coincides with InitialMassKG if there is no load and no ORTS freight anim
         public float InitialMassKG = 10000;
         public bool IsDriveable;
