@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.168
-September 27th, 2025
+﻿Open Rails NewYear README - Rev.169
+October 24th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-2012, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-2092, 
 plus some of the features already present in the Unstable release.
 
 
@@ -82,21 +82,18 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
   *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
-  *- NEW: Do not activate ETS switch if no suitable cars are attached (PR #1115); will be present in next testing release
-  *- Automatically Calculate Friction Values if Missing, by steelfill (PR #1120)
-  *- Manually Override Articulation, by steelfill (PR #1121)
   *- Wagon Size and Centering Controls, by steelfill (PR #1122)
-  *- NEW: Built-in PBL2 brake controller, by cesarBLG (PR #1124)
-  *- Fix F9 points to an incorrect car ID, by mbm-OR (PR #1130)
-  *- NEW: Fix incorrectly disabled options in train operations window, by cesarBLG (PR #1156)
-  *- NEW: Dynamic brake authorization by TCS, by cesarBLG (PR #1157)
-  *- NEW: Temporary fix for bug 2121985: F9 TCO out-of-range after resume , by rwf-rr (PR #1158)
-  *- Skip OR warnings about TSRE-specific token Ruler (PR #1159)
-  *- NEW: Fix string trim in .ini files, by cesarBLG (PR #1161)
-  *- NEW: Specifies precedence of DDS over ACE (documentation), by cjamekan (PR 1162)
-
-
-
+  *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
+  *- NEW: Particle Emitter Overhaul, by Steelfill (PR #1128)
+  *- NEW: Fix F9 points to an incorrect car ID, by mbm-OR (PR #1130)
+  *- Fix incorrectly disabled options in train operations window, by cesarBLG (PR #1156)
+  *- Dynamic brake authorization by TCS, by cesarBLG (PR #1157)
+  *- Temporary fix for bug 2121985: F9 TCO out-of-range after resume , by rwf-rr (PR #1158)
+  *- NEW: Fix: RunActivity slow to terminate because of long sleep in Host Process, by rwf-rr (PR #1167)
+  *- NEW: Fix exception when exiting with MapForm or SoundDebugForm open, by rwf-rr (PR #1168)
+  *- NEW: Better Handling of Wagons with Invalid Bogie Configuration, by SteelFill (PR #1169)
+  *- NEW: Fix Command Log Time for Commands that had it at 0 (zero), by rwf-rr (PR #1170)
+  *- NEW: Fix: no internet connection is available, not possible to open the Menu Content Form, by sweiland (PR #1171)
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
