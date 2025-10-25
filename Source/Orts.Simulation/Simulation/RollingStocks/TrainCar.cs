@@ -2511,8 +2511,6 @@ public string GetCurveDirection()
             CurveSquealAoAmRadFiltered = inf.ReadSingle();
             CurveSquealAoAmRadFilter.ForceSmoothValue(CurveSquealAoAmRadFiltered);
             FreightAnimations?.LoadDataList?.Clear();
-            CurveSquealAoAmRadFiltered = inf.ReadSingle();
-            CurveSquealAoAmRadFilter.ForceSmoothValue(CurveSquealAoAmRadFiltered);
         }
 
         //================================================================================================//
