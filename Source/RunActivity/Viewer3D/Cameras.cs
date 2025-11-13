@@ -1105,7 +1105,12 @@ namespace Orts.Viewer3D
                 Viewer.FirstLoop = false;
                 if (Front)
                 {
-                    SetCameraCar(trainCars[Viewer.CameraOutsideFrontPosition]);
+                    var carPos = 0;
+                    if (Viewer.CameraOutsideFrontPosition > trainCars.Count - 1)
+                        carPos = trainCars.Count - 1;
+                    else if (Viewer.CameraOutsideFrontPosition >= 0)
+                        carPos = Viewer.CameraOutsideFrontPosition;
+                    SetCameraCar(trainCars[carPos]);
                     Viewer.CameraFrontUpdated = true;
                 }
                 else
