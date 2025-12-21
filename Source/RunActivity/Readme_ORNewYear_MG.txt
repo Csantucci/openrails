@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.169
-October 24th, 2025
+﻿Open Rails NewYear README - Rev.169.3
+November 16th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -78,6 +78,7 @@ This version includes some features not (yet) available in the Open Rails testin
 - extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
 - Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
+- NEW: ORNYMG-only bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322263
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
@@ -94,6 +95,11 @@ This version includes some features not (yet) available in the Open Rails testin
   *- NEW: Better Handling of Wagons with Invalid Bogie Configuration, by SteelFill (PR #1169)
   *- NEW: Fix Command Log Time for Commands that had it at 0 (zero), by rwf-rr (PR #1170)
   *- NEW: Fix: no internet connection is available, not possible to open the Menu Content Form, by sweiland (PR #1171)
+  *- NEW: Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
+  *- NEW: Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
+  *- NEW: Merge updated PR #1169 solving locomotives not appearing (including Little Joe), see https://www.elvastower.com/forums/index.php?/topic/39269-missing-loco-shapes-in-rmd-east-route/page__view__findpost__p__322641 , by SteelFill
+  *- NEW: Avoid wrong warning message about missing .dds texture, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322663
+
 
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
