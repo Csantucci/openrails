@@ -99,6 +99,7 @@ This version includes some features not (yet) available in the Open Rails testin
   *- NEW: Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
   *- NEW: Merge updated PR #1169 solving locomotives not appearing (including Little Joe), see https://www.elvastower.com/forums/index.php?/topic/39269-missing-loco-shapes-in-rmd-east-route/page__view__findpost__p__322641 , by SteelFill
   *- NEW: Avoid wrong warning message about missing .dds texture, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322663
+  *- NEW: Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
 
 
 Info about content of the various PR to the Unstable release can be found here
