@@ -647,18 +647,23 @@ namespace Orts.Viewer3D.Popups
             var mstsLocomotive = locomotive as MSTSLocomotive;
             var train = locomotive.Train;
             float tonnage = 0f;
+            var brakeMass = 0f;
+            var totalMass = 0f;
             foreach (var car in train.Cars)
             {
                 if (car.WagonType == TrainCar.WagonTypes.Freight || car.WagonType == TrainCar.WagonTypes.Passenger)
                     tonnage += car.MassKG;
+                totalMass += car.MassKG;
+                brakeMass += (car.BrakeSystem as AirSinglePipe)?.BrakeMass ?? 0;
             }
+            var brakePercentage = (int)(brakeMass / totalMass * 100);
 
             if (Visible)
                 ResetHudScroll();//Reset Hudscroll.
 
             List<string> statusConsist = new List<string>();
             //Consist information. Header.
-            statusConsist.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t\t{5}\t{6}\t\t{7}\t\t{8}",
+            statusConsist.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t\t{5}\t{6}\t\t{7}\t\t{8}\t\t{9}",
                 Viewer.Catalog.GetString("Player"),
                 Viewer.Catalog.GetString("Tilted"),
                 Viewer.Catalog.GetString("Type"),
@@ -667,12 +672,13 @@ namespace Orts.Viewer3D.Popups
                 Viewer.Catalog.GetString("Tonnage"), //"",
                 Viewer.Catalog.GetString("Control Mode"),// "",
                 Viewer.Catalog.GetString("Out of Control"),// "",
-                Viewer.Catalog.GetString("Cab Aspect")
+                Viewer.Catalog.GetString("Cab Aspect"),// "",
+                Viewer.Catalog.GetString("Brake %")
                 //Add new header data here, if adding additional column.
                 ));
 
             //Consist information. Data.
-            statusConsist.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t\t{5}\t{6}\t\t{7}\t\t{8}",
+            statusConsist.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t\t{5}\t{6}\t\t{7}\t\t{8}\t\t{9}",
                 locomotive.CarID + " " + (mstsLocomotive == null ? "" : mstsLocomotive.UsingRearCab ? Viewer.Catalog.GetParticularString("Cab", "R") : Viewer.Catalog.GetParticularString("Cab", "F")),
                 (train.IsTilting ? Viewer.Catalog.GetString("Yes") : Viewer.Catalog.GetString("No")),
                 (train.IsFreight ? Viewer.Catalog.GetString("Freight") : Viewer.Catalog.GetString("Pass")),
@@ -681,19 +687,22 @@ namespace Orts.Viewer3D.Popups
                 FormatStrings.FormatLargeMass(tonnage, locomotive.IsMetric, locomotive.IsUK),
                 train.ControlMode.ToString(),
                 train.OutOfControlReason.ToString(),
-                mstsLocomotive.TrainControlSystem.CabSignalAspect.ToString()
+                mstsLocomotive.TrainControlSystem.CabSignalAspect.ToString(),
+                string.Format("{0:F0}%", brakePercentage)
                 //Add new data here, if adding additional column.
                 ));
 
             //Car information
-            statusConsist.Add(string.Format("\n{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}",
+            statusConsist.Add(string.Format("\n{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}",
                 Viewer.Catalog.GetString("Car"),
                 Viewer.Catalog.GetString("Flipped"),
                 Viewer.Catalog.GetString("Type"),
                 Viewer.Catalog.GetString("Length"),
                 Viewer.Catalog.GetString("Weight"),
                 Viewer.Catalog.GetString("Drv/Cabs"),
-                Viewer.Catalog.GetString("Wheels")
+                Viewer.Catalog.GetString("Wheels"),
+                Viewer.Catalog.GetString("Temp"),
+                Viewer.Catalog.GetString("BrkMass")
                 //Add new header data here, if adding additional column.
                 ));
 
@@ -715,8 +724,9 @@ namespace Orts.Viewer3D.Popups
                     FormatStrings.FormatLargeMass(car.MassKG, locomotive.IsMetric, locomotive.IsUK) + "\t" +
                     (car.IsDriveable ? Viewer.Catalog.GetParticularString("Cab", "D") : "") + (car.HasFrontCab || car.HasFront3DCab ? Viewer.Catalog.GetParticularString("Cab", "F") : "") + (car.HasRearCab || car.HasRear3DCab ? Viewer.Catalog.GetParticularString("Cab", "R") : "") + "\t" +
                     GetCarWhyteLikeNotation(car) + "\t" +
-                    (car.WagonType == TrainCar.WagonTypes.Passenger || car.WagonSpecialType == TrainCar.WagonSpecialTypes.Heated ? FormatStrings.FormatTemperature(car.CarInsideTempC, locomotive.IsMetric, false) : string.Empty) + "\t");
-                //Add new data here, if adding additional column.
+                    (car.WagonType == TrainCar.WagonTypes.Passenger || car.WagonSpecialType == TrainCar.WagonSpecialTypes.Heated ? FormatStrings.FormatTemperature(car.CarInsideTempC, locomotive.IsMetric, false) : string.Empty) + "\t" + 
+                    ((int)Kg.ToTonne((car.BrakeSystem as AirSinglePipe)?.BrakeMass ?? 0)).ToString() + " " + FormatStrings.t);
+            //Add new data here, if adding additional column.
             }
             // Displays data
             DrawScrollArrows(statusConsist, table, false);
@@ -1423,7 +1433,7 @@ namespace Orts.Viewer3D.Popups
                 var car = train.Cars[i];
                 if (car.BrakeSystem is VacuumSinglePipe)
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}",
                         //0
                         Viewer.Catalog.GetString("Car"),
                         //1
@@ -1448,17 +1458,19 @@ namespace Orts.Viewer3D.Popups
                         //10
                         Viewer.Catalog.GetString(""),
                         //11
-                        Viewer.Catalog.GetString("Handbrk"),
+                        Viewer.Catalog.GetString(""),
                         //12
-                        Viewer.Catalog.GetString("Conn"),
+                        Viewer.Catalog.GetString("Handbrk"),
                         //13
+                        Viewer.Catalog.GetString("Conn"),
+                        //14
                         Viewer.Catalog.GetString("AnglCock")
                         //Add new header data here, if addining additional column.
                         ));
                 }
                 else if (car.BrakeSystem is ManualBraking)
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}",
                         //0
                         Viewer.Catalog.GetString("Car"),
                         //1
@@ -1482,12 +1494,14 @@ namespace Orts.Viewer3D.Popups
                         //10
                         Viewer.Catalog.GetString(""),
                         //11
+                        Viewer.Catalog.GetString(""),
+                        //12
                         Viewer.Catalog.GetString("Handbrk")
                     ));
                 }
                 else if ((Viewer.PlayerLocomotive as MSTSLocomotive).BrakeSystem is SMEBrakeSystem)
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}",
                     //0
                     Viewer.Catalog.GetString("Car"),
                     //1
@@ -1525,7 +1539,7 @@ namespace Orts.Viewer3D.Popups
                 }
                 else // default air braked
                 {
-                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}",
+                    statusHeader.Add(string.Format("{0}\t{1}\t{2}\t{3}\t{4}\t{5}\t{6}\t{7}\t{8}\t{9}\t{10}\t{11}\t{12}\t{13}\t{14}\t{15}",
                     //0
                     Viewer.Catalog.GetString("Car"),
                     //1
