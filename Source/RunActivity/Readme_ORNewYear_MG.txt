@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.169.3
-November 16th, 2025
+﻿Open Rails NewYear README - Rev.170
+December 27th, 2025
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-2092, 
+This unofficial version has been derived from the latest official Testing release T1.5.1-2149, 
 plus some of the features already present in the Unstable release.
 
 
@@ -78,29 +78,23 @@ This version includes some features not (yet) available in the Open Rails testin
 - extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
 - Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
-- NEW: ORNYMG-only bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322263
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
   *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
   *- Wagon Size and Centering Controls, by steelfill (PR #1122)
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
-  *- NEW: Particle Emitter Overhaul, by Steelfill (PR #1128)
-  *- NEW: Fix F9 points to an incorrect car ID, by mbm-OR (PR #1130)
-  *- Fix incorrectly disabled options in train operations window, by cesarBLG (PR #1156)
-  *- Dynamic brake authorization by TCS, by cesarBLG (PR #1157)
+  *- Particle Emitter Overhaul, by Steelfill (PR #1128)
   *- Temporary fix for bug 2121985: F9 TCO out-of-range after resume , by rwf-rr (PR #1158)
-  *- NEW: Fix: RunActivity slow to terminate because of long sleep in Host Process, by rwf-rr (PR #1167)
-  *- NEW: Fix exception when exiting with MapForm or SoundDebugForm open, by rwf-rr (PR #1168)
-  *- NEW: Better Handling of Wagons with Invalid Bogie Configuration, by SteelFill (PR #1169)
-  *- NEW: Fix Command Log Time for Commands that had it at 0 (zero), by rwf-rr (PR #1170)
-  *- NEW: Fix: no internet connection is available, not possible to open the Menu Content Form, by sweiland (PR #1171)
-  *- NEW: Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
-  *- NEW: Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
-  *- NEW: Merge updated PR #1169 solving locomotives not appearing (including Little Joe), see https://www.elvastower.com/forums/index.php?/topic/39269-missing-loco-shapes-in-rmd-east-route/page__view__findpost__p__322641 , by SteelFill
-  *- NEW: Avoid wrong warning message about missing .dds texture, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322663
+  *- Revise TrainCar.SetUpWheels to Better Handle Unusual Rolling Stock , by SteelFill (PR #1169)
+  *- NEW: Make data logger interval configurable, by rwf-rr (PR #1175)
+  *- NEW: Remove Implicit Requirement for Engine Name to Come After "Engine (", by SteelFill (PR #1176)
+  *- NEW: Fix Diesel RPM Rate of Change, by SteelFill (PR #1178)
+  *- NEW: Fix/avoid type initialization exception - 2nd try, by cjakeman (PR #1184)
   *- NEW: Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- NEW: Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
+  *- NEW: Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
+  *- NEW: Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
 
 
 Info about content of the various PR to the Unstable release can be found here
