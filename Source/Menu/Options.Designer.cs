@@ -144,6 +144,8 @@
             this.label17 = new System.Windows.Forms.Label();
             this.checkDataLogPhysics = new System.Windows.Forms.CheckBox();
             this.checkDataLogSteamPerformance = new System.Windows.Forms.CheckBox();
+            this.dataLoggerInterval = new System.Windows.Forms.NumericUpDown();
+            this.dataLoggerIntervalLabel = new System.Windows.Forms.Label();
             this.checkVerboseConfigurationMessages = new System.Windows.Forms.CheckBox();
             this.tabPageRailDriver = new System.Windows.Forms.TabPage();
             this.pbRailDriverOptions = new System.Windows.Forms.PictureBox();
@@ -304,6 +306,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericDataLogTSInterval)).BeginInit();
             this.tabPageDataLogger.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).BeginInit();
             this.tabPageRailDriver.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).BeginInit();
             this.panelRDSettings.SuspendLayout();
@@ -1706,6 +1709,8 @@
             this.tabPageDataLogger.Controls.Add(this.label17);
             this.tabPageDataLogger.Controls.Add(this.checkDataLogPhysics);
             this.tabPageDataLogger.Controls.Add(this.checkDataLogSteamPerformance);
+            this.tabPageDataLogger.Controls.Add(this.dataLoggerInterval);
+            this.tabPageDataLogger.Controls.Add(this.dataLoggerIntervalLabel);
             this.tabPageDataLogger.Controls.Add(this.checkVerboseConfigurationMessages);
             this.tabPageDataLogger.Location = new System.Drawing.Point(4, 22);
             this.tabPageDataLogger.Name = "tabPageDataLogger";
@@ -1827,6 +1832,36 @@
             this.checkDataLogSteamPerformance.TabIndex = 6;
             this.checkDataLogSteamPerformance.Text = "Log Steam performance data (exclusive)";
             this.checkDataLogSteamPerformance.UseVisualStyleBackColor = true;
+            // 
+            // dataLoggerInterval
+            // 
+            this.dataLoggerInterval.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.dataLoggerInterval.Location = new System.Drawing.Point(310, 40);
+            this.dataLoggerInterval.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
+            this.dataLoggerInterval.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+            this.dataLoggerInterval.Name = "dataLoggerInterval";
+            this.dataLoggerInterval.Size = new System.Drawing.Size(54, 20);
+            this.dataLoggerInterval.TabIndex = 25;
+            this.dataLoggerInterval.ThousandsSeparator = true;
+            this.toolTip1.SetToolTip(this.dataLoggerInterval, "Interval at which to log data. In milliseconds, 0 means log at frame rate.");
+            // 
+            // dataLoggerIntervalLabel
+            // 
+            this.dataLoggerIntervalLabel.AutoSize = true;
+            this.dataLoggerIntervalLabel.Location = new System.Drawing.Point(370, 42);
+            this.dataLoggerIntervalLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.dataLoggerIntervalLabel.Name = "dataLoggerIntervalLabel";
+            this.dataLoggerIntervalLabel.Size = new System.Drawing.Size(117, 13);
+            this.dataLoggerIntervalLabel.TabIndex = 26;
+            this.dataLoggerIntervalLabel.Text = "Logging Interval (msec)";
             // 
             // checkVerboseConfigurationMessages
             // 
@@ -3354,6 +3389,7 @@
             this.tabPageDataLogger.ResumeLayout(false);
             this.tabPageDataLogger.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).EndInit();
             this.tabPageRailDriver.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).EndInit();
             this.panelRDSettings.ResumeLayout(false);
@@ -3637,6 +3673,8 @@
         private System.Windows.Forms.PictureBox pbAdhesionFactorCorrection;
         private System.Windows.Forms.PictureBox pbAdhesionFactorRandomChange;
         private System.Windows.Forms.CheckBox checkDataLogSteamPowerCurve;
+        private System.Windows.Forms.NumericUpDown dataLoggerInterval;
+        private System.Windows.Forms.Label dataLoggerIntervalLabel;
         private System.Windows.Forms.CheckBox checkExtendedPerformanceDump;
     }
 }

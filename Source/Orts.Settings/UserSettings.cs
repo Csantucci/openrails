@@ -252,6 +252,8 @@ namespace ORTS.Settings
         public bool DataLogExclusiveSteamPerformance { get; set; }
         [Default(false)]
         public bool DataLogExclusiveSteamPowerCurve { get; set; }
+        [Default(0)]
+        public int DataLoggerInterval { get; set; }
         [Default(false)]
         public bool VerboseConfigurationMessages { get; set; }
 
