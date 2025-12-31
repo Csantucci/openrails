@@ -226,8 +226,29 @@ namespace Orts.Viewer3D
 
             // Calculate XNA matrix for shape file objects by offsetting from car's location
             // The new List<int> is intentional, this allows the dictionary to be changed while iterating
+            int maxDepth = trainCarShape.Hierarchy.Max();
             foreach (int index in new List<int>(ShapeXNATranslations.Keys))
-                ShapeXNATranslations[index] = trainCarShape.XNAMatrices[index] * xnaDTileTranslation;
+            {
+                Matrix res = trainCarShape.XNAMatrices[index];
+                int hIndex = trainCarShape.Hierarchy[index];
+
+                int i = 0;
+
+                // Transform the matrix repeatedly for all of its parents
+                while (hIndex > -1 && hIndex < trainCarShape.Hierarchy.Length && i < maxDepth)
+                {
+                    res = res * trainCarShape.XNAMatrices[hIndex];
+                    // Prevent potential infinite loop due to faulty hierarchy definition
+                    if (hIndex != trainCarShape.Hierarchy[hIndex])
+                        hIndex = trainCarShape.Hierarchy[hIndex];
+                    else
+                        break;
+
+                    i++;
+                }
+
+                ShapeXNATranslations[index] = res * xnaDTileTranslation;
+            }
 
             float objectRadius = 20; // Even more arbitrary.
             float objectViewingDistance = Viewer.Settings.ViewingDistance; // Arbitrary.
@@ -300,7 +321,9 @@ namespace Orts.Viewer3D
 			Debug.Assert(Viewer.PlayerTrain.LeadLocomotive == Viewer.PlayerLocomotive ||Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.AI_PLAYERHOSTING ||
 				Viewer.PlayerTrain.Autopilot ||
                 Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.REMOTE || Viewer.PlayerTrain.TrainType == Train.TRAINTYPE.STATIC, "PlayerTrain.LeadLocomotive must be PlayerLocomotive.");
-			var leadLocomotiveCar = Car.Train?.LeadLocomotive; // Note: Will return null for AI trains, this is intended behavior
+			var leadLocomotiveCar = Car.Train != null && Car.Train.IsActualPlayerTrain ? Viewer.PlayerLocomotive : null; // Note: Will return null for AI trains, this is intended behavior
+            if (leadLocomotiveCar == null && Car.Train != null && Car.Train.TrainType == Train.TRAINTYPE.REMOTE && Car is MSTSLocomotive && (Car as MSTSLocomotive) == Car.Train.LeadLocomotive)
+                leadLocomotiveCar = Car.Train.LeadLocomotive;
             var leadLocomotive = leadLocomotiveCar as MSTSLocomotive;
 
             // There are a lot of conditions now! IgnoredConditions[] stores which conditions are ignored, allowing shortcutting of many of these calculations
@@ -968,6 +991,7 @@ namespace Orts.Viewer3D
             : base(viewer, textureName)
         {
             // TODO: This should happen on the loader thread.
+//          LightGlowTexture = textureName.StartsWith(Viewer.ContentPath, StringComparison.OrdinalIgnoreCase) ? SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, textureName) : Viewer.TextureManager.Get(textureName);
             LightGlowTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, textureName);
         }
 

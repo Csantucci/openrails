@@ -25,22 +25,10 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
 {
     public class SingleTransferPipe : AirSinglePipe
     {
-
-        readonly static float OneAtmospherePSI = Bar.ToPSI(1);
-
         public SingleTransferPipe(TrainCar car)
             : base(car)
         {
             DebugType = "-";
-        }
-
-        public override void Parse(string lowercasetoken, STFReader stf)
-        {
-            switch (lowercasetoken)
-            {
-                // OpenRails specific parameters
-                case "wagon(brakepipevolume": BrakePipeVolumeM3 = Me3.FromFt3(stf.ReadFloatBlock(STFReader.UNITS.VolumeDefaultFT3, null)); break;
-            }
         }
 
         public override void Initialize(bool handbrakeOn, float maxPressurePSI, float fullServPressurePSI, bool immediateRelease)
@@ -61,11 +49,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             }
         }
 
-        public override void InitializeFromCopy(BrakeSystem copy)
+        public override void InitializeFromCopy(BrakeSystem copy, bool diff)
         {
+            base.InitializeFromCopy(copy, diff);
             SingleTransferPipe thiscopy = (SingleTransferPipe)copy;
-            BrakePipeVolumeM3 = thiscopy.BrakePipeVolumeM3;
-            HandBrakePresent = thiscopy.HandBrakePresent;
+            BrakePipeVolumeM3 = diff && thiscopy.BrakePipeVolumeM3 == default ? BrakePipeVolumeM3 : thiscopy.BrakePipeVolumeM3;
+            HandBrakePresent = diff && thiscopy.HandBrakePresent == default ? HandBrakePresent : thiscopy.HandBrakePresent;
         }
 
         public override string GetStatus(Dictionary<BrakeSystemComponent, PressureUnit> units)
@@ -118,6 +107,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                 FormatStrings.FormatPressure(Vac.FromPress(BrakeLine1PressurePSI), PressureUnit.InHg, PressureUnit.InHg, true),
                 string.Empty,
                 string.Empty, // Spacer because the state above needs 2 columns.
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                string.Empty,
                 HandbrakePercent > 0 ? string.Format("{0:F0}%", HandbrakePercent) : string.Empty,
                 FrontBrakeHoseConnected ? "I" : "T",
                 string.Format("A{0} B{1}", AngleCockAOpen ? "+" : "-", AngleCockBOpen ? "+" : "-"),
@@ -170,15 +165,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             UpdateAngleCockState(AngleCockBOpen, ref AngleCockBOpenAmount, ref AngleCockBOpenTime);
 
             Car.BrakeRetardForceN = ( Car.MaxHandbrakeForceN * HandbrakePercent / 100) * brakeShoeFriction; // calculates value of force applied to wheel, independent of wheel skid
-            if (Car.BrakeSkid) // Test to see if wheels are skiding to excessive brake force
-            {
-                Car.BrakeForceN = (Car.MaxHandbrakeForceN * HandbrakePercent / 100) * Car.SkidFriction;   // if excessive brakeforce, wheel skids, and loses adhesion
-            }
-            else
-            {
-                Car.BrakeForceN = (Car.MaxHandbrakeForceN * HandbrakePercent / 100) * brakeShoeFriction; // In advanced adhesion model brake shoe coefficient varies with speed, in simple model constant force applied as per value in WAG file, will vary with wheel skid.
-            }
-        
         }
     }
 }

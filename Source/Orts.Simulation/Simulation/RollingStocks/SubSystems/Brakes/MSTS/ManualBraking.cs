@@ -74,12 +74,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             }
         }
 
-        public override void InitializeFromCopy(BrakeSystem copy)
+        public override void InitializeFromCopy(BrakeSystem copy, bool diff)
         {
-            base.InitializeFromCopy(copy);
+            base.InitializeFromCopy(copy, diff);
             ManualBraking thiscopy = (ManualBraking)copy;
-            ManualMaxApplicationRateValuepS = thiscopy.ManualMaxApplicationRateValuepS;
-            ManualReleaseRateValuepS = thiscopy.ManualReleaseRateValuepS;
+            ManualMaxApplicationRateValuepS = diff && thiscopy.ManualMaxApplicationRateValuepS == default ? ManualMaxApplicationRateValuepS : thiscopy.ManualMaxApplicationRateValuepS;
+            ManualReleaseRateValuepS = diff && thiscopy.ManualReleaseRateValuepS == default ? ManualReleaseRateValuepS : thiscopy.ManualReleaseRateValuepS;
 
         }
 
@@ -232,14 +232,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
             Car.HuDBrakeShoeFriction = Car.GetBrakeShoeFrictionCoefficientHuD();
 
             Car.BrakeRetardForceN = Car.BrakeShoeForceN * brakeShoeFriction; // calculates value of force applied to wheel, independent of wheel skid
-            if (Car.BrakeSkid) // Test to see if wheels are skiding to excessive brake force
-            {
-                Car.BrakeForceN = Car.BrakeShoeForceN * Car.SkidFriction;   // if excessive brakeforce, wheel skids, and loses adhesion
-            }
-            else
-            {
-                Car.BrakeForceN = Car.BrakeShoeForceN * brakeShoeFriction; // In advanced adhesion model brake shoe coefficient varies with speed, in simple model constant force applied as per value in WAG file, will vary with wheel skid.
-            }
 
         }
 
@@ -269,6 +261,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Brakes.MSTS
                 return new string[] {
                 DebugType,
                 string.Format("{0:F0}", FormatStrings.FormatPressure(SteamBrakeCylinderPressurePSI, PressureUnit.PSI,  PressureUnit.PSI, true)),
+                string.Empty,
                 string.Empty,
                 string.Empty,
                 string.Empty,

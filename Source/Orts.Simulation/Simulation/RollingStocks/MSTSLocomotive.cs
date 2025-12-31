@@ -160,8 +160,6 @@ namespace Orts.Simulation.RollingStocks
 
 
 
-        public float ZeroSpeedAdhesionBase;
-
         public float FilteredBrakePipeFlowM3pS;
         public IIRFilter AFMFilter;
 
@@ -247,16 +245,19 @@ namespace Orts.Simulation.RollingStocks
         // Adhesion parameters
         public enum SlipControlType
         {
+            Unknown,
             None,
+            CutPower,
+            ReduceForce,
             Full
         }
         public SlipControlType SlipControlSystem;
+        public bool[] SlipControlActive;
         float BaseFrictionCoefficientFactor;  // Factor used to adjust Curtius formula depending upon weather conditions
         float SlipFrictionCoefficientFactor;
         public float SteamStaticWheelForce;
         public float SteamTangentialWheelForce;
         public float SteamDrvWheelWeightLbs;  // Weight on each drive axle
-        public float PreviousThrottleSetting = 0.0f;  // Holds the value of the previous throttle setting for calculating the correct antislip speed
         float DebugTimer; // Used for debugging adhesion coefficient
         bool DebugSpeedReached = false; // Used for debugging adhesion coefficient
         float DebugSpeedIncrement = 1; // Used for debugging adhesion coefficient
@@ -301,7 +302,6 @@ namespace Orts.Simulation.RollingStocks
         public float LargeEjectorBrakePipeChargingRatePSIorInHgpS;
         public float ExhausterHighSBPChargingRatePSIorInHgpS;  // Rate for Exhauster in high speed mode
         public float ExhausterLowSBPChargingRatePSIorInHgpS;  // Rate for Exhauster in high speed mode
-        public bool VacuumBrakeCutoffActivated = false;
         public bool BrakeFlagDecrease = false;
         public bool BrakeFlagIncrease = false;
 
@@ -467,6 +467,7 @@ namespace Orts.Simulation.RollingStocks
         public float BrakeCutsPowerAtBrakePipePressurePSI;
         public bool DoesVacuumBrakeCutPower { get; private set; }
         public bool DoesBrakeCutPower { get; private set; }
+        public bool EmergencyBrakeCutsDynamicBrake { get; private set; }
         public float BrakeCutsPowerAtBrakeCylinderPressurePSI { get; private set; }
         public bool DoesHornTriggerBell { get; private set; }
         public bool DPSyncTrainApplication { get; private set; }
@@ -536,7 +537,7 @@ namespace Orts.Simulation.RollingStocks
             MilepostUnitsMetric = Simulator.TRK.Tr_RouteFile.MilepostUnitsMetric;
             BrakeCutsPowerAtBrakeCylinderPressurePSI = 4.0f;
 
-            LocomotiveAxles.Add(new Axle());
+            LocomotiveAxles.Add(new Axle(this));
             AdhesionFilter = new IIRFilter(IIRFilter.FilterTypes.Butterworth, 1, IIRFilter.HzToRad(1f), 0.001f);
             AFMFilter = new IIRFilter(IIRFilter.FilterTypes.Butterworth, 1, IIRFilter.HzToRad(0.1f), 1.0f);
 
@@ -961,10 +962,10 @@ namespace Orts.Simulation.RollingStocks
                 case "engine(ortsunloadingspeed": UnloadingSpeedMpS = stf.ReadFloatBlock(STFReader.UNITS.Speed, null); break;
                 case "engine(ortsslipcontrolsystem":
                     stf.MustMatch("(");
-                    string slipControlType = stf.ReadString().ToLowerInvariant();
+                    string slipControlType = stf.ReadString();
                     try
                     {
-                        SlipControlSystem = (SlipControlType)Enum.Parse(typeof(SlipControlType), slipControlType.First().ToString().ToUpper() + slipControlType.Substring(1));
+                        SlipControlSystem = (SlipControlType)Enum.Parse(typeof(SlipControlType), slipControlType, true);
                     }
                     catch
                     {
@@ -1135,7 +1136,7 @@ namespace Orts.Simulation.RollingStocks
                 case "engine(dynamicbrakesresistorcurrentlimit": DynamicBrakeMaxCurrentA = stf.ReadFloatBlock(STFReader.UNITS.Current, null); break;
                 case "engine(numwheels": MSTSLocoNumDrvWheels = stf.ReadFloatBlock(STFReader.UNITS.None, 4.0f); if (MSTSLocoNumDrvWheels < 1) STFException.TraceWarning(stf, "Engine:NumWheels is less than 1, parts of the simulation may not function correctly"); break;
                 case "engine(ortsnumberdriveaxles": LocoNumDrvAxles = stf.ReadIntBlock(null); if (LocoNumDrvAxles < 1) STFException.TraceWarning(stf, "Engine:ORTSNumberDriveAxles is less than 1, parts of the simulation may not function correctly"); break;
-                case "engine(antislip": AntiSlip = stf.ReadBoolBlock(false); break;
+                case "engine(antislip": AntiSlip = stf.ReadBoolBlock(true); break;
                 case "engine(ortsdrivewheelweight": InitialDrvWheelWeightKg = stf.ReadFloatBlock(STFReader.UNITS.Mass, null); break;
                 case "engine(engineoperatingprocedures": EngineOperatingProcedures = stf.ReadStringBlock(""); break;
                 case "engine(headout":
@@ -1148,6 +1149,7 @@ namespace Orts.Simulation.RollingStocks
                 case "engine(brakecutspoweratbrakecylinderpressure": BrakeCutsPowerAtBrakeCylinderPressurePSI = stf.ReadFloatBlock(STFReader.UNITS.PressureDefaultPSI, null); break;
                 case "engine(ortsbrakecutspoweratbrakepipepressure": BrakeCutsPowerAtBrakePipePressurePSI = stf.ReadFloatBlock(STFReader.UNITS.PressureDefaultPSI, null); break;
                 case "engine(ortsbrakerestorespoweratbrakepipepressure": BrakeRestoresPowerAtBrakePipePressurePSI = stf.ReadFloatBlock(STFReader.UNITS.PressureDefaultPSI, null); break;
+                case "engine(ortsemergencybrakecutsdynamicbrake": EmergencyBrakeCutsDynamicBrake = stf.ReadBoolBlock(false); break;
                 case "engine(doeshorntriggerbell": DoesHornTriggerBell = stf.ReadBoolBlock(false); break;
                 case "engine(ortshornlightstimer": HornTimerS = stf.ReadFloatBlock(STFReader.UNITS.Time, null); break;
                 case "engine(ortsbelllightstimer": BellTimerS = stf.ReadFloatBlock(STFReader.UNITS.Time, null); break;
@@ -1367,6 +1369,7 @@ namespace Orts.Simulation.RollingStocks
             BrakeCutsPowerAtBrakeCylinderPressurePSI = locoCopy.BrakeCutsPowerAtBrakeCylinderPressurePSI;
             BrakeCutsPowerAtBrakePipePressurePSI = locoCopy.BrakeCutsPowerAtBrakePipePressurePSI;
             BrakeRestoresPowerAtBrakePipePressurePSI = locoCopy.BrakeRestoresPowerAtBrakePipePressurePSI;
+            EmergencyBrakeCutsDynamicBrake = locoCopy.EmergencyBrakeCutsDynamicBrake;
             DynamicBrakeCommandStartTime = locoCopy.DynamicBrakeCommandStartTime;
             DynamicBrakeBlendingOverride = locoCopy.DynamicBrakeBlendingOverride;
             DynamicBrakeBlendingForceMatch = locoCopy.DynamicBrakeBlendingForceMatch;
@@ -1714,9 +1717,19 @@ namespace Orts.Simulation.RollingStocks
             {
                 foreach (var axle in LocomotiveAxles)
                 {
-                    InductionMotor motor = new InductionMotor(axle, this);
-                    TractionMotors.Add(motor);
+                    if (axle.DriveType != AxleDriveType.NotDriven)
+                    {
+                        InductionMotor motor = new InductionMotor(axle, this);
+                        TractionMotors.Add(motor);
+                    }
                 }
+            }
+            SlipControlActive = new bool[LocomotiveAxles.Count];
+            if (SlipControlSystem == SlipControlType.Unknown)
+            {
+                if (AntiSlip) SlipControlSystem = SlipControlType.ReduceForce;
+                else if (WheelslipCausesThrottleDown) SlipControlSystem = SlipControlType.CutPower;
+                else SlipControlSystem = SlipControlType.None;
             }
 
             // Calculate minimum speed to pickup water
@@ -1876,17 +1889,17 @@ namespace Orts.Simulation.RollingStocks
 
             }
 
-            if (DoesBrakeCutPower && BrakeCutsPowerAtBrakePipePressurePSI > BrakeRestoresPowerAtBrakePipePressurePSI)
+            if ((DoesBrakeCutPower || DoesVacuumBrakeCutPower) && BrakeCutsPowerAtBrakePipePressurePSI > BrakeRestoresPowerAtBrakePipePressurePSI)
             {
                 BrakeCutsPowerAtBrakePipePressurePSI = BrakeRestoresPowerAtBrakePipePressurePSI - 1.0f;
 
                 if (Simulator.Settings.VerboseConfigurationMessages)
                 {
-                    Trace.TraceInformation("BrakeCutsPowerAtBrakePipePressure is greater then BrakeRestoresPowerAtBrakePipePressurePSI, and has been set to value of {0} InHg", Bar.ToInHg(Bar.FromPSI(BrakeCutsPowerAtBrakePipePressurePSI)));
+                    Trace.TraceInformation("BrakeCutsPowerAtBrakePipePressure is greater then BrakeRestoresPowerAtBrakePipePressure, and has been set to value of {0}", FormatStrings.FormatPressure(BrakeCutsPowerAtBrakePipePressurePSI, PressureUnit.PSI, BrakeSystemPressureUnits[BrakeSystemComponent.BrakePipe], true));
                 }
             }
 
-            if (DoesBrakeCutPower && (BrakeSystem is VacuumSinglePipe) && (BrakeRestoresPowerAtBrakePipePressurePSI == 0 || BrakeRestoresPowerAtBrakePipePressurePSI > OneAtmospherePSI))
+            if (DoesVacuumBrakeCutPower && BrakeSystem is VacuumSinglePipe && (BrakeRestoresPowerAtBrakePipePressurePSI == 0 || BrakeRestoresPowerAtBrakePipePressurePSI > OneAtmospherePSI))
             {
                 BrakeRestoresPowerAtBrakePipePressurePSI = Bar.ToPSI(Bar.FromInHg(15.0f)); // Power can be restored once brake pipe rises above 15 InHg
 
@@ -2196,27 +2209,6 @@ namespace Orts.Simulation.RollingStocks
                 UpdateCarSteamHeat(elapsedClockSeconds);
             }
 
-            if (!AdvancedAdhesionModel)  // Advanced adhesion model turned off.
-               AbsWheelSpeedMpS = AbsSpeedMpS;
-
-            // For the advanced adhesion model, a rudimentary form of slip control is incorporated by using the wheel speed to calculate tractive effort.
-            // As wheel speed is increased tractive effort is decreased. Hence wheel slip is "controlled" to a certain extent.
-            // This doesn't cover all types of locomotives, for example if DC traction motors and no slip control, then the tractive effort shouldn't be reduced.
-            // This won't eliminate slip, but limits its impact. 
-            // More modern locomotive have a more sophisticated system that eliminates slip in the majority (if not all circumstances).
-            // Simple adhesion control does not have any slip control feature built into it.
-            // TODO - a full review of slip/no slip control.
-            if (WheelSlip && AdvancedAdhesionModel)
-            {
-                AbsTractionSpeedMpS = AbsWheelSpeedMpS;
-            }
-            else
-            {
-                AbsTractionSpeedMpS = AbsSpeedMpS;
-            }
-
-            CheckAccelerationBits(elapsedClockSeconds, AbsWheelSpeedMpS);
-
             // Cruise Control
             CruiseControl?.Update(elapsedClockSeconds);
 
@@ -2271,8 +2263,8 @@ namespace Orts.Simulation.RollingStocks
                     }
 
                     AntiSlip = true; // Always set AI trains to AntiSlip
-                    SimpleAdhesion();   // Simple adhesion model used for AI trains
                     AdvancedAdhesionModel = false;
+                    UpdateAxles(elapsedClockSeconds);   // Simple adhesion model used for AI trains
                     WheelSpeedMpS = Flipped ? -AbsSpeedMpS : AbsSpeedMpS;            //make the wheels go round
                     break;
                 case Train.TRAINTYPE.STATIC:
@@ -2304,34 +2296,15 @@ namespace Orts.Simulation.RollingStocks
                     // SimpleControlPhysics and if locomotive is a control car advanced adhesion will be "disabled".
                     if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && EngineType != EngineTypes.Control)
                     {
-                        AdvancedAdhesion(elapsedClockSeconds); // Use advanced adhesion model
                         AdvancedAdhesionModel = true;  // Set flag to advise advanced adhesion model is in use
                     }
                     else
                     {
-                        SimpleAdhesion();  // Use simple adhesion model
                         AdvancedAdhesionModel = false; // Set flag to advise simple adhesion model is in use
                     }
+                    UpdateAxles(elapsedClockSeconds);
 
                     UpdateTrackSander(elapsedClockSeconds);
-
-                    if (this is MSTSDieselLocomotive || this is MSTSElectricLocomotive)  // Antislip and throttle down should only work on diesel or electric locomotives.
-                    {
-
-                        // If wheel slip waring activated, and antislip is set in ENG file then reduce throttle setting to a value below warning power
-                        if (WheelSlipWarning && AntiSlip)
-                        {
-                            ThrottleController.SetValue(PreviousThrottleSetting);
-                        }
-
-
-                        PreviousThrottleSetting = (ThrottlePercent / 100.0f) - 0.005f;
-                        PreviousThrottleSetting = MathHelper.Clamp(PreviousThrottleSetting, 0.0f, 1.0f); // Prevents parameter going outside of bounds 
-
-                        // If wheels slip and WheelslipCausesThrottleDown is set in engine file reduce throttle to 0 setting
-                        if (WheelslipCausesThrottleDown && WheelSlip)
-                            ThrottleController.SetValue(0.0f);
-                    }
                     break;
                 default:
                     break;
@@ -2693,7 +2666,14 @@ namespace Orts.Simulation.RollingStocks
             {
                 TractionForceN = 0f;
             }
-            TractiveForceN = TractionForceN;
+            if (MaxForceN > 0 && MaxContinuousForceN > 0 && PowerReduction < 1)
+            {
+                TractionForceN *= 1 - (MaxForceN - MaxContinuousForceN) / (MaxForceN * MaxContinuousForceN) * AverageForceN * (1 - PowerReduction);
+                float w = (ContinuousForceTimeFactor - elapsedClockSeconds) / ContinuousForceTimeFactor;
+                if (w < 0)
+                    w = 0;
+                AverageForceN = w * AverageForceN + (1 - w) * TractionForceN;
+            }
         }
         public float GetAvailableDynamicBrakeForceN(float d)
         {
@@ -2711,7 +2691,7 @@ namespace Orts.Simulation.RollingStocks
         }
         protected virtual void UpdateDynamicBrakeForce(float elapsedClockSeconds)
         {
-            if (ThrottlePercent <= 0 && TractionForceN <= 0 && LocomotivePowerSupply.DynamicBrakeAvailable && Direction != Direction.N && DynamicBrakePercent >= 0)
+            if (ThrottlePercent <= 0 && TractionForceN == 0 && LocomotivePowerSupply.DynamicBrakeAvailable && Direction != Direction.N && DynamicBrakePercent >= 0)
             {
                 if (DynamicBrakeCommandStartTime == null)
                 {
@@ -2734,7 +2714,7 @@ namespace Orts.Simulation.RollingStocks
                 DynamicBrake = false;
                 DynamicBrakeCommandStartTime = null;
             }
-            float maxdynamic = DynamicBrake ? 1 : 0;
+            float maxdynamic = DynamicBrake ? MaxDynamicBrakePercent / 100 : 0;
             float d = DynamicBrakePercent / 100;
             bool dynamicLimited = d > maxdynamic;
             if (dynamicLimited) d = maxdynamic;
@@ -2751,7 +2731,6 @@ namespace Orts.Simulation.RollingStocks
             {
                 DynamicBrakeForceN = 0; // Set dynamic brake force to zero if in Notch 0 position
             }
-            TractiveForceN -= Math.Sign(WheelSpeedMpS) * DynamicBrakeForceN;
         }
 
         /// <summary>
@@ -2776,44 +2755,109 @@ namespace Orts.Simulation.RollingStocks
             PrevAbsTractionSpeedMpS = AbsTractionSpeedMpS;
             AbsTractionSpeedMpS = AbsWheelSpeedMpS;
             UpdateTractionForce(elapsedClockSeconds);
-
-            if (MaxForceN > 0 && MaxContinuousForceN > 0 && PowerReduction < 1)
-            {
-                TractiveForceN *= 1 - (MaxForceN - MaxContinuousForceN) / (MaxForceN * MaxContinuousForceN) * AverageForceN * (1 - PowerReduction);
-                float w = (ContinuousForceTimeFactor - elapsedClockSeconds) / ContinuousForceTimeFactor;
-                if (w < 0)
-                    w = 0;
-                AverageForceN = w * AverageForceN + (1 - w) * TractiveForceN;
-            }
-
-            ApplyDirectionToTractiveForce(ref TractiveForceN, 0);
+            TractiveForceN = TractionForceN;
+            ApplyDirectionToTractiveForce(ref TractiveForceN);
 
             UpdateDynamicBrakeForce(elapsedClockSeconds);
+            TractiveForceN -= Math.Sign(WheelSpeedMpS) * DynamicBrakeForceN;
 
-            if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics)
+            for (int i=0; i<LocomotiveAxles.Count; i++)
             {
-                UpdateAxleDriveForce();
-            }
-        }
-
-        protected virtual void UpdateAxleDriveForce()
-        {
-            foreach (var axle in LocomotiveAxles)
-            {
+                var axle = LocomotiveAxles[i];
                 if (axle.DriveType == AxleDriveType.ForceDriven)
                 {
-                    axle.DriveForceN = TractiveForceN / LocomotiveAxles.Count;
+                    float prevForceN = axle.DriveForceN;
+                    axle.DriveForceN = TractiveForceN * axle.TractiveForceFraction;
                     if (SlipControlSystem == SlipControlType.Full)
                     {
                         // Simple slip control
-                        // Motive force is reduced to the maximum adhesive force
-                        // In wheelslip situations, motive force is set to zero
-                        if (axle.IsWheelSlip || float.IsNaN(axle.DriveForceN))
+                        // Motive force is limited to the maximum adhesive force
+                        // In wheelslip situations, motive force is reduced to zero
+                        float absForceN = Math.Min(Math.Abs(axle.DriveForceN), axle.MaximumWheelAdhesion * axle.AxleWeightN);
+                        float newForceN;
+                        if (axle.DriveForceN != 0)
                         {
-                            axle.DriveForceN = 0;
-                            return;
+                            if (axle.HuDIsWheelSlip) SlipControlActive[i] = true;
                         }
-                        axle.DriveForceN = Math.Sign(axle.DriveForceN) * Math.Min(axle.MaximumPolachWheelAdhesion * axle.AxleWeightN, Math.Abs(axle.DriveForceN));
+                        else
+                        {
+                            SlipControlActive[i] = false;
+                        }
+
+                        if (SlipControlActive[i])
+                        {
+                            if (!axle.HuDIsWheelSlip)
+                            {
+                                // If well below slip threshold, restore full power in 10 seconds
+                                newForceN = Math.Min(Math.Abs(prevForceN) + absForceN * elapsedClockSeconds / 10, absForceN);
+
+                                // If full force is restored, disengage slip control (but limiting force to max adhesion)
+                                if (newForceN / absForceN > 0.95f) SlipControlActive[i] = false;
+                            }
+                            else if (axle.IsWheelSlip)
+                            {
+                                newForceN = Math.Max(Math.Abs(prevForceN) - absForceN * elapsedClockSeconds / 3, 0);
+                            }
+                            else
+                            {
+                                newForceN = Math.Min(Math.Abs(prevForceN), absForceN);
+                            }
+                        }
+                        else
+                        {
+                            newForceN = absForceN;
+                        }
+
+                        if (axle.DriveForceN > 0 && prevForceN >= 0) axle.DriveForceN = newForceN;
+                        else if (axle.DriveForceN < 0 && prevForceN <= 0) axle.DriveForceN = -newForceN;
+                    }
+                    else if (SlipControlSystem == SlipControlType.CutPower)
+                    {
+                        if (axle.DriveForceN != 0)
+                        {
+                            if (axle.HuDIsWheelSlip) SlipControlActive[i] = true;
+                        }
+                        else
+                        {
+                            // Only restore traction when throttle is set to 0
+                            SlipControlActive[i] = false;
+                        }
+                        // Disable traction in the axle if slipping
+                        if (SlipControlActive[i]) axle.DriveForceN = 0;
+                    }
+                    else if (SlipControlSystem == SlipControlType.ReduceForce)
+                    {
+                        if (axle.DriveForceN != 0 && (AdvancedAdhesionModel || !AntiSlip))
+                        {
+                            if (axle.HuDIsWheelSlipWarning) SlipControlActive[i] = true;
+                        }
+                        else
+                        {
+                            SlipControlActive[i] = false;
+                        }
+                        if (SlipControlActive[i])
+                        {
+                            float absForceN = Math.Abs(axle.DriveForceN);
+                            float newForceN;
+                            if (!axle.HuDIsWheelSlipWarning)
+                            {
+                                // If well below slip threshold, restore full power in 10 seconds
+                                newForceN = Math.Min(Math.Abs(prevForceN) + absForceN * elapsedClockSeconds / 10, absForceN);
+
+                                // If full force is restored, disengage slip control
+                                if (newForceN / absForceN > 0.95f) SlipControlActive[i] = false;
+                            }
+                            else if (axle.IsWheelSlipWarning)
+                            {
+                                newForceN = Math.Max(Math.Abs(prevForceN) - absForceN * elapsedClockSeconds / 3, 0);
+                            }
+                            else
+                            {
+                                newForceN = Math.Min(Math.Abs(prevForceN), absForceN);
+                            }
+                            if (axle.DriveForceN > 0 && prevForceN >= 0) axle.DriveForceN = newForceN;
+                            else if (axle.DriveForceN < 0 && prevForceN <= 0) axle.DriveForceN = -newForceN;
+                        }
                     }
                 }
             }
@@ -2822,7 +2866,7 @@ namespace Orts.Simulation.RollingStocks
         /// <summary>
         /// This function applies a sign to the motive force as a function of the direction of the train.
         /// </summary>
-        protected virtual void ApplyDirectionToTractiveForce(ref float tractiveForceN, int numberofengine = 0 )
+        protected void ApplyDirectionToTractiveForce(ref float tractiveForceN)
         {
             if (Train.IsPlayerDriven)
             {
@@ -3163,15 +3207,8 @@ namespace Orts.Simulation.RollingStocks
             base.Update(elapsedClockSeconds);
         }
 
-        /// <summary>
-        /// Adjusts the MotiveForce to account for adhesion limits
-        /// If UseAdvancedAdhesion is true, dynamic adhesion model is computed
-        /// If UseAdvancedAdhesion is false, the basic force limits are calculated the same way MSTS calculates them, but
-        /// the weather handling is different and Curtius-Kniffler curves are considered as a static limit
-        /// </summary>
-        public virtual void AdvancedAdhesion(float elapsedClockSeconds)
+        protected virtual void UpdateAxles(float elapsedClockSeconds)
         {
-
             if (LocoNumDrvAxles <= 0)
             {
                 WheelSpeedMpS = AbsSpeedMpS;
@@ -3180,13 +3217,14 @@ namespace Orts.Simulation.RollingStocks
 
             foreach (var axle in LocomotiveAxles)
             {
-                axle.BrakeRetardForceN = BrakeRetardForceN / LocomotiveAxles.Count;
+                /*axle.FrictionN = DavisAN * axle.WheelWeightKg / MassKG;
+                axle.DampingNs = DavisBNSpM * axle.WheelWeightKg / MassKG;*/
+                axle.BrakeRetardForceN = BrakeRetardForceN * axle.BrakeForceFraction;
                 axle.TrainSpeedMpS = SpeedMpS;                //Set the train speed of the axle mod
                 axle.WheelRadiusM = DriverWheelRadiusM;
                 axle.WheelDistanceGaugeM = TrackGaugeM;
                 axle.CurrentCurveRadiusM = CurrentCurveRadiusM;
                 axle.BogieRigidWheelBaseM = RigidWheelBaseM;
-                axle.CurtiusKnifflerZeroSpeed = ZeroSpeedAdhesionBase;
             }
 
             LocomotiveAxles.Update(elapsedClockSeconds);
@@ -3195,7 +3233,14 @@ namespace Orts.Simulation.RollingStocks
                 return;
             }
 
-            MotiveForceN = LocomotiveAxles.CompensatedForceN;
+            // TODO: Rolling friction should be handled by the axle module
+
+            TractiveForceN = LocomotiveAxles.DriveForceN;
+            if (DynamicBrake) DynamicBrakeForceN = Math.Abs(TractiveForceN);
+            else TractionForceN = Math.Abs(TractiveForceN);
+            MotiveForceN = LocomotiveAxles.AxleMotiveForceN;
+            BrakeForceN = LocomotiveAxles.AxleBrakeForceN;
+            RollingFrictionForceN = LocomotiveAxles.AxleFrictionForceN;
 
             if (elapsedClockSeconds > 0)
             {
@@ -3206,81 +3251,6 @@ namespace Orts.Simulation.RollingStocks
             }
 
             WheelSpeedMpS = (float)LocomotiveAxles[0].AxleSpeedMpS;
-        }
-
-        public void SimpleAdhesion()
-        {
-            MotiveForceN = TractiveForceN;
-            // Check if the following few lines are required???
-            if (LocoNumDrvAxles <= 0)
-            {
-                WheelSpeedMpS = AbsSpeedMpS;
-                return;
-            }
-            
-            if (LocoNumDrvAxles <= 0)
-                return;
-
-            //Curtius-Kniffler computation
-            // Set to a high level of adhesion to ensure that locomotive rarely slips in dry mode
-            float uMax = 1.3f * (7.5f / (AbsSpeedMpS + 44.0f) + 0.161f); // Curtius - Kniffler equation
- 
-            float max0 = DrvWheelWeightKg * 9.81f * uMax;  //Ahesion limit in [N]
-            float max1;
-            float SandingFrictionFactor = 1;
-
-            if (Simulator.WeatherType == WeatherType.Rain || Simulator.WeatherType == WeatherType.Snow)
-            {
-                if (Train.SlipperySpotDistanceM < 0)
-                {
-                    Train.SlipperySpotLengthM = 10 + 40 * (float)Simulator.Random.NextDouble();
-                    Train.SlipperySpotDistanceM = Train.SlipperySpotLengthM + 2000 * (float)Simulator.Random.NextDouble();
-                }
-                if (Train.SlipperySpotDistanceM < Train.SlipperySpotLengthM)
-                    max0 *= 0.8f;
-                if (Simulator.WeatherType == WeatherType.Rain)
-                    max0 *= 0.8f;
-                else
-                    max0 *= 0.7f;
-            }
-            //float max1 = (Sander ? .95f : Adhesion2) * max0;  //Not used this way
-            max1 = MaxForceN;
-            //add sander
-            if (Sander && AbsSpeedMpS < SanderSpeedOfMpS && CurrentTrackSandBoxCapacityM3 > 0.0 && MainResPressurePSI > 80.0)
-            {
-                switch (Simulator.WeatherType)
-                {
-                    case WeatherType.Clear: SandingFrictionFactor = 1.2f; break;
-                    case WeatherType.Rain: SandingFrictionFactor = 1.8f; break;
-                    case WeatherType.Snow: SandingFrictionFactor = 2.5f; break;
-                }
-                if (SanderSpeedEffectUpToMpS > 0.0f) // Reduce sander effectiveness if max effective speed is defined
-                {
-                    SandingFrictionFactor *= (1.0f - 0.5f / SanderSpeedEffectUpToMpS * AbsSpeedMpS);
-                }
-                max0 *= Math.Max(SandingFrictionFactor, 1.0f); // Prevent sand from harming adhesion above max effective speed
-            }
-
-            max1 = max0;
-
-            WheelSlip = false;
-
-            if (MotiveForceN > max1)
-            {
-                WheelSlip = true;
-                if (AntiSlip)
-                    MotiveForceN = max1;
-                else
-                    MotiveForceN = Adhesion1 * max0;        //Lowers the adhesion limit to 20% of its full
-            }
-            else if (MotiveForceN < -max1)
-            {
-                WheelSlip = true;
-                if (AntiSlip)
-                    MotiveForceN = -max1;
-                else
-                    MotiveForceN = -Adhesion1 * max0;       //Lowers the adhesion limit to 20% of its full
-            }
         }
 
         /// <summary>
@@ -3564,13 +3534,14 @@ namespace Orts.Simulation.RollingStocks
             }
 
             var AdhesionMultiplier = Simulator.Settings.AdhesionFactor / 100.0f; // Convert to a factor where 100% = no change to adhesion
+            if (!AdvancedAdhesionModel) AdhesionMultiplier = Math.Max(AdhesionMultiplier, 1.3f);
             var AdhesionRandom = (float)((float)(Simulator.Settings.AdhesionFactorChange) * 0.01f * 2f * (Simulator.Random.NextDouble() - 0.5f));
 
             Train.LocomotiveCoefficientFriction = BaseuMax * BaseFrictionCoefficientFactor * AdhesionMultiplier;  // Find friction coefficient factor for locomotive
             Train.LocomotiveCoefficientFriction = MathHelper.Clamp(Train.LocomotiveCoefficientFriction, 0.05f, 0.8f); // Ensure friction coefficient never exceeds a "reasonable" value
 
             float ZeroBaseuMax = (Curtius_KnifflerA / (Curtius_KnifflerB) + Curtius_KnifflerC); // Base Curtius - Kniffler equation - u = 0.33, all other values are scaled off this formula
-            ZeroSpeedAdhesionBase = ZeroBaseuMax * BaseFrictionCoefficientFactor * AdhesionMultiplier;
+            ZeroBaseuMax *= BaseFrictionCoefficientFactor * AdhesionMultiplier;
 
             // Set adhesion conditions for diesel, electric or steam geared locomotives
             if (elapsedClockSeconds > 0)
@@ -3581,6 +3552,17 @@ namespace Orts.Simulation.RollingStocks
                 {
                     axle.AdhesionLimit = AdhesionConditions * BaseuMax;
                     axle.CurtiusKnifflerZeroSpeed = ZeroBaseuMax;
+                }
+            }
+            else
+            {
+                foreach (var axle in LocomotiveAxles)
+                {
+                    if (axle.AdhesionLimit == 0)
+                    {
+                        axle.AdhesionLimit = BaseFrictionCoefficientFactor * AdhesionMultiplier;
+                        axle.CurtiusKnifflerZeroSpeed = ZeroBaseuMax;
+                    }
                 }
             }
 
@@ -3794,9 +3776,17 @@ namespace Orts.Simulation.RollingStocks
             }
             }
             if (CombinedControlType == CombinedControl.ThrottleDynamic && DynamicBrakeController.CurrentValue > 0)
+            {
                 StartDynamicBrakeDecrease(null);
+                if (DynamicBrakeController != null)
+                    DynamicBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
+            }
             else if (CombinedControlType == CombinedControl.ThrottleAir && TrainBrakeController.CurrentValue > 0)
+            {
                 StartTrainBrakeDecrease(null);
+                if (TrainBrakeController != null)
+                    TrainBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
+            }
             else
                 StartThrottleIncrease(ThrottleController.SmoothMax());
         }
@@ -3836,6 +3826,9 @@ namespace Orts.Simulation.RollingStocks
             AlerterReset(TCSEvent.ThrottleChanged);
             CommandStartTime = Simulator.ClockTime;
         }
+
+        protected bool speedSelectorModeDecreasing = false;
+
         public void StartThrottleDecrease()
         {
             var mpc = MultiPositionControllers.Where(x => x.controllerBinding == ControllerBinding.Throttle).FirstOrDefault();
@@ -3852,9 +3845,17 @@ namespace Orts.Simulation.RollingStocks
                 return;
             }
             if (CombinedControlType == CombinedControl.ThrottleDynamic && ThrottleController.CurrentValue <= 0)
+            {
                 StartDynamicBrakeIncrease(null);
+                if (DynamicBrakeController != null)
+                    DynamicBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
+            }
             else if (CombinedControlType == CombinedControl.ThrottleAir && ThrottleController.CurrentValue <= 0)
+            {
                 StartTrainBrakeIncrease(null);
+                if (TrainBrakeController != null)
+                    TrainBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
+            }
             else
                 StartThrottleDecrease(ThrottleController.SmoothMin());
         }
@@ -3875,9 +3876,19 @@ namespace Orts.Simulation.RollingStocks
             ThrottleController.StopDecrease();
 
             if (CombinedControlType == CombinedControl.ThrottleDynamic)
+            {
+                // sometimes called without a corresponding start
+                if (DynamicBrakeController != null && DynamicBrakeController.CommandStartTime < CommandStartTime)
+                    DynamicBrakeController.CommandStartTime = CommandStartTime;
                 StopDynamicBrakeIncrease();
+            }
             else if (CombinedControlType == CombinedControl.ThrottleAir)
+            {
+                // sometimes called without a corresponding start
+                if (TrainBrakeController != null && TrainBrakeController.CommandStartTime < CommandStartTime)
+                    TrainBrakeController.CommandStartTime = CommandStartTime;
                 StopTrainBrakeIncrease();
+            }
             if (ThrottleController.SmoothMin() != null)
                 new ContinuousThrottleCommand(Simulator.Log, false, ThrottleController.CurrentValue, CommandStartTime);
         }
@@ -4492,6 +4503,7 @@ namespace Orts.Simulation.RollingStocks
 
             //if (CruiseControl != null) CruiseControl.EngineBrakePriority = true;
             EngineBrakeController.StartIncrease(target);
+            EngineBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
             Simulator.Confirmer.Confirm(CabControl.EngineBrake, CabSetting.Increase, GetEngineBrakeStatus());
             SignalEvent(Event.EngineBrakeChange);
         }
@@ -4623,6 +4635,7 @@ namespace Orts.Simulation.RollingStocks
                 return;
 
             BrakemanBrakeController.StartIncrease(target);
+            BrakemanBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
             Simulator.Confirmer.Confirm(CabControl.BrakemanBrake, CabSetting.Increase, GetBrakemanBrakeStatus());
 //            SignalEvent(Event.EngineBrakeChange);
         }
@@ -4731,6 +4744,7 @@ namespace Orts.Simulation.RollingStocks
                 float prevValue = DynamicBrakeController.CurrentValue;
 
                 DynamicBrakeController.StartIncrease(target);
+                DynamicBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
 
                 AlerterReset(TCSEvent.DynamicBrakeChanged);
                 SignalEvent(Event.DynamicBrakeChange);
@@ -4765,6 +4779,7 @@ namespace Orts.Simulation.RollingStocks
             if (DynamicBrakeController?.CurrentValue > 0)
             {
                 DynamicBrakeController.StartDecrease(target);
+                DynamicBrakeController.CommandStartTime = Simulator.ClockTime; // Remember when the command was issued
 
                 AlerterReset(TCSEvent.DynamicBrakeChanged);
                 SignalEvent(Event.DynamicBrakeChange);
@@ -5222,11 +5237,7 @@ namespace Orts.Simulation.RollingStocks
                 {
                     case CABViewControlTypes.SPEEDOMETER:
                         {
-                            //data = SpeedMpS;
-                            if (AdvancedAdhesionModel)
-                                data = WheelSpeedMpS;
-                            else
-                                data = SpeedMpS;
+                            data = WheelSpeedMpS;
 
                             if (cvc.Units == CABViewControlUnits.KM_PER_HOUR)
                                 data *= 3.6f;
@@ -5352,15 +5363,15 @@ namespace Orts.Simulation.RollingStocks
                             if (DynamicBrakeMaxCurrentA == 0)
                                 DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
                             data = 0.0f;
-                            if (TractionForceN > 0)
-                            {
-                                data = TractiveForceN / MaxForceN * MaxCurrentA;
-                                data = Math.Abs(data);
-                            }
-                            if (DynamicBrakeForceN > 0)
+                            if (DynamicBrake)
                             {
                                 data = DynamicBrakeForceN / MaxDynamicBrakeForceN * DynamicBrakeMaxCurrentA;
                                 data = -Math.Abs(data); // Ensure that dynamic force is seen as a "-ve force", changes colour on the load meter
+                            }
+                            else
+                            {
+                                data = TractiveForceN / MaxForceN * MaxCurrentA;
+                                data = Math.Abs(data);
                             }
                             if (direction == 1)
                                 data = -data;
@@ -5373,7 +5384,7 @@ namespace Orts.Simulation.RollingStocks
                                 direction = ((CVCGauge)cvc).Direction;
                             data = 0.0f;
                             data = TractiveForceN;
-                            if (DynamicBrakeForceN > 0)
+                            if (DynamicBrake)
                             {
                                 data = DynamicBrakeForceN;
                             }
@@ -5385,13 +5396,13 @@ namespace Orts.Simulation.RollingStocks
                                         MaxCurrentA = (float)cvc.MaxValue;
                                     if (DynamicBrakeMaxCurrentA == 0)
                                         DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
-                                    if (TractionForceN > 0)
-                                    {
-                                        data = (data / MaxForceN) * MaxCurrentA;
-                                    }
-                                    if (DynamicBrakeForceN > 0)
+                                    if (DynamicBrake)
                                     {
                                         data = (DynamicBrakeForceN / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
+                                    }
+                                    else
+                                    {
+                                        data = (data / MaxForceN) * MaxCurrentA;
                                     }
                                     data = Math.Abs(data);
                                     break;
@@ -5429,13 +5440,13 @@ namespace Orts.Simulation.RollingStocks
                                         MaxCurrentA = (float)cvc.MaxValue;
                                     if (DynamicBrakeMaxCurrentA == 0)
                                         DynamicBrakeMaxCurrentA = (float)cvc.MinValue;
-                                    if (TractionForceN > 0)
-                                    {
-                                        data = (data / MaxForceN) * MaxCurrentA;
-                                    }
-                                    if (DynamicBrakeForceN > 0)
+                                    if (DynamicBrake)
                                     {
                                         data = (data / MaxDynamicBrakeForceN) * DynamicBrakeMaxCurrentA;
+                                    }
+                                    else
+                                    {
+                                        data = (data / MaxForceN) * MaxCurrentA;
                                     }
                                     break;
 
@@ -5671,6 +5682,16 @@ namespace Orts.Simulation.RollingStocks
                         }
                         break;
                     }
+                    case CABViewControlTypes.ORTS_NEUTRAL_MODE_COMMAND_SWITCH:
+                        {
+                            data = (TrainBrakeController == null || !TrainBrakeController.NeutralModeCommandSwitchOn) ? 0 : 1;
+                            break;
+                        }
+                    case CABViewControlTypes.ORTS_NEUTRAL_MODE_ON:
+                        {
+                            data = (TrainBrakeController == null || !TrainBrakeController.NeutralModeOn) ? 0 : 1;
+                            break;
+                        }
                     case CABViewControlTypes.FRICTION_BRAKING:
                         {
                             data = (BrakeSystem == null) ? 0.0f : BrakeSystem.GetCylPressurePSI();

@@ -211,6 +211,8 @@ namespace Orts.Formats.Msts
         ORTS_TRAIN_AIR_FLOW_METER,
         ORTS_BATTERY,
         ORTS_POWERKEY,
+        ORTS_NEUTRAL_MODE_COMMAND_SWITCH,
+        ORTS_NEUTRAL_MODE_ON,
         ORTS_BATTERY_SWITCH_COMMAND_SWITCH,
         ORTS_BATTERY_SWITCH_COMMAND_BUTTON_CLOSE,
         ORTS_BATTERY_SWITCH_COMMAND_BUTTON_OPEN,
@@ -1203,9 +1205,10 @@ namespace Orts.Formats.Msts
                         if (Positions.Count > 0 && Positions[0] > Positions[Positions.Count - 1])
                         {
                             Reversed ^= true;
+                            int maxPos = Positions.Max();
                             // Recalculate positions in reverse
                             for (int i = 0; i < Positions.Count; i++)
-                                Positions[i] = (FramesCount - 1) - Positions[i];
+                                Positions[i] = maxPos - Positions[i];
                         }
 
                         // Check if eligible for filling

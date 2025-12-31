@@ -345,7 +345,7 @@ Detailed spec
    no changes are done to the .eng file.
 2) In such folder there is also an ``ORTSLightGlow.png``, which is maybe more realistic.
 3) adding a line within the .eng file it is possible to select either ORTSLightGlow.png or any other picture
-   with extension ``.png, .jpg, bmp, .gif, .ace, or .dds``.
+   with extension ``.ace`` or ``.dds``.
    
 
    Here an example for the legacy Acela loco::
@@ -357,13 +357,13 @@ Detailed spec
 			      Type	( 1 )
 			      Conditions	(...
 
-  The code first searches for the .png file by building its directory starting from the directory of 
+  The code first searches for the file by building its directory starting from the directory of 
   the .eng file; in this case the line could be e.g.::
 
-           ORTSGraphic ( "ORTSAcelaLightGlow.png" )
+           ORTSGraphic ( "ORTSAcelaLightGlow.dds" )
 
 4) The ``ORTSGraphic`` line can be added also for one or more ``Light()`` blocks. In that case the 
-   .png file is used only for the related Light block. Here an example::
+   file is used only for the related Light block. Here an example::
 
     Light	(
 			comment( Head light outer right bright )
@@ -386,7 +386,7 @@ Detailed spec
 					Elevation ( -50 -50 -50 )
 					)
 				)
-			ORTSGraphic (BigLightGlow.png)
+			ORTSGraphic (BigLightGlow.dds)
     )
 
   OR searches for the file as it does for the general file for all lights, as explained above.
@@ -402,6 +402,139 @@ OR supports tilting trains. A train tilts when its .con file name contains the
 *tilted* string: e.g. ``ETR460_tilted.con``.
 
 .. image:: images/features-tilting.png
+
+Features to assist content creation
+===================================
+
+OR now includes some features that don't change the functionality of rolling stock, but simplify
+some steps of the content creation process or allow more control over content than was previously
+possible. The goal of these features is to save content creators' time, give additional power to
+creators, and to simplify the installation process for end users.
+
+Advanced articulation control
+-----------------------------
+
+A wide variety of modern rolling stock uses articulation, in which multiple rail vehicles
+share a single "Jacobs Bogie". Open Rails offers partial support for such passenger and
+freight units by allowing one wagon to include a bogie in its 3D model while the next
+wagon removes the bogie from its 3D model. Ideally, OR will then add an invisible bogie
+to the end of the wagon without the bogie to emulate "sharing" the bogie with the previous
+wagon.
+
+However, this automatic system is limited. OR will check for wheels in the wagon's 3D
+model and will assume the wagon is articulated at one end if there are no wheels towards
+that end of the 3D model. This approach will only be used on 3D models with 3, 2, or 0 axles
+(the 1-axle case is excluded for compatibility reasons) and won't be used on locomotives.
+In some cases, this approach will result in false negative or false positive detection
+of articulation. Should the automatic articulation method not produce the expected track
+following behavior, it is now possible to manually define whether a wagon or engine
+should use the articulation behavior.
+
+.. index::
+   single: ORTSFrontArticulation
+   single: ORTSRearArticulation
+
+To forcibly enable the articulation behavior at the front of the rail vehicle, use
+``ORTSFrontArticulation ( 1 )`` and at the rear use ``ORTSRearArticulation ( 1 )``.
+Conversely, use ``ORTSFrontArticulation ( 0 )`` or ``ORTSRearArticulation ( 0 )`` to
+force disable articulation behavior. Articulation should generally be enabled on the
+'floating' end(s) of a vehicle, where a bogie or wheels are not present in the 3D
+model, and disabled on the end(s) that have wheels. Entering a value of -1 provides
+the default (automatic) behavior.
+
+Automatic wagon size calculation
+--------------------------------
+
+Determining the appropriate values to enter in the ``Size ( w, h, l )`` parameter of an engine or
+wagon can be tedious, as reasonable settings for the simulated width, height, and length of rolling
+stock depend on measurements of the 3D model used. Many content creators have entered largely
+arbitrary values of width and height into the size parameter, only adjusting the length value to
+give correct coupler alignement.
+
+.. index::
+   single: ORTSAutoSize
+   single: ORTSShapeBounds
+
+To simplify this process, and produce more reasonable dimensions for rolling stock, OR can now
+automatically calculate the dimensions of rolling stock based on the shape file used. Enter
+``ORTSAutoSize`` in the Wagon section of an engine or wagon to allow OR to determine
+the width, height, and length of the rolling stock based on the bounding info of the shape file,
+ignoring any values entered manually in the MSTS Size parameter.
+
+Additionally, ``ORTSAutoSize`` accepts 3 (optional) arguments, default units in meters, corresponding to
+offsets from the shape's width, height, and length respectively. For example,
+``ORTSAutoSize ( 0.1m, -0.2m, -0.18m )`` would tell OR to automatically determine the wagon's dimensions
+from the shape file or ``ORTSShapeBounds`` (see next paragraph), then subsequently add 0.1 meters to the
+width, subtract 0.2 meters from the height, and subtract 0.18 meters from the length, using the resulting
+values to set the simulated size of the wagon. In most cases, the width and height arguments can be set to
+0, and the length argument adjusted to produce the desired coupler spacing. If no arguments are specified
+(ie: ``ORTSAutoSize ()`` was entered in the Wagon section) then all three offsets are assumed to be 0 meters.
+
+Inspecting the shape file to determine its size requires additional processing time, but this
+step can be skipped by providing the data directly with the ``ORTSShapeBounds`` parameter.
+Enter the minimum and maximum bounds of the shape in the format ``ORTSShapeBounds ( minX minY minZ
+maxX maxY maxZ )``, where the first 3 values give the minimum bounds (leftmost, rearmost, and lowest
+points) and the second 3 values give the maximum bounds (rightmost, frontmost, highest points) of the
+vertices in the shape, in meters by default. These 6 values can be determined automatically by shape
+viewing programs, saving time by only running the calculation once, at the disadvantage of not
+updating if the shape changes. If verbose eng/wag configuration messages are enabled, OR will also
+log the settings it calculated for ``ORTSShapeBounds`` when ``ORTSAutoSize`` is used.
+
+Note that the automatic bounding method has further limitations that may require use of ``ORTSShapeBounds``
+or prevent use of auto sizing entirely. Automatic bounding calculation uses the nearest LOD of
+the main shape file and attached freight animations. LODs for further distances have no effect
+on the automatic sizing. Freight animations using the ``ShapeHierarchy`` feature are also skipped
+due to potential unintended behaviors. :ref:`Shape descriptor overrides <features-shape-manipulation>`
+are also not considered at this phase, so if any changes are made in the .sd file, this feature may not
+provide good results. This method also works best for rolling stock with standard buffers/couplers on
+each end. Automatic sizing generally can't produce reasonable results for articulated rolling stock.
+And should something go wrong with the shape file causing automatic sizing to fail, OR will revert to
+the values entered in the ``Size`` parameter.
+
+Improved wagon alignment tools
+------------------------------
+
+Many MSTS and OR creators have encountered rolling stock shapes that were not correctly aligned,
+resulting in couplers/buffers clipping at one end of the wagon and separating at the other end.
+Normally, this would require inspecting the 3D model to determine exactly how off-center it was
+and carefully setting the Z value of ``CentreOfGravity ( x, y, z )`` to "nudge" the wagon shape
+until it is centered.
+
+.. index::
+   single: ORTSShapeNudge
+
+In some cases, this approach could still be insufficient as the Z offset is limited to 2 meters in
+order to prevent unusual behaviors with some MSTS models that used unreasonably large Z offsets.
+To facilitate models that need large offsets without introducing errors, OR now accepts this offset
+with the parameter ``ORTSShapeNudge ( z )``, which can be set to *any length offset without limit*.
+
+.. index::
+   single: CentreOfGravity
+
+However, this does not entirely replace ``CentreOfGravity``. The Y (height) value of the CoG is
+still used by the physics system and should still be defined. In this case, simply use
+``CentreOfGravity ( y )`` where y is the CoG height in meters (or other units, as desired).
+Unlike entering all 3 values for the CoG, entering only the Y value will NOT affect the alignment
+of the 3D model, allowing the "physical" CoG to be entered separately from the "visual" CoG.
+
+.. index::
+   single: ORTSAutoCenter
+
+And, for the sake of simplicity, it may be desired to just center the 3D model lengthwise
+such that the couplers/buffers are equidistant from the centerpoint of the model. To make this
+specific case easier, OR now includes the ``ORTSAutoCenter`` parameter. When ``ORTSAutoCenter ( 1 )``
+is included in the Wagon section of an engine or wagon, OR will use the shape bounding box given
+by ``ORTSShapeBounds`` or calculated automatically from the shape file to determine the exact
+Z value of CentreOfGravity required to re-center the shape in the simulation. This will overwrite
+the manually entered Z component of ``CentreOfGravity ( x y z )`` but will not change the X or Y
+components. Should no re-centering be required, none will be applied.
+
+Some rolling stock will not align correctly when auto-centered. As with ``ORTSAutoSize``, this
+feature should be employed on rolling stock with standard buffers or couplers, and will
+not produce suitable results for articulated rolling stock or stock with different coupler
+types at each end. Only the highest detail LOD of the main shape and freight animations are
+used, the .sd file is not checked. If the process fails, a warning will be written to the
+log and the automatic calculation will be skipped.
 
 Freight animations and pickups
 ==============================
@@ -762,9 +895,9 @@ and the state of these parameters when the wagon or locomotive is full.
    single: FullBrakeRelayValveInshot
 
 To configure the stock correctly the following empty and full parameters need to be 
-included in the ORTSFreightAnims file. Empty values are included in the first block, 
-and full values are included in the second code block. A sample code block is shown 
-below::
+included in the ``ORTSFreightAnims`` block. Empty values are included in the first block, 
+and full values are included in the ``FreightAnimContinuous`` or ``FreightAnimStatic``
+sub-block. A sample code block is shown below::
 
     ORTSFreightAnims
     (
@@ -799,6 +932,12 @@ below::
       FullCentreOfGravity_Y ( 1.8 ) 
      )
   )
+
+Any parameters not included will use the equivalent value specified outside
+the ORTSFreightAnims block. If the Davis A, B, and C values are not given
+they will be determined automatically using other properties of the rolling
+stock and either the 1926 Davis formula or 1992 CN formula, depending on the
+ORTSBearingType specified in the Wagon section.
 
 For some rolling stock, it may be more realistic to handle variations in load/empty
 brake force by changing the brake cylinder pressure developed, rather than changing
@@ -2087,8 +2226,15 @@ or::
       ORTSEngineBrakeController ( "YourBrakes.cs" )
   )
 
-The .cs extension is optional. "MSTS" loads the default MSTS-compatible 
-implementation, so do `not` use this name for your own script.
+The .cs extension is optional. Alternatively, there are several built-in
+brake controllers:
+- "MSTS": default implementation for a notched brake controller. Each notch
+  behaves as defined in the :ref:`Train Brake Controller Positions <physics-brake-controller>` section.
+- "PBL2": a brake controller widely used in Europe. It has a stable Hold position which keeps brake
+  pipe pressure, and two unstable positions that apply or release the brakes when pressed. The controller
+  also generates the electrical Release and Apply signals required for the UIC EP brake.
+
+Do `not` use these names for your own script.
 
 .. _features-scripting-cb:
 

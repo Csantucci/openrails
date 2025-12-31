@@ -33,25 +33,24 @@
 // Debug Brake Slide Calculations
 //#define DEBUG_BRAKE_SLIDE
 
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Orts.Common;
 using Orts.Formats.Msts;
 using Orts.Parsers.Msts;
-using Orts.Simulation.AIs;
+using Orts.Simulation;
 using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks.Coupling;
 using Orts.Simulation.RollingStocks.SubSystems;
 using Orts.Simulation.RollingStocks.SubSystems.Brakes;
 using Orts.Simulation.RollingStocks.SubSystems.PowerSupplies;
 using Orts.Simulation.Signalling;
-using Orts.Simulation.Timetables;
 using ORTS.Common;
 using ORTS.Scripting.Api;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using Event = Orts.Common.Event;
 
 namespace Orts.Simulation.RollingStocks
@@ -187,6 +186,11 @@ namespace Orts.Simulation.RollingStocks
         public float CarWidthM = 2.5f;
         public float CarLengthM = 40;       // derived classes must overwrite these defaults
         public float CarHeightM = 4;        // derived classes must overwrite these defaults
+        public (Vector3 Mins, Vector3 Maxes) ShapeBoundingLimits;
+        public bool AutoSize = false;       // Are the dimensions of this wagon to be calculated automatically from the shape file?
+        public Vector3 AutoSizeOffsetM;
+        public int FrontArticulation = -1;  // -1: Determine front articulation automatically, 0: Force no front articulation, 1: Force front articulation
+        public int RearArticulation = -1;   // -1: Determine rear articulation automatically, 0: Force no rear articulation, 1: Force rear articulation
         public float MassKG = 10000;        // Mass in KG at runtime; coincides with InitialMassKG if there is no load and no ORTS freight anim
         public float InitialMassKG = 10000;
         public bool IsDriveable;
@@ -212,10 +216,7 @@ namespace Orts.Simulation.RollingStocks
 
         public float MaxHandbrakeForceN;
         public float MaxBrakeForceN = 89e3f;
-        public float MaxBrakeShoeForceN; // This is the force applied to the brake shoe, hence it will be decreased by CoF to give force applied to the wheel
         public int NumberCarBrakeShoes;
-        public float InitialMaxHandbrakeForceN;  // Initial force when agon initialised
-        public float InitialMaxBrakeForceN = 89e3f;   // Initial force when wagon initialised, this is the force on the wheel, ie after the brake shoe.
 
         // Coupler Animation
         public AnimatedCoupler FrontCoupler = new AnimatedCoupler();
@@ -273,7 +274,6 @@ namespace Orts.Simulation.RollingStocks
         public bool BrakeSkidWarning = false;
         public bool HUDBrakeSkid = false;
 
-        float BrakeWheelTreadForceN; // The retarding force apparent on the tread of the wheel
         float WagonBrakeAdhesiveForceN; // The adhesive force existing on the wheels of the wagon
         public float SkidFriction = 0.08f; // Friction if wheel starts skidding - based upon wheel dynamic friction of approx 0.08
         public float HuDBrakeShoeFriction;
@@ -502,6 +502,21 @@ namespace Orts.Simulation.RollingStocks
         }
 
         public float LocalDynamicBrakePercent = -1;
+        public float MaxDynamicBrakePercent
+        {
+            get
+            {
+                float percent = 100;
+                if (RemoteControlGroup == 0 && Train != null && Train.LeadLocomotive is MSTSLocomotive locomotive)
+                {
+                    if (!locomotive.TrainControlSystem.DynamicBrakingAuthorization)
+                    {
+                        percent = 0;
+                    }
+                }
+                return percent;
+            }
+        }
         public float DynamicBrakePercent
         {
             get
@@ -566,13 +581,21 @@ namespace Orts.Simulation.RollingStocks
                 Train.MUDirection = Flipped ^ loco.UsingRearCab ? DirectionControl.Flip(value) : value;
             }
         }
+
+        /// <summary>The actually used brake system. When mode is changed, this one is updated from the values of <see cref="BrakeSystems"/> and used directly</summary>
         public BrakeSystem BrakeSystem;
+        /// <summary>Alternative for dual vacuum/air vehicles, to be swapped with <see cref="BrakeSystem"/> and used directly</summary>
+        protected BrakeSystem BrakeSystemAlt;
+        /// <summary>Store for the various loades within modes. Never used directly, only the non-zero values get copied into <see cref="BrakeSystem"/></summary>
+        public readonly Dictionary<(BrakeModes BrakeMode, float MinMass), BrakeSystem> BrakeSystems = new Dictionary<(BrakeModes, float), BrakeSystem>();
+        /// <summary>Filter for the <see cref="BrakeSystems"/>, in case that comes from an include file</summary>
+        public string[] BrakeModeNames { get; protected set; }
 
         public float PreviousSteamBrakeCylinderPressurePSI;
 
         // TrainCar.Update() must set these variables
         /// <summary>
-        /// Force transmitted to rail, excluding brake force
+        /// Force transmitted to rail, excluding brake and friction force
         /// Adhesion-corrected tractive force
         /// </summary>
         public float MotiveForceN;
@@ -580,6 +603,7 @@ namespace Orts.Simulation.RollingStocks
         /// Tractive force generated by the engine(s)
         /// </summary>
         public float TractiveForceN = 0f;
+        public float RollingFrictionForceN;
         // Gravity forces have negative values on rising grade. 
         // This means they have the same sense as the motive forces and will push the train downhill.
         public float GravityForceN;  // Newtons  - signed relative to direction of car.
@@ -611,8 +635,31 @@ namespace Orts.Simulation.RollingStocks
         protected SmoothedData CurveForceFilter = new SmoothedData(0.75f);
         public float CurveForceNFiltered;
 
+
         protected SmoothedData CurveSquealAoAmRadFilter = new SmoothedData(0.75f);
         public float CurveSquealAoAmRadFiltered;
+
+        // Track sound effects - joints
+        public float TrackJointSoundTriggered;
+        public float realTimeTrackJointDistanceM;
+        bool carOnJointTriggered = false;
+        int jointTrigger;
+        float jointTriggerDelayedS = 0.1f; // Set delay to 0.1 seconds
+        float jointSpeedMpS;
+        public float SoundAxleCount;
+        public float CarTrackControlledDistanceM = 0;
+        public float CarTunnelDistanceM;
+
+        // Track sound effects - switch / crossover
+        public float TrackSwitchSoundTriggered;
+        bool carOnSwitchTriggered = false;
+        float switchTriggerDelayedS = 0.1f; // Set delay to 0.1 seconds
+        public bool EnableCarOnXoverTrigger = false;
+        public float carOnXoverTriggerDelayedS = 0.1f;
+        public float TrackXoverSoundTriggered;
+
+        public float TrackSoundInTunnelTriggered;
+        bool CarInTunnel = false;
 
         public float TunnelForceN;  // Resistive force due to tunnel, in Newtons
         public float FrictionForceN; // in Newtons ( kg.m/s^2 ) unsigned, includes effects of curvature
@@ -667,6 +714,7 @@ namespace Orts.Simulation.RollingStocks
         protected float TrackGaugeM;  // Track gauge - read in MSTSWagon, otherwise uses value given by the route
         protected Vector3 InitialCentreOfGravityM = new Vector3(0, 1.8f, 0); // get centre of gravity - read in MSTSWagon
         public Vector3 CentreOfGravityM = new Vector3(0, 1.8f, 0); // get centre of gravity after adjusted for freight animation
+        protected bool AutoCenter = false; // Should CentreOfGravityM.Z be set automatically to center the wagon?
         public float SuperElevationM; // Super elevation on the curve
         protected float MaxUnbalancedSuperElevationM;  // Maximum comfortable cant deficiency, read from MSTS Wagon File
         public float SuperElevationAngleRad;
@@ -775,14 +823,14 @@ namespace Orts.Simulation.RollingStocks
             if (BrakeShoeType == BrakeShoeTypes.Cast_Iron_P10 || BrakeShoeType == BrakeShoeTypes.Cast_Iron_P6 || BrakeShoeType == BrakeShoeTypes.High_Friction_Composite || BrakeShoeType == BrakeShoeTypes.Disc_Pads)
             {
                 float NewtonsTokNewtons = 0.001f;
-                float maxBrakeShoeForcekN = NewtonsTokNewtons * MaxBrakeShoeForceN / NumberCarBrakeShoes;
+                float maxBrakeShoeForcekN = NewtonsTokNewtons * BrakeSystem.MaxBrakeShoeForceN / NumberCarBrakeShoes;
 
                 if (maxBrakeShoeForcekN > 20 && Simulator.Settings.VerboseConfigurationMessages)
                 {
-                    Trace.TraceInformation("Maximum force per brakeshoe is {0} and has exceeded {1}, check MaxBrakeShoeForceN {2} or NumberCarBrakeShoes {3}",  FormatStrings.FormatForce(maxBrakeShoeForcekN * 1000, IsMetric), FormatStrings.FormatForce(20 * 1000, IsMetric), FormatStrings.FormatForce(MaxBrakeShoeForceN, IsMetric), NumberCarBrakeShoes);
+                    Trace.TraceInformation("Maximum force per brakeshoe is {0} and has exceeded {1}, check MaxBrakeShoeForceN {2} or NumberCarBrakeShoes {3}",  FormatStrings.FormatForce(maxBrakeShoeForcekN * 1000, IsMetric), FormatStrings.FormatForce(20 * 1000, IsMetric), FormatStrings.FormatForce(BrakeSystem.MaxBrakeShoeForceN, IsMetric), NumberCarBrakeShoes);
                 }
-            } 
-            
+            }
+
             //CurveForceFilter.Initialize();
             // Initialize tunnel resistance values
 
@@ -875,6 +923,15 @@ namespace Orts.Simulation.RollingStocks
                 Trace.TraceInformation("Tunnel 2 tr perimeter {0} Tunnel 2 tr area {1}", DoubleTunnelPerimeterM, DoubleTunnelCrossSectAreaM2);
 #endif
 
+            realTimeTrackJointDistanceM = (float)Simulator.TRK.Tr_RouteFile.DistanceBetweenTrackJointsM; // Initialise track joint distance
+            SoundAxleCount = (LocoNumDrvAxles + WagonNumAxles);
+
+            // make sure that axle count does not exceed maximum possible trigger
+            if (SoundAxleCount > 8)
+            {
+                SoundAxleCount = 8f;
+            }
+
         }
 
         // called when it's time to update the MotiveForce and FrictionForce
@@ -883,9 +940,11 @@ namespace Orts.Simulation.RollingStocks
             // Initialize RigidWheelBaseM in first loop if not defined in ENG file, then ignore
             if (RigidWheelBaseM == 0 && !RigidWheelBaseInitialised)   // Calculate default values if no value in Wag File
             {
-                float Axles = WheelAxles.Count;
-                float Bogies = Parts.Count - 1;
-                float BogieSize = Axles / Bogies;
+                int Axles = WheelAxles.Sum(w => w.Fake ? 0 : 1); // Only consider real axles
+                int Bogies = Parts.Sum(p => p.Bogie ? 1 : 0);
+                int BogieSize = Axles;
+                if (Bogies > 0)
+                    BogieSize = (int)(WheelAxles.Sum(w => !w.Fake && w.Part.Bogie ? 1 : 0) / Bogies); // Only consider axles attached to bogies
 
                 RigidWheelBaseM = 1.6764f;       // Set a default in case no option is found - assume a standard 4 wheel (2 axle) bogie - wheel base - 5' 6" (1.6764m)
 
@@ -1058,7 +1117,7 @@ namespace Orts.Simulation.RollingStocks
                 InitializeCarTemperatures();
                 AmbientTemperatureInitialised = true;
             }
-            
+
             // Update temperature variation for height of car above sea level
             // Typically in clear conditions there is a 9.8 DegC variation for every 1000m (1km) rise, in snow/rain there is approx 5.5 DegC variation for every 1000m (1km) rise
             float TemperatureHeightVariationDegC = 0;
@@ -1073,23 +1132,65 @@ namespace Orts.Simulation.RollingStocks
             {
                 TemperatureHeightVariationDegC = Me.ToKiloM(CarHeightAboveSeaLevelM) * DryLapseTemperatureC;
             }
-            
+
             TemperatureHeightVariationDegC = MathHelper.Clamp(TemperatureHeightVariationDegC, 0.00f, 30.0f);
-            
+
             CarOutsideTempC = InitialCarOutsideTempC - TemperatureHeightVariationDegC;
 
             AbsSpeedMpS = Math.Abs(_SpeedMpS);
 
+            // Update Track based sound flags for joints,curve squeal and switches
             AngleOfAttackmRad = GetAngleofAttackmRad();
 
             CurveSquealAoAmRadFilter.Update(elapsedClockSeconds, AngleOfAttackmRad);
             CurveSquealAoAmRadFiltered = CurveSquealAoAmRadFilter.SmoothedValue;
+
+            TrackJointSoundTriggered = GetTrackJointPosition(elapsedClockSeconds);
+
+            TrackSwitchSoundTriggered = GetTrackSwitchTrigger(elapsedClockSeconds);
+
+            if (IsOverCrossover)
+            {
+                TrackXoverSoundTriggered = 1;
+            }
+            else
+            {
+                TrackXoverSoundTriggered = 0;
+            }
 
             UpdateCurveSpeedLimit(elapsedClockSeconds);
             UpdateCurveForce(elapsedClockSeconds);
             UpdateTunnelForce();
             UpdateBrakeSlideCalculation();
             UpdateTrainDerailmentRisk(elapsedClockSeconds);
+
+            // Update tunnel track sounds allows tunnel sound to increase in volume when train enters tunnel, and decrease in volume when train leaves tunnel
+            // Maximum distance set to 25 meters
+            if (CarInTunnel)
+            {
+                TrackSoundInTunnelTriggered = 1; // set rigger for sound to turn on
+                if (CarTunnelDistanceM < 25) // calculate distance
+                {
+                    CarTunnelDistanceM += elapsedClockSeconds * AbsSpeedMpS;
+                }
+                else
+                {
+                    CarTunnelDistanceM = 25;
+                }
+            }
+            else if (!CarInTunnel)
+            {
+                // Count down sound volume, then reset tunnel trigger
+                if (CarTunnelDistanceM > 0)
+                {
+                    CarTunnelDistanceM -= elapsedClockSeconds * AbsSpeedMpS;
+                }
+                else
+                {
+                    CarTunnelDistanceM = 0;
+                    TrackSoundInTunnelTriggered = 0;
+                }
+            }
 
             // acceleration
             if (elapsedClockSeconds > 0.0f)
@@ -1195,108 +1296,94 @@ namespace Orts.Simulation.RollingStocks
 
         public virtual void UpdateBrakeSlideCalculation()
         {
-
-            // Only apply slide, and advanced brake friction, if advanced adhesion is selected, simplecontrolphysics is not set, and it is a Player train
-            if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && IsPlayerTrain)
+            if (this is MSTSLocomotive locomotive)
             {
-
-                // ************  Check if diesel or electric - assumed already be cover by advanced adhesion model *********
-
-                if (this is MSTSDieselLocomotive || this is MSTSElectricLocomotive)
+                // If advanced adhesion model indicates wheel slip warning, then check other conditions (throttle and brake force) to determine whether it is a wheel slip or brake skid
+                if (WheelSlipWarning && ThrottlePercent < 0.1f && BrakeRetardForceN > 25.0)
                 {
-                    // If advanced adhesion model indicates wheel slip warning, then check other conditions (throttle and brake force) to determine whether it is a wheel slip or brake skid
-                    if (WheelSlipWarning && ThrottlePercent < 0.1f && BrakeRetardForceN > 25.0) 
-                    {
-                        BrakeSkidWarning = true;  // set brake skid flag true
-                    }
-                    else
-                    {
-                        BrakeSkidWarning = false;
-                    }
-
-                    // If advanced adhesion model indicates wheel slip, then check other conditions (throttle and brake force) to determine whether it is a wheel slip or brake skid
-                    if (WheelSlip && ThrottlePercent < 0.1f && BrakeRetardForceN > 25.0)
-                    {
-                        BrakeSkid = true;  // set brake skid flag true
-                    }
-                    else
-                    {
-                        BrakeSkid = false;
-                    }
-                }
-
-                else if (!(this is MSTSDieselLocomotive) || !(this is MSTSElectricLocomotive))
-                {
-
-                    // Calculate tread force on wheel - use the retard force as this is related to brakeshoe coefficient, and doesn't vary with skid.
-                    BrakeWheelTreadForceN = BrakeRetardForceN;
-
-                    // Determine whether car is experiencing a wheel slip during braking
-                    if (!BrakeSkidWarning && AbsSpeedMpS > 0.01)
-                    {
-                        var wagonbrakeadhesiveforcen = MassKG * GravitationalAccelerationMpS2 * Train.WagonCoefficientFriction; // Adhesive force wheel normal 
-
-                        if (BrakeWheelTreadForceN > 0.80f * WagonBrakeAdhesiveForceN && ThrottlePercent > 0.01)
-                        {
-                            BrakeSkidWarning = true; 	// wagon wheel is about to slip
-                        }
-                    }
-                    else if ( BrakeWheelTreadForceN < 0.75f * WagonBrakeAdhesiveForceN)
-                    {
-                        BrakeSkidWarning = false; 	// wagon wheel is back to normal
-                    }
-
-                    // Reset WSP dump valve lockout
-                    if (WheelBrakeSlideProtectionFitted && WheelBrakeSlideProtectionDumpValveLockout && (ThrottlePercent > 0.01 || AbsSpeedMpS <= 0.002))
-                    {
-                        WheelBrakeSlideProtectionTimerS = wheelBrakeSlideTimerResetValueS;
-                        WheelBrakeSlideProtectionDumpValveLockout = false;
-
-                    }       
-
-                    // Calculate adhesive force based upon whether in skid or not
-                    if (BrakeSkid)
-                    {
-                        WagonBrakeAdhesiveForceN = MassKG * GravitationalAccelerationMpS2 * SkidFriction;  // Adhesive force if wheel skidding
-                    }
-                    else
-                    {
-                        WagonBrakeAdhesiveForceN = MassKG * GravitationalAccelerationMpS2 * Train.WagonCoefficientFriction; // Adhesive force wheel normal
-                    }
-                                   
-
-                    // Test if wheel forces are high enough to induce a slip. Set slip flag if slip occuring 
-                    if (!BrakeSkid && AbsSpeedMpS > 0.01)  // Train must be moving forward to experience skid
-                    {
-                        if (BrakeWheelTreadForceN > WagonBrakeAdhesiveForceN)
-                        {
-                            BrakeSkid = true; 	// wagon wheel is slipping
-                            var message = "Car ID: " + CarID + " - experiencing braking force wheel skid.";
-                            Simulator.Confirmer.Message(ConfirmLevel.Warning, message);
-                        }
-                    }
-                    else if (BrakeSkid && AbsSpeedMpS > 0.01)
-                    {
-                        if (BrakeWheelTreadForceN < WagonBrakeAdhesiveForceN || BrakeForceN == 0.0f)
-                        {
-                            BrakeSkid = false; 	// wagon wheel is not slipping
-                        }
-                        
-                    }
-                    else
-                    {
-                        BrakeSkid = false; 	// wagon wheel is not slipping
-
-                    }
+                    BrakeSkidWarning = true;  // set brake skid flag true
                 }
                 else
                 {
-                    BrakeSkid = false; 	// wagon wheel is not slipping
+                    BrakeSkidWarning = false;
+                }
+
+                // If advanced adhesion model indicates wheel slip, then check other conditions (throttle and brake force) to determine whether it is a wheel slip or brake skid
+                if (WheelSlip && ThrottlePercent < 0.1f && BrakeRetardForceN > 25.0)
+                {
+                    BrakeSkid = true;  // set brake skid flag true
+                }
+                else
+                {
+                    BrakeSkid = false;
                 }
             }
-            else  // set default values if simple adhesion model, or if diesel or electric locomotive is used, which doesn't check for brake skid.
+            // Only apply slide, and advanced brake friction, if advanced adhesion is selected, simplecontrolphysics is not set, and it is a Player train
+            else if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && IsPlayerTrain)
+            {
+                // Determine whether car is experiencing a wheel slip during braking
+                if (!BrakeSkidWarning && AbsSpeedMpS > 0.01)
+                {
+                    var wagonbrakeadhesiveforcen = MassKG * GravitationalAccelerationMpS2 * Train.WagonCoefficientFriction; // Adhesive force wheel normal 
+
+                    if (BrakeRetardForceN > 0.80f * WagonBrakeAdhesiveForceN && ThrottlePercent > 0.01)
+                    {
+                        BrakeSkidWarning = true; 	// wagon wheel is about to slip
+                    }
+                }
+                else if (BrakeRetardForceN < 0.75f * WagonBrakeAdhesiveForceN)
+                {
+                    BrakeSkidWarning = false; 	// wagon wheel is back to normal
+                }
+
+                // Reset WSP dump valve lockout
+                if (WheelBrakeSlideProtectionFitted && WheelBrakeSlideProtectionDumpValveLockout && (ThrottlePercent > 0.01 || AbsSpeedMpS <= 0.002))
+                {
+                    WheelBrakeSlideProtectionTimerS = wheelBrakeSlideTimerResetValueS;
+                    WheelBrakeSlideProtectionDumpValveLockout = false;
+
+                }       
+
+                // Calculate adhesive force based upon whether in skid or not
+                if (BrakeSkid)
+                {
+                    WagonBrakeAdhesiveForceN = MassKG * GravitationalAccelerationMpS2 * SkidFriction;  // Adhesive force if wheel skidding
+                }
+                else
+                {
+                    WagonBrakeAdhesiveForceN = MassKG * GravitationalAccelerationMpS2 * Train.WagonCoefficientFriction; // Adhesive force wheel normal
+                }
+                                   
+
+                // Test if wheel forces are high enough to induce a slip. Set slip flag if slip occuring 
+                if (!BrakeSkid && AbsSpeedMpS > 0.01)  // Train must be moving forward to experience skid
+                {
+                    if (BrakeRetardForceN > WagonBrakeAdhesiveForceN)
+                    {
+                        BrakeSkid = true; 	// wagon wheel is slipping
+                        var message = "Car ID: " + CarID + " - experiencing braking force wheel skid.";
+                        Simulator.Confirmer.Message(ConfirmLevel.Warning, message);
+                    }
+                }
+                else if (BrakeSkid && AbsSpeedMpS > 0.01)
+                {
+                    if (BrakeRetardForceN < WagonBrakeAdhesiveForceN || BrakeForceN == 0.0f)
+                    {
+                        BrakeSkid = false; 	// wagon wheel is not slipping
+                    }
+                        
+                }
+                else
+                {
+                    BrakeSkid = false;  // wagon wheel is not slipping
+                }
+                BrakeForceN = BrakeRetardForceN;
+                if (BrakeSkid) BrakeForceN = Math.Min(BrakeForceN, MassKG * GravitationalAccelerationMpS2 * SkidFriction);
+            }
+            else  // set default values if simple adhesion model
             {
                 BrakeSkid = false; 	// wagon wheel is not slipping
+                BrakeForceN = BrakeRetardForceN;
             }
 
 #if DEBUG_BRAKE_SLIDE
@@ -1362,10 +1449,12 @@ namespace Orts.Simulation.RollingStocks
                         float UnitAerodynamicDrag = ((TunnelAComponent * TrainLengthTunnelM) / Kg.ToTonne(TrainMassTunnelKg)) * TempTunnel2;
 
                         TunnelForceN = UnitAerodynamicDrag * Kg.ToTonne(MassKG) * AbsSpeedMpS * AbsSpeedMpS;
+                        CarInTunnel = true;
                     }
                     else
                     {
                         TunnelForceN = 0.0f; // Reset tunnel force to zero when train is no longer in the tunnel
+                        CarInTunnel = false;
                     }
                 }
             }
@@ -1801,6 +1890,10 @@ namespace Orts.Simulation.RollingStocks
                     // Calculate Nadal derailment coefficient limit
                     NadalDerailmentCoefficient = ((float) Math.Tan(MaximumWheelFlangeAngleRad) - wagonAdhesion) / (1f + wagonAdhesion * (float) Math.Tan(MaximumWheelFlangeAngleRad));
 
+                    // Calculate Angle of Attack - AOA = sin-1(2 * bogie wheel base / curve radius)
+                    AngleOfAttackmRad = (float)Math.Asin(2 * RigidWheelBaseM / CurrentCurveRadiusM);
+                    var angleofAttackmRad = AngleOfAttackmRad * 1000f; // Convert to micro radians
+
                     // Calculate the derail climb distance - uses the general form equation 2.4 from the above publication
                     var parameterA_1 = ((100 / (-1.9128f * MathHelper.ToDegrees(MaximumWheelFlangeAngleRad) + 146.56f)) + 3.1f) * Me.ToIn(WheelFlangeLengthM);
 
@@ -1904,7 +1997,7 @@ namespace Orts.Simulation.RollingStocks
         /// </summary>
         /// <returns>angle in micro radians</returns>
         /// 
-        public float GetAngleofAttackmRad ()
+        public float GetAngleofAttackmRad()
         {
             if (CurrentCurveRadiusM > 0)
             {
@@ -1918,12 +2011,98 @@ namespace Orts.Simulation.RollingStocks
             }
         }
 
+        /// <summary>
+        /// Get the track switch /crossover trigger for a car as it goes over a switch
+        /// </summary>
+        /// <returns>1 = switch, 0 = no switch</returns>
+        ///
+        public float GetTrackSwitchTrigger(float elapsedClockSeconds)
+        {
+
+            // Timer to hold trigger on for a period of time
+            if (carOnSwitchTriggered)
+            {
+                switchTriggerDelayedS -= elapsedClockSeconds;
+                if (switchTriggerDelayedS < 0)
+                    switchTriggerDelayedS = 0;
+            }
+
+            if (IsOverSwitch && !carOnSwitchTriggered)
+            {
+                carOnSwitchTriggered = true;
+                return 1; // Set trigger for car on switch
+            }
+            else if (!IsOverSwitch && switchTriggerDelayedS == 0 && carOnSwitchTriggered)
+            {
+                carOnSwitchTriggered = false;
+                switchTriggerDelayedS = 0.1f;
+                return 0; // Reset trigger when off
+            }
+            else if (carOnSwitchTriggered && switchTriggerDelayedS > 0)
+            {
+                return 1; // ensure trigger stays on until time out
+            }
+
+            return 0; // default if no result found
+        }
 
         /// <summary>
-        /// Get the current direction that curve is heading relative to the train.
+        /// Get the track joint trigger for a car as it goes over a joint
         /// </summary>
-        /// <returns>left or Right indication</returns>
-        public string GetCurveDirection()
+        /// <returns>1 = track joint, 0 = no track joint</returns>
+        ///
+        public float GetTrackJointPosition(float elapsedClockSeconds)
+        {
+            if ((float)Simulator.TRK.Tr_RouteFile.DistanceBetweenTrackJointsM == 0)
+            {
+                return 0; // Rail joints have not been selected
+            }
+            else
+            {
+                // Calculate remaining distance beween track joints
+                realTimeTrackJointDistanceM -= AbsSpeedMpS * elapsedClockSeconds;
+                if (realTimeTrackJointDistanceM < 0)
+                    realTimeTrackJointDistanceM = 0;
+                if (realTimeTrackJointDistanceM == 0)
+                {
+                    jointTrigger = 1;
+                    carOnJointTriggered = true;
+                    jointTriggerDelayedS -= elapsedClockSeconds;
+                    if (jointTriggerDelayedS < 0)
+                        jointTriggerDelayedS = 0;
+                }
+                else
+                {
+                    jointTrigger = 0;
+                }
+                if (jointTrigger == 1 && jointTriggerDelayedS == 0)
+                {
+                    jointTriggerDelayedS = 0.1f; // Ensure enough delay to trigger sound
+                    jointTrigger = 0;
+                    // To ensure that track joints are never closer then 1 sec apart set to speedmps when distance traveled in 1 sec is greater then the joint distance.
+                    if (AbsSpeedMpS > (float)Simulator.TRK.Tr_RouteFile.DistanceBetweenTrackJointsM)
+                    {
+                        realTimeTrackJointDistanceM = AbsSpeedMpS;
+                        jointSpeedMpS = AbsSpeedMpS;
+                    }
+                    else
+                    {
+                        realTimeTrackJointDistanceM = (float)Simulator.TRK.Tr_RouteFile.DistanceBetweenTrackJointsM; // Reset for next pass
+                        jointSpeedMpS = (float)Simulator.TRK.Tr_RouteFile.DistanceBetweenTrackJointsM;
+                    }
+                    carOnJointTriggered = false;
+                }
+
+                return jointTrigger;
+            }
+        }
+
+
+/// <summary>
+/// Get the current direction that curve is heading relative to the train.
+/// </summary>
+/// <returns>left or Right indication</returns>
+public string GetCurveDirection()
         {
             string curveDirection = "Straight";
 
@@ -2196,14 +2375,13 @@ namespace Orts.Simulation.RollingStocks
                 // Base Curve Resistance (from refernce i)) = (Vehicle mass x Coeff Friction) * (Track Gauge + Vehicle Fixed Wheelbase) / (2 * curve radius)
                 // Vehicle Fixed Wheel base is the distance between the wheels, ie bogie or fixed wheels
 
-                var rBaseWagonN = 9.81f * MassKG * Train.WagonCoefficientFriction * (TrackGaugeM + RigidWheelBaseM) / (2.0f * CurrentCurveRadiusM);
+                float rBaseWagonN = GravitationalAccelerationMpS2 * MassKG * Train.WagonCoefficientFriction * (TrackGaugeM + RigidWheelBaseM) / (2.0f * CurrentCurveRadiusM);
 
                 // Speed Curve Resistance (from reference ii) - second term only) = ((Speed^2 / Curve Radius) - (Superelevation / Track Gauge) * Gravitational acceleration) * Constant
 
-                var speedConstant = 1.5f;
-                var MToMM = 1000;
-                var rspeedKgpTonne = speedConstant * Math.Abs((SpeedMpS * SpeedMpS / CurrentCurveRadiusM) - ((MToMM * SuperElevationM / MToMM * TrackGaugeM) * GravitationalAccelerationMpS2));
-                var rSpeedWagonN = GravitationalAccelerationMpS2 * (Kg.ToTonne(MassKG) * rspeedKgpTonne);
+                float speedConstant = 1.5f;
+                float rspeedKgpTonne = speedConstant * Math.Abs((SpeedMpS * SpeedMpS / CurrentCurveRadiusM) - (GravitationalAccelerationMpS2 * SuperElevationM / TrackGaugeM));
+                float rSpeedWagonN = GravitationalAccelerationMpS2 * (Kg.ToTonne(MassKG) * rspeedKgpTonne);
 
                 CurveForceN = rBaseWagonN + rSpeedWagonN;
             }
@@ -2248,8 +2426,8 @@ namespace Orts.Simulation.RollingStocks
                 String.Format("{0}", FormatStrings.FormatSpeedDisplay(SpeedMpS, IsMetric)),
                 loco.DieselEngines[0].GearBox.HuDShaftRPM,
                 // For Locomotive HUD display shows "forward" motive power (& force) as a positive value, braking power (& force) will be shown as negative values.
-                FormatStrings.FormatPower(TractiveForceN * WheelSpeedMpS, IsMetric, false, false),
-                String.Format("{0}{1}", FormatStrings.FormatForce(TractiveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : ""),
+                FormatStrings.FormatPower(loco.LocomotiveAxles.DrivePowerW, IsMetric, false, false),
+                String.Format("{0}{1}", FormatStrings.FormatForce(loco.LocomotiveAxles.DriveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : ""),
                 Simulator.Catalog.GetString(locomotivetypetext)
                 );
             }
@@ -2263,8 +2441,8 @@ namespace Orts.Simulation.RollingStocks
                 ThrottlePercent,
                 String.Format("{0}", FormatStrings.FormatSpeedDisplay(SpeedMpS, IsMetric)),
                 // For Locomotive HUD display shows "forward" motive power (& force) as a positive value, braking power (& force) will be shown as negative values.
-                FormatStrings.FormatPower(TractiveForceN * WheelSpeedMpS, IsMetric, false, false),
-                String.Format("{0}{1}", FormatStrings.FormatForce(TractiveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : ""),
+                FormatStrings.FormatPower((this as MSTSWagon).LocomotiveAxles.DrivePowerW, IsMetric, false, false),
+                String.Format("{0}{1}", FormatStrings.FormatForce((this as MSTSWagon).LocomotiveAxles.DriveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : ""),
                 Simulator.Catalog.GetString(locomotivetypetext)
                 );
             }
@@ -2296,6 +2474,7 @@ namespace Orts.Simulation.RollingStocks
             outf.Write(UiD);
             outf.Write(CarID);
             BrakeSystem.Save(outf);
+            BrakeSystemAlt.Save(outf);
             outf.Write(TractionForceN);
             outf.Write(DynamicBrakeForceN);
             outf.Write(MotiveForceN);
@@ -2321,6 +2500,7 @@ namespace Orts.Simulation.RollingStocks
             UiD = inf.ReadInt32();
             CarID = inf.ReadString();
             BrakeSystem.Restore(inf);
+            BrakeSystemAlt.Restore(inf);
             TractionForceN = inf.ReadSingle();
             DynamicBrakeForceN = inf.ReadSingle();
             MotiveForceN = inf.ReadSingle();
@@ -2337,9 +2517,9 @@ namespace Orts.Simulation.RollingStocks
             CarHeatCurrentCompartmentHeatJ = inf.ReadSingle();
             CarSteamHeatMainPipeSteamPressurePSI = inf.ReadSingle();
             CarHeatCompartmentHeaterOn = inf.ReadBoolean();
-            FreightAnimations?.LoadDataList?.Clear();
             CurveSquealAoAmRadFiltered = inf.ReadSingle();
             CurveSquealAoAmRadFilter.ForceSmoothValue(CurveSquealAoAmRadFiltered);
+            FreightAnimations?.LoadDataList?.Clear();
         }
 
         //================================================================================================//
@@ -2735,16 +2915,20 @@ namespace Orts.Simulation.RollingStocks
             // No parts means no bogies (always?), so make sure we've got Parts[0] for the car itself.
             if (Parts.Count == 0)
                 Parts.Add(new TrainCarPart(Vector3.Zero, 0));
-            // No axles but we have bogies.
-            if (WheelAxles.Count == 0 && Parts.Count > 1)
+            // Determine how many parts are considered bogies (used to calculate position of the car)
+            int bogieCount = 0;
+            foreach (TrainCarPart p in Parts)
+                if (p.Bogie == true)
+                    bogieCount++;
+            // No axles but we have bogies. Each bogie needs axles to function correctly
+            if (WheelAxles.Count == 0 && bogieCount > 0)
             {
-                // Fake the axles by pretending each has 1 axle.
-                foreach (var part in Parts)
-                    WheelAxles.Add(new WheelAxle(part.OffsetM, part.iMatrix, 0));
-                Trace.TraceInformation("Wheel axle data faked based on {1} bogies for {0}", WagFilePath, Parts.Count - 1);
+                // Add a fake axle to each bogie, a second fake axle will be added later if needed
+                for (int i = 1; i < Parts.Count; i++)
+                    if (Parts[i].Bogie == true)
+                        WheelAxles.Add(new WheelAxle(Parts[i].OffsetM, i, Parts[i].iMatrix, true));
+                Trace.TraceInformation("Wheel axle data faked based on {1} bogies for {0}", WagFilePath, bogieCount);
             }
-            bool articFront = !WheelAxles.Any(a => a.OffsetM.Z < 0);
-            bool articRear = !WheelAxles.Any(a => a.OffsetM.Z > 0);
             // Validate the axles' assigned bogies and count up the axles on each bogie.
             if (WheelAxles.Count > 0)
             {
@@ -2764,10 +2948,6 @@ namespace Orts.Simulation.RollingStocks
                     w.Part = Parts[w.BogieIndex];
                     w.Part.SumWgt++;
                 }
-
-                // Make sure the axles are sorted by OffsetM along the car.
-                // Attempting to sort car w/o WheelAxles will resort to an error.
-                WheelAxles.Sort(WheelAxles[0]);
             }
 
             //fix bogies with only one wheel set:
@@ -2787,7 +2967,7 @@ namespace Orts.Simulation.RollingStocks
                         {
                             if (w.OffsetM.Z.AlmostEqual(Parts[i].OffsetM.Z, 0.6f))
                             {
-                                var w1 = new WheelAxle(new Vector3(w.OffsetM.X, w.OffsetM.Y, w.OffsetM.Z - 0.5f), w.BogieIndex, i);
+                                var w1 = new WheelAxle(new Vector3(w.OffsetM.X, w.OffsetM.Y, w.OffsetM.Z - 0.5f), w.BogieIndex, i, true);
                                 w1.Part = Parts[w1.BogieIndex]; //create virtual wheel
                                 w1.Part.SumWgt++;
                                 WheelAxles.Add(w1);
@@ -2800,34 +2980,29 @@ namespace Orts.Simulation.RollingStocks
                 }
             }
 
-            // Count up the number of bogies (parts) with at least 2 axles.
+            // Check how many parts can drive the position of the car itself
+            // Each part needs at least 2 components (sum of weights > 1.5) for position calculation to work
             for (var i = 1; i < Parts.Count; i++)
                 if (Parts[i].SumWgt > 1.5)
                     Parts[0].SumWgt++;
 
-            // This check is for the single axle/bogie issue.
-            // Check SumWgt using Parts[0].SumWgt.
-            // Certain locomotives do not test well when using Part.SumWgt versus Parts[0].SumWgt.
-            // Make sure test using Parts[0] is performed after the above for loop.
+            // Check if articulation is desired on this car, as this requires different handling
+            bool articFront = (FrontArticulation == 1 || (FrontArticulation == -1 && !WheelAxles.Any(a => a.OffsetM.Z < 0)));
+            bool articRear = (RearArticulation == 1 || (RearArticulation == -1 && !WheelAxles.Any(a => a.OffsetM.Z > 0)));
+
+            // If car has insufficient bogies and it's not because of articulation, attempt to avoid position calculation errors
+            // Detach wheels from the last bogie, and instead attach to the main part, which should allow calculations to work properly
             if (!articFront && !articRear && (Parts[0].SumWgt < 1.5))
             {
-                foreach (var w in WheelAxles)
+                foreach (WheelAxle w in WheelAxles)
                 {
                     if (w.BogieIndex >= Parts.Count - 1)
                     {
                         w.BogieIndex = 0;
                         w.Part = Parts[w.BogieIndex];
-
                     }
                 }
             }
-            // Using WheelAxles.Count test to control WheelAxlesLoaded flag.
-            if (WheelAxles.Count > 2)
-            {
-                WheelAxles.Sort(WheelAxles[0]);
-                WheelAxlesLoaded = true;
-            }
-
 
 #if DEBUG_WHEELS
             Console.WriteLine(WagFilePath);
@@ -2838,41 +3013,50 @@ namespace Orts.Simulation.RollingStocks
             foreach (var p in Parts)
                 Console.WriteLine("  part:  matrix {1,5:F0}  offset {0,10:F4}  weight {2,5:F0}", p.OffsetM, p.iMatrix, p.SumWgt);
 #endif
-            // Decided to control what is sent to SetUpWheelsArticulation()by using
-            // WheelAxlesLoaded as a flag.  This way, wagons that have to be processed are included
-            // and the rest left out.
-            bool articulatedFront = !WheelAxles.Any(a => a.OffsetM.Z < 0);
-            bool articulatedRear = !WheelAxles.Any(a => a.OffsetM.Z > 0);
-            var carIndex = Train.Cars.IndexOf(this);
-            //Certain locomotives are testing as articulated wagons for some reason.
-            if (WagonType != WagonTypes.Engine)
-                if (WheelAxles.Count != 1 && (articulatedFront || articulatedRear))
-                {
-                    WheelAxlesLoaded = true;
-                    SetUpWheelsArticulation(carIndex);
-                }
+            // Add fake axle(s) to train car for articulation when desired
+            // Adding fake axles automatically is only allowed on non-engines with 0, 2, or 3 axles
+            // These limitations prevent various incompatibilities with existing content
+            bool allowAutoArticulate = WagonType != WagonTypes.Engine && WheelAxles.Count != 1 && WheelAxles.Count <= 3;
+            articFront &= !(FrontArticulation == -1 && !allowAutoArticulate);
+            articRear &= !(RearArticulation == -1 && !allowAutoArticulate);
+
+            if (articFront || articRear)
+                SetUpWheelsArticulation(articFront, articRear);
+
+            // Other calculations require axles to be sorted based on their Z-offset
+            if (WheelAxles.Count > 0)
+                WheelAxles.Sort(WheelAxles[0]);
+
+            // After all processing is complete, check if the car can have its position calculated
+            // using the position of the axles, which is indicated by the 'WheelAxlesLoaded' flag.
+            // The train car must have at least 2 position references. These references can be either
+            // an axle or a bogie, but each bogie itself needs 2 position references.
+            int[] posReferences = new int[Parts.Count];
+            // Count the number of axles associated with each part (including main object)
+            foreach (WheelAxle w in WheelAxles)
+                posReferences[w.BogieIndex]++;
+            // Add a position reference to the main object for each bogie itself with at least 2 position references
+            for (int i = 1; i < Parts.Count; i++)
+                if (posReferences[i] >= 2) 
+                    posReferences[0]++;
+            // Car has a suitable arrangement of axles for position calculation if the main object has at least 2 position references
+            if (posReferences[0] >= 2) 
+                WheelAxlesLoaded = true;
         } // end SetUpWheels()
 
-        protected void SetUpWheelsArticulation(int carIndex)
+        protected void SetUpWheelsArticulation(bool front, bool rear)
         {
-            // If there are no forward wheels, this car is articulated (joined
+            // If there are no forward axles, this car is articulated (joined
             // to the car in front) at the front. Likewise for the rear.
-            bool articulatedFront = !WheelAxles.Any(a => a.OffsetM.Z < 0);
-            bool articulatedRear = !WheelAxles.Any(a => a.OffsetM.Z > 0);
-            // Original process originally used caused too many issues.
-            // The original process did include the below process of just using WheelAxles.Add
-            //  if the initial test did not work.  Since the below process is working without issues the
-            //  original process was stripped down to what is below
-            if (articulatedFront || articulatedRear)
-            {
-                if (articulatedFront && WheelAxles.Count <= 3)
-                    WheelAxles.Add(new WheelAxle(new Vector3(0.0f, BogiePivotHeightM, -CarLengthM / 2.0f), 0, 0) { Part = Parts[0] });
+            // This will cause the car to move incorrectly, so to produce the
+            // expected motion, a fake axle is added at the articulated end(s)
+            // of the car, attached to the car itself. This will drive the positioning
+            // of the car as expected.
+            if (front)
+                WheelAxles.Add(new WheelAxle(new Vector3(0.0f, BogiePivotHeightM, -CarLengthM / 2.0f), 0, 0, true) { Part = Parts[0] });
 
-                if (articulatedRear && WheelAxles.Count <= 3)
-                    WheelAxles.Add(new WheelAxle(new Vector3(0.0f, BogiePivotHeightM, CarLengthM / 2.0f), 0, 0) { Part = Parts[0] });
-
-                WheelAxles.Sort(WheelAxles[0]);
-            }
+            if (rear)
+                WheelAxles.Add(new WheelAxle(new Vector3(0.0f, BogiePivotHeightM, CarLengthM / 2.0f), 0, 0, true) { Part = Parts[0] });
 
 
 #if DEBUG_WHEELS
@@ -2949,8 +3133,18 @@ namespace Orts.Simulation.RollingStocks
                 if (p.SumWgt > 1.5f)
                     p0.AddPartLocation(1, p);
             }
-            // Determine facing direction and position of train car
-            p0.FindCenterLine();
+            if (Parts.Count == 2 && p0.SumWgt < 1.5f)
+            {
+                // Train car lacks sufficient parts to locate using linear regression
+                p0.Dir = Parts[1].Dir;
+                p0.Pos = Parts[1].Pos;
+                p0.Roll = Parts[1].Roll;
+            }
+            else
+            {
+                // Determine facing direction and position of train car
+                p0.FindCenterLine();
+            }
             Vector3 fwd = new Vector3(p0.Dir[0], p0.Dir[1], -p0.Dir[2]);
             // Check if null (0-length) vector
             if (!(fwd.X == 0 && fwd.Y == 0 && fwd.Z == 0))
@@ -3637,14 +3831,16 @@ namespace Orts.Simulation.RollingStocks
     public class WheelAxle : IComparer<WheelAxle>
     {
         public Vector3 OffsetM;   // Offset from the bogie center
-        public int BogieIndex;
-        public int BogieMatrix;
-        public TrainCarPart Part;
-        public WheelAxle(Vector3 offset, int bogie, int parentMatrix)
+        public int BogieIndex;    // Index in the Parts list of the bogie this is attached to
+        public int BogieMatrix;   // Index in the matrix hierarchy of the bogie this is attached to
+        public TrainCarPart Part; // Reference to the object for the bogie this is attached to
+        public bool Fake;         // True for axles that aren't present in the 3D model
+        public WheelAxle(Vector3 offset, int bogie, int parentMatrix, bool fake = false)
         {
             OffsetM = offset;
             BogieIndex = bogie;
             BogieMatrix = parentMatrix;
+            Fake = fake;
         }
         public int Compare(WheelAxle a, WheelAxle b)
         {
@@ -3668,7 +3864,7 @@ namespace Orts.Simulation.RollingStocks
         public double[] SumPos = new double[3]; // Sum of component locations [x, y, z]
         public double[] SumPosZOffset = new double[3]; // Sum of component locations [x, y, z] times Z-offsets
         public float[] Pos = new float[3]; // Position [x, y, z] of this part, calculated with y-intercept of linear regression
-        public float[] Dir = new float[3]; // Oritentation [x, y, z] of this part, calculated with slope of linear regression
+        public float[] Dir = new float[3]; // Orientation [x, y, z] of this part, calculated with slope of linear regression
         public float SumRoll; // Sum of all roll angles of components
         public float Roll; // Roll angle of this part
         public bool Bogie; // True if this is a bogie
@@ -3733,7 +3929,7 @@ namespace Orts.Simulation.RollingStocks
             // 2D Least regression between the offsets (along longitudinal axis of rail vehicle)
             // and actual positions in 3D space, repeated 3 times for each dimension in 3D.
 
-            // Follows format of y = M * x + B where x is the foward/backward position along the train car axis
+            // Follows format of y = M * x + B where x is the forward/backward position along the train car axis
             // and y is the actual (x, y, or z) position in 3D space. We need to determine vectors B (the 3D
             // position of this part) and M (the 3D orientation of this part) using the offsets and positions added previously.
 
@@ -3748,12 +3944,12 @@ namespace Orts.Simulation.RollingStocks
                     Dir[i] = (float)((SumWgt * SumPosZOffset[i] - SumZOffset * SumPos[i]) / denominator);
                     // The position (B) is defined as 'B = [sum(y) - M * sum(x)] / N', where N is the total
                     // weight, x is the offset, y is the 3D position, and M is the direction value from earlier.
-                    // This uses an equivalent form that doesn't use the result of the above calulcation to avoid
+                    // This uses an equivalent form that doesn't use the result of the above calculation to avoid
                     // precision errors from the value being converted to a float.
                     Pos[i] = (float)((SumZOffsetSq * SumPos[i] - SumZOffset * SumPosZOffset[i]) / denominator);
                 }
             }
-            else
+            else // Improperly defined wagon, fallback to basic calculation
             {
                 for (int i = 0; i < 3; i++)
                 {

@@ -253,6 +253,10 @@ namespace ORTS.Scripting.Api
         /// </summary>
         public Func<bool> TractionAuthorization;
         /// <summary>
+        /// True if dynamic braking is authorized.
+        /// </summary>
+        public Func<bool> DynamicBrakingAuthorization;
+        /// <summary>
         /// Train brake pipe pressure. Returns float.MaxValue if no data is available.
         /// </summary>
         public Func<float> BrakePipePressureBar;
@@ -265,9 +269,18 @@ namespace ORTS.Scripting.Api
         /// </summary>
         public Func<bool> DoesBrakeCutPower;
         /// <summary>
-        /// Train brake pressure value which triggers the power cut-off.
+        /// Deprecated. Returns positive infinity if traction cutoff is requested by the brake system, and negative infinity if it is not requested
         /// </summary>
-        public Func<float> BrakeCutsPowerAtBrakeCylinderPressureBar;
+        [Obsolete("BrakeCutsPowerAtBrakeCylinderPressureBar() is deprecated, use BrakeSystemTractionAuthorization instead")]
+        public float BrakeCutsPowerAtBrakeCylinderPressureBar()
+        {
+            return BrakeSystemTractionAuthorization ? float.PositiveInfinity : float.NegativeInfinity;
+        }
+        public bool BrakeSystemTractionAuthorization => Host.BrakeSystemTractionAuthorization;
+        /// <summary>
+        /// True if dynamic brake must be cut if the emergency brake is applied.
+        /// </summary>
+        public bool EmergencyBrakeCutsDynamicBrake => Loco.EmergencyBrakeCutsDynamicBrake;
         /// <summary>
         /// State of the train brake controller.
         /// </summary>
@@ -424,6 +437,10 @@ namespace ORTS.Scripting.Api
         /// Set the traction authorization.
         /// </summary>
         public Action<bool> SetTractionAuthorization;
+        /// <summary>
+        /// Set the dynamic braking authorization.
+        /// </summary>
+        public Action<bool> SetDynamicBrakingAuthorization;
         /// <summary>
         /// Set the maximum throttle percent
         /// Range: 0 to 100

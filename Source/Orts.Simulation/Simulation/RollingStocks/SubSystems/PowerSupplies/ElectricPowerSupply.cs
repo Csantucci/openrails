@@ -316,6 +316,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     SignalEventToMasterKey(PowerSupplyEvent.TurnOnMasterKey);
                     SignalEventToPantograph(PowerSupplyEvent.RaisePantograph, 1);
                     SignalEventToOtherTrainVehiclesWithId(PowerSupplyEvent.RaisePantograph, 1);
+                    SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.QuickPowerOn);
                     break;
 
                 case PowerSupplyEvent.QuickPowerOnConditional:
@@ -325,13 +326,13 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     SignalEventToMasterKey(PowerSupplyEvent.TurnOnMasterKey);
                     SignalEventToPantographs(PowerSupplyEvent.RaisePantographConditional);
                     SignalEventToOtherTrainVehicles(PowerSupplyEvent.RaisePantographConditional);
-                    SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.SwitchOnElectricTrainSupply);
+                    SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.QuickPowerOn);
                     break;
 
                 case PowerSupplyEvent.QuickPowerOff:
                 case PowerSupplyEvent.ForcedPowerOff:
                     QuickPowerOn = (false, false);
-                    SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.SwitchOffElectricTrainSupply);
+                    SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.QuickPowerOff);
                     SignalEventToCircuitBreaker(PowerSupplyEvent.QuickPowerOff);
                     SignalEventToPantographs(PowerSupplyEvent.LowerPantograph);
                     SignalEventToOtherTrainVehicles(PowerSupplyEvent.LowerPantograph);
@@ -342,7 +343,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 case PowerSupplyEvent.QuickPowerOffPantoUp:
                 case PowerSupplyEvent.ForcedPowerOffPantoUp:
                     QuickPowerOn = (false, false);
-                    SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.SwitchOffElectricTrainSupply);
+                    SignalEventToElectricTrainSupplySwitch(PowerSupplyEvent.QuickPowerOff);
                     SignalEventToCircuitBreaker(PowerSupplyEvent.OpenCircuitBreaker);
                     SignalEventToMasterKey(PowerSupplyEvent.TurnOffMasterKey);
                     SignalEventToBatterySwitch(PowerSupplyEvent.QuickPowerOff);
