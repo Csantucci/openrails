@@ -78,6 +78,8 @@ This version includes some features not (yet) available in the Open Rails testin
 - extended dump log, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__317895
 - Fix for https://www.elvastower.com/forums/index.php?/topic/38722-problem-with-displaying-some-tracks-in-testing-t151-1627-g90cae11a5-ornymg-rev-161-163/ (can be solved also fixing the TrackShape)
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
+- Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
+- Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
@@ -93,8 +95,7 @@ This version includes some features not (yet) available in the Open Rails testin
   *- NEW: Fix/avoid type initialization exception - 2nd try, by cjakeman (PR #1184)
   *- NEW: Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- NEW: Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
-  *- NEW: Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
-  *- NEW: Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
+
 
 
 Info about content of the various PR to the Unstable release can be found here
