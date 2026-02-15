@@ -470,7 +470,6 @@ namespace Orts.Viewer3D
         EffectParameter wvp;
         EffectParameter invView;
         EffectParameter texture;
-        EffectParameter textureAtlasSize;
         EffectParameter lightVector;
         EffectParameter fog;
 
@@ -487,11 +486,6 @@ namespace Orts.Viewer3D
         public Texture2D Texture
         {
             set { texture.SetValue(value); }
-        }
-
-        public Vector2 TextureAtlasSizeXY
-        {
-            set { textureAtlasSize.SetValue(value); }
         }
 
         public float EmitSize
@@ -513,7 +507,6 @@ namespace Orts.Viewer3D
             invView = Parameters["invView"];
             tileXY = Parameters["cameraTileXY"];
             texture = Parameters["particle_Tex"];
-            textureAtlasSize = Parameters["texAtlasSize"];
             lightVector = Parameters["LightVector"];
             fog = Parameters["Fog"];
         }
