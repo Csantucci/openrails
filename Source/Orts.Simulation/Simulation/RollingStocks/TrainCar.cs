@@ -48,6 +48,7 @@ using Orts.Simulation.RollingStocks.Coupling;
 using Orts.Simulation.RollingStocks.SubSystems;
 using Orts.Simulation.RollingStocks.SubSystems.Brakes;
 using Orts.Simulation.RollingStocks.SubSystems.PowerSupplies;
+using Orts.Simulation.RollingStocks.SubSystems.PowerTransmissions;
 using Orts.Simulation.Signalling;
 using ORTS.Common;
 using ORTS.Scripting.Api;
@@ -669,6 +670,9 @@ namespace Orts.Simulation.RollingStocks
         public float BrakeRetardForceN;    // brake force applied to wheel by brakeshoe (Newtons) independent of friction wheel/rail friction
         public float BrakeShoeForceN;
         public float FrictionBrakeBlendingMaxForceN; // This is the maximum force for the friction barke when it is blended with the dynamic brake
+
+        public bool IsRackRailway = false;
+        public bool BrakeCogWheelFitted;
 
         // Sum of all the forces acting on a Traincar in the direction of driving.
         // MotiveForceN and GravityForceN act to accelerate the train. The others act to brake the train.
@@ -1321,7 +1325,8 @@ namespace Orts.Simulation.RollingStocks
                 }
             }
             // Only apply slide, and advanced brake friction, if advanced adhesion is selected, simplecontrolphysics is not set, and it is a Player train
-            else if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && IsPlayerTrain)
+            // Rack stock with cog wheel fitted will not skid
+            else if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && IsPlayerTrain && !(BrakeCogWheelFitted && IsRackRailway))
             {
                 // Determine whether car is experiencing a wheel slip during braking
                 if (!BrakeSkidWarning && AbsSpeedMpS > 0.01)
@@ -1360,7 +1365,7 @@ namespace Orts.Simulation.RollingStocks
                 // Test if wheel forces are high enough to induce a slip. Set slip flag if slip occuring 
                 if (!BrakeSkid && AbsSpeedMpS > 0.01)  // Train must be moving forward to experience skid
                 {
-                    if (BrakeRetardForceN > WagonBrakeAdhesiveForceN)
+                    if (BrakeRetardForceN > WagonBrakeAdhesiveForceN && !(BrakeCogWheelFitted && IsRackRailway))
                     {
                         BrakeSkid = true; 	// wagon wheel is slipping
                         var message = "Car ID: " + CarID + " - experiencing braking force wheel skid.";
@@ -3161,6 +3166,9 @@ public string GetCurveDirection()
             m.Up = up;
             m.Backward = fwd;
 
+            // Update whether track is rack or not
+            UpdateRackRailDetection(traveler);
+
             // Update gravity force when position is updated, but before any secondary motion is added
             UpdateGravity(m);
 
@@ -3215,6 +3223,28 @@ public string GetCurveDirection()
 
         #region Traveller-based updates
         public float CurrentCurveRadiusM;
+
+        public void UpdateRackRailDetection(Traveller traveller)
+        {
+            if (this is MSTSWagon wagon)
+            {
+                var thisSection = traveller.GetCurrentSection();
+
+                if (thisSection != null && Simulator.TSectionDat.TrackShapes.ContainsKey(thisSection.ShapeIndex))
+                {
+                    TrackShape thisShape = Simulator.TSectionDat.TrackShapes[thisSection.ShapeIndex];
+
+                    if (thisShape.RackShape)
+                    {
+                        IsRackRailway = true;
+                    }
+                    else
+                    {
+                        IsRackRailway = false;
+                    }
+                }
+            }
+        }
 
         internal void UpdateTilting(Traveller traveller,  float elapsedTimeS, float speedMpS, int direction)
         {
