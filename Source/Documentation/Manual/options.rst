@@ -102,17 +102,6 @@ If this parameter is set at 1000, a simplified, MSTS-like braking model is
 implemented, providing for faster brake release and being less influenced
 by incoherent braking parameters within .eng file.
 
-Language
---------
-
-OR is an internationalized package. It supports many languages, and others
-can be added by following the instructions contained in the *Localization
-Manual* which can be found in the Open Rails ``Documentation``
-folder.
-
-When *System* is selected, OR automatically selects the language of the
-hosting OS, if the language is available.
-
 .. _options-pressure:
 
 Pressure unit
@@ -764,47 +753,117 @@ pressing ``<F12>`` a file with the name dump.csv is generated in the
 configured Open Rails logging folder (placed on the Desktop by default).
 This file can be used for later analysis.
 
-Evaluation Options
-==================
-
-.. image:: images/options-evaluation.png
-
-When data logging is started (see preceding paragraph), data selected in
-this panel are logged, allowing a later evaluation on how the activity was
-executed by the player.
-
-.. _options-Content:
-
-Content Options
-===============
-
-.. image:: images/options-content.png
-
-This window allows you to add, remove or modify access to additional MSTS
-installations or miniroute installations for Open Rails. Installations
-located on other drives, or on a USB key, can be added even if they are
-not always available.
-
-Click on the *Add* button, and locate the desired installation. OR will
-automatically enter a proposed name in the *Name:* window that will
-appear in the *Installation set:* window on the main menu form. Modify
-the name if desired, then click *OK* to add the new path and name to
-Open Rails.
-
-To remove an entry (note that this does not remove the installation
-itself!) select the entry in the window, and click *Delete*, then *OK*
-to close the window. To modify an entry, use the *Change...* button to
-access the location and make the necessary changes.
+A *Logging interval* of 0 (zero) dumps data for each frame (i.e. logs at the frame rate).
+This is intended for analyzing system and graphics performance.
+Larger intervals are better for looking at train performance.
 
 .. _options-system:
 
-Updater Options
+System Options
 ===============
 
-.. image:: images/options-updater.png
+.. image:: images/options-system.png
 
-These options control which OR version update channel is active (see also
-:ref:`here <updating-or>`). The various options available are self-explanatory.
+
+Language
+--------
+ORTS is an internationalized package. It supports many languages, and others
+can be added by following the instructions contained in the *Localization
+Manual* which can be found in the Open Rails ``Documentation``
+folder.
+
+When *System* is selected, ORTS automatically selects the language of the
+hosting OS, if that language is available.
+
+
+Window size
+-----------
+
+This pair of values defines the size of the ORTS window. There are some
+pre-configured pairs of values and you can also enter a
+specific width and height to be used.
+
+The format is <width>x<height>, for example 1024x768.
+
+
+.. _options-window-glass:
+
+Glass on in-game windows
+------------------------
+
+When this option is checked, the in-game windows are shown semi-transparently.
+
+The default setting is checked.
+
+
+.. _options-control-confirmations:
+
+Control confirmations
+---------------------
+
+Whenever you make adjustments to the train
+controls (e.g. open the throttle) Open Rails briefly shows a message near the
+bottom of the screen.
+
+.. image:: images/options-confirmations.png
+
+This is helpful for operations that don't have visible feedback and also
+allows you to control the train without being in the cab.
+
+Informational, Warning and Error messages are displayed here also. 
+
+The default setting of this option is to show all messages. Dropdown list gives the following choices:
+
+- None: no messages suppressed (default)
+- Information: informational messages and control confirmations suppressed
+- Warning: warning messages and the ones mentioned above suppressed
+- Error: error messages and the ones mentioned above suppressed
+
+OR uses the same message scheme for system messages such as "Game saved"
+or "Replay ended" but you cannot suppress these system messages.
+
+Once the game has started, you can cycle through the above settings  
+by pressing ``Ctrl+Alt+F10``. 
+
+
+.. _options-web-server-port:
+
+Web server port
+-----------------
+
+The web server can be accessed from a browser on the local machine at
+``http://localhost:<port>``, where ``<port>`` is the specified port number.
+Change the default value of 2150 if it conflicts with other services.
+
+If you `open
+<https://www.howtogeek.com/394735/how-do-i-open-a-port-on-windows-firewall/>`_
+the web server port (just granting RunActivity.exe an exemption is not
+sufficient) in Windows Firewall, the server can also be accessed from a device
+on the local network, such as a smartphone, tablet or another PC, using your
+system's `IP address
+<https://support.microsoft.com/en-us/windows/find-your-ip-address-f21a9bbc-c582-55cd-35e0-73431160a1b9>`_.
+E.g.: If your Open Rails PC is at IP address 192.168.0.99, browse to
+``http://192.168.0.99:2150``, where ``2150`` is the specified port number.
+
+:ref:`Sample web pages <sample-web-pages>` are included in the Open Rails
+installation and the browser will show a menu of sample pages.
+
+As well as a web browser, data from the web server can also be fetched by any
+program which can make a web request, such as C# or Python, using the
+:ref:`Application Programming Interface <web-server-api>` (API).
+
+
+.. _options-performance-tuner:
+
+Automatically tune settings to keep performance level
+-----------------------------------------------------
+
+When this option is selected ORTS attempts to maintain the selected Target
+frame rate FPS ( Frames per second). To do this it decreases or increases
+the viewing distance of the standard terrain. If the option is selected,
+also select the desired FPS in the *Target frame rate* field.
+
+The default setting is unchecked.
 
 .. _options-experimental:
 

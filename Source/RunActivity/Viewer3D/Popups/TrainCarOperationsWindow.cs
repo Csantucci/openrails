@@ -35,8 +35,8 @@ using System.IO;
 using System.Linq;
 using static Orts.Viewer3D.Popups.TrainCarOperationsWindow;
 using Orts.Simulation.RollingStocks.SubSystems.PowerSupplies;
-using ORTS.Scripting.Api;
 using System.Diagnostics;
+using ORTS.Scripting.Api;
 
 namespace Orts.Viewer3D.Popups
 {

@@ -302,10 +302,13 @@ namespace Orts.Viewer3D.Debugging
             {
                 string name = "Map_" + mapViewer.Name;
 
-                int X = this.Bounds.X;
-                int Y = this.Bounds.Y;
-                Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, new int[] { X, Y, Size.Width, Size.Height }, null);
-                if (!(X == -32000 && Y == -32000))
+                bool useRestoreBounds = this.WindowState == FormWindowState.Minimized || this.WindowState == FormWindowState.Maximized;
+                int posX = useRestoreBounds ? this.RestoreBounds.X : this.Bounds.X;
+                int posY = useRestoreBounds ? this.RestoreBounds.Y : this.Bounds.Y;
+                int width = useRestoreBounds ? this.RestoreBounds.Width : this.Bounds.Width;
+                int height = useRestoreBounds ? this.RestoreBounds.Height : this.Bounds.Height;
+                Viewer.Settings.GetProperty(name).SetValue(Viewer.Settings, new int[] { posX, posY, width, height }, null);
+                if (!(posX == -32000 && posY == -32000))
                     Viewer.Settings.Save(name);
             }
         }
