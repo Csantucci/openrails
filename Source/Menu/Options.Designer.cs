@@ -80,7 +80,9 @@
             this.numericExternalSoundPassThruPercent = new System.Windows.Forms.NumericUpDown();
             this.numericCab2DStretch = new System.Windows.Forms.NumericUpDown();
             this.numericSuperElevationGauge = new System.Windows.Forms.NumericUpDown();
+            this.dataLoggerInterval = new System.Windows.Forms.NumericUpDown();
             this.trackWindVariability = new System.Windows.Forms.TrackBar();
+            this.trackMaxWindSpeed = new System.Windows.Forms.TrackBar();
             this.checkLODViewingExtension = new System.Windows.Forms.CheckBox();
             this.labelWindowSize = new System.Windows.Forms.Label();
             this.labelWebServerPort = new System.Windows.Forms.Label();
@@ -134,8 +136,8 @@
             this.checkDataLogTrainSpeed = new System.Windows.Forms.CheckBox();
             this.tabPageDataLogger = new System.Windows.Forms.TabPage();
             this.checkDataLogSteamPowerCurve = new System.Windows.Forms.CheckBox();
-            this.comboDataLogSpeedUnits = new System.Windows.Forms.ComboBox();
             this.pbDataLoggerOptions = new System.Windows.Forms.PictureBox();
+            this.comboDataLogSpeedUnits = new System.Windows.Forms.ComboBox();
             this.comboDataLoggerSeparator = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
@@ -144,7 +146,6 @@
             this.label17 = new System.Windows.Forms.Label();
             this.checkDataLogPhysics = new System.Windows.Forms.CheckBox();
             this.checkDataLogSteamPerformance = new System.Windows.Forms.CheckBox();
-            this.dataLoggerInterval = new System.Windows.Forms.NumericUpDown();
             this.dataLoggerIntervalLabel = new System.Windows.Forms.Label();
             this.checkVerboseConfigurationMessages = new System.Windows.Forms.CheckBox();
             this.tabPageRailDriver = new System.Windows.Forms.TabPage();
@@ -254,8 +255,10 @@
             this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
             this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
-            this.label29 = new System.Windows.Forms.Label();
+            this.labelWindVariability = new System.Windows.Forms.Label();
             this.windVariabilityValueLabel = new System.Windows.Forms.Label();
+            this.labelMaxWindSpeed = new System.Windows.Forms.Label();
+            this.maxWindSpeedValueLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWindowGlass)).BeginInit();
@@ -288,7 +291,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackMaxWindSpeed)).BeginInit();
             this.tabPageExperimental.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorRandomChange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorCorrection)).BeginInit();
@@ -306,7 +311,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericDataLogTSInterval)).BeginInit();
             this.tabPageDataLogger.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).BeginInit();
             this.tabPageRailDriver.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).BeginInit();
             this.panelRDSettings.SuspendLayout();
@@ -1048,20 +1052,25 @@
             0,
             0});
             // 
-            // trackWindVariability
+            // dataLoggerInterval
             // 
-            this.trackWindVariability.AutoSize = false;
-            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
-            this.trackWindVariability.LargeChange = 10;
-            this.trackWindVariability.Location = new System.Drawing.Point(301, 328);
-            this.trackWindVariability.Maximum = 100;
-            this.trackWindVariability.Name = "trackWindVariability";
-            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
-            this.trackWindVariability.TabIndex = 32;
-            this.trackWindVariability.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
-            this.trackWindVariability.Value = 10;
-            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
+            this.dataLoggerInterval.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.dataLoggerInterval.Location = new System.Drawing.Point(310, 40);
+            this.dataLoggerInterval.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
+            this.dataLoggerInterval.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+            this.dataLoggerInterval.Name = "dataLoggerInterval";
+            this.dataLoggerInterval.Size = new System.Drawing.Size(54, 20);
+            this.dataLoggerInterval.TabIndex = 25;
+            this.dataLoggerInterval.ThousandsSeparator = true;
+            this.toolTip1.SetToolTip(this.dataLoggerInterval, "Interval at which to log data. In milliseconds, 0 means log at frame rate.");
             // 
             // checkLODViewingExtension
             // 
@@ -1697,7 +1706,7 @@
             this.checkDataLogTrainSpeed.Click += new System.EventHandler(this.checkDataLogTrainSpeed_Click);
             // 
             // tabPageDataLogger
-            //
+            // 
             this.tabPageDataLogger.Controls.Add(this.checkDataLogSteamPowerCurve);
             this.tabPageDataLogger.Controls.Add(this.pbDataLoggerOptions);
             this.tabPageDataLogger.Controls.Add(this.comboDataLogSpeedUnits);
@@ -1828,30 +1837,10 @@
             this.checkDataLogSteamPerformance.AutoSize = true;
             this.checkDataLogSteamPerformance.Location = new System.Drawing.Point(6, 157);
             this.checkDataLogSteamPerformance.Name = "checkDataLogSteamPerformance";
-            this.checkDataLogSteamPerformance.Size = new System.Drawing.Size(214, 17);
+            this.checkDataLogSteamPerformance.Size = new System.Drawing.Size(216, 17);
             this.checkDataLogSteamPerformance.TabIndex = 6;
             this.checkDataLogSteamPerformance.Text = "Log Steam performance data (exclusive)";
             this.checkDataLogSteamPerformance.UseVisualStyleBackColor = true;
-            // 
-            // dataLoggerInterval
-            // 
-            this.dataLoggerInterval.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.dataLoggerInterval.Location = new System.Drawing.Point(310, 40);
-            this.dataLoggerInterval.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.dataLoggerInterval.Maximum = new decimal(new int[] {
-            60000,
-            0,
-            0,
-            0});
-            this.dataLoggerInterval.Name = "dataLoggerInterval";
-            this.dataLoggerInterval.Size = new System.Drawing.Size(54, 20);
-            this.dataLoggerInterval.TabIndex = 25;
-            this.dataLoggerInterval.ThousandsSeparator = true;
-            this.toolTip1.SetToolTip(this.dataLoggerInterval, "Interval at which to log data. In milliseconds, 0 means log at frame rate.");
             // 
             // dataLoggerIntervalLabel
             // 
@@ -3054,8 +3043,11 @@
             this.tabPageORNYMG.Controls.Add(this.checkEnableWatchdog);
             this.tabPageORNYMG.Controls.Add(this.checkFastFullScreenAltTab);
             this.tabPageORNYMG.Controls.Add(this.trackWindVariability);
-            this.tabPageORNYMG.Controls.Add(this.label29);
+            this.tabPageORNYMG.Controls.Add(this.labelWindVariability);
             this.tabPageORNYMG.Controls.Add(this.windVariabilityValueLabel);
+            this.tabPageORNYMG.Controls.Add(this.trackMaxWindSpeed);
+            this.tabPageORNYMG.Controls.Add(this.labelMaxWindSpeed);
+            this.tabPageORNYMG.Controls.Add(this.maxWindSpeedValueLabel);
             this.tabPageORNYMG.Location = new System.Drawing.Point(4, 22);
             this.tabPageORNYMG.Name = "tabPageORNYMG";
             this.tabPageORNYMG.Padding = new System.Windows.Forms.Padding(3);
@@ -3299,24 +3291,72 @@
             this.checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
             this.checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
             // 
-            // label29
+            // labelWindVariability
             // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(301, 309);
-            this.label29.Margin = new System.Windows.Forms.Padding(3);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(81, 13);
-            this.label29.TabIndex = 30;
-            this.label29.Text = "Wind variability:";
+            this.labelWindVariability.AutoSize = true;
+            this.labelWindVariability.Location = new System.Drawing.Point(301, 287);
+            this.labelWindVariability.Margin = new System.Windows.Forms.Padding(3);
+            this.labelWindVariability.Name = "labelWindVariability";
+            this.labelWindVariability.Size = new System.Drawing.Size(81, 13);
+            this.labelWindVariability.TabIndex = 30;
+            this.labelWindVariability.Text = "Wind variability:";
             // 
             // windVariabilityValueLabel
             // 
-            this.windVariabilityValueLabel.Location = new System.Drawing.Point(301, 309);
+            this.windVariabilityValueLabel.Location = new System.Drawing.Point(301, 287);
             this.windVariabilityValueLabel.Margin = new System.Windows.Forms.Padding(3);
             this.windVariabilityValueLabel.Name = "windVariabilityValueLabel";
             this.windVariabilityValueLabel.Size = new System.Drawing.Size(292, 13);
             this.windVariabilityValueLabel.TabIndex = 31;
             this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // trackWindVariability
+            // 
+            this.trackWindVariability.AutoSize = false;
+            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
+            this.trackWindVariability.LargeChange = 10;
+            this.trackWindVariability.Location = new System.Drawing.Point(301, 306);
+            this.trackWindVariability.Maximum = 100;
+            this.trackWindVariability.Name = "trackWindVariability";
+            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
+            this.trackWindVariability.TabIndex = 32;
+            this.trackWindVariability.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
+            this.trackWindVariability.Value = 10;
+            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
+            // 
+            // labelMaxWindSpeed
+            // 
+            this.labelMaxWindSpeed.AutoSize = true;
+            this.labelMaxWindSpeed.Location = new System.Drawing.Point(301, 352);
+            this.labelMaxWindSpeed.Margin = new System.Windows.Forms.Padding(3);
+            this.labelMaxWindSpeed.Name = "labelMaxWindSpeed";
+            this.labelMaxWindSpeed.Size = new System.Drawing.Size(90, 13);
+            this.labelMaxWindSpeed.TabIndex = 50;
+            this.labelMaxWindSpeed.Text = "Max Wind speed:";
+            // 
+            // maxWindSpeedValueLabel
+            // 
+            this.maxWindSpeedValueLabel.Location = new System.Drawing.Point(301, 352);
+            this.maxWindSpeedValueLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.maxWindSpeedValueLabel.Name = "maxWindSpeedValueLabel";
+            this.maxWindSpeedValueLabel.Size = new System.Drawing.Size(292, 13);
+            this.maxWindSpeedValueLabel.TabIndex = 51;
+            this.maxWindSpeedValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // trackMaxWindSpeed
+            // 
+            this.trackMaxWindSpeed.AutoSize = false;
+            this.trackMaxWindSpeed.BackColor = System.Drawing.SystemColors.Window;
+            this.trackMaxWindSpeed.LargeChange = 10;
+            this.trackMaxWindSpeed.Location = new System.Drawing.Point(301, 371);
+            this.trackMaxWindSpeed.Maximum = 33;
+            this.trackMaxWindSpeed.Name = "trackMaxWindSpeed";
+            this.trackMaxWindSpeed.Size = new System.Drawing.Size(292, 26);
+            this.trackMaxWindSpeed.TabIndex = 52;
+            this.trackMaxWindSpeed.TickFrequency = 10;
+            this.trackMaxWindSpeed.Value = 5;
+            this.trackMaxWindSpeed.ValueChanged += new System.EventHandler(this.trackWindSpeed_ValueChanged);
             // 
             // OptionsForm
             // 
@@ -3367,7 +3407,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackMaxWindSpeed)).EndInit();
             this.tabPageExperimental.ResumeLayout(false);
             this.tabPageExperimental.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorRandomChange)).EndInit();
@@ -3389,7 +3431,6 @@
             this.tabPageDataLogger.ResumeLayout(false);
             this.tabPageDataLogger.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).EndInit();
             this.tabPageRailDriver.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).EndInit();
             this.panelRDSettings.ResumeLayout(false);
@@ -3650,7 +3691,7 @@
         private System.Windows.Forms.Label labelControlConfirmations;
         private System.Windows.Forms.TrackBar trackWindVariability;
         private System.Windows.Forms.Label windVariabilityValueLabel;
-        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label labelWindVariability;
         private System.Windows.Forms.PictureBox pbAutoSave;
         private System.Windows.Forms.PictureBox pbAdvancedAdhesionModel;
         private System.Windows.Forms.PictureBox pbForcedRedAtStationStops;
@@ -3676,5 +3717,8 @@
         private System.Windows.Forms.NumericUpDown dataLoggerInterval;
         private System.Windows.Forms.Label dataLoggerIntervalLabel;
         private System.Windows.Forms.CheckBox checkExtendedPerformanceDump;
+        private System.Windows.Forms.TrackBar trackMaxWindSpeed;
+        private System.Windows.Forms.Label labelMaxWindSpeed;
+        private System.Windows.Forms.Label maxWindSpeedValueLabel;
     }
 }

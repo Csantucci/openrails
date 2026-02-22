@@ -126,6 +126,7 @@ namespace Menu
                 trackDayAmbientLight.BackColor = BackColor;
                 trackLODBias.BackColor = BackColor;
                 trackWindVariability.BackColor = BackColor;
+                trackMaxWindSpeed.BackColor = BackColor;
             }
 
             // General tab
@@ -294,6 +295,8 @@ namespace Menu
             precipitationBoxWidth.Value = Settings.PrecipitationBoxWidth;
             precipitationBoxLength.Value = Settings.PrecipitationBoxLength;
             trackWindVariability.Value = Settings.WindVariability;
+            trackMaxWindSpeed.Value = Settings.MaxWindSpeedMpS;
+            trackWindSpeed_ValueChanged(null, null);
             checkExtendedPerformanceDump.Checked = Settings.ExtendedPerformanceDump;
         }
 
@@ -509,6 +512,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             Settings.PrecipitationBoxWidth = (int)precipitationBoxWidth.Value;
             Settings.PrecipitationBoxLength = (int)precipitationBoxLength.Value;
             Settings.WindVariability = (int)trackWindVariability.Value;
+            Settings.MaxWindSpeedMpS = (int)trackMaxWindSpeed.Value;
             Settings.ExtendedPerformanceDump = checkExtendedPerformanceDump.Checked;
 
             Settings.Save();
@@ -646,6 +650,11 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
         private void trackWindVariability_ValueChanged(object sender, EventArgs e)
         {
             windVariabilityValueLabel.Text = trackWindVariability.Value.ToString() + "%";
+        }
+
+        private void trackWindSpeed_ValueChanged(object sender, EventArgs e)
+        {
+            maxWindSpeedValueLabel.Text = trackMaxWindSpeed.Value.ToString() + " m/s";
         }
 
         private void checkAlerter_CheckedChanged(object sender, EventArgs e)

@@ -196,7 +196,7 @@ namespace Orts.Viewer3D
             }
 
             Weather.WindAverageDirectionRad = (float)Viewer.Random.NextDouble() * MathHelper.TwoPi;
-            Weather.WindAverageSpeedMpS = (float)Viewer.Random.NextDouble() * WeatherConstants.WindSpeedBeaufortMpS[WindSpeedBeaufort];
+            Weather.WindAverageSpeedMpS = (float)Viewer.Random.NextDouble() * Program.Simulator.Settings.MaxWindSpeedMpS;
             CloudScale = new Vector2(4, 4);
         }
 

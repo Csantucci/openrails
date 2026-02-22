@@ -321,6 +321,8 @@ namespace ORTS.Settings
         //ORNYMG only settings
         [Default(100)]
         public int WindVariability { get; set; }
+        [Default(5)]
+        public int MaxWindSpeedMpS { get; set; }
         [Default(true)]
         public bool EnableWatchdog { get; set; }
         [Default(false)]
