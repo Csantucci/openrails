@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.170
-December 27th, 2025
+﻿Open Rails NewYear README - Rev.171
+February 22nd, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,7 +9,7 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-2149, 
+This unofficial version has been derived from the latest official Testing release T1.6.1-324, 
 plus some of the features already present in the Unstable release.
 
 
@@ -80,22 +80,17 @@ This version includes some features not (yet) available in the Open Rails testin
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
 - Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
 - Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
+- NEW: added possibility to set max wind speed in the ORNYMG only option window
+- NOTE: skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
+- NOTE: reverted updates to particle management (exhaust); now compatible with 1.6.1
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
   *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
   *- Wagon Size and Centering Controls, by steelfill (PR #1122)
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
-  *- Particle Emitter Overhaul, by Steelfill (PR #1128)
-  *- Temporary fix for bug 2121985: F9 TCO out-of-range after resume , by rwf-rr (PR #1158)
-  *- Revise TrainCar.SetUpWheels to Better Handle Unusual Rolling Stock , by SteelFill (PR #1169)
-  *- NEW: Make data logger interval configurable, by rwf-rr (PR #1175)
-  *- NEW: Remove Implicit Requirement for Engine Name to Come After "Engine (", by SteelFill (PR #1176)
-  *- NEW: Fix Diesel RPM Rate of Change, by SteelFill (PR #1178)
-  *- NEW: Fix/avoid type initialization exception - 2nd try, by cjakeman (PR #1184)
-  *- NEW: Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
-  *- NEW: Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
-
+  *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
+  *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
 
 
 Info about content of the various PR to the Unstable release can be found here
