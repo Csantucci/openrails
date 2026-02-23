@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.171
-February 22nd, 2026
+﻿Open Rails NewYear README - Rev.171.1
+February 23rd, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -91,6 +91,7 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
   *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
+  *- NEW: fix bug https://bugs.launchpad.net/or/+bug/2142466 F9 window not updated
 
 
 Info about content of the various PR to the Unstable release can be found here
@@ -100,9 +101,7 @@ The Monogame related code intentionally coincides only partly with the code of t
 
 CREDITS
 This unofficial version couldn't have been created without following contributions:
-- the whole Open Rails Development Team and Open Rails Management Team, that have generated the off, by cesarBLG (PR #1115)
-  *- NEW: Handle null control active locomotive, by cesarBLG (PR #1123)
-    *- NEW: Add missing es.po files, by cjakeman (PR #1129)icial Open Rails version
+- the whole Open Rails Development Team and Open Rails Management Team, that have generated the official Open Rails version
 - the Monogame Development Team                                                                                   #
 - Peter Gulyas, who created the first Monogame version of Open Rails
 - perpetualKid
