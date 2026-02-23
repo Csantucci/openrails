@@ -81,6 +81,7 @@ This version includes some features not (yet) available in the Open Rails testin
 - Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
 - Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
 - NEW: added possibility to set max wind speed in the ORNYMG only option window
+- NEW: fix for ORNYMG bug about F9 window not updated
 - NOTE: skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
 - NOTE: reverted updates to particle management (exhaust); now compatible with 1.6.1
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
@@ -91,7 +92,7 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
   *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
-  *- NEW: fix bug https://bugs.launchpad.net/or/+bug/2142466 F9 window not updated
+
 
 
 Info about content of the various PR to the Unstable release can be found here
