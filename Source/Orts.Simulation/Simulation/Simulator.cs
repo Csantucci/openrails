@@ -261,6 +261,7 @@ namespace Orts.Simulation
         public event System.EventHandler<QueryCarViewerLoadedEventArgs> QueryCarViewerLoaded;
         public event System.EventHandler RequestTTDetachWindow;
         public event System.EventHandler TTRequestStopMessageWindow;
+        public event System.EventHandler TrainsetParameterChanged;
 
         public float TimetableLoadedFraction = 0.0f;    // Set by AI.PrerunAI(), Get by GameStateRunActivity.Update()
 
@@ -2526,5 +2527,11 @@ namespace Orts.Simulation
             return query.Loaded;
         }
 
+        internal void OnTrainsetParameterChanged()
+        {
+            var trainsetParameterChanged = TrainsetParameterChanged;
+            if (trainsetParameterChanged != null)
+                trainsetParameterChanged(this, EventArgs.Empty);
+        }
     } // Simulator
 }

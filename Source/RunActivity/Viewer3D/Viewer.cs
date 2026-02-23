@@ -392,6 +392,7 @@ namespace Orts.Viewer3D
             Simulator.PlayerTrainChanged += PlayerTrainChanged;
             Simulator.RequestTTDetachWindow += RequestTTDetachWindow;
             Simulator.TTRequestStopMessageWindow += TTRequestStopMessageWindow;
+            Simulator.TrainsetParameterChanged += TrainsetParameterChanged;
 
             // The speedpost.dat file is needed only to derive the shape names for the temporary speed restriction zones,
             // so it is opened only in activity mode
@@ -1759,6 +1760,13 @@ namespace Orts.Viewer3D
         void TTRequestStopMessageWindow(object sender, EventArgs e)
         {
             TTRequestStopWindow.Visible = true;
+        }
+
+        // update TrainOperationsWindow if window visible
+        void TrainsetParameterChanged(object sender, EventArgs e)
+        {
+            if (TrainOperationsWindow.Visible)
+                TrainOperationsWindow.TrainOperationsChanged = true;
         }
 
         // Finds the Turntable or Transfertable nearest to the viewing point
