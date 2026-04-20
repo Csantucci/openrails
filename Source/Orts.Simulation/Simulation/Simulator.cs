@@ -369,21 +369,21 @@ namespace Orts.Simulation
                 RDB = new RoadDatabaseFile(rdbFile);
             }
 
-            var carSpawnFile = RoutePath + @"\carspawn.dat";
+            string carSpawnFile = RoutePath + @"\carspawn.dat";
             if (File.Exists(carSpawnFile))
             {
                 CarSpawnerLists = new List<CarSpawnerList>();
                 Trace.Write(" CARSPAWN");
-                CarSpawnerFile = new CarSpawnerFile(RoutePath + @"\carspawn.dat", RoutePath + @"\shapes\", CarSpawnerLists);
+                CarSpawnerFile = new CarSpawnerFile(carSpawnFile, RoutePath + @"\shapes\", CarSpawnerLists);
             }
 
             // Extended car spawner file
-            var extCarSpawnFile = RoutePath + @"\openrails\carspawn.dat";
+            string extCarSpawnFile = ORFileHelper.GetORTSFilePath(carSpawnFile);
             if (File.Exists(extCarSpawnFile))
             {
                 if (CarSpawnerLists == null) CarSpawnerLists = new List<CarSpawnerList>();
                 Trace.Write(" EXTCARSPAWN");
-                ExtCarSpawnerFile = new ExtCarSpawnerFile(RoutePath + @"\openrails\carspawn.dat", RoutePath + @"\shapes\", CarSpawnerLists);
+                ExtCarSpawnerFile = new ExtCarSpawnerFile(extCarSpawnFile, RoutePath + @"\shapes\", CarSpawnerLists);
             }
 
             // Generate a list of EOTs that may be used to attach at end of train
@@ -417,7 +417,7 @@ namespace Orts.Simulation
 
             // check for existence of activity file in OpenRails subfolder
 
-            activityPath = RoutePath + @"\Activities\Openrails\" + ActivityFileName + ".act";
+            activityPath = ORFileHelper.GetORTSFilePath(activityPath);
             if (File.Exists(activityPath))
             {
                 // We have an OR-specific addition to world file
