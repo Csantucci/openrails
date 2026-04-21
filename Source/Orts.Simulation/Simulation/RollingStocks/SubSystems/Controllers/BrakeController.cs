@@ -376,6 +376,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.Controllers
         {
             if (!Activated)
             {
+                Activated = true;
                 if (ScriptName == "PBL2") Script = new PBL2BrakeController();
                 else if (ScriptName != null && ScriptName != "MSTS")
                 {
