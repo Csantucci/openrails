@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.171.1
-February 23rd, 2026
+﻿Open Rails NewYear Stable README - Rev.171.2
+April 21st, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,8 +9,9 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.6.1-324, 
-plus some of the features already present in the Unstable release.
+This unofficial version has been derived from the official Testing release T1.6.1-324, 
+plus some of the features already present in the Unstable release, plus some fixes.
+It has the aim to be a stable version compatible with official 1.6.1, and that will be modified only to insert bug fixes.
 
 
 This version includes some features not (yet) available in the Open Rails testing official version, that is:
@@ -80,10 +81,8 @@ This version includes some features not (yet) available in the Open Rails testin
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
 - Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
 - Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
-- NEW: added possibility to set max wind speed in the ORNYMG only option window
-- NEW: fix for ORNYMG bug about F9 window not updated
+- added possibility to set max wind speed in the ORNYMG only option window
 - NOTE: skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
-- NOTE: reverted updates to particle management (exhaust); now compatible with 1.6.1
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
@@ -92,6 +91,14 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
   *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
+  
+Further bug fixes included:
+- NEW: Fix for null crash in timetable mode, see https://bugs.launchpad.net/or/+bug/2148824 Null crash in timetable mode (PR #1219)
+- NEW: Partial fix for cruise control sounds not working, by cesarBLG, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__324967
+- NEW: Partial fix for remote control of switches not working in multiplayer,  see https://www.elvastower.com/forums/index.php?/topic/39601-switches-and-signals-dont-respond-correctly-in-multiplayer/ (PR #1218)
+- NEW: Fix for compound locomotive starting valve not working (PR #1210), bu steamer_ctn, already present in official testing releases
+- NEW: Don't Assume MSTS ENG and WAG Files (PR #1215), by steelfill, already present in official testing releases
+
 
 
 
