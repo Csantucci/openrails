@@ -504,6 +504,7 @@ namespace Orts.Viewer3D
                 for (int i = 0; i < Viewer.ENVFile.SkyLayers.Count; i++)
                 {
                     mstsSkyTexture[i] = Viewer.Simulator.RoutePath + @"\envfiles\textures\" + mstsskytexture[i].TextureName.ToString();
+//                    MSTSSkyTexture.Add(Viewer.TextureManager.Get(mstsSkyTexture[i], true));
                     MSTSSkyTexture.Add(Orts.Formats.Msts.AceFile.Texture2DFromFile(Viewer.RenderProcess.GraphicsDevice, mstsSkyTexture[i]));
                     if( i == 0 )
                     {
@@ -520,6 +521,7 @@ namespace Orts.Viewer3D
                     }
                     else
                     {
+//                        MSTSSkyCloudTexture.Add(Viewer.TextureManager.Get(mstsSkyTexture[i]));
                         MSTSSkyCloudTexture.Add(Orts.Formats.Msts.AceFile.Texture2DFromFile(Viewer.RenderProcess.GraphicsDevice, mstsSkyTexture[i]));
                         mstscloudtexturex = mstsskytexture[i].TileX;
                         mstscloudtexturey = mstsskytexture[i].TileY;
