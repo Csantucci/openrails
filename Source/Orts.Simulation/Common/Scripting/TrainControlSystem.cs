@@ -273,11 +273,7 @@ namespace ORTS.Scripting.Api
         /// <summary>
         /// Deprecated. Returns positive infinity if traction cutoff is requested by the brake system, and negative infinity if it is not requested
         /// </summary>
-        [Obsolete("BrakeCutsPowerAtBrakeCylinderPressureBar() is deprecated, use BrakeSystemTractionAuthorization instead")]
-        public float BrakeCutsPowerAtBrakeCylinderPressureBar()
-        {
-            return BrakeSystemTractionAuthorization ? float.PositiveInfinity : float.NegativeInfinity;
-        }
+        public Func<float> BrakeCutsPowerAtBrakeCylinderPressureBar;
         public bool BrakeSystemTractionAuthorization => Host.BrakeSystemTractionAuthorization;
         /// <summary>
         /// True if dynamic brake must be cut if the emergency brake is applied.
