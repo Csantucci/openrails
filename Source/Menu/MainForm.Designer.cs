@@ -84,6 +84,19 @@ namespace Menu
             this.comboBoxDifficulty = new System.Windows.Forms.ComboBox();
             this.label8 = new System.Windows.Forms.Label();
             this.panelModeTimetable = new System.Windows.Forms.Panel();
+            this.checkBoxTTWatchMode = new System.Windows.Forms.CheckBox();
+            this.labelTimetableWeatherFile = new System.Windows.Forms.Label();
+            this.comboBoxTimetableWeatherFile = new System.Windows.Forms.ComboBox();
+            this.comboBoxTimetableDay = new System.Windows.Forms.ComboBox();
+            this.label22 = new System.Windows.Forms.Label();
+            this.comboBoxTimetableWeather = new System.Windows.Forms.ComboBox();
+            this.label20 = new System.Windows.Forms.Label();
+            this.comboBoxTimetableSeason = new System.Windows.Forms.ComboBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.labelTTStartLocation = new System.Windows.Forms.Label();
+            this.comboBoxTTStartLocation = new System.Windows.Forms.ComboBox();
+            this.labelTTStartTime = new System.Windows.Forms.Label();
+            this.comboBoxTTStartTime = new System.Windows.Forms.ComboBox();
             this.label24 = new System.Windows.Forms.Label();
             this.comboBoxTimetableTrain = new System.Windows.Forms.ComboBox();
             this.label23 = new System.Windows.Forms.Label();
@@ -98,19 +111,6 @@ namespace Menu
             this.pbNotificationsNone = new System.Windows.Forms.PictureBox();
             this.pictureBoxLogo = new System.Windows.Forms.PictureBox();
             this.ttNotifications = new System.Windows.Forms.ToolTip(this.components);
-            this.labelTTStartLocation = new System.Windows.Forms.Label();
-            this.comboBoxTTStartLocation = new System.Windows.Forms.ComboBox();
-            this.labelTTStartTime = new System.Windows.Forms.Label();
-            this.comboBoxTTStartTime = new System.Windows.Forms.ComboBox();
-            this.labelTimetableWeatherFile = new System.Windows.Forms.Label();
-            this.comboBoxTimetableWeatherFile = new System.Windows.Forms.ComboBox();
-            this.comboBoxTimetableDay = new System.Windows.Forms.ComboBox();
-            this.label22 = new System.Windows.Forms.Label();
-            this.comboBoxTimetableWeather = new System.Windows.Forms.ComboBox();
-            this.label20 = new System.Windows.Forms.Label();
-            this.comboBoxTimetableSeason = new System.Windows.Forms.ComboBox();
-            this.label21 = new System.Windows.Forms.Label();
-            this.checkBoxTTWatchMode = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -149,12 +149,12 @@ namespace Menu
             this.labelLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.labelLogo.Font = new System.Drawing.Font("Arial", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelLogo.ForeColor = System.Drawing.Color.Gray;
-            this.labelLogo.Location = new System.Drawing.Point(96, 472);
+            this.labelLogo.Location = new System.Drawing.Point(82, 470);
             this.labelLogo.Name = "labelLogo";
-            this.labelLogo.Size = new System.Drawing.Size(224, 64);
+            this.labelLogo.Size = new System.Drawing.Size(224, 66);
             this.labelLogo.TabIndex = 11;
-            this.labelLogo.Text = "Open Rails";
-            this.labelLogo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.labelLogo.Text = "Open Rails NYMG stable";
+            this.labelLogo.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             this.labelLogo.UseMnemonic = false;
             // 
             // folderBrowserDialog
@@ -739,179 +739,16 @@ namespace Menu
             this.panelModeTimetable.TabIndex = 10;
             this.panelModeTimetable.Visible = false;
             // 
-            // label24
+            // checkBoxTTWatchMode
             // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(5, 79);
-            this.label24.Margin = new System.Windows.Forms.Padding(3);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(34, 13);
-            this.label24.TabIndex = 4;
-            this.label24.Text = "Train:";
-            this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // comboBoxTimetableTrain
-            // 
-            this.comboBoxTimetableTrain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxTimetableTrain.FormattingEnabled = true;
-            this.comboBoxTimetableTrain.Location = new System.Drawing.Point(91, 76);
-            this.comboBoxTimetableTrain.Name = "comboBoxTimetableTrain";
-            this.comboBoxTimetableTrain.Size = new System.Drawing.Size(193, 21);
-            this.comboBoxTimetableTrain.TabIndex = 5;
-            this.comboBoxTimetableTrain.SelectedIndexChanged += new System.EventHandler(this.comboBoxTimetableTrain_SelectedIndexChanged);
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(3, 52);
-            this.label23.Margin = new System.Windows.Forms.Padding(3);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(56, 13);
-            this.label23.TabIndex = 2;
-            this.label23.Text = "Timetable:";
-            this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // comboBoxTimetable
-            // 
-            this.comboBoxTimetable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxTimetable.FormattingEnabled = true;
-            this.comboBoxTimetable.Location = new System.Drawing.Point(91, 49);
-            this.comboBoxTimetable.Name = "comboBoxTimetable";
-            this.comboBoxTimetable.Size = new System.Drawing.Size(193, 21);
-            this.comboBoxTimetable.TabIndex = 3;
-            this.comboBoxTimetable.SelectedIndexChanged += new System.EventHandler(this.comboBoxTimetable_selectedIndexChanged);
-            this.comboBoxTimetable.EnabledChanged += new System.EventHandler(this.comboBoxTimetable_EnabledChanged);
-            // 
-            // comboBoxTimetableSet
-            // 
-            this.comboBoxTimetableSet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxTimetableSet.FormattingEnabled = true;
-            this.comboBoxTimetableSet.Location = new System.Drawing.Point(3, 22);
-            this.comboBoxTimetableSet.Name = "comboBoxTimetableSet";
-            this.comboBoxTimetableSet.Size = new System.Drawing.Size(281, 21);
-            this.comboBoxTimetableSet.TabIndex = 1;
-            this.comboBoxTimetableSet.SelectedIndexChanged += new System.EventHandler(this.comboBoxTimetableSet_SelectedIndexChanged);
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(3, 3);
-            this.label15.Margin = new System.Windows.Forms.Padding(3);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(73, 13);
-            this.label15.TabIndex = 0;
-            this.label15.Text = "Timetable set:";
-            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // testingToolStripMenuItem
-            // 
-            this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
-            this.testingToolStripMenuItem.Size = new System.Drawing.Size(111, 22);
-            this.testingToolStripMenuItem.Text = "Testing";
-            this.testingToolStripMenuItem.Click += new System.EventHandler(this.testingToolStripMenuItem_Click);
-            // 
-            // contextMenuStripTools
-            // 
-            this.contextMenuStripTools.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStripTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.testingToolStripMenuItem});
-            this.contextMenuStripTools.Name = "contextMenuStrip1";
-            this.contextMenuStripTools.Size = new System.Drawing.Size(112, 26);
-            // 
-            // contextMenuStripDocuments
-            // 
-            this.contextMenuStripDocuments.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStripDocuments.Name = "contextMenuStripDocuments";
-            this.contextMenuStripDocuments.Size = new System.Drawing.Size(61, 4);
-            // 
-            // lblNotificationCount
-            // 
-            this.lblNotificationCount.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(0)))), ((int)(((byte)(6)))));
-            this.lblNotificationCount.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblNotificationCount.ForeColor = System.Drawing.Color.White;
-            this.lblNotificationCount.Location = new System.Drawing.Point(827, 3);
-            this.lblNotificationCount.Name = "lblNotificationCount";
-            this.lblNotificationCount.Size = new System.Drawing.Size(8, 8);
-            this.lblNotificationCount.TabIndex = 42;
-            this.lblNotificationCount.Text = "1";
-            this.lblNotificationCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.lblNotificationCount.Visible = false;
-            this.lblNotificationCount.Click += new System.EventHandler(this.lblNotificationCount_Click);
-            // 
-            // pbNotificationsSome
-            // 
-            this.pbNotificationsSome.BackColor = System.Drawing.Color.Transparent;
-            this.pbNotificationsSome.Image = global::Menu.Properties.Resources.chat_icon_new_message_transparent;
-            this.pbNotificationsSome.Location = new System.Drawing.Point(805, 0);
-            this.pbNotificationsSome.Name = "pbNotificationsSome";
-            this.pbNotificationsSome.Size = new System.Drawing.Size(37, 31);
-            this.pbNotificationsSome.TabIndex = 41;
-            this.pbNotificationsSome.TabStop = false;
-            this.ttNotifications.SetToolTip(this.pbNotificationsSome, "Notifications published by Open Rails");
-            this.pbNotificationsSome.Click += new System.EventHandler(this.pbNotificationsSome_Click);
-            // 
-            // pbNotificationsNone
-            // 
-            this.pbNotificationsNone.Image = global::Menu.Properties.Resources.chat_icon_no_message_transparent;
-            this.pbNotificationsNone.InitialImage = ((System.Drawing.Image)(resources.GetObject("pbNotificationsNone.InitialImage")));
-            this.pbNotificationsNone.Location = new System.Drawing.Point(805, 0);
-            this.pbNotificationsNone.Name = "pbNotificationsNone";
-            this.pbNotificationsNone.Size = new System.Drawing.Size(37, 31);
-            this.pbNotificationsNone.TabIndex = 40;
-            this.pbNotificationsNone.TabStop = false;
-            this.ttNotifications.SetToolTip(this.pbNotificationsNone, "Notifications published by Open Rails");
-            this.pbNotificationsNone.Click += new System.EventHandler(this.pbNotificationsNone_Click);
-            // 
-            // pictureBoxLogo
-            // 
-            this.pictureBoxLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.pictureBoxLogo.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxLogo.Image")));
-            this.pictureBoxLogo.Location = new System.Drawing.Point(12, 472);
-            this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(64, 64);
-            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBoxLogo.TabIndex = 5;
-            this.pictureBoxLogo.TabStop = false;
-            // 
-            // labelTTStartLocation
-            // 
-            this.labelTTStartLocation.AutoSize = true;
-            this.labelTTStartLocation.Location = new System.Drawing.Point(3, 145);
-            this.labelTTStartLocation.Margin = new System.Windows.Forms.Padding(3);
-            this.labelTTStartLocation.Name = "labelTTStartLocation";
-            this.labelTTStartLocation.Size = new System.Drawing.Size(51, 13);
-            this.labelTTStartLocation.TabIndex = 21;
-            this.labelTTStartLocation.Text = "Location:";
-            this.labelTTStartLocation.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // comboBoxTTStartLocation
-            // 
-            this.comboBoxTTStartLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBoxTTStartLocation.FormattingEnabled = true;
-            this.comboBoxTTStartLocation.Location = new System.Drawing.Point(91, 142);
-            this.comboBoxTTStartLocation.Name = "comboBoxTTStartLocation";
-            this.comboBoxTTStartLocation.Size = new System.Drawing.Size(193, 21);
-            this.comboBoxTTStartLocation.TabIndex = 22;
-            // 
-            // labelTTStartTime
-            // 
-            this.labelTTStartTime.Location = new System.Drawing.Point(5, 120);
-            this.labelTTStartTime.Margin = new System.Windows.Forms.Padding(2);
-            this.labelTTStartTime.Name = "labelTTStartTime";
-            this.labelTTStartTime.Size = new System.Drawing.Size(56, 14);
-            this.labelTTStartTime.TabIndex = 19;
-            this.labelTTStartTime.Text = "Time:";
-            this.labelTTStartTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // comboBoxTTStartTime
-            // 
-            this.comboBoxTTStartTime.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
-            this.comboBoxTTStartTime.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
-            this.comboBoxTTStartTime.FormattingEnabled = true;
-            this.comboBoxTTStartTime.Location = new System.Drawing.Point(93, 113);
-            this.comboBoxTTStartTime.Name = "comboBoxTTStartTime";
-            this.comboBoxTTStartTime.Size = new System.Drawing.Size(73, 21);
-            this.comboBoxTTStartTime.TabIndex = 20;
+            this.checkBoxTTWatchMode.AutoSize = true;
+            this.checkBoxTTWatchMode.Location = new System.Drawing.Point(172, 115);
+            this.checkBoxTTWatchMode.Name = "checkBoxTTWatchMode";
+            this.checkBoxTTWatchMode.Size = new System.Drawing.Size(88, 17);
+            this.checkBoxTTWatchMode.TabIndex = 5;
+            this.checkBoxTTWatchMode.Text = "Watch Mode";
+            this.checkBoxTTWatchMode.UseVisualStyleBackColor = true;
+            this.checkBoxTTWatchMode.CheckedChanged += new System.EventHandler(this.checkBoxTTWatchMode_CheckedChanged);
             // 
             // labelTimetableWeatherFile
             // 
@@ -1000,16 +837,179 @@ namespace Menu
             this.label21.Text = "Season:";
             this.label21.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // checkBoxTTWatchMode
+            // labelTTStartLocation
             // 
-            this.checkBoxTTWatchMode.AutoSize = true;
-            this.checkBoxTTWatchMode.Location = new System.Drawing.Point(172, 115);
-            this.checkBoxTTWatchMode.Name = "checkBoxTTWatchMode";
-            this.checkBoxTTWatchMode.Size = new System.Drawing.Size(88, 17);
-            this.checkBoxTTWatchMode.TabIndex = 5;
-            this.checkBoxTTWatchMode.Text = "Watch Mode";
-            this.checkBoxTTWatchMode.UseVisualStyleBackColor = true;
-            this.checkBoxTTWatchMode.CheckedChanged += new System.EventHandler(this.checkBoxTTWatchMode_CheckedChanged);
+            this.labelTTStartLocation.AutoSize = true;
+            this.labelTTStartLocation.Location = new System.Drawing.Point(3, 145);
+            this.labelTTStartLocation.Margin = new System.Windows.Forms.Padding(3);
+            this.labelTTStartLocation.Name = "labelTTStartLocation";
+            this.labelTTStartLocation.Size = new System.Drawing.Size(51, 13);
+            this.labelTTStartLocation.TabIndex = 21;
+            this.labelTTStartLocation.Text = "Location:";
+            this.labelTTStartLocation.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxTTStartLocation
+            // 
+            this.comboBoxTTStartLocation.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTTStartLocation.FormattingEnabled = true;
+            this.comboBoxTTStartLocation.Location = new System.Drawing.Point(91, 142);
+            this.comboBoxTTStartLocation.Name = "comboBoxTTStartLocation";
+            this.comboBoxTTStartLocation.Size = new System.Drawing.Size(193, 21);
+            this.comboBoxTTStartLocation.TabIndex = 22;
+            // 
+            // labelTTStartTime
+            // 
+            this.labelTTStartTime.Location = new System.Drawing.Point(5, 120);
+            this.labelTTStartTime.Margin = new System.Windows.Forms.Padding(2);
+            this.labelTTStartTime.Name = "labelTTStartTime";
+            this.labelTTStartTime.Size = new System.Drawing.Size(56, 14);
+            this.labelTTStartTime.TabIndex = 19;
+            this.labelTTStartTime.Text = "Time:";
+            this.labelTTStartTime.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxTTStartTime
+            // 
+            this.comboBoxTTStartTime.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.SuggestAppend;
+            this.comboBoxTTStartTime.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.ListItems;
+            this.comboBoxTTStartTime.FormattingEnabled = true;
+            this.comboBoxTTStartTime.Location = new System.Drawing.Point(93, 113);
+            this.comboBoxTTStartTime.Name = "comboBoxTTStartTime";
+            this.comboBoxTTStartTime.Size = new System.Drawing.Size(73, 21);
+            this.comboBoxTTStartTime.TabIndex = 20;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(5, 79);
+            this.label24.Margin = new System.Windows.Forms.Padding(3);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(34, 13);
+            this.label24.TabIndex = 4;
+            this.label24.Text = "Train:";
+            this.label24.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxTimetableTrain
+            // 
+            this.comboBoxTimetableTrain.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTimetableTrain.FormattingEnabled = true;
+            this.comboBoxTimetableTrain.Location = new System.Drawing.Point(91, 76);
+            this.comboBoxTimetableTrain.Name = "comboBoxTimetableTrain";
+            this.comboBoxTimetableTrain.Size = new System.Drawing.Size(193, 21);
+            this.comboBoxTimetableTrain.TabIndex = 5;
+            this.comboBoxTimetableTrain.SelectedIndexChanged += new System.EventHandler(this.comboBoxTimetableTrain_SelectedIndexChanged);
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(3, 52);
+            this.label23.Margin = new System.Windows.Forms.Padding(3);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(56, 13);
+            this.label23.TabIndex = 2;
+            this.label23.Text = "Timetable:";
+            this.label23.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // comboBoxTimetable
+            // 
+            this.comboBoxTimetable.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTimetable.FormattingEnabled = true;
+            this.comboBoxTimetable.Location = new System.Drawing.Point(91, 49);
+            this.comboBoxTimetable.Name = "comboBoxTimetable";
+            this.comboBoxTimetable.Size = new System.Drawing.Size(193, 21);
+            this.comboBoxTimetable.TabIndex = 3;
+            this.comboBoxTimetable.SelectedIndexChanged += new System.EventHandler(this.comboBoxTimetable_selectedIndexChanged);
+            this.comboBoxTimetable.EnabledChanged += new System.EventHandler(this.comboBoxTimetable_EnabledChanged);
+            // 
+            // comboBoxTimetableSet
+            // 
+            this.comboBoxTimetableSet.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboBoxTimetableSet.FormattingEnabled = true;
+            this.comboBoxTimetableSet.Location = new System.Drawing.Point(3, 22);
+            this.comboBoxTimetableSet.Name = "comboBoxTimetableSet";
+            this.comboBoxTimetableSet.Size = new System.Drawing.Size(281, 21);
+            this.comboBoxTimetableSet.TabIndex = 1;
+            this.comboBoxTimetableSet.SelectedIndexChanged += new System.EventHandler(this.comboBoxTimetableSet_SelectedIndexChanged);
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(3, 3);
+            this.label15.Margin = new System.Windows.Forms.Padding(3);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(73, 13);
+            this.label15.TabIndex = 0;
+            this.label15.Text = "Timetable set:";
+            this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // testingToolStripMenuItem
+            // 
+            this.testingToolStripMenuItem.Name = "testingToolStripMenuItem";
+            this.testingToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.testingToolStripMenuItem.Text = "Testing";
+            this.testingToolStripMenuItem.Click += new System.EventHandler(this.testingToolStripMenuItem_Click);
+            // 
+            // contextMenuStripTools
+            // 
+            this.contextMenuStripTools.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStripTools.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.testingToolStripMenuItem});
+            this.contextMenuStripTools.Name = "contextMenuStrip1";
+            this.contextMenuStripTools.Size = new System.Drawing.Size(113, 26);
+            // 
+            // contextMenuStripDocuments
+            // 
+            this.contextMenuStripDocuments.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.contextMenuStripDocuments.Name = "contextMenuStripDocuments";
+            this.contextMenuStripDocuments.Size = new System.Drawing.Size(61, 4);
+            // 
+            // lblNotificationCount
+            // 
+            this.lblNotificationCount.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(234)))), ((int)(((byte)(0)))), ((int)(((byte)(6)))));
+            this.lblNotificationCount.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lblNotificationCount.ForeColor = System.Drawing.Color.White;
+            this.lblNotificationCount.Location = new System.Drawing.Point(827, 3);
+            this.lblNotificationCount.Name = "lblNotificationCount";
+            this.lblNotificationCount.Size = new System.Drawing.Size(8, 8);
+            this.lblNotificationCount.TabIndex = 42;
+            this.lblNotificationCount.Text = "1";
+            this.lblNotificationCount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.lblNotificationCount.Visible = false;
+            this.lblNotificationCount.Click += new System.EventHandler(this.lblNotificationCount_Click);
+            // 
+            // pbNotificationsSome
+            // 
+            this.pbNotificationsSome.BackColor = System.Drawing.Color.Transparent;
+            this.pbNotificationsSome.Image = global::Menu.Properties.Resources.chat_icon_new_message_transparent;
+            this.pbNotificationsSome.Location = new System.Drawing.Point(805, 0);
+            this.pbNotificationsSome.Name = "pbNotificationsSome";
+            this.pbNotificationsSome.Size = new System.Drawing.Size(37, 31);
+            this.pbNotificationsSome.TabIndex = 41;
+            this.pbNotificationsSome.TabStop = false;
+            this.ttNotifications.SetToolTip(this.pbNotificationsSome, "Notifications published by Open Rails");
+            this.pbNotificationsSome.Click += new System.EventHandler(this.pbNotificationsSome_Click);
+            // 
+            // pbNotificationsNone
+            // 
+            this.pbNotificationsNone.Image = global::Menu.Properties.Resources.chat_icon_no_message_transparent;
+            this.pbNotificationsNone.InitialImage = ((System.Drawing.Image)(resources.GetObject("pbNotificationsNone.InitialImage")));
+            this.pbNotificationsNone.Location = new System.Drawing.Point(805, 0);
+            this.pbNotificationsNone.Name = "pbNotificationsNone";
+            this.pbNotificationsNone.Size = new System.Drawing.Size(37, 31);
+            this.pbNotificationsNone.TabIndex = 40;
+            this.pbNotificationsNone.TabStop = false;
+            this.ttNotifications.SetToolTip(this.pbNotificationsNone, "Notifications published by Open Rails");
+            this.pbNotificationsNone.Click += new System.EventHandler(this.pbNotificationsNone_Click);
+            // 
+            // pictureBoxLogo
+            // 
+            this.pictureBoxLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.pictureBoxLogo.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxLogo.Image")));
+            this.pictureBoxLogo.Location = new System.Drawing.Point(12, 472);
+            this.pictureBoxLogo.Name = "pictureBoxLogo";
+            this.pictureBoxLogo.Size = new System.Drawing.Size(64, 64);
+            this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxLogo.TabIndex = 5;
+            this.pictureBoxLogo.TabStop = false;
             // 
             // MainForm
             // 
