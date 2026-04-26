@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.171.1
-February 23rd, 2026
+﻿Open Rails NewYear README - Rev.172
+April 26th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,12 +9,11 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.6.1-324, 
+This unofficial version has been derived from the latest official Testing release T1.6.1-363, 
 plus some of the features already present in the Unstable release.
 
 
 This version includes some features not (yet) available in the Open Rails testing official version, that is:
-- addition of track sounds in the sound debug window (by dennisat)
 - F5 HUD scrolling (by mbm_or)
 - checkbox in General Options tab to enable or disable watchdog
 - increase of remote horn sound volume level
@@ -80,18 +79,22 @@ This version includes some features not (yet) available in the Open Rails testin
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
 - Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
 - Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
-- NEW: added possibility to set max wind speed in the ORNYMG only option window
-- NEW: fix for ORNYMG bug about F9 window not updated
-- NOTE: skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
-- NOTE: reverted updates to particle management (exhaust); now compatible with 1.6.1
+- added possibility to set max wind speed in the ORNYMG only option window
+- skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
+  *- Automatic speed control (Cruise Control) refactoring (updated merge including partial fix for Cruise Control sounds not working, by cesarBLG (PR #1091)
   *- Wagon Size and Centering Controls, by steelfill (PR #1122)
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
   *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
+  *- NEW: Temporary fix for https://bugs.launchpad.net/or/+bug/2148824 Null crash in timetable mode (PR #1219)
+  *- NEW: Partial bug fix for https://bugs.launchpad.net/or/+bug/2148806 Switch state isn't synced in multiplayer mode (PR #1218)
+  *- NEW: Switchable brake system, by gpz (PR #1057)
+  *- NEW: ShapeHierarchy Attachment for More Wagon Addons, by steelfill (PR #1126)
+  *- NEW: Add missing sounds on control cars, cy cesarBLG (PR #1216)
+  *- NEW: New Sounds for Diesel Locomotives, plus refactoring of sound debug window, by steelfill (PR #1221)
 
 
 
