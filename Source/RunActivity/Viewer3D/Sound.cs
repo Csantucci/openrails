@@ -44,14 +44,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Microsoft.Xna.Framework;
 using Orts.Common;
 using Orts.Formats.Msts;
 using Orts.Simulation;
 using Orts.Simulation.AIs;
 using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
-using Orts.Viewer3D.RollingStock;
+using Orts.Simulation.Signalling;
+using Orts.Viewer3D;
 using ORTS.Common;
 using ORTS.Settings;
 using Event = Orts.Common.Event;
@@ -80,10 +80,6 @@ namespace Orts.Viewer3D
         /// The sound may be from a train car
         /// </summary>
         public MSTSWagon Car;
-        /// <summary>
-        /// The viewer of the connected train car (if any)
-        /// </summary>
-        public MSTSWagonViewer CarViewer;
         /// <summary>
         /// The listener is connected to this viewer
         /// </summary>
@@ -126,7 +122,7 @@ namespace Orts.Viewer3D
             Car = car;
             Viewer = viewer;
 
-            foreach (TrackTypesFile.TrackType ttdf in viewer.TrackTypes)
+            foreach (Orts.Formats.Msts.TrackTypesFile.TrackType ttdf in viewer.TrackTypes)
             {
                 MSTSLocomotive loco = Car as MSTSLocomotive;
 
@@ -538,9 +534,19 @@ namespace Orts.Viewer3D
     {
         /// <summary>
         /// Squared cutoff distance. No sound is audible above that, except for the actual player train,
-        /// where cutoff occurs at a distance wich is higher than the train length
+        /// where cutoff occurs at a distance wich is higher than the train length plus offset to 
+        /// approximately take into account distance from camera to car
         /// </summary>
-        private const int CUTOFFDISTANCE = 4000000;
+        private int CutOffDistanceM2
+        {
+            get
+            {
+                const int staticDistanceM2 = 4000000;
+                var isPlayer = Car?.Train?.IsActualPlayerTrain ?? false;
+                var correctedLength = isPlayer ? Car.Train.Length + 50 : 0; 
+                return (int)Math.Max(staticDistanceM2, correctedLength * correctedLength);
+            }
+        }
         /// <summary>
         /// Max distance for OpenAL inverse distance model. Equals to Math.Sqrt(CUTOFFDISTANCE)
         /// </summary>
@@ -565,19 +571,6 @@ namespace Orts.Viewer3D
         /// Used for Horns
         /// </summary>
         public float HornRolloffFactor = 0.05f;
-
-        /// <summary>
-        /// Construct a SoundSource attached to a train car viewer.
-        /// </summary>
-        /// <param name="viewer"></param>
-        /// <param name="carViewer"></param>
-        /// <param name="smsFilePath"></param>
-        public SoundSource(Viewer viewer, MSTSWagonViewer carViewer, string smsFilePath)
-        {
-            CarViewer = carViewer;
-            Car = (carViewer.Car as MSTSWagon);
-            Initialize(viewer, Car.WorldPosition.WorldLocation, Events.Source.MSTSCar, smsFilePath);
-        }
 
         /// <summary>
         /// Construct a SoundSource attached to a train car.
@@ -723,9 +716,9 @@ namespace Orts.Viewer3D
         public bool MstsMonoTreatment;
 
         /// <summary>
-        /// Current distance to camera, squared meter. Is used for comparision to <see cref="CUTOFFDISTANCE"/>, to determine if is out-of-scope
+        /// Current distance to camera, squared meter. Is used for comparision to <see cref="CutOffDistanceM2"/>, to determine if is out-of-scope
         /// </summary>
-        public float DistanceSquared = CUTOFFDISTANCE + 1;
+        public float DistanceSquared = float.MaxValue;
         /// <summary>
         /// Out-of-scope state in previous <see cref="Update"/> loop
         /// </summary>
@@ -783,7 +776,7 @@ namespace Orts.Viewer3D
 
                 foreach (SMSStream mstsStream in mstsScalabiltyGroup.Streams)
                 {
-                    // Initialization step for sound stream shape attachment
+/*                    // Initialization step for sound stream shape attachment
                     if (CarViewer != null && Car != null)
                     {
                         if (mstsStream.ShapeIndex != -1)
@@ -814,6 +807,7 @@ namespace Orts.Viewer3D
                                 mstsStream.ShapeIndex = 0;
                         }
                     }
+*/
 
                     SoundStreams.Add(new SoundStream(mstsStream, eventSource, this, Viewer.Settings));
                 }
@@ -1080,7 +1074,7 @@ namespace Orts.Viewer3D
             {
                 foreach (SoundStream stream in SoundStreams)
                 {
-                    // For train cars, calculate the position and velocity of exterior sounds
+/*                    // For train cars, calculate the position and velocity of exterior sounds
                     if (CarViewer != null && !Ignore3D)
                     {
                         // Convert position offset into train-car space offset
@@ -1100,7 +1094,7 @@ namespace Orts.Viewer3D
 
                         stream.Update(position, CarViewer.Velocity);
                     }
-                    else // Interior sounds ignore 3D position, do not try to update 3D position
+                    else // Interior sounds ignore 3D position, do not try to update 3D position */
                         stream.Update();
                     needsFrequentUpdate |= stream.NeedsFrequentUpdate;
                 }
@@ -1111,7 +1105,7 @@ namespace Orts.Viewer3D
         } // Update
 
         /// <summary>
-        /// Calculate current distance to camera, and compare it to <see cref="CUTOFFDISTANCE"/>
+        /// Calculate current distance to camera, and compare it to <see cref="CutOffDistanceM2"/>
         /// </summary>
         /// <returns>True, if is now out-of-scope</returns>
         public bool isOutOfDistance()
@@ -1126,15 +1120,13 @@ namespace Orts.Viewer3D
                 float.IsNaN(WorldLocation.Location.Y) ||
                 float.IsNaN(WorldLocation.Location.Z))
             {
-                DistanceSquared = (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ?
-                Math.Max(CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) : CUTOFFDISTANCE) + 1;
+                DistanceSquared = float.MaxValue;
                 return true;
             }
 
             DistanceSquared = WorldLocation.GetDistanceSquared(WorldLocation, Viewer.Camera.CameraWorldLocation);
 
-            return DistanceSquared > (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ? 
-                Math.Max (CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) +2500f : CUTOFFDISTANCE);
+            return DistanceSquared > CutOffDistanceM2;
         }
 
         /// <summary>
@@ -1153,8 +1145,7 @@ namespace Orts.Viewer3D
                 {
                     // (ActivationConditions.Distance == 0) means distance checking disabled
                     if ((ActivationConditions.Distance == 0 || DistanceSquared < ActivationConditions.Distance * ActivationConditions.Distance) &&
-                        DistanceSquared < (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ?
-                        Math.Max(CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) +2500f : CUTOFFDISTANCE))
+                        DistanceSquared < CutOffDistanceM2)
                         return true;
                 }
                 else
@@ -1179,8 +1170,7 @@ namespace Orts.Viewer3D
             if (WorldLocation != WorldLocation.None)
             {
                 if (DeactivationConditions.Distance != 0 && DistanceSquared > DeactivationConditions.Distance * DeactivationConditions.Distance ||
-                    DistanceSquared > (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ?
-                    Math.Max(CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) + 2500f : CUTOFFDISTANCE))
+                    DistanceSquared > CutOffDistanceM2)
                     return true;
             }
 
@@ -1566,7 +1556,7 @@ namespace Orts.Viewer3D
             if (ALSoundSource == null)
                 return;
 
-            if (MSTSStream != null && MSTSStream.FrequencyCurve != null)
+            if (MSTSStream != null && MSTSStream.FrequencyCurve != null) 
             {
                 if (SoundSource.Car != null || SoundSource.Viewer.Camera.AttachedCar != null)
                 {
@@ -1724,20 +1714,6 @@ namespace Orts.Viewer3D
         {
             switch (curve.Control)
             {
-/*                case Orts.Formats.Msts.VolumeCurve.Controls.Variable2Controlled:
-                    {
-                        var returnvar = car.Variable2;
-                        if (car is MSTSDieselLocomotive && car.Train.TrainType != Train.TRAINTYPE.REMOTE)
-                        {
-                            var thisEngine = car as MSTSDieselLocomotive;
-                            if (thisEngine.DieselEngines[0].RealRPM < thisEngine.IdleRPM)
-                            {
-                                // ensure variable is <0 and >= -1 when engine is revving up or down
-                                returnvar = (-0.0001f - 0.9999f * (thisEngine.DieselEngines[0].RealRPM / thisEngine.IdleRPM));
-                            }
-                        }
-                        return (returnvar);
-                    }*/
                 case VolumeCurve.Controls.DistanceControlled: return SoundSource.DistanceSquared;
                 case VolumeCurve.Controls.SpeedControlled: return car.AbsSpeedMpS;
                 case VolumeCurve.Controls.Variable1Controlled: return car.Variable1.ElementAtOrDefault(curve.SourceID);
@@ -3653,7 +3629,6 @@ namespace Orts.Viewer3D
                                 Program.Viewer.Simulator.PlayerLocomotive : train.Cars[0];
                             var worldLocation = loco.WorldPosition.WorldLocation;
                             worldLocation.Location.Y = worldLocation.Location.Y + 3; // Sound does not come from earth!
-//                            string wsName = Program.Viewer.Simulator.RoutePath + @"\WORLD\" + WorldFile.WorldFileNameFromTileCoordinates(worldLocation.TileX, worldLocation.TileZ) + "s";
                             ActivitySounds = new SoundSource(Program.Viewer, worldLocation, Events.Source.None, ORTSActSoundFile, true);
                             Program.Viewer.SoundProcess.AddSoundSources(localEventID, new List<SoundSourceBase>() { ActivitySounds });
                             break;
@@ -3696,7 +3671,6 @@ namespace Orts.Viewer3D
                                 Program.Viewer.Simulator.PlayerLocomotive : train.Cars[0];
                             var worldLocation = loco.WorldPosition.WorldLocation;
                             worldLocation.Location.Y = worldLocation.Location.Y + 3; // Sound does not come from earth!
- //                           string wsName = Program.Viewer.Simulator.RoutePath + @"\WORLD\" + WorldFile.WorldFileNameFromTileCoordinates(worldLocation.TileX, worldLocation.TileZ) + "s";
                             ActivitySounds = new SoundSource(Program.Viewer, worldLocation, Events.Source.None, ORTSActSoundFile, true, ORTSActSoundFileType, true);
                             Program.Viewer.SoundProcess.AddSoundSources(localEventID, new List<SoundSourceBase>() { ActivitySounds });
                             break;

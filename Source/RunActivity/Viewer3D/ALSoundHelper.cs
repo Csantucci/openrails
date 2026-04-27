@@ -17,7 +17,6 @@
 
 // This file is the responsibility of the 3D & Environment Team. 
 
-using ORTS.Common;
 using Orts.Simulation.RollingStocks;
 using System;
 using System.Collections.Generic;
@@ -525,17 +524,6 @@ namespace Orts.Viewer3D
                 PlayState = PlayState.NOP;
             }
         }
-
-
-        /// <summary>
-        /// Returns a status string for the Debug HUD.
-        /// </summary>
-        [CallOnThread("Updater")]
-        public static string GetStatus()
-        {
-            return Viewer.Catalog.GetPluralStringFmt("{0:F0} wav", "{0:F0} wavs", SoundItem.AllPieces.Count);
-        }
-
     }
 
     /// <summary>
@@ -662,6 +650,9 @@ namespace Orts.Viewer3D
             {
                 OpenAL.alSourcei(SoundSourceID, OpenAL.AL_SOURCE_RELATIVE, OpenAL.AL_FALSE);
                 OpenAL.alSourcef(SoundSourceID, OpenAL.AL_DOPPLER_FACTOR, 1);
+
+                if (Car != null && !Car.SoundSourceIDs.Contains(SoundSourceID))
+                    Car.SoundSourceIDs.Add(SoundSourceID);
             }
         }
 
@@ -685,6 +676,9 @@ namespace Orts.Viewer3D
         {
             if (SoundSourceID != -1)
             {
+                if (Car != null)
+                    Car.SoundSourceIDs.Remove(SoundSourceID);
+
                 Stop();
                 OpenAL.alDeleteSources(1, ref SoundSourceID);
                 SoundSourceID = -1;
@@ -1278,15 +1272,6 @@ namespace Orts.Viewer3D
                 OpenAL.alDeleteSources(1, ref SoundSourceID);
                 ActiveCount--;
             }
-        }
-
-        /// <summary>
-        /// Returns a status string for the Debug HUD.
-        /// </summary>
-        [CallOnThread("Updater")]
-        public static string GetStatus()
-        {
-            return Viewer.Catalog.GetPluralStringFmt("{0:F0} AL sound sources", "{0:F0} AL sound sources", ALSoundSource.ActiveCount);
         }
     }
 }
