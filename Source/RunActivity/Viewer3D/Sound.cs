@@ -44,6 +44,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Orts.Common;
 using Orts.Formats.Msts;
 using Orts.Simulation;
@@ -52,6 +53,7 @@ using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.Signalling;
 using Orts.Viewer3D;
+using Orts.Viewer3D.RollingStock;
 using ORTS.Common;
 using ORTS.Settings;
 using Event = Orts.Common.Event;
@@ -80,6 +82,10 @@ namespace Orts.Viewer3D
         /// The sound may be from a train car
         /// </summary>
         public MSTSWagon Car;
+        /// <summary>
+        /// The viewer of the connected train car (if any)
+        /// </summary>
+        public MSTSWagonViewer CarViewer;
         /// <summary>
         /// The listener is connected to this viewer
         /// </summary>
@@ -116,10 +122,11 @@ namespace Orts.Viewer3D
         private bool CarOnCurve = false;
 
 
-        public TrackSoundSource(MSTSWagon car, Viewer viewer)
+        public TrackSoundSource(MSTSWagonViewer carViewer, Viewer viewer)
         {
             IsTrackSound = true;
-            Car = car;
+            CarViewer = carViewer;
+            Car = (carViewer.Car as MSTSWagon);
             Viewer = viewer;
 
             foreach (Orts.Formats.Msts.TrackTypesFile.TrackType ttdf in viewer.TrackTypes)
@@ -148,9 +155,9 @@ namespace Orts.Viewer3D
                 return;
             }
             if (isInside)
-                InSources.Add(new SoundSource(Viewer, Car, fullPath, true));
+                InSources.Add(new SoundSource(Viewer, CarViewer, fullPath, true));
             else
-                OutSources.Add(new SoundSource(Viewer, Car, fullPath, true));
+                OutSources.Add(new SoundSource(Viewer, CarViewer, fullPath, true));
         }
 
         public override void Uninitialize()
@@ -573,6 +580,20 @@ namespace Orts.Viewer3D
         public float HornRolloffFactor = 0.05f;
 
         /// <summary>
+        /// Construct a SoundSource attached to a train car viewer.
+        /// </summary>
+        /// <param name="viewer"></param>
+        /// <param name="carViewer"></param>
+        /// <param name="smsFilePath"></param>
+        public SoundSource(Viewer viewer, MSTSWagonViewer carViewer, string smsFilePath, bool isTrack = false)
+        {
+            CarViewer = carViewer;
+            Car = (carViewer.Car as MSTSWagon);
+            IsTrackSound = isTrack;
+            Initialize(viewer, Car.WorldPosition.WorldLocation, Events.Source.MSTSCar, smsFilePath);
+        }
+
+        /// <summary>
         /// Construct a SoundSource attached to a train car.
         /// </summary>
         /// <param name="viewer"></param>
@@ -583,7 +604,9 @@ namespace Orts.Viewer3D
         {
             Car = car;
             IsTrackSound = isTrack;
-            Initialize(viewer, car.WorldPosition.WorldLocation, Events.Source.MSTSCar, smsFilePath);
+            viewer.World.Trains.Cars.TryGetValue(car, out TrainCarViewer carViewer);
+            CarViewer = carViewer as MSTSWagonViewer;
+            Initialize(viewer, Car.WorldPosition.WorldLocation, Events.Source.MSTSCar, smsFilePath);
         }
 
         /// <summary>
@@ -776,7 +799,7 @@ namespace Orts.Viewer3D
 
                 foreach (SMSStream mstsStream in mstsScalabiltyGroup.Streams)
                 {
-/*                    // Initialization step for sound stream shape attachment
+                    // Initialization step for sound stream shape attachment
                     if (CarViewer != null && Car != null)
                     {
                         if (mstsStream.ShapeIndex != -1)
@@ -807,7 +830,6 @@ namespace Orts.Viewer3D
                                 mstsStream.ShapeIndex = 0;
                         }
                     }
-*/
 
                     SoundStreams.Add(new SoundStream(mstsStream, eventSource, this, Viewer.Settings));
                 }
@@ -1074,7 +1096,7 @@ namespace Orts.Viewer3D
             {
                 foreach (SoundStream stream in SoundStreams)
                 {
-/*                    // For train cars, calculate the position and velocity of exterior sounds
+                    // For train cars, calculate the position and velocity of exterior sounds
                     if (CarViewer != null && !Ignore3D)
                     {
                         // Convert position offset into train-car space offset
@@ -1094,7 +1116,7 @@ namespace Orts.Viewer3D
 
                         stream.Update(position, CarViewer.Velocity);
                     }
-                    else // Interior sounds ignore 3D position, do not try to update 3D position */
+                    else // Interior sounds ignore 3D position, do not try to update 3D position 
                         stream.Update();
                     needsFrequentUpdate |= stream.NeedsFrequentUpdate;
                 }
