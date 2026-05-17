@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.172.1
-April 28th, 2026
+﻿Open Rails NewYear README - Rev.172.2
+May 17th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -11,6 +11,7 @@ INSTALLATION
 RELEASE NOTES
 This unofficial version has been derived from the latest official Testing release T1.6.1-363, 
 plus some of the features already present in the Unstable release.
+NEW: This version has been built in "Release" mode, which allows for significantly higher FPS in high-end computers
 
 
 This version includes some features not (yet) available in the Open Rails testing official version, that is:
