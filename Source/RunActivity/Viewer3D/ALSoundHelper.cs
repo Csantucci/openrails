@@ -17,7 +17,6 @@
 
 // This file is the responsibility of the 3D & Environment Team. 
 
-using ORTS.Common;
 using Orts.Simulation.RollingStocks;
 using System;
 using System.Collections.Generic;
@@ -525,17 +524,6 @@ namespace Orts.Viewer3D
                 PlayState = PlayState.NOP;
             }
         }
-
-
-        /// <summary>
-        /// Returns a status string for the Debug HUD.
-        /// </summary>
-        [CallOnThread("Updater")]
-        public static string GetStatus()
-        {
-            return Viewer.Catalog.GetPluralStringFmt("{0:F0} wav", "{0:F0} wavs", SoundItem.AllPieces.Count);
-        }
-
     }
 
     /// <summary>
@@ -1145,6 +1133,20 @@ namespace Orts.Viewer3D
         }
 
         /// <summary>
+        /// Immediately stops playback of all sounds in the queue and clears wave data
+        /// </summary>
+        public void ForceResetQueue()
+        {
+            for (int i = 0; i < QUEUELENGHT; i++)
+            {
+                SoundQueue[i].PlayState = PlayState.NOP;
+                SoundQueue[i].SoundPiece = null;
+            }
+
+            QueueHeader = QueueTail = 0;
+        }
+
+        /// <summary>
         /// Start OpenAL playback
         /// </summary>
         private void Start()
@@ -1270,15 +1272,6 @@ namespace Orts.Viewer3D
                 OpenAL.alDeleteSources(1, ref SoundSourceID);
                 ActiveCount--;
             }
-        }
-
-        /// <summary>
-        /// Returns a status string for the Debug HUD.
-        /// </summary>
-        [CallOnThread("Updater")]
-        public static string GetStatus()
-        {
-            return Viewer.Catalog.GetPluralStringFmt("{0:F0} AL sound sources", "{0:F0} AL sound sources", ALSoundSource.ActiveCount);
         }
     }
 }

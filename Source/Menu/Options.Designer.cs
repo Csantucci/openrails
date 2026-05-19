@@ -80,7 +80,9 @@
             this.numericExternalSoundPassThruPercent = new System.Windows.Forms.NumericUpDown();
             this.numericCab2DStretch = new System.Windows.Forms.NumericUpDown();
             this.numericSuperElevationGauge = new System.Windows.Forms.NumericUpDown();
+            this.dataLoggerInterval = new System.Windows.Forms.NumericUpDown();
             this.trackWindVariability = new System.Windows.Forms.TrackBar();
+            this.trackMaxWindSpeed = new System.Windows.Forms.TrackBar();
             this.checkLODViewingExtension = new System.Windows.Forms.CheckBox();
             this.labelWindowSize = new System.Windows.Forms.Label();
             this.labelWebServerPort = new System.Windows.Forms.Label();
@@ -134,8 +136,8 @@
             this.checkDataLogTrainSpeed = new System.Windows.Forms.CheckBox();
             this.tabPageDataLogger = new System.Windows.Forms.TabPage();
             this.checkDataLogSteamPowerCurve = new System.Windows.Forms.CheckBox();
-            this.comboDataLogSpeedUnits = new System.Windows.Forms.ComboBox();
             this.pbDataLoggerOptions = new System.Windows.Forms.PictureBox();
+            this.comboDataLogSpeedUnits = new System.Windows.Forms.ComboBox();
             this.comboDataLoggerSeparator = new System.Windows.Forms.ComboBox();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
@@ -144,7 +146,6 @@
             this.label17 = new System.Windows.Forms.Label();
             this.checkDataLogPhysics = new System.Windows.Forms.CheckBox();
             this.checkDataLogSteamPerformance = new System.Windows.Forms.CheckBox();
-            this.dataLoggerInterval = new System.Windows.Forms.NumericUpDown();
             this.dataLoggerIntervalLabel = new System.Windows.Forms.Label();
             this.checkVerboseConfigurationMessages = new System.Windows.Forms.CheckBox();
             this.tabPageRailDriver = new System.Windows.Forms.TabPage();
@@ -236,23 +237,11 @@
             this.checkAlerter = new System.Windows.Forms.CheckBox();
             this.tabOptions = new System.Windows.Forms.TabControl();
             this.tabPageORNYMG = new System.Windows.Forms.TabPage();
-            this.LNumberOfParticles2 = new System.Windows.Forms.Label();
-            this.label28 = new System.Windows.Forms.Label();
-            this.LNumberOfParticles = new System.Windows.Forms.Label();
-            this.NumberOfParticles2 = new System.Windows.Forms.NumericUpDown();
             this.checkExtendedPerformanceDump = new System.Windows.Forms.CheckBox();
             this.label25 = new System.Windows.Forms.Label();
-            this.precipitationBoxLength2 = new System.Windows.Forms.NumericUpDown();
-            this.NumberOfParticles = new System.Windows.Forms.NumericUpDown();
-            this.label21 = new System.Windows.Forms.Label();
             this.precipitationBoxLength = new System.Windows.Forms.NumericUpDown();
-            this.precipitationBoxWidth2 = new System.Windows.Forms.NumericUpDown();
             this.label24 = new System.Windows.Forms.Label();
             this.precipitationBoxWidth = new System.Windows.Forms.NumericUpDown();
-            this.label14 = new System.Windows.Forms.Label();
-            this.label15 = new System.Windows.Forms.Label();
-            this.label11 = new System.Windows.Forms.Label();
-            this.precipitationBoxHeight2 = new System.Windows.Forms.NumericUpDown();
             this.label23 = new System.Windows.Forms.Label();
             this.precipitationBoxHeight = new System.Windows.Forms.NumericUpDown();
             this.pbEnableWebServer = new System.Windows.Forms.PictureBox();
@@ -266,8 +255,10 @@
             this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
             this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
             this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
-            this.label29 = new System.Windows.Forms.Label();
+            this.labelWindVariability = new System.Windows.Forms.Label();
             this.windVariabilityValueLabel = new System.Windows.Forms.Label();
+            this.labelMaxWindSpeed = new System.Windows.Forms.Label();
+            this.maxWindSpeedValueLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbWindowGlass)).BeginInit();
@@ -300,7 +291,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackMaxWindSpeed)).BeginInit();
             this.tabPageExperimental.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorRandomChange)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorCorrection)).BeginInit();
@@ -318,7 +311,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericDataLogTSInterval)).BeginInit();
             this.tabPageDataLogger.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).BeginInit();
             this.tabPageRailDriver.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).BeginInit();
             this.panelRDSettings.SuspendLayout();
@@ -360,13 +352,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericBrakePipeChargingRate)).BeginInit();
             this.tabOptions.SuspendLayout();
             this.tabPageORNYMG.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
             this.SuspendLayout();
@@ -374,7 +361,7 @@
             // buttonOK
             // 
             this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(517, 527);
+            this.buttonOK.Location = new System.Drawing.Point(466, 446);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 23);
             this.buttonOK.TabIndex = 1;
@@ -386,7 +373,7 @@
             // 
             this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(598, 527);
+            this.buttonCancel.Location = new System.Drawing.Point(547, 446);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 2;
@@ -1027,7 +1014,7 @@
             0,
             0,
             0});
-            this.numericCab2DStretch.Location = new System.Drawing.Point(15, 210);
+            this.numericCab2DStretch.Location = new System.Drawing.Point(15, 235);
             this.numericCab2DStretch.Name = "numericCab2DStretch";
             this.numericCab2DStretch.Size = new System.Drawing.Size(54, 20);
             this.numericCab2DStretch.TabIndex = 28;
@@ -1065,20 +1052,25 @@
             0,
             0});
             // 
-            // trackWindVariability
+            // dataLoggerInterval
             // 
-            this.trackWindVariability.AutoSize = false;
-            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
-            this.trackWindVariability.LargeChange = 10;
-            this.trackWindVariability.Location = new System.Drawing.Point(267, 37);
-            this.trackWindVariability.Maximum = 100;
-            this.trackWindVariability.Name = "trackWindVariability";
-            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
-            this.trackWindVariability.TabIndex = 32;
-            this.trackWindVariability.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
-            this.trackWindVariability.Value = 10;
-            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
+            this.dataLoggerInterval.Increment = new decimal(new int[] {
+            50,
+            0,
+            0,
+            0});
+            this.dataLoggerInterval.Location = new System.Drawing.Point(310, 40);
+            this.dataLoggerInterval.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
+            this.dataLoggerInterval.Maximum = new decimal(new int[] {
+            60000,
+            0,
+            0,
+            0});
+            this.dataLoggerInterval.Name = "dataLoggerInterval";
+            this.dataLoggerInterval.Size = new System.Drawing.Size(54, 20);
+            this.dataLoggerInterval.TabIndex = 25;
+            this.dataLoggerInterval.ThousandsSeparator = true;
+            this.toolTip1.SetToolTip(this.dataLoggerInterval, "Interval at which to log data. In milliseconds, 0 means log at frame rate.");
             // 
             // checkLODViewingExtension
             // 
@@ -1153,7 +1145,7 @@
             this.tabPageExperimental.Location = new System.Drawing.Point(4, 22);
             this.tabPageExperimental.Name = "tabPageExperimental";
             this.tabPageExperimental.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageExperimental.Size = new System.Drawing.Size(653, 483);
+            this.tabPageExperimental.Size = new System.Drawing.Size(602, 402);
             this.tabPageExperimental.TabIndex = 3;
             this.tabPageExperimental.Text = "Experimental";
             this.tabPageExperimental.UseVisualStyleBackColor = true;
@@ -1489,7 +1481,7 @@
             this.tabPageSystem.Location = new System.Drawing.Point(4, 22);
             this.tabPageSystem.Name = "tabPageSystem";
             this.tabPageSystem.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSystem.Size = new System.Drawing.Size(653, 483);
+            this.tabPageSystem.Size = new System.Drawing.Size(602, 402);
             this.tabPageSystem.TabIndex = 8;
             this.tabPageSystem.Text = "System";
             this.tabPageSystem.UseVisualStyleBackColor = true;
@@ -1645,7 +1637,7 @@
             this.tabPageEvaluate.Location = new System.Drawing.Point(4, 22);
             this.tabPageEvaluate.Name = "tabPageEvaluate";
             this.tabPageEvaluate.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEvaluate.Size = new System.Drawing.Size(653, 483);
+            this.tabPageEvaluate.Size = new System.Drawing.Size(602, 402);
             this.tabPageEvaluate.TabIndex = 7;
             this.tabPageEvaluate.Text = "Evaluation";
             this.tabPageEvaluate.UseVisualStyleBackColor = true;
@@ -1714,7 +1706,7 @@
             this.checkDataLogTrainSpeed.Click += new System.EventHandler(this.checkDataLogTrainSpeed_Click);
             // 
             // tabPageDataLogger
-            //
+            // 
             this.tabPageDataLogger.Controls.Add(this.checkDataLogSteamPowerCurve);
             this.tabPageDataLogger.Controls.Add(this.pbDataLoggerOptions);
             this.tabPageDataLogger.Controls.Add(this.comboDataLogSpeedUnits);
@@ -1732,7 +1724,7 @@
             this.tabPageDataLogger.Location = new System.Drawing.Point(4, 22);
             this.tabPageDataLogger.Name = "tabPageDataLogger";
             this.tabPageDataLogger.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataLogger.Size = new System.Drawing.Size(653, 483);
+            this.tabPageDataLogger.Size = new System.Drawing.Size(602, 402);
             this.tabPageDataLogger.TabIndex = 6;
             this.tabPageDataLogger.Text = "Data logger";
             this.tabPageDataLogger.UseVisualStyleBackColor = true;
@@ -1845,30 +1837,10 @@
             this.checkDataLogSteamPerformance.AutoSize = true;
             this.checkDataLogSteamPerformance.Location = new System.Drawing.Point(6, 157);
             this.checkDataLogSteamPerformance.Name = "checkDataLogSteamPerformance";
-            this.checkDataLogSteamPerformance.Size = new System.Drawing.Size(214, 17);
+            this.checkDataLogSteamPerformance.Size = new System.Drawing.Size(216, 17);
             this.checkDataLogSteamPerformance.TabIndex = 6;
             this.checkDataLogSteamPerformance.Text = "Log Steam performance data (exclusive)";
             this.checkDataLogSteamPerformance.UseVisualStyleBackColor = true;
-            // 
-            // dataLoggerInterval
-            // 
-            this.dataLoggerInterval.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.dataLoggerInterval.Location = new System.Drawing.Point(310, 40);
-            this.dataLoggerInterval.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.dataLoggerInterval.Maximum = new decimal(new int[] {
-            60000,
-            0,
-            0,
-            0});
-            this.dataLoggerInterval.Name = "dataLoggerInterval";
-            this.dataLoggerInterval.Size = new System.Drawing.Size(54, 20);
-            this.dataLoggerInterval.TabIndex = 25;
-            this.dataLoggerInterval.ThousandsSeparator = true;
-            this.toolTip1.SetToolTip(this.dataLoggerInterval, "Interval at which to log data. In milliseconds, 0 means log at frame rate.");
             // 
             // dataLoggerIntervalLabel
             // 
@@ -1901,7 +1873,7 @@
             this.tabPageRailDriver.Controls.Add(this.panelRDSettings);
             this.tabPageRailDriver.Location = new System.Drawing.Point(4, 22);
             this.tabPageRailDriver.Name = "tabPageRailDriver";
-            this.tabPageRailDriver.Size = new System.Drawing.Size(653, 483);
+            this.tabPageRailDriver.Size = new System.Drawing.Size(602, 402);
             this.tabPageRailDriver.TabIndex = 10;
             this.tabPageRailDriver.Text = "RailDriver";
             this.tabPageRailDriver.UseVisualStyleBackColor = true;
@@ -2018,7 +1990,7 @@
             this.tabPageKeyboard.Location = new System.Drawing.Point(4, 22);
             this.tabPageKeyboard.Name = "tabPageKeyboard";
             this.tabPageKeyboard.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageKeyboard.Size = new System.Drawing.Size(653, 483);
+            this.tabPageKeyboard.Size = new System.Drawing.Size(602, 402);
             this.tabPageKeyboard.TabIndex = 1;
             this.tabPageKeyboard.Text = "Keyboard";
             this.tabPageKeyboard.UseVisualStyleBackColor = true;
@@ -2065,7 +2037,7 @@
             this.tabPageSimulation.Location = new System.Drawing.Point(4, 22);
             this.tabPageSimulation.Name = "tabPageSimulation";
             this.tabPageSimulation.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSimulation.Size = new System.Drawing.Size(653, 483);
+            this.tabPageSimulation.Size = new System.Drawing.Size(602, 402);
             this.tabPageSimulation.TabIndex = 2;
             this.tabPageSimulation.Text = "Simulation";
             this.tabPageSimulation.UseVisualStyleBackColor = true;
@@ -2391,7 +2363,7 @@
             this.tabPageVideo.Location = new System.Drawing.Point(4, 22);
             this.tabPageVideo.Name = "tabPageVideo";
             this.tabPageVideo.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageVideo.Size = new System.Drawing.Size(653, 483);
+            this.tabPageVideo.Size = new System.Drawing.Size(602, 402);
             this.tabPageVideo.TabIndex = 4;
             this.tabPageVideo.Text = "Video";
             this.tabPageVideo.UseVisualStyleBackColor = true;
@@ -2645,7 +2617,7 @@
             this.tabPageAudio.Location = new System.Drawing.Point(4, 22);
             this.tabPageAudio.Name = "tabPageAudio";
             this.tabPageAudio.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageAudio.Size = new System.Drawing.Size(653, 483);
+            this.tabPageAudio.Size = new System.Drawing.Size(602, 402);
             this.tabPageAudio.TabIndex = 5;
             this.tabPageAudio.Text = "Audio";
             this.tabPageAudio.UseVisualStyleBackColor = true;
@@ -2764,7 +2736,7 @@
             this.tabPageGeneral.Location = new System.Drawing.Point(4, 22);
             this.tabPageGeneral.Name = "tabPageGeneral";
             this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGeneral.Size = new System.Drawing.Size(653, 483);
+            this.tabPageGeneral.Size = new System.Drawing.Size(602, 402);
             this.tabPageGeneral.TabIndex = 0;
             this.tabPageGeneral.Text = "General";
             this.tabPageGeneral.UseVisualStyleBackColor = true;
@@ -3046,28 +3018,16 @@
             this.tabOptions.Location = new System.Drawing.Point(13, 12);
             this.tabOptions.Name = "tabOptions";
             this.tabOptions.SelectedIndex = 0;
-            this.tabOptions.Size = new System.Drawing.Size(661, 509);
+            this.tabOptions.Size = new System.Drawing.Size(610, 428);
             this.tabOptions.TabIndex = 0;
             // 
             // tabPageORNYMG
             // 
-            this.tabPageORNYMG.Controls.Add(this.LNumberOfParticles2);
-            this.tabPageORNYMG.Controls.Add(this.label28);
-            this.tabPageORNYMG.Controls.Add(this.LNumberOfParticles);
-            this.tabPageORNYMG.Controls.Add(this.NumberOfParticles2);
             this.tabPageORNYMG.Controls.Add(this.checkExtendedPerformanceDump);
             this.tabPageORNYMG.Controls.Add(this.label25);
-            this.tabPageORNYMG.Controls.Add(this.precipitationBoxLength2);
-            this.tabPageORNYMG.Controls.Add(this.NumberOfParticles);
-            this.tabPageORNYMG.Controls.Add(this.label21);
             this.tabPageORNYMG.Controls.Add(this.precipitationBoxLength);
-            this.tabPageORNYMG.Controls.Add(this.precipitationBoxWidth2);
             this.tabPageORNYMG.Controls.Add(this.label24);
             this.tabPageORNYMG.Controls.Add(this.precipitationBoxWidth);
-            this.tabPageORNYMG.Controls.Add(this.label14);
-            this.tabPageORNYMG.Controls.Add(this.label15);
-            this.tabPageORNYMG.Controls.Add(this.label11);
-            this.tabPageORNYMG.Controls.Add(this.precipitationBoxHeight2);
             this.tabPageORNYMG.Controls.Add(this.label23);
             this.tabPageORNYMG.Controls.Add(this.precipitationBoxHeight);
             this.tabPageORNYMG.Controls.Add(this.pbEnableWebServer);
@@ -3083,72 +3043,18 @@
             this.tabPageORNYMG.Controls.Add(this.checkEnableWatchdog);
             this.tabPageORNYMG.Controls.Add(this.checkFastFullScreenAltTab);
             this.tabPageORNYMG.Controls.Add(this.trackWindVariability);
-            this.tabPageORNYMG.Controls.Add(this.label29);
+            this.tabPageORNYMG.Controls.Add(this.labelWindVariability);
             this.tabPageORNYMG.Controls.Add(this.windVariabilityValueLabel);
+            this.tabPageORNYMG.Controls.Add(this.trackMaxWindSpeed);
+            this.tabPageORNYMG.Controls.Add(this.labelMaxWindSpeed);
+            this.tabPageORNYMG.Controls.Add(this.maxWindSpeedValueLabel);
             this.tabPageORNYMG.Location = new System.Drawing.Point(4, 22);
             this.tabPageORNYMG.Name = "tabPageORNYMG";
             this.tabPageORNYMG.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageORNYMG.Size = new System.Drawing.Size(653, 483);
+            this.tabPageORNYMG.Size = new System.Drawing.Size(602, 402);
             this.tabPageORNYMG.TabIndex = 11;
             this.tabPageORNYMG.Text = "ORNYMG Only";
             this.tabPageORNYMG.UseVisualStyleBackColor = true;
-            // 
-            // LNumberOfParticles2
-            // 
-            this.LNumberOfParticles2.AutoSize = true;
-            this.LNumberOfParticles2.Location = new System.Drawing.Point(316, 399);
-            this.LNumberOfParticles2.Margin = new System.Windows.Forms.Padding(3);
-            this.LNumberOfParticles2.Name = "LNumberOfParticles2";
-            this.LNumberOfParticles2.Size = new System.Drawing.Size(99, 13);
-            this.LNumberOfParticles2.TabIndex = 48;
-            this.LNumberOfParticles2.Text = "Number of Particles";
-            // 
-            // label28
-            // 
-            this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(316, 373);
-            this.label28.Margin = new System.Windows.Forms.Padding(3);
-            this.label28.Name = "label28";
-            this.label28.Size = new System.Drawing.Size(134, 13);
-            this.label28.TabIndex = 48;
-            this.label28.Text = "Precipitation box length (m)";
-            // 
-            // LNumberOfParticles
-            // 
-            this.LNumberOfParticles.AutoSize = true;
-            this.LNumberOfParticles.Location = new System.Drawing.Point(75, 399);
-            this.LNumberOfParticles.Margin = new System.Windows.Forms.Padding(3);
-            this.LNumberOfParticles.Name = "LNumberOfParticles";
-            this.LNumberOfParticles.Size = new System.Drawing.Size(99, 13);
-            this.LNumberOfParticles.TabIndex = 48;
-            this.LNumberOfParticles.Text = "Number of Particles";
-            // 
-            // NumberOfParticles2
-            // 
-            this.NumberOfParticles2.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.NumberOfParticles2.Location = new System.Drawing.Point(256, 397);
-            this.NumberOfParticles2.Maximum = new decimal(new int[] {
-            500000,
-            0,
-            0,
-            0});
-            this.NumberOfParticles2.Minimum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.NumberOfParticles2.Name = "NumberOfParticles2";
-            this.NumberOfParticles2.Size = new System.Drawing.Size(54, 20);
-            this.NumberOfParticles2.TabIndex = 47;
-            this.NumberOfParticles2.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
             // 
             // checkExtendedPerformanceDump
             // 
@@ -3171,70 +3077,6 @@
             this.label25.TabIndex = 48;
             this.label25.Text = "Precipitation box length (m)";
             // 
-            // precipitationBoxLength2
-            // 
-            this.precipitationBoxLength2.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.precipitationBoxLength2.Location = new System.Drawing.Point(256, 371);
-            this.precipitationBoxLength2.Maximum = new decimal(new int[] {
-            3000,
-            0,
-            0,
-            0});
-            this.precipitationBoxLength2.Minimum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.precipitationBoxLength2.Name = "precipitationBoxLength2";
-            this.precipitationBoxLength2.Size = new System.Drawing.Size(54, 20);
-            this.precipitationBoxLength2.TabIndex = 47;
-            this.precipitationBoxLength2.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            // 
-            // NumberOfParticles
-            // 
-            this.NumberOfParticles.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.NumberOfParticles.Location = new System.Drawing.Point(15, 397);
-            this.NumberOfParticles.Maximum = new decimal(new int[] {
-            500000,
-            0,
-            0,
-            0});
-            this.NumberOfParticles.Minimum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.NumberOfParticles.Name = "NumberOfParticles";
-            this.NumberOfParticles.Size = new System.Drawing.Size(54, 20);
-            this.NumberOfParticles.TabIndex = 47;
-            this.NumberOfParticles.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(316, 347);
-            this.label21.Margin = new System.Windows.Forms.Padding(3);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(130, 13);
-            this.label21.TabIndex = 46;
-            this.label21.Text = "Precipitation box width (m)";
-            // 
             // precipitationBoxLength
             // 
             this.precipitationBoxLength.Increment = new decimal(new int[] {
@@ -3249,7 +3091,7 @@
             0,
             0});
             this.precipitationBoxLength.Minimum = new decimal(new int[] {
-            50,
+            500,
             0,
             0,
             0});
@@ -3257,33 +3099,6 @@
             this.precipitationBoxLength.Size = new System.Drawing.Size(54, 20);
             this.precipitationBoxLength.TabIndex = 47;
             this.precipitationBoxLength.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            // 
-            // precipitationBoxWidth2
-            // 
-            this.precipitationBoxWidth2.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.precipitationBoxWidth2.Location = new System.Drawing.Point(256, 345);
-            this.precipitationBoxWidth2.Maximum = new decimal(new int[] {
-            3000,
-            0,
-            0,
-            0});
-            this.precipitationBoxWidth2.Minimum = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.precipitationBoxWidth2.Name = "precipitationBoxWidth2";
-            this.precipitationBoxWidth2.Size = new System.Drawing.Size(54, 20);
-            this.precipitationBoxWidth2.TabIndex = 45;
-            this.precipitationBoxWidth2.Value = new decimal(new int[] {
             500,
             0,
             0,
@@ -3313,7 +3128,7 @@
             0,
             0});
             this.precipitationBoxWidth.Minimum = new decimal(new int[] {
-            50,
+            500,
             0,
             0,
             0});
@@ -3322,63 +3137,6 @@
             this.precipitationBoxWidth.TabIndex = 45;
             this.precipitationBoxWidth.Value = new decimal(new int[] {
             500,
-            0,
-            0,
-            0});
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(254, 300);
-            this.label14.Margin = new System.Windows.Forms.Padding(3);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(111, 13);
-            this.label14.TabIndex = 44;
-            this.label14.Text = "Precipitation System 2";
-            // 
-            // label15
-            // 
-            this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(316, 321);
-            this.label15.Margin = new System.Windows.Forms.Padding(3);
-            this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(134, 13);
-            this.label15.TabIndex = 44;
-            this.label15.Text = "Precipitation box height (m)";
-            // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(16, 300);
-            this.label11.Margin = new System.Windows.Forms.Padding(3);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(111, 13);
-            this.label11.TabIndex = 44;
-            this.label11.Text = "Precipitation System 1";
-            // 
-            // precipitationBoxHeight2
-            // 
-            this.precipitationBoxHeight2.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.precipitationBoxHeight2.Location = new System.Drawing.Point(256, 319);
-            this.precipitationBoxHeight2.Maximum = new decimal(new int[] {
-            3000,
-            0,
-            0,
-            0});
-            this.precipitationBoxHeight2.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.precipitationBoxHeight2.Name = "precipitationBoxHeight2";
-            this.precipitationBoxHeight2.Size = new System.Drawing.Size(54, 20);
-            this.precipitationBoxHeight2.TabIndex = 43;
-            this.precipitationBoxHeight2.Value = new decimal(new int[] {
-            100,
             0,
             0,
             0});
@@ -3407,7 +3165,7 @@
             0,
             0});
             this.precipitationBoxHeight.Minimum = new decimal(new int[] {
-            10,
+            25,
             0,
             0,
             0});
@@ -3423,7 +3181,7 @@
             // pbEnableWebServer
             // 
             this.pbEnableWebServer.Image = global::Menu.Properties.Resources.info_18;
-            this.pbEnableWebServer.Location = new System.Drawing.Point(15, 242);
+            this.pbEnableWebServer.Location = new System.Drawing.Point(15, 284);
             this.pbEnableWebServer.Name = "pbEnableWebServer";
             this.pbEnableWebServer.Size = new System.Drawing.Size(18, 18);
             this.pbEnableWebServer.TabIndex = 31;
@@ -3432,7 +3190,7 @@
             // checkEnableWebServer
             // 
             this.checkEnableWebServer.AutoSize = true;
-            this.checkEnableWebServer.Location = new System.Drawing.Point(39, 243);
+            this.checkEnableWebServer.Location = new System.Drawing.Point(41, 283);
             this.checkEnableWebServer.Name = "checkEnableWebServer";
             this.checkEnableWebServer.Size = new System.Drawing.Size(255, 17);
             this.checkEnableWebServer.TabIndex = 30;
@@ -3442,7 +3200,7 @@
             // labelCab2DStretch
             // 
             this.labelCab2DStretch.AutoSize = true;
-            this.labelCab2DStretch.Location = new System.Drawing.Point(75, 212);
+            this.labelCab2DStretch.Location = new System.Drawing.Point(75, 237);
             this.labelCab2DStretch.Margin = new System.Windows.Forms.Padding(3);
             this.labelCab2DStretch.Name = "labelCab2DStretch";
             this.labelCab2DStretch.Size = new System.Drawing.Size(88, 13);
@@ -3452,7 +3210,7 @@
             // checkTunnelResistanceDependent
             // 
             this.checkTunnelResistanceDependent.AutoSize = true;
-            this.checkTunnelResistanceDependent.Location = new System.Drawing.Point(15, 164);
+            this.checkTunnelResistanceDependent.Location = new System.Drawing.Point(15, 189);
             this.checkTunnelResistanceDependent.Name = "checkTunnelResistanceDependent";
             this.checkTunnelResistanceDependent.Size = new System.Drawing.Size(164, 17);
             this.checkTunnelResistanceDependent.TabIndex = 26;
@@ -3462,7 +3220,7 @@
             // checkWindResistanceDependent
             // 
             this.checkWindResistanceDependent.AutoSize = true;
-            this.checkWindResistanceDependent.Location = new System.Drawing.Point(15, 187);
+            this.checkWindResistanceDependent.Location = new System.Drawing.Point(15, 212);
             this.checkWindResistanceDependent.Name = "checkWindResistanceDependent";
             this.checkWindResistanceDependent.Size = new System.Drawing.Size(156, 17);
             this.checkWindResistanceDependent.TabIndex = 25;
@@ -3472,7 +3230,7 @@
             // checkCurveResistanceDependent
             // 
             this.checkCurveResistanceDependent.AutoSize = true;
-            this.checkCurveResistanceDependent.Location = new System.Drawing.Point(15, 141);
+            this.checkCurveResistanceDependent.Location = new System.Drawing.Point(15, 166);
             this.checkCurveResistanceDependent.Name = "checkCurveResistanceDependent";
             this.checkCurveResistanceDependent.Size = new System.Drawing.Size(159, 17);
             this.checkCurveResistanceDependent.TabIndex = 24;
@@ -3526,31 +3284,79 @@
             // checkFastFullScreenAltTab
             // 
             this.checkFastFullScreenAltTab.AutoSize = true;
-            this.checkFastFullScreenAltTab.Location = new System.Drawing.Point(15, 118);
+            this.checkFastFullScreenAltTab.Location = new System.Drawing.Point(15, 143);
             this.checkFastFullScreenAltTab.Name = "checkFastFullScreenAltTab";
             this.checkFastFullScreenAltTab.Size = new System.Drawing.Size(129, 17);
             this.checkFastFullScreenAltTab.TabIndex = 2;
             this.checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
             this.checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
             // 
-            // label29
+            // labelWindVariability
             // 
-            this.label29.AutoSize = true;
-            this.label29.Location = new System.Drawing.Point(267, 15);
-            this.label29.Margin = new System.Windows.Forms.Padding(3);
-            this.label29.Name = "label29";
-            this.label29.Size = new System.Drawing.Size(81, 13);
-            this.label29.TabIndex = 30;
-            this.label29.Text = "Wind variability:";
+            this.labelWindVariability.AutoSize = true;
+            this.labelWindVariability.Location = new System.Drawing.Point(301, 287);
+            this.labelWindVariability.Margin = new System.Windows.Forms.Padding(3);
+            this.labelWindVariability.Name = "labelWindVariability";
+            this.labelWindVariability.Size = new System.Drawing.Size(81, 13);
+            this.labelWindVariability.TabIndex = 30;
+            this.labelWindVariability.Text = "Wind variability:";
             // 
             // windVariabilityValueLabel
             // 
-            this.windVariabilityValueLabel.Location = new System.Drawing.Point(267, 18);
+            this.windVariabilityValueLabel.Location = new System.Drawing.Point(301, 287);
             this.windVariabilityValueLabel.Margin = new System.Windows.Forms.Padding(3);
             this.windVariabilityValueLabel.Name = "windVariabilityValueLabel";
             this.windVariabilityValueLabel.Size = new System.Drawing.Size(292, 13);
             this.windVariabilityValueLabel.TabIndex = 31;
             this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // trackWindVariability
+            // 
+            this.trackWindVariability.AutoSize = false;
+            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
+            this.trackWindVariability.LargeChange = 10;
+            this.trackWindVariability.Location = new System.Drawing.Point(301, 306);
+            this.trackWindVariability.Maximum = 100;
+            this.trackWindVariability.Name = "trackWindVariability";
+            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
+            this.trackWindVariability.TabIndex = 32;
+            this.trackWindVariability.TickFrequency = 10;
+            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
+            this.trackWindVariability.Value = 10;
+            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
+            // 
+            // labelMaxWindSpeed
+            // 
+            this.labelMaxWindSpeed.AutoSize = true;
+            this.labelMaxWindSpeed.Location = new System.Drawing.Point(301, 352);
+            this.labelMaxWindSpeed.Margin = new System.Windows.Forms.Padding(3);
+            this.labelMaxWindSpeed.Name = "labelMaxWindSpeed";
+            this.labelMaxWindSpeed.Size = new System.Drawing.Size(90, 13);
+            this.labelMaxWindSpeed.TabIndex = 50;
+            this.labelMaxWindSpeed.Text = "Max Wind speed:";
+            // 
+            // maxWindSpeedValueLabel
+            // 
+            this.maxWindSpeedValueLabel.Location = new System.Drawing.Point(301, 352);
+            this.maxWindSpeedValueLabel.Margin = new System.Windows.Forms.Padding(3);
+            this.maxWindSpeedValueLabel.Name = "maxWindSpeedValueLabel";
+            this.maxWindSpeedValueLabel.Size = new System.Drawing.Size(292, 13);
+            this.maxWindSpeedValueLabel.TabIndex = 51;
+            this.maxWindSpeedValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // trackMaxWindSpeed
+            // 
+            this.trackMaxWindSpeed.AutoSize = false;
+            this.trackMaxWindSpeed.BackColor = System.Drawing.SystemColors.Window;
+            this.trackMaxWindSpeed.LargeChange = 10;
+            this.trackMaxWindSpeed.Location = new System.Drawing.Point(301, 371);
+            this.trackMaxWindSpeed.Maximum = 33;
+            this.trackMaxWindSpeed.Name = "trackMaxWindSpeed";
+            this.trackMaxWindSpeed.Size = new System.Drawing.Size(292, 26);
+            this.trackMaxWindSpeed.TabIndex = 52;
+            this.trackMaxWindSpeed.TickFrequency = 10;
+            this.trackMaxWindSpeed.Value = 5;
+            this.trackMaxWindSpeed.ValueChanged += new System.EventHandler(this.trackWindSpeed_ValueChanged);
             // 
             // OptionsForm
             // 
@@ -3558,7 +3364,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(685, 562);
+            this.ClientSize = new System.Drawing.Size(634, 481);
             this.Controls.Add(this.tabOptions);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOK);
@@ -3601,7 +3407,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.trackMaxWindSpeed)).EndInit();
             this.tabPageExperimental.ResumeLayout(false);
             this.tabPageExperimental.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorRandomChange)).EndInit();
@@ -3623,7 +3431,6 @@
             this.tabPageDataLogger.ResumeLayout(false);
             this.tabPageDataLogger.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).EndInit();
             this.tabPageRailDriver.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).EndInit();
             this.panelRDSettings.ResumeLayout(false);
@@ -3671,13 +3478,8 @@
             this.tabOptions.ResumeLayout(false);
             this.tabPageORNYMG.ResumeLayout(false);
             this.tabPageORNYMG.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.NumberOfParticles)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight2)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).EndInit();
             this.ResumeLayout(false);
@@ -3887,21 +3689,9 @@
         private System.Windows.Forms.PictureBox pbControlConfirmations;
         private System.Windows.Forms.ComboBox comboControlConfirmations;
         private System.Windows.Forms.Label labelControlConfirmations;
-        private System.Windows.Forms.Label LNumberOfParticles;
-        private System.Windows.Forms.NumericUpDown NumberOfParticles;
-        private System.Windows.Forms.Label label14;
-        private System.Windows.Forms.Label label11;
-        private System.Windows.Forms.Label LNumberOfParticles2;
-        private System.Windows.Forms.Label label28;
-        private System.Windows.Forms.NumericUpDown NumberOfParticles2;
-        private System.Windows.Forms.NumericUpDown precipitationBoxLength2;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.NumericUpDown precipitationBoxWidth2;
-        private System.Windows.Forms.Label label15;
-        private System.Windows.Forms.NumericUpDown precipitationBoxHeight2;
         private System.Windows.Forms.TrackBar trackWindVariability;
         private System.Windows.Forms.Label windVariabilityValueLabel;
-        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.Label labelWindVariability;
         private System.Windows.Forms.PictureBox pbAutoSave;
         private System.Windows.Forms.PictureBox pbAdvancedAdhesionModel;
         private System.Windows.Forms.PictureBox pbForcedRedAtStationStops;
@@ -3927,5 +3717,8 @@
         private System.Windows.Forms.NumericUpDown dataLoggerInterval;
         private System.Windows.Forms.Label dataLoggerIntervalLabel;
         private System.Windows.Forms.CheckBox checkExtendedPerformanceDump;
+        private System.Windows.Forms.TrackBar trackMaxWindSpeed;
+        private System.Windows.Forms.Label labelMaxWindSpeed;
+        private System.Windows.Forms.Label maxWindSpeedValueLabel;
     }
 }

@@ -729,6 +729,7 @@ namespace Orts.Common
         public override void Redo()
         {
             Receiver.UnconditionalInitializeBrakes();
+            Receiver.Simulator.OnTrainsetParameterChanged();
         }
     }
 
@@ -868,6 +869,7 @@ namespace Orts.Common
         public override void Redo()
         {
             Receiver.SetTrainHandbrake(ToState);
+            Receiver.Simulator.OnTrainsetParameterChanged();
             // Report();
         }
 
@@ -938,6 +940,7 @@ namespace Orts.Common
         public override void Redo()
         {
             Receiver.BrakeHoseConnect(ToState);
+            Receiver.Simulator.OnTrainsetParameterChanged();
             // Report();
         }
 
@@ -2237,6 +2240,7 @@ namespace Orts.Common
         public override void Redo()
         {
             Receiver?.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.TogglePlayerEngine);
+            Receiver.Simulator.OnTrainsetParameterChanged();
         }
     }
 
@@ -2255,6 +2259,7 @@ namespace Orts.Common
         public override void Redo()
         {
             Receiver?.LocomotivePowerSupply.HandleEvent(PowerSupplyEvent.ToggleHelperEngine);
+            Receiver.Simulator.OnTrainsetParameterChanged();
         }
     }
 

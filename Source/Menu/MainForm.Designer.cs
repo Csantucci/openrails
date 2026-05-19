@@ -122,7 +122,7 @@ namespace Menu
             this.checkBoxWindowed.AutoSize = true;
             this.checkBoxWindowed.Checked = true;
             this.checkBoxWindowed.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxWindowed.Location = new System.Drawing.Point(120, 89);
+            this.checkBoxWindowed.Location = new System.Drawing.Point(109, 71);
             this.checkBoxWindowed.Name = "checkBoxWindowed";
             this.checkBoxWindowed.Size = new System.Drawing.Size(77, 17);
             this.checkBoxWindowed.TabIndex = 2;
@@ -142,12 +142,11 @@ namespace Menu
             // labelLogo
             // 
             this.labelLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelLogo.BackColor = System.Drawing.Color.Transparent;
-            this.labelLogo.Font = new System.Drawing.Font("Arial", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelLogo.ForeColor = System.Drawing.Color.DimGray;
-            this.labelLogo.Location = new System.Drawing.Point(68, 569);
+            this.labelLogo.Font = new System.Drawing.Font("Arial", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelLogo.ForeColor = System.Drawing.Color.Gray;
+            this.labelLogo.Location = new System.Drawing.Point(82, 472);
             this.labelLogo.Name = "labelLogo";
-            this.labelLogo.Size = new System.Drawing.Size(265, 32);
+            this.labelLogo.Size = new System.Drawing.Size(237, 64);
             this.labelLogo.TabIndex = 11;
             this.labelLogo.Text = "Open Rails NYMG WE";
             this.labelLogo.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -163,7 +162,7 @@ namespace Menu
             this.checkBoxWarnings.AutoSize = true;
             this.checkBoxWarnings.Checked = true;
             this.checkBoxWarnings.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxWarnings.Location = new System.Drawing.Point(120, 66);
+            this.checkBoxWarnings.Location = new System.Drawing.Point(109, 48);
             this.checkBoxWarnings.Name = "checkBoxWarnings";
             this.checkBoxWarnings.Size = new System.Drawing.Size(64, 17);
             this.checkBoxWarnings.TabIndex = 4;
@@ -172,9 +171,9 @@ namespace Menu
             // 
             // buttonOptions
             // 
-            this.buttonOptions.Location = new System.Drawing.Point(120, 22);
+            this.buttonOptions.Location = new System.Drawing.Point(109, 19);
             this.buttonOptions.Name = "buttonOptions";
-            this.buttonOptions.Size = new System.Drawing.Size(86, 23);
+            this.buttonOptions.Size = new System.Drawing.Size(75, 23);
             this.buttonOptions.TabIndex = 3;
             this.buttonOptions.Text = "Options";
             this.buttonOptions.Click += new System.EventHandler(this.buttonOptions_Click);
@@ -182,7 +181,7 @@ namespace Menu
             // buttonResume
             // 
             this.buttonResume.Enabled = false;
-            this.buttonResume.Location = new System.Drawing.Point(7, 72);
+            this.buttonResume.Location = new System.Drawing.Point(7, 79);
             this.buttonResume.Name = "buttonResume";
             this.buttonResume.Size = new System.Drawing.Size(75, 41);
             this.buttonResume.TabIndex = 1;
@@ -191,7 +190,7 @@ namespace Menu
             // 
             // buttonTools
             // 
-            this.buttonTools.Location = new System.Drawing.Point(9, 56);
+            this.buttonTools.Location = new System.Drawing.Point(3, 48);
             this.buttonTools.Name = "buttonTools";
             this.buttonTools.Size = new System.Drawing.Size(100, 23);
             this.buttonTools.TabIndex = 1;
@@ -282,7 +281,7 @@ namespace Menu
             this.groupBox1.Controls.Add(this.textBoxMPHost);
             this.groupBox1.Controls.Add(this.textBoxMPUser);
             this.groupBox1.Controls.Add(this.label14);
-            this.groupBox1.Location = new System.Drawing.Point(659, 493);
+            this.groupBox1.Location = new System.Drawing.Point(597, 416);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(245, 120);
             this.groupBox1.TabIndex = 15;
@@ -336,9 +335,9 @@ namespace Menu
             this.groupBox3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox3.Controls.Add(this.buttonResume);
             this.groupBox3.Controls.Add(this.buttonStart);
-            this.groupBox3.Location = new System.Drawing.Point(547, 493);
+            this.groupBox3.Location = new System.Drawing.Point(504, 416);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(106, 120);
+            this.groupBox3.Size = new System.Drawing.Size(87, 120);
             this.groupBox3.TabIndex = 14;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Singleplayer";
@@ -363,9 +362,9 @@ namespace Menu
             this.panelDetails.BackColor = System.Drawing.SystemColors.Window;
             this.panelDetails.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelDetails.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.panelDetails.Location = new System.Drawing.Point(319, 31);
+            this.panelDetails.Location = new System.Drawing.Point(299, 31);
             this.panelDetails.Name = "panelDetails";
-            this.panelDetails.Size = new System.Drawing.Size(587, 449);
+            this.panelDetails.Size = new System.Drawing.Size(543, 379);
             this.panelDetails.TabIndex = 20;
             // 
             // panel1
@@ -377,15 +376,14 @@ namespace Menu
             this.panel1.Controls.Add(this.checkBoxWarnings);
             this.panel1.Controls.Add(this.checkBoxWindowed);
             this.panel1.Controls.Add(this.buttonTools);
-            this.panel1.ForeColor = System.Drawing.SystemColors.ControlText;
-            this.panel1.Location = new System.Drawing.Point(319, 493);
+            this.panel1.Location = new System.Drawing.Point(311, 416);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(220, 120);
+            this.panel1.Size = new System.Drawing.Size(187, 120);
             this.panel1.TabIndex = 13;
             // 
             // buttonDocuments
             // 
-            this.buttonDocuments.Location = new System.Drawing.Point(9, 85);
+            this.buttonDocuments.Location = new System.Drawing.Point(3, 79);
             this.buttonDocuments.Name = "buttonDocuments";
             this.buttonDocuments.Size = new System.Drawing.Size(100, 23);
             this.buttonDocuments.TabIndex = 2;
@@ -395,7 +393,7 @@ namespace Menu
             // 
             // buttonDownloadContent
             // 
-            this.buttonDownloadContent.Location = new System.Drawing.Point(9, 22);
+            this.buttonDownloadContent.Location = new System.Drawing.Point(3, 19);
             this.buttonDownloadContent.Name = "buttonDownloadContent";
             this.buttonDownloadContent.Size = new System.Drawing.Size(100, 23);
             this.buttonDownloadContent.TabIndex = 0;
@@ -461,7 +459,7 @@ namespace Menu
             this.panelModeActivity.Location = new System.Drawing.Point(9, 146);
             this.panelModeActivity.Margin = new System.Windows.Forms.Padding(0);
             this.panelModeActivity.Name = "panelModeActivity";
-            this.panelModeActivity.Size = new System.Drawing.Size(287, 411);
+            this.panelModeActivity.Size = new System.Drawing.Size(287, 311);
             this.panelModeActivity.TabIndex = 9;
             // 
             // checkDebriefActivityEval
@@ -597,20 +595,20 @@ namespace Menu
             // 
             // label11
             // 
-            this.label11.Location = new System.Drawing.Point(3, 252);
+            this.label11.Location = new System.Drawing.Point(143, 234);
             this.label11.Margin = new System.Windows.Forms.Padding(2);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(50, 14);
+            this.label11.Size = new System.Drawing.Size(67, 14);
             this.label11.TabIndex = 16;
             this.label11.Text = "Duration:";
             this.label11.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label9
             // 
-            this.label9.Location = new System.Drawing.Point(6, 298);
+            this.label9.Location = new System.Drawing.Point(4, 234);
             this.label9.Margin = new System.Windows.Forms.Padding(2);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(51, 14);
+            this.label9.Size = new System.Drawing.Size(56, 14);
             this.label9.TabIndex = 10;
             this.label9.Text = "Time:";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -622,9 +620,9 @@ namespace Menu
             this.comboBoxStartTime.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxStartTime.Enabled = false;
             this.comboBoxStartTime.FormattingEnabled = true;
-            this.comboBoxStartTime.Location = new System.Drawing.Point(57, 295);
+            this.comboBoxStartTime.Location = new System.Drawing.Point(61, 231);
             this.comboBoxStartTime.Name = "comboBoxStartTime";
-            this.comboBoxStartTime.Size = new System.Drawing.Size(90, 21);
+            this.comboBoxStartTime.Size = new System.Drawing.Size(73, 21);
             this.comboBoxStartTime.TabIndex = 11;
             this.comboBoxStartTime.TextChanged += new System.EventHandler(this.comboBoxStartTime_TextChanged);
             // 
@@ -635,7 +633,7 @@ namespace Menu
             this.comboBoxDuration.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxDuration.Enabled = false;
             this.comboBoxDuration.FormattingEnabled = true;
-            this.comboBoxDuration.Location = new System.Drawing.Point(58, 249);
+            this.comboBoxDuration.Location = new System.Drawing.Point(211, 231);
             this.comboBoxDuration.Name = "comboBoxDuration";
             this.comboBoxDuration.Size = new System.Drawing.Size(73, 21);
             this.comboBoxDuration.TabIndex = 17;
@@ -647,18 +645,18 @@ namespace Menu
             this.comboBoxStartWeather.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxStartWeather.Enabled = false;
             this.comboBoxStartWeather.FormattingEnabled = true;
-            this.comboBoxStartWeather.Location = new System.Drawing.Point(57, 362);
+            this.comboBoxStartWeather.Location = new System.Drawing.Point(61, 286);
             this.comboBoxStartWeather.Name = "comboBoxStartWeather";
-            this.comboBoxStartWeather.Size = new System.Drawing.Size(90, 21);
+            this.comboBoxStartWeather.Size = new System.Drawing.Size(73, 21);
             this.comboBoxStartWeather.TabIndex = 15;
             this.comboBoxStartWeather.SelectedIndexChanged += new System.EventHandler(this.comboBoxStartWeather_SelectedIndexChanged);
             // 
             // label12
             // 
-            this.label12.Location = new System.Drawing.Point(6, 365);
+            this.label12.Location = new System.Drawing.Point(4, 289);
             this.label12.Margin = new System.Windows.Forms.Padding(2);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(51, 14);
+            this.label12.Size = new System.Drawing.Size(56, 14);
             this.label12.TabIndex = 14;
             this.label12.Text = "Weather:";
             this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -670,18 +668,18 @@ namespace Menu
             this.comboBoxStartSeason.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxStartSeason.Enabled = false;
             this.comboBoxStartSeason.FormattingEnabled = true;
-            this.comboBoxStartSeason.Location = new System.Drawing.Point(57, 329);
+            this.comboBoxStartSeason.Location = new System.Drawing.Point(61, 259);
             this.comboBoxStartSeason.Name = "comboBoxStartSeason";
-            this.comboBoxStartSeason.Size = new System.Drawing.Size(90, 21);
+            this.comboBoxStartSeason.Size = new System.Drawing.Size(73, 21);
             this.comboBoxStartSeason.TabIndex = 13;
             this.comboBoxStartSeason.SelectedIndexChanged += new System.EventHandler(this.comboBoxStartSeason_SelectedIndexChanged);
             // 
             // label10
             // 
-            this.label10.Location = new System.Drawing.Point(142, 252);
+            this.label10.Location = new System.Drawing.Point(143, 262);
             this.label10.Margin = new System.Windows.Forms.Padding(2);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(50, 14);
+            this.label10.Size = new System.Drawing.Size(67, 14);
             this.label10.TabIndex = 18;
             this.label10.Text = "Difficulty:";
             this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -693,17 +691,17 @@ namespace Menu
             this.comboBoxDifficulty.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBoxDifficulty.Enabled = false;
             this.comboBoxDifficulty.FormattingEnabled = true;
-            this.comboBoxDifficulty.Location = new System.Drawing.Point(197, 249);
+            this.comboBoxDifficulty.Location = new System.Drawing.Point(211, 259);
             this.comboBoxDifficulty.Name = "comboBoxDifficulty";
             this.comboBoxDifficulty.Size = new System.Drawing.Size(73, 21);
             this.comboBoxDifficulty.TabIndex = 19;
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(6, 332);
+            this.label8.Location = new System.Drawing.Point(4, 262);
             this.label8.Margin = new System.Windows.Forms.Padding(2);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(51, 14);
+            this.label8.Size = new System.Drawing.Size(56, 14);
             this.label8.TabIndex = 12;
             this.label8.Text = "Season:";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -732,7 +730,7 @@ namespace Menu
             this.panelModeTimetable.Location = new System.Drawing.Point(299, 119);
             this.panelModeTimetable.Margin = new System.Windows.Forms.Padding(0);
             this.panelModeTimetable.Name = "panelModeTimetable";
-            this.panelModeTimetable.Size = new System.Drawing.Size(287, 316);
+            this.panelModeTimetable.Size = new System.Drawing.Size(287, 291);
             this.panelModeTimetable.TabIndex = 10;
             this.panelModeTimetable.Visible = false;
             // 
@@ -958,14 +956,13 @@ namespace Menu
             this.contextMenuStripDocuments.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.contextMenuStripDocuments.Name = "contextMenuStripDocuments";
             this.contextMenuStripDocuments.Size = new System.Drawing.Size(61, 4);
-            // 
             // pictureBoxLogo
             // 
             this.pictureBoxLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.pictureBoxLogo.Image = ((System.Drawing.Image)(resources.GetObject("pictureBoxLogo.Image")));
-            this.pictureBoxLogo.Location = new System.Drawing.Point(12, 560);
+            this.pictureBoxLogo.Location = new System.Drawing.Point(12, 472);
             this.pictureBoxLogo.Name = "pictureBoxLogo";
-            this.pictureBoxLogo.Size = new System.Drawing.Size(55, 60);
+            this.pictureBoxLogo.Size = new System.Drawing.Size(64, 64);
             this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBoxLogo.TabIndex = 5;
             this.pictureBoxLogo.TabStop = false;
@@ -974,9 +971,8 @@ namespace Menu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(918, 623);
+            this.ClientSize = new System.Drawing.Size(854, 548);
             this.Controls.Add(this.panelModeTimetable);
-            this.Controls.Add(this.labelLogo);
             this.Controls.Add(this.panelModeActivity);
             this.Controls.Add(this.radioButtonModeTimetable);
             this.Controls.Add(this.radioButtonModeActivity);
@@ -989,6 +985,7 @@ namespace Menu
             this.Controls.Add(this.comboBoxRoute);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.pictureBoxLogo);
+            this.Controls.Add(this.labelLogo);
             this.Controls.Add(this.label2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));

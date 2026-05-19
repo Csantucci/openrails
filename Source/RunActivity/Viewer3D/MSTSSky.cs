@@ -504,7 +504,7 @@ namespace Orts.Viewer3D
                 for (int i = 0; i < Viewer.ENVFile.SkyLayers.Count; i++)
                 {
                     mstsSkyTexture[i] = Viewer.Simulator.RoutePath + @"\envfiles\textures\" + mstsskytexture[i].TextureName.ToString();
-                    MSTSSkyTexture.Add(Orts.Formats.Msts.AceFile.Texture2DFromFile(Viewer.RenderProcess.GraphicsDevice, mstsSkyTexture[i]));
+                    MSTSSkyTexture.Add(Viewer.TextureManager.Get(mstsSkyTexture[i], true));
                     if( i == 0 )
                     {
                         MSTSDayTexture = MSTSSkyTexture[i];
@@ -520,7 +520,7 @@ namespace Orts.Viewer3D
                     }
                     else
                     {
-                        MSTSSkyCloudTexture.Add(Orts.Formats.Msts.AceFile.Texture2DFromFile(Viewer.RenderProcess.GraphicsDevice, mstsSkyTexture[i]));
+                        MSTSSkyCloudTexture.Add(Viewer.TextureManager.Get(mstsSkyTexture[i]));
                         mstscloudtexturex = mstsskytexture[i].TileX;
                         mstscloudtexturey = mstsskytexture[i].TileY;
                     }
@@ -674,6 +674,16 @@ namespace Orts.Viewer3D
         // These should be user defined in the Environment files (future)
         static Vector3 startColor = new Vector3(0.647f, 0.651f, 0.655f); // Original daytime fog color - must be preserved!
         static Vector3 finishColor = new Vector3(0.05f, 0.05f, 0.05f); //Darkest nighttime fog color
+
+        public override void Mark()
+        {
+            Viewer.TextureManager.Mark(MSTSDayTexture);
+            Viewer.TextureManager.Mark(MSTSSkyStarTexture);
+            Viewer.TextureManager.Mark(MSTSSkyMoonTexture);
+            Viewer.TextureManager.Mark(MSTSSkyMoonMask);
+            Viewer.TextureManager.Mark(MSTSSkyCloudTexture[0]);
+            base.Mark();
+        }
 
         /// <summary>
         /// This function darkens the fog color as night begins to fall

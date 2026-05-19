@@ -179,9 +179,22 @@ namespace Orts.Viewer3D.Processes
                             {
                                 for (int i = 0; i < sources.Value.Count; i++)
                                 {
+                                    if (sources.Key is Orts.Viewer3D.RollingStock.MSTSDieselLocomotiveViewer)
+                                    {
+                                        if (i == 0)
+                                        {
+                                            var pippo = 1;
+                                        }
+                                    }
                                     if (!sources.Value[i].NeedsFrequentUpdate && UpdateCounter > 0)
                                         continue;
-
+                                    if (sources.Key is Orts.Viewer3D.RollingStock.MSTSDieselLocomotiveViewer)
+                                    {
+                                        if (i == 0)
+                                        {
+                                            var pippo = 1;
+                                        }
+                                    }
                                     if (!sources.Value[i].Update())
                                     {
                                         removals.Add(new KeyValuePair<object, SoundSourceBase>(sources.Key, sources.Value[i]));

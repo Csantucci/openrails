@@ -473,7 +473,7 @@ The following control parameters can be used in the relevant track region SMS fi
 
 ``AngleofAttackControlled`` - Varies as the Angle of Attack of a car on a curve varies, in Milliradian (mRad).
 
-``CarFrictionControlled`` - Varies as friction of car changes, typically between 0 and 1.
+``CarFrictionControlled`` - Varies as the adhesion of trailing wagons change, typically between 0.1 and 0.5.
 
 ``WheelRPMControlled`` - Varies as RPM of wheel changes, in RPM.
 
@@ -502,7 +502,7 @@ over a Cross over, and can be varied in accordance with the number of axles defi
 
 ``CarCameraDistance_inc_past``, ``CarCameraDistance_dec_past`` - Distance that the car is from the camera, in metres.
 
-Note: If rolling stock already has track sounds set up in tyhe wagon SMS file, then these will be played at the same time as the route based sounds. For best sound outcomes, 
+Note: If rolling stock already has track sounds set up in the wagon SMS file, then these will be played at the same time as the route based sounds. For best sound outcomes, 
 the number of axles for each wagon should be correctly set in the WAG file.
 
 
@@ -521,11 +521,11 @@ There are a number of triggers as follows:
 
 - pressure in the brake cylinder (psi)	
 
-- centrifugal force due to traversing a curve (N)	
+- resistance force due to traversing a curve (N)	
 
 - 3 variables in range 0 - 1:
 
-  - Variable1 reflects the throttle. For steam locomotives it is possible to have multiple steam engines, thus this variable can be applied
+  - Variable1 reflects the throttle. For steam locomotives in ORTS it is possible to have multiple steam engines, thus this variable can be applied
    to each engine, by using a sound trigger of the form ``Variable1_x_inc_past`` or ``Variable1_x_dec_past``, where x = steam engine number.
 
   - Variable2 reflects the engine's RPM (diesel) or Tractive Force (electric) or cylinder pressure (steam). Where a Booster Engine is fitted, 
@@ -554,6 +554,29 @@ New variables introduced by OR:
   which makes the sound speed dependent too, and ``CurveForceControlled``. 
   Of course ``CurveForce_Inc_Past``, and ``CurveForce_Dec_Past`` are also 
   available for activating and deactivating the sound.
+- Tractive effort (kN) and tractive power (kW):
+  - For curves, ``TractiveEffortControlled``, and for triggers, ``TractiveEffort_Inc_Past`` and ``TractiveEffort_Dec_Past``, can be used
+    to make sounds tractive effort dependant, with the tractive effort values measured in *kilonewtons*. The tractive effort value used by
+    the sound system can be positive or negative, negative values indicate force opposite the direction of travel (either dynamic braking,
+    or using the throttle in the wrong direction).
+  - Similarly, ``TractivePowerControlled`` can be used on curves and ``TractivePower_Inc_Past`` or ``TractivePower_Dec_Past`` on triggers
+    to vary sounds with the power, measured in *kilowatts*, applied to the rails. Like for tractive effort, a negative value indicates
+    dynamic braking or traction against the motion of the train.
+- Diesel engine rotation speed (RPM), diesel engine power (kW), and diesel engine torque (Nm):
+  - Curve control ``EngineXRPMControlled`` and variable triggers ``EngineXRPM_Inc_Past`` and ``EngineXRPM_Dec_Past`` can control sounds based
+    on engine RPM (note: unlike Variable2, EngineRPM values are NOT scaled to a range of 0-1, the values used must correspond to the actual
+    RPM values of the engine) where X is the diesel engine number, allowing for sounds to respond to individual engines on locomotives with
+    multiple diesel engines. On locomotives with only one engine, the X value can be removed (eg: ``EngineRPMControlled``) and the RPM value
+    of the #1 engine will be used by default.
+  - Curve control ``EngineXPowerControlled`` and variable triggers ``EngineXPower_Inc_Past`` and ``EngineXPower_Dec_Past`` similarly control sounds
+    depending on the actual instantaneous power output of the engine, measured in *kilowatts*. This allows for more dynamic engine sounds than
+    using RPM alone, as real engines sound very different when unloaded (generating low power) and loaded (generating high power). As with engine
+    RPM, X must be replaced with the diesel engine number, but X can be removed if there is only one diesel engine.
+  - Curve control ``EngineXTorqueControlled`` and variable triggers ``EngineXTorque_Inc_Past`` and ``EngineXTorque_Dec_Past`` likewise control sounds
+    using the instantaneous torque output of the engine in *newton meters*. Like for engine power, this is another option to create sounds that vary
+    with engine load. As with engine RPM and power, the value X is optionally included to specify which diesel engine to measure the torque of.
+  - See the :ref:`sound debug window <driving-sound-debug>` to determine typical RPM, power, and torque values used by the sound system
+    for each engine in real time.
 
 Sound Loop Management
 ---------------------
@@ -775,3 +798,136 @@ In the example shown, the sound is played if all conditions are met, that is sea
 is spring or winter and weather is rain and time of day is within one of the two 
 intervals 7-12 or 13-20. There may be as many TimeOfDay lines as wanted, 
 but the granularity is one hour.
+
+3D sound positioning
+====================
+
+By default, each sound source has a 3D position calculated (for purposes of determining
+stereo output and distance-based volume falloff) assuming the sound is emitted from
+the center of the engine/wagon the sound is attached to. While this is generally
+acceptable, when listened to up close it may become obvious that sounds aren't coming from
+the appropriate location. The bell may be on the front of the locomotive, but the sound
+comes from the center. Brake squeal should come from the wheels, but also comes from the
+center of the wagon. And so on; many noises trains make shouldn't come from the middle.
+
+.. index::
+   single: ORTSPosition
+
+To improve upon this, OR now supports the ability to define a custom location for each
+sound stream relative to the center of the engine/wagon shape. Inside each `Stream` of
+a .sms file, the ``ORTSPosition ( x y z )`` parameter can be added to specify where the
+sound should come from. The ``x y z`` values representing the right/left, up/down, and
+front/back position respectively, measured in units of distance (default is meters).
+For example, here is a horn stream adjusted so the audio comes from the location of the
+horn on the roof of the locomotive 3D model::
+
+    Stream (
+        Skip ( **** This stream allows the horn to be played at the same time  	**** )
+        Priority ( 6 )
+        Volume ( 2.0 )
+        Skip ( Horn is on the left side of the locomotive roof, toward the front. )
+        ORTSPosition ( -0.635 4.716 7.398 )
+        Triggers ( 2
+            Discrete_Trigger ( 8	StartLoopRelease ( 1	File ( "x_P5.wav" -1 )	SelectionMethod ( SequentialSelection )	)	)
+            Discrete_Trigger ( 9	ReleaseLoopReleaseWithJump ()	)
+        )
+        FrequencyCurve(
+            SpeedControlled
+            CurvePoints ( 3
+                -100           44100
+                0              44100
+                100            44100
+            )
+            Granularity ( 0 )
+        )
+    )
+
+.. index::
+   single: ORTSShapeHierarchy
+
+An additional new capability is the option to attach sound streams to specific sub
+objects of the engine/wagon. Using ``ORTSShapeHierarchy ( MATRIXNAME )``, the sound
+can be attached to the shape sub object called "MATRIXNAME". The names of matrices
+used on an engine/wagon shape can be found in shape viewing programs. Attaching a
+sound to a sub object causes the position of the sound to be measured relative to
+that sub object, which may be easier than calculating ``ORTSPosition``, and causes
+the sound to move in sync with the sub object as it moves and rotates around.
+A good example of this is attaching traction motor sounds to the locomotive bogies::
+
+    Stream (
+        Priority ( 5 )
+        Skip ( Traction motor sound for front bogie. )
+        ORTSShapeHierarchy ( "BOGIE1" )
+        Triggers ( 1
+            Skip ( **** Traction-Motor **** )
+            Initial_Trigger  ( StartLoop   ( 1 File ( "x_GEACtraction.wav" -1 )   SelectionMethod ( SequentialSelection ) ) )		
+        )
+        FrequencyCurve(
+            SpeedControlled
+            CurvePoints ( 5
+                -36           98400
+                -18           44100
+                0             10100
+                18            44100
+                36            98400
+            )
+            Granularity ( 25 )
+        )
+        VolumeCurve(
+            SpeedControlled
+            CurvePoints ( 5
+                -25           0.8
+                -5            0.5
+                0             0.0
+                5             0.5
+                25            0.8
+            )
+            Granularity ( 0.001 )
+        )
+    )
+    Stream (
+        Priority ( 5 )
+        Skip ( Traction motor sound for rear bogie. )
+        ORTSShapeHierarchy ( "BOGIE2" )
+        Triggers ( 1
+            Skip ( **** Traction-Motor **** )
+            Initial_Trigger  ( StartLoop   ( 1 File ( "x_GEACtraction.wav" -1 )   SelectionMethod ( SequentialSelection ) ) )	
+        )
+        FrequencyCurve(
+            SpeedControlled
+            CurvePoints ( 5
+                -36           98400
+                -18           44100
+                0             10100
+                18            44100
+                36            98400
+            )
+            Granularity ( 25 )
+        )
+        VolumeCurve(
+            SpeedControlled
+            CurvePoints ( 5
+                -25           0.8
+                -5            0.5
+                0             0.0
+                5             0.5
+                25            0.8
+            )
+            Granularity ( 0.001 )
+        )
+    )
+
+Observe how the stream has to be included twice, once for each bogie. A sound stream
+can only emit sounds from one location, so additional streams are required if a sound
+is to come from multiple locations. Care should be taken to keep the number of streams
+to a reasonable level. (You may also wish to lower the volume of each individual
+stream so the total volume remains somewhat constant.) Also, ``ORTSPosition`` is not used
+in this case, as the sound is automatically moved to the position of the bogie it is attached to.
+``ORTSPosition`` and ``ORTSShapeHierarchy`` can be used together if the position needed
+to be fine tuned, but that's not needed in this specific case.
+
+If the given "MATRIXNAME" cannot be found in the 3D model the sounds are attached to,
+a warning will be logged and the sound will attach to the main body of the shape instead.
+Be careful when using the same .sms for multiple different engines/wagons, as matrix names
+aren't identical between every piece of content.
+If ``ORTSShapeHierarchy`` is not included, the sound will attach to the main body by default.

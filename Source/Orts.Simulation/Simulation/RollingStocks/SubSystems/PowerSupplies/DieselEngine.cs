@@ -682,7 +682,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// </summary>
         public float RateOfChangeDownRPMpSS;
         /// <summary>
-        /// MAximum Rated Power output of the diesel engine (prime mover)
+        /// Maximum Rated Power output of the diesel engine (prime mover)
         /// </summary>
         public float MaximumDieselPowerW;
         /// <summary>
@@ -754,7 +754,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// <summary>
         /// Exhaust color at steady state (no RPM change)
         /// </summary>
-        public Color ExhaustSteadyColor = new Color(Color.Gray, 127);
+        public Color ExhaustSteadyColor = Color.Gray;
         /// <summary>
         /// Exhaust color when accelerating the engine
         /// </summary>
@@ -762,7 +762,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// <summary>
         /// Exhaust color when decelerating the engine
         /// </summary>
-        public Color ExhaustDecelColor = new Color(Color.WhiteSmoke, 63);
+        public Color ExhaustDecelColor = Color.WhiteSmoke;
 
         public Color ExhaustCompressorBlownColor = Color.Gray;
 
@@ -871,7 +871,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 }
                 else
                 {
-                    return CurrentDieselOutputPowerW <= 0f ? 0f : ((OutputPowerW + (Locomotive.DieselEngines.NumOfActiveEngines > 0 ? Locomotive.LocomotivePowerSupply.ElectricTrainSupplyPowerW / Locomotive.DieselEngines.NumOfActiveEngines : 0f)) * 100f / CurrentDieselOutputPowerW);
+                    return CurrentDieselOutputPowerW <= 0f ? 0f : ((OutputPowerW) * 100f / CurrentDieselOutputPowerW);
                 }
             }
         }
@@ -998,6 +998,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
             RPMRange = MaxRPM - IdleRPM;
             MagnitudeRange = MaxMagnitude - InitialMagnitude;
             ExhaustRange = MaxExhaust - InitialExhaust;
+            ExhaustSteadyColor.A = 10;
+            ExhaustDecelColor.A = 10;
 
             if (GearBoxParams.IsInitialized)
             {
@@ -1030,8 +1032,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
             if (State == DieselEngineState.Running)
             {
-                var abstempTractiveForce = Locomotive.TractionForceN;
-                OutputPowerW = ( abstempTractiveForce > 0 ? abstempTractiveForce * Locomotive.AbsWheelSpeedMpS : 0) / Locomotive.DieselEngines.NumOfActiveEngines;
+                float abstempTractiveForce = Locomotive.TractionForceN;
+                float relativePower = CurrentDieselOutputPowerW / Locomotive.DieselEngines.MaxOutputPowerW;
+                OutputPowerW = ((abstempTractiveForce > 0 ? abstempTractiveForce * Locomotive.AbsWheelSpeedMpS : 0) + Locomotive.LocomotivePowerSupply.ElectricTrainSupplyPowerW) * relativePower;
             }
             else
             {
@@ -1397,14 +1400,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
             {
                 if (LoadPercent != 0)
                 {
+                    // For ETS on multi-engine locomotives, estimate the proportion of power supplied by this engine relative to the total
+                    float relativePower = CurrentDieselOutputPowerW / Locomotive.DieselEngines.MaxOutputPowerW;
+
                     CurrentDieselOutputPowerW = GearBox.TractiveForceN * Locomotive.AbsTractionSpeedMpS * 100.0f / LoadPercent;
 
-                    if (Locomotive.DieselEngines.NumOfActiveEngines > 0)
-                    {
-
-                        CurrentDieselOutputPowerW += Locomotive.DieselPowerSupply.ElectricTrainSupplyPowerW / Locomotive.DieselEngines.NumOfActiveEngines;
-                    }
-
+                    CurrentDieselOutputPowerW += Locomotive.DieselPowerSupply.ElectricTrainSupplyPowerW * relativePower;
                 }
                 else
                 {

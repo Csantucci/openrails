@@ -47,6 +47,7 @@ namespace Orts.Viewer3D.RollingStock
         /// Executes in the UpdaterThread
         /// </summary>
         public abstract void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime);
+        public abstract void UpdateAnimations(ElapsedTime elapsedTime);
 
         [CallOnThread("Loader")]
         public virtual void Unload() { }
@@ -59,7 +60,7 @@ namespace Orts.Viewer3D.RollingStock
 
 
         public float[] Velocity = new float[] { 0, 0, 0 };
-        WorldLocation SoundLocation;
+        public WorldLocation SoundLocation;
 
         public void UpdateSoundPosition()
         {

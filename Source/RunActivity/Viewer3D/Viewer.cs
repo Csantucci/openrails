@@ -102,6 +102,8 @@ namespace Orts.Viewer3D
         public TrainCarOperationsWindow TrainCarOperationsWindow { get; private set; } // Alt-F9 window
         public TrainCarOperationsViewerWindow TrainCarOperationsViewerWindow { get; private set; } // From TrainCarOperationWindow
         public TrainCarOperationsWebpage TrainCarOperationsWebpage { get; set; }
+
+        public ActivityEventsWebpage ActivityEventsWebpage { get; set; }
         public CarOperationsWindow CarOperationsWindow { get; private set; } // F9 sub-window for car operations
         public TrainDpuWindow TrainDpuWindow { get; private set; } // Shift + F9 train distributed power window
         public NextStationWindow NextStationWindow { get; private set; } // F10 window
@@ -398,6 +400,7 @@ namespace Orts.Viewer3D
             Simulator.PlayerTrainChanged += PlayerTrainChanged;
             Simulator.RequestTTDetachWindow += RequestTTDetachWindow;
             Simulator.TTRequestStopMessageWindow += TTRequestStopMessageWindow;
+            Simulator.TrainsetParameterChanged += TrainsetParameterChanged;
 
             // The speedpost.dat file is needed only to derive the shape names for the temporary speed restriction zones,
             // so it is opened only in activity mode
@@ -639,6 +642,9 @@ namespace Orts.Viewer3D
             PlayerLocomotiveViewer = World.Trains.GetViewer(PlayerLocomotive);
 
             ExtendedPerformanceDump = Settings.ExtendedPerformanceDump;
+            // Camera loaded before car viewers did, make sure camera has an up to date car viewer
+            if (Camera is AttachedCamera atCam)
+                atCam.RefreshCarViewer();
 
             SetCommandReceivers();
             InitReplay();
@@ -905,10 +911,12 @@ namespace Orts.Viewer3D
 
             UserInput.RDState.ShowSpeed(MpS.FromMpS(PlayerLocomotive.SpeedMpS, PlayerLocomotive.IsMetric));
 
-            // This has to be done also for stopped trains
-            var cars = World.Trains.Cars;
-            foreach (var car in cars)
-                car.Value.UpdateSoundPosition();
+            // Update animations and sound for all train cars before proceeding
+            foreach (TrainCarViewer car in World.Trains.Cars.Values)
+            {
+                car.UpdateAnimations(elapsedTime);
+                car.UpdateSoundPosition();
+            }
 
             if (Simulator.ReplayCommandList != null)
             {
@@ -1642,12 +1650,11 @@ namespace Orts.Viewer3D
                         {
                             foreach (var targetNode in animatedPart.MatrixIndexes)
                             {
-                                if (!trainCarShape.SharedShape.StoredResultMatrixes.TryGetValue(targetNode, out var matrix))
+                                if (targetNode > trainCarShape.ResultMatrices.Length)
                                     continue;
                                 var matrixWorldLocation = trainCarShape.Location.WorldLocation;
-                                matrixWorldLocation.Location.X = matrix.Translation.X;
-                                matrixWorldLocation.Location.Y = matrix.Translation.Y;
-                                matrixWorldLocation.Location.Z = -matrix.Translation.Z;
+                                matrixWorldLocation.Location = (trainCarShape.ResultMatrices[targetNode] * trainCarShape.Location.XNAMatrix).Translation;
+                                matrixWorldLocation.Location.Z *= -1;
                                 Vector3 xnaCenter = Camera.XnaLocation(matrixWorldLocation);
                                 float d = ORTSMath.LineSegmentDistanceSq(xnaCenter, NearPoint, FarPoint);
                                 if (bestD > d)
@@ -1786,6 +1793,13 @@ namespace Orts.Viewer3D
         void TTRequestStopMessageWindow(object sender, EventArgs e)
         {
             TTRequestStopWindow.Visible = true;
+        }
+
+        // update TrainOperationsWindow if window visible
+        void TrainsetParameterChanged(object sender, EventArgs e)
+        {
+            if (TrainOperationsWindow.Visible)
+                TrainOperationsWindow.TrainOperationsChanged = true;
         }
 
         // Finds the Turntable or Transfertable nearest to the viewing point

@@ -48,6 +48,7 @@ using Orts.Simulation.RollingStocks.Coupling;
 using Orts.Simulation.RollingStocks.SubSystems;
 using Orts.Simulation.RollingStocks.SubSystems.Brakes;
 using Orts.Simulation.RollingStocks.SubSystems.PowerSupplies;
+using Orts.Simulation.RollingStocks.SubSystems.Controllers;
 using Orts.Simulation.Signalling;
 using ORTS.Common;
 using ORTS.Scripting.Api;
@@ -60,6 +61,8 @@ namespace Orts.Simulation.RollingStocks
         public Vector3 Location;
         public Vector3 StartDirection;
         public Vector3 RotationLimit;
+        public int ShapeIndex = -1;
+        public string ShapeHierarchy;
 
         public ViewPoint()
         {
@@ -75,6 +78,8 @@ namespace Orts.Simulation.RollingStocks
             Location = copy.Location;
             StartDirection = copy.StartDirection;
             RotationLimit = copy.RotationLimit;
+            ShapeIndex = copy.ShapeIndex;
+            ShapeHierarchy = copy.ShapeHierarchy;
             if (rotate)
             {
                 Location.X *= -1;
@@ -90,6 +95,7 @@ namespace Orts.Simulation.RollingStocks
         // Remember direction of passenger camera and apply when user returns to it.
         public float RotationXRadians;
         public float RotationYRadians;
+        public Vector3 ShapeOffset;
     }
 
     public abstract class TrainCar
@@ -148,6 +154,8 @@ namespace Orts.Simulation.RollingStocks
         {
             return new Interpolator(SteamUsageLbpH, FuelUsageGalukpH);
         }
+
+        public float BackPressurePSIG; // Back pressure in steam cylinder for sound system
 
         public float MainSteamHeatPipeOuterDiaM = Me.FromIn(2.4f); // Steel pipe OD = 1.9" + 0.5" insulation (0.25" either side of pipe)
         public float MainSteamHeatPipeInnerDiaM = Me.FromIn(1.50f); // Steel pipe ID = 1.5"
@@ -590,6 +598,8 @@ namespace Orts.Simulation.RollingStocks
         public readonly Dictionary<(BrakeModes BrakeMode, float MinMass), BrakeSystem> BrakeSystems = new Dictionary<(BrakeModes, float), BrakeSystem>();
         /// <summary>Filter for the <see cref="BrakeSystems"/>, in case that comes from an include file</summary>
         public string[] BrakeModeNames { get; protected set; }
+        /// <summary>Store for the various train brake controllers fitted, e.g. air and vacuum.</summary>
+        public readonly Dictionary<BrakeModes, ScriptedBrakeController> TrainBrakeControllers = new Dictionary<BrakeModes, ScriptedBrakeController>();
 
         public float PreviousSteamBrakeCylinderPressurePSI;
 
@@ -668,6 +678,9 @@ namespace Orts.Simulation.RollingStocks
         public float BrakeShoeForceN;
         public float FrictionBrakeBlendingMaxForceN; // This is the maximum force for the friction barke when it is blended with the dynamic brake
 
+        public bool IsRackRailway = false;
+        public bool BrakeCogWheelFitted;
+
         // Sum of all the forces acting on a Traincar in the direction of driving.
         // MotiveForceN and GravityForceN act to accelerate the train. The others act to brake the train.
         public float TotalForceN; // 
@@ -707,7 +720,7 @@ namespace Orts.Simulation.RollingStocks
 
         // For use by cameras, initialized in MSTSWagon class and its derived classes
         public List<PassengerViewPoint> PassengerViewpoints = new List<PassengerViewPoint>();
-        public List<PassengerViewPoint> CabViewpoints; //three dimensional cab view point
+        public List<PassengerViewPoint> CabViewpoints = new List<PassengerViewPoint>(); //three dimensional cab view point
         public List<ViewPoint> HeadOutViewpoints = new List<ViewPoint>();
 
         // Used by Curve Speed Method
@@ -1319,7 +1332,8 @@ namespace Orts.Simulation.RollingStocks
                 }
             }
             // Only apply slide, and advanced brake friction, if advanced adhesion is selected, simplecontrolphysics is not set, and it is a Player train
-            else if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && IsPlayerTrain)
+            // Rack stock with cog wheel fitted will not skid
+            else if (Simulator.UseAdvancedAdhesion && !Simulator.Settings.SimpleControlPhysics && IsPlayerTrain && !(BrakeCogWheelFitted && IsRackRailway))
             {
                 // Determine whether car is experiencing a wheel slip during braking
                 if (!BrakeSkidWarning && AbsSpeedMpS > 0.01)
@@ -1358,7 +1372,7 @@ namespace Orts.Simulation.RollingStocks
                 // Test if wheel forces are high enough to induce a slip. Set slip flag if slip occuring 
                 if (!BrakeSkid && AbsSpeedMpS > 0.01)  // Train must be moving forward to experience skid
                 {
-                    if (BrakeRetardForceN > WagonBrakeAdhesiveForceN)
+                    if (BrakeRetardForceN > WagonBrakeAdhesiveForceN && !(BrakeCogWheelFitted && IsRackRailway))
                     {
                         BrakeSkid = true; 	// wagon wheel is slipping
                         var message = "Car ID: " + CarID + " - experiencing braking force wheel skid.";
@@ -2408,16 +2422,10 @@ public string GetCurveDirection()
         public virtual string GetStatus() { return null; }
         public virtual string GetDebugStatus()
         {
-            string locomotivetypetext = "";
-            if (EngineType == EngineTypes.Control)
-            {
-                locomotivetypetext = "Unpowered Control Trailer Car";
-            }
-
             var loco = this as MSTSDieselLocomotive;
             if (loco != null && loco.DieselEngines.HasGearBox && loco.DieselTransmissionType == MSTSDieselLocomotive.DieselTransmissionTypes.Mechanic)
             {
-                return String.Format("{0}\t{1}\t{2}\t{3}\t{4:F0}%\t{5} - {6:F0} rpm\t\t{7}\t{8}\t{9}",
+                return String.Format("{0}\t{1}\t{2}\t{3}\t{4:F0}%\t{5} - {6:F0} rpm\t\t{7}\t{8}\t",
                 CarID,
                 FormatStrings.Catalog.GetParticularString("Reverser", GetStringAttribute.GetPrettyName(Direction)),
                 Flipped ? Simulator.Catalog.GetString("Yes") : Simulator.Catalog.GetString("No"),
@@ -2427,13 +2435,12 @@ public string GetCurveDirection()
                 loco.DieselEngines[0].GearBox.HuDShaftRPM,
                 // For Locomotive HUD display shows "forward" motive power (& force) as a positive value, braking power (& force) will be shown as negative values.
                 FormatStrings.FormatPower(loco.LocomotiveAxles.DrivePowerW, IsMetric, false, false),
-                String.Format("{0}{1}", FormatStrings.FormatForce(loco.LocomotiveAxles.DriveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : ""),
-                Simulator.Catalog.GetString(locomotivetypetext)
+                String.Format("{0}{1}", FormatStrings.FormatForce(loco.LocomotiveAxles.DriveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : "")
                 );
             }
             else
             {
-                return String.Format("{0}\t{2}\t{1}\t{3}\t{4:F0}%\t{5}\t\t{6}\t{7}\t{8}",
+                return String.Format("{0}\t{2}\t{1}\t{3}\t{4:F0}%\t{5}\t\t{6}\t{7}\t",
                 CarID,
                 Flipped ? Simulator.Catalog.GetString("Yes") : Simulator.Catalog.GetString("No"),
                 FormatStrings.Catalog.GetParticularString("Reverser", GetStringAttribute.GetPrettyName(Direction)),
@@ -2442,8 +2449,7 @@ public string GetCurveDirection()
                 String.Format("{0}", FormatStrings.FormatSpeedDisplay(SpeedMpS, IsMetric)),
                 // For Locomotive HUD display shows "forward" motive power (& force) as a positive value, braking power (& force) will be shown as negative values.
                 FormatStrings.FormatPower((this as MSTSWagon).LocomotiveAxles.DrivePowerW, IsMetric, false, false),
-                String.Format("{0}{1}", FormatStrings.FormatForce((this as MSTSWagon).LocomotiveAxles.DriveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : ""),
-                Simulator.Catalog.GetString(locomotivetypetext)
+                String.Format("{0}{1}", FormatStrings.FormatForce((this as MSTSWagon).LocomotiveAxles.DriveForceN, IsMetric), WheelSlip ? "!!!" : WheelSlipWarning ? "???" : "")
                 );
             }
         }
@@ -3149,6 +3155,8 @@ public string GetCurveDirection()
             // Check if null (0-length) vector
             if (!(fwd.X == 0 && fwd.Y == 0 && fwd.Z == 0))
                 fwd.Normalize();
+            else // If calculation fails, force set forward vector to prevent NaN errors
+                fwd.X = 1; 
             Vector3 side = Vector3.Cross(Vector3.Up, fwd);
             // Check if null (0-length) vector
             if (!(side.X == 0 && side.Y == 0 && side.Z == 0))
@@ -3158,6 +3166,9 @@ public string GetCurveDirection()
             m.Right = side;
             m.Up = up;
             m.Backward = fwd;
+
+            // Update whether track is rack or not
+            UpdateRackRailDetection(traveler);
 
             // Update gravity force when position is updated, but before any secondary motion is added
             UpdateGravity(m);
@@ -3213,6 +3224,28 @@ public string GetCurveDirection()
 
         #region Traveller-based updates
         public float CurrentCurveRadiusM;
+
+        public void UpdateRackRailDetection(Traveller traveller)
+        {
+            if (this is MSTSWagon wagon)
+            {
+                var thisSection = traveller.GetCurrentSection();
+
+                if (thisSection != null && Simulator.TSectionDat.TrackShapes.ContainsKey(thisSection.ShapeIndex))
+                {
+                    TrackShape thisShape = Simulator.TSectionDat.TrackShapes[thisSection.ShapeIndex];
+
+                    if (thisShape.RackShape)
+                    {
+                        IsRackRailway = true;
+                    }
+                    else
+                    {
+                        IsRackRailway = false;
+                    }
+                }
+            }
+        }
 
         internal void UpdateTilting(Traveller traveller,  float elapsedTimeS, float speedMpS, int direction)
         {

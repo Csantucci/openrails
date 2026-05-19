@@ -97,7 +97,6 @@ namespace Orts.Simulation.RollingStocks
         public SmoothedData ExhaustColorR = new SmoothedData(1);
         public SmoothedData ExhaustColorG = new SmoothedData(1);
         public SmoothedData ExhaustColorB = new SmoothedData(1);
-        public SmoothedData ExhaustColorA = new SmoothedData(1);
 
         public float DieselOilPressurePSI = 0f;
         public float DieselMinOilPressurePSI;
@@ -271,7 +270,6 @@ namespace Orts.Simulation.RollingStocks
                 DieselEngines[0].InitFromMSTS();
                 DieselEngines[0].Initialize();
             }
-
 
             // Check initialization of power values for diesel engines
             for (int i = 0; i < DieselEngines.Count; i++)
@@ -469,6 +467,10 @@ namespace Orts.Simulation.RollingStocks
                 GearBoxController = new MSTSNotchController(DieselEngines[0].GearBox.NumOfGears + 1);
             }
 
+            EnginesRPM = new float[DieselEngines.Count];
+            EnginesPower = new float[DieselEngines.Count];
+            EnginesTorque = new float[DieselEngines.Count];
+
             base.Initialize();
 
             // Initialise water level in steam heat boiler
@@ -582,7 +584,6 @@ namespace Orts.Simulation.RollingStocks
             ExhaustColorR.Update(elapsedClockSeconds, DieselEngines[0].ExhaustColor.R);
             ExhaustColorG.Update(elapsedClockSeconds, DieselEngines[0].ExhaustColor.G);
             ExhaustColorB.Update(elapsedClockSeconds, DieselEngines[0].ExhaustColor.B);
-            ExhaustColorA.Update(elapsedClockSeconds, DieselEngines[0].ExhaustColor.A);
 
             base.Update(elapsedClockSeconds);
 
@@ -713,7 +714,14 @@ namespace Orts.Simulation.RollingStocks
         {
             EngineRPMRatio = (DieselEngines[0].RealRPM - DieselEngines[0].IdleRPM) / (DieselEngines[0].MaxRPM - DieselEngines[0].IdleRPM);
 
-            Variable1 = ThrottlePercent / 100.0f;
+            for (int i = 0; i < DieselEngines.Count; i++)
+            {
+                EnginesRPM[i] = DieselEngines[i].RealRPM;
+                EnginesPower[i] = DieselEngines[i].OutputPowerW / 1000.0f; // Convert to kW
+                EnginesTorque[i] = DieselEngines[i].OutputPowerW / (DieselEngines[i].RealRPM * (2.0f * (float)Math.PI / 60.0f));
+            }
+
+            Variable1[0] = ThrottlePercent / 100.0f;
             // else Variable1 = MotiveForceN / MaxForceN; // Gearbased, Variable1 proportional to motive force
             // allows for motor volume proportional to effort.
 
@@ -922,7 +930,7 @@ namespace Orts.Simulation.RollingStocks
                    Simulator.Catalog.GetString("Press"),
                    FormatStrings.FormatPressure(CurrentSteamHeatPressurePSI, PressureUnit.PSI, MainPressureUnit, true),
                    Simulator.Catalog.GetString("StTemp"),
-                   FormatStrings.FormatTemperature(C.FromF(SteamHeatPressureToTemperaturePSItoF[CurrentSteamHeatPressurePSI]), IsMetric, false),
+                   FormatStrings.FormatTemperature(C.FromF(SaturatedSteamHeatPressureToTemperaturePSItoF[CurrentSteamHeatPressurePSI]), IsMetric, false),
                    Simulator.Catalog.GetString("StUse"),
                    FormatStrings.FormatMass(pS.TopH(Kg.FromLb(CalculatedCarHeaterSteamUsageLBpS)), IsMetric),
                    FormatStrings.h,
@@ -1394,14 +1402,13 @@ namespace Orts.Simulation.RollingStocks
         }
 
         //used by remote diesels to update their exhaust
-        public void RemoteUpdate(float exhPart, float exhMag, float exhColorR, float exhColorG, float exhColorB, float exhColorA)
+        public void RemoteUpdate(float exhPart, float exhMag, float exhColorR, float exhColorG, float exhColorB)
         {
             ExhaustParticles.ForceSmoothValue(exhPart);
             ExhaustMagnitude.ForceSmoothValue(exhMag);
             ExhaustColorR.ForceSmoothValue(exhColorR);
             ExhaustColorG.ForceSmoothValue(exhColorG);
             ExhaustColorB.ForceSmoothValue(exhColorB);
-            ExhaustColorA.ForceSmoothValue(exhColorA);
         }
 
 

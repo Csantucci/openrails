@@ -202,7 +202,7 @@ namespace Orts.Simulation.RollingStocks
         /// </summary>
         protected override void UpdateSoundVariables(float elapsedClockSeconds)
         {
-            Variable1 = ThrottlePercent;
+            Variable1[0] = ThrottlePercent;
             if (ThrottlePercent == 0f) Variable2 = 0;
             else
             {
@@ -470,7 +470,7 @@ namespace Orts.Simulation.RollingStocks
                    Simulator.Catalog.GetString("Press"),
                    FormatStrings.FormatPressure(CurrentSteamHeatPressurePSI, PressureUnit.PSI, MainPressureUnit, true),
                    Simulator.Catalog.GetString("StTemp"),
-                   FormatStrings.FormatTemperature(C.FromF(SteamHeatPressureToTemperaturePSItoF[CurrentSteamHeatPressurePSI]), IsMetric, false),
+                   FormatStrings.FormatTemperature(C.FromF(SaturatedSteamHeatPressureToTemperaturePSItoF[CurrentSteamHeatPressurePSI]), IsMetric, false),
                    Simulator.Catalog.GetString("StUse"),
                    FormatStrings.FormatMass(pS.TopH(Kg.FromLb(CalculatedCarHeaterSteamUsageLBpS)), IsMetric),
                    FormatStrings.h,

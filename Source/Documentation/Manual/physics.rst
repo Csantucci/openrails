@@ -274,6 +274,8 @@ performance of the wheelset.
 ``NumberWheelsetAxles`` - number of axles in the wheelset.
 ``ORTSFlangeAngle`` - flange angle of the wheels in the wheelset.
 ``ORTSInertia`` - inertia of the wheels in the wheelset.
+``AxleRailTractionType`` - indicates the type of rail traction for the axle. 
+Valid inputs are Rack, Rack_Adhesion or Adhesion.
 
 The first model -- simple adhesion model -- is a simple tractive force
 condition-based computation. If the tractive force reaches its actual
@@ -410,6 +412,59 @@ cylinder or sometimes it has two of the cranks separated by 45 deg instead. Thes
 Rad (default) or Deg. The separations should be described around the full 360 deg of rotation, so for example, 
 a 3 cylinder locomotive would be - ORTSWheelCrankAngleDifference ( 0deg, 120deg, 240deg ).
 
+.. _physics-rack_railway:
+
+Rack Railway Operation
+----------------------
+
+Whilst the steepest adhesion track gradient is 1 in 7.2 ( 13.8% ), this gradient will significantly reduce the load 
+that can be hauled up the gradient, so often railway designers elect to add a cog wheel to the train which engages 
+a rack rail in the track, and by this method the train is able to haul itself up the hill without any wheel slippage.
+
+In regards to steam rack locomotives there are potentially three different types, as follows:
+
+a) Pure Rack Locomotive - which has wheels supporting its weight, but is driven only by a Cog wheel.
+
+b) Combined Rack and Adhesion locomotive - this type has two different steam engines, with one driving the rack cog wheel, 
+and one driving the adhesion wheels.
+
+c) Rack locomotive with driven adhesion wheels - in this variation the Cog wheel is on the same drive axle as the adhesion wheels. 
+This type of locomotive could run on adhesion tracks as well as rack tracks.
+
+To configure a rack railway operation into OR, the following parameters need to be configured into the files indicated.
+
+i) In the TSECTION.DAT file add the entry ``ORTSRackShape ( )`` into all the track shapes that have rack rails included.
+
+ii) In the Rack locomotive ENG file it will be necessary to add one or more :ref:`Steam Engines <physics-multiple-steam-engines>`
+ depending upon the type of rack locomotive being crerated.
+
+iii) It will also be necessary to define which axles are Adhesion or Rack driven. This can be done by adjusting the :ref:`Axles <physics-adhesion:>` parameters.
+
+iv) In the WAG file (for wagons only) add the entry ``BrakingCogWheelFitted`` to indicate that the cog wheel is used for braking.
+
+This configuration should eliminate all wheel slip and skids when the train is on a rack section of track.
+
+.. _physics-riggenbach_counter_pressure_brake:
+
+Riggenbach Counter Pressure Brake
+---------------------------------
+
+To assist in braking some steam locomotives were fitted with Counter Pressure Braking system. Either steam or air could be used. A series of 
+valves were fitted around the steam cylinder which allowed the cylinder to be reconfigured as a either and air compressor or to reverse the 
+steam operation. This created a retarding force which could be used to brake the locomotive.
+
+To set this feature up the following parametrs need to be add:
+
+``ORTSCounterPressureBraking`` - is added to the engine section of the ENG file, and set to true if a Riggenbach brake has been fitted to the locomotive. 
+This will apply for all steam locomotives with only one steam engine.
+
+``CounterPressureBraking`` - for locomotives with multiple steam engines on the same locomotive (such as a rack locomotive) then this value is set to true 
+within the steam engine block that provides the counter pressure braking.
+
+Two steam effects are provided to model the exhaust steam from the counter pressure braking. These effects can be enabled by adding ``CounterPressureBrake1FX``
+ and  ``CounterPressureBrake2FX`` to the locomotive steam effects.
+
+Steam effects can be added to the locomotive by using sound trigger 323 to turn the sounds ON, and 324 to turn the sounds OFF.
 
 Engine -- Classes of Motive Power
 =================================
@@ -1535,6 +1590,8 @@ cylinder also tended to reach finite limits as well. These factors
 typically combined to place limits on the power of a locomotive depending
 upon the design factors used.
 
+.. _physics-multiple-steam-engines:
+
 Steam Locomotives with Multiple Engines
 .......................................
 
@@ -1547,8 +1604,8 @@ engines need to be added to the engine section of the ENG file. These should hav
 following format::
 
     ORTSSteamEngines ( x
-        Wheelset (
-           
+        Steam (
+           ..............
         )
     )
 
@@ -1561,6 +1618,7 @@ The following parameters can be used to configure the steam engine::
 ``CylinderDiameter`` - diameter of steam cylinder.
 ``MaxIndicatedHorsepower`` - maximum indicated horsepower of steam engine.
 ``AttachedAxle`` - the axle wheelset that the steam engine is attached to.
+``ExcessRodBalance`` - the weeight of the excess balance on the connecting rods
 
 To specify the engine as a Booster engine, the following additional parameters 
 can be used::
@@ -1568,8 +1626,8 @@ can be used::
 ``BoosterCutoff`` - the cutoff point for the Booster steam cylinder.
 ``BoosterThrottleCutoff`` - the locomotive cutoff point where the Booster unlatches.
 ``BoosterGearRatio`` - the gear ratio of the Booster engine.
-``AuxiliarySteamEngineType`` - by inserting "Booster" into this parameter the 
-engine is defined as a Booster engine.
+``AuxiliarySteamEngineType`` - the purpose of the steam engine can be defined by entering 
+one of Adhesion, Rack or Booster.
 
 The following steam effects are defined for the 2nd multuple engine:
 
@@ -1594,6 +1652,65 @@ ii) Cylinder Cocks Exhaust - the exhaust out of the cylinder drainage cocks,
 
 The following CAB controls have been defined, ``STEAM_BOOSTER_AIR``, ``STEAM_BOOSTER_IDLE``,
  ``STEAM_BOOSTER_LATCH``, ``STEAM_BOOSTER_PRESSURE``.
+
+Boiler Water and Water Gauge
+............................
+
+The management of boiler water on a steam locomotive is important for maintaining steam productions as 
+well as ensuring that water levels do not drop far enough to expose the firebox crown and the fusible plugs.
+
+The Water Glass is the primary indication used by the fireman to manage boiler water levels, however as the 
+locomotive goes up and down grades, the water level will appear to significantly change. The amount of variation 
+will be determined by a number of factors, and principal amongst them are the following.
+
+``ORTSBoilerLength`` - length of the boiler (UoM distance)
+``ORTSWaterGaugeGlassHeight`` - length of the water gauge (UoM Distance)
+``ORTSBoilerDiameter`` - diameter of the boiler (UoM Distance)
+``ORTSBoilerCrownHeight`` - Height of boiler crown above centre line of the boiler (UoM Distance)
+``ORTSBoilerCrownCoverageHeight`` - Amount of water required to cover the crown (UoM Distance)
+``ORTSteamLocomotiveBoilerOrientation`` - indicates the boiler orientation, valid values are Horizontal, 
+CabForward, CabCentre, Vertical, Sloping. Default = Horizontal
+``ORTSBoilerAngle`` - Angle of boiler to horizontal, typically for Sloping boilers on steep inclines. (UoM Degree)
+
+To display the changing water level with gradient in the Cab, use ``BOILER_WATER_GRADE`` in place of 
+``BOILER_WATER`` in the CVF file. For example,
+
+"``Type ( BOILER_WATER_GRADE GAUGE )``"
+
+Steam Water Injectors
+.....................
+
+Water injectors are typically modelled by default, and sizes and injection rates will be calculated automatically by OR.
+
+If desired the user may customise some of the default values by using the following parameters:
+
+``ORTSInjectorTypes ( x, y )`` - will allow the user to set up a combination of exhaust or live steam injectors for the 
+locomotive. Use 0 = Live steam and 1 = Exhaust steam in either of the x or y positions. Note if ``ORTSInjectorTypes`` is not 
+present then InjectorTypes will be used if it is present in ENG file.
+
+``ORTSInjectorSize ( x, y )`` - the size of each injector can be indicated in this parameter. The values will be in 
+mm, and typically should not be greater then 19mm. (UoM Distance)
+
+
+Locomotive Back Pressure
+........................
+
+OR calculates a default back pressure value for the exhaust steam emitted from the cylinder.
+
+The user may customise the default value where appropriate values are known, ie from test reports, etc.
+
+To customise the backpressure curve use:
+
+``ORTSCylinderBackPressureVsSteamOutput ( x, y )`` - where x = series of cylinder steam usage rates in lb/h, and y = back 
+pressure in psig.
+
+Note: The older parameter ``ortscylinderbackpressure`` is inaccurate and no longer supported in OR. An error message will 
+display if OR detects the use of this parameter.
+
+To display the back pressure in the Cab, use ``BACK_PR``.
+
+Sound effects on the steam locomotive can be varied by using the volume control parameter ``BackPressureControlled``.
+
 
 Locomotive Types
 ................
@@ -2397,7 +2514,7 @@ iii. `Testing Resources for Open Rails Steam Locomotives
 Steam exhausts on a steam locomotive, and other special visual effects can be modelled in OR by defining
 appropriate visual effects in the ``SteamSpecialEffects`` section of the steam locomotive ENG file, the
 ``DieselSpecialEffects`` section of the diesel locomotive ENG file, or the ``SpecialEffects`` section
-of a relevant wagon (including diesel, steam or electric locomotives.
+of a relevant wagon (also including diesel, steam or electric locomotives).
 
 OR supports the following special visual effects in a steam locomotive:
 
@@ -2427,9 +2544,9 @@ OR supports the following special visual effects in a steam locomotive:
   turbo-generator is not fitted to the locomotive it is recommended that this
   effect is left out of the effects section which will ensure that it is not
   displayed in OR.
-- Safety valves (named ``SafetyValvesFX``) -- represents the discharge of the
-  steam valves if the maximum boiler pressure is exceeded. It will appear
-  whenever the safety valve operates.
+- Safety valves (named ``SafetyValvesFX, SafetyValves2FX, SafetyValves3FX, SafetyValves4FX``) 
+-- represents the discharge of the steam valves if the maximum boiler pressure is exceeded. 
+They will appear whenever the relevant safety valve operates.
 - Whistle (named ``WhistleFX``) -- represents the steam discharge from the
   whistle.
 - Injectors (named ``Injectors1FX`` and ``Injectors2FX``) -- represents the
@@ -2443,9 +2560,9 @@ OR supports the following special visual effects in a steam locomotive:
 
 OR supports the following special visual effects in a diesel locomotive:
 
-- Exhaust (named ``Exhaustnumber``, eg: ``Exhaust2``) -- is a diesel exhaust. Multiple
-  exhausts can be defined, simply by adjusting the numerical value of the number after
-  the key word Exhaust.
+- Exhaust (named ``Exhaustnumber``) -- is a diesel exhaust. Multiple exhausts can
+  be defined, simply by adjusting the numerical value of the number after the key
+  word exhaust.
 
 OR supports the following special visual effects in a wagon (also the wagon section of
 an ENG file):
@@ -2474,225 +2591,34 @@ Each effect is defined by inserting a code block into the ENG/WAG file similar t
 the one shown below::
 
     Cylinders11FX (
-        Comment ( Required parameters. )
-        ORTSPosition ( -1.0485m 1.0m 2.8m )
-        ORTSInitialVelocity ( -1  0  0 )
-        ORTSParticleDiameter ( 0.1m )
-
-        Comment ( Optional parameters. )
-        ORTSPositionVariation ( 0m 0m 0m )
-        ORTSInitialVelocityVariation ( 0.1 )
-        ORTSFinalVelocity ( 0 1m/s 0 )
-        ORTSFinalVelocityVariation ( 0.75m/s )
-
-        ORTSLifespanMultiplier ( 1.0 )
-        ORTSLifespanVariation ( 0.5 )
-        ORTSMomentumMultiplier ( 1.0 )
-        ORTSMomentumVariation ( 0.1 )
-
-        ORTSInititalExpansion ( 1.0 )
-        ORTSExpansionSpeed ( 4.0 )
-        ORTSRotationVariation ( 0.25 )
-        ORTSWindMultiplier ( 1.0 )
-        
-        ORTSParticleOpacity ( 1.0 )
-        ORTSPipeArea ( 0.03m^2 )
-        ORTSRateMultiplier ( 1.0 )
-        ORTSUseChaoticRandomization ( false )
-        
-        Comment ( Advanced optional parameters. )
-        ORTSMaxParticles ( 2500 )
-        ORTSGraphic ( "smokemain.ace" )
-        ORTSGraphicAtlasLayout ( 4 4 )
-    )
-
-.. index::
-   single: ORTSPosition
-   single: ORTSInitialVelocity
-   single: ORTSParticleDiameter
-   single: ORTSPositionVariation
-   single: ORTSInitialVelocityVariation
-   single: ORTSFinalVelocity
-   single: ORTSFinalVelocityVariation
-   single: ORTSLifespanMultiplier
-   single: ORTSLifespanVariation
-   single: ORTSMomentumMultiplier
-   single: ORTSMomentumVariation
-   single: ORTSInititalExpansion
-   single: ORTSExpansionSpeed
-   single: ORTSRotationVariation
-   single: ORTSWindMultiplier
-   single: ORTSPipeArea
-   single: ORTSMaxParticles
-   single: ORTSRateMultiplier
-   single: ORTSUseChaoticRandomization
-   single: ORTSParticleOpacity
-   single: ORTSGraphic
-   single: ORTSGraphicAtlasLayout
-
-While there are many parameters available to customize the appearance and behavior of emitted particles, most are set
-to reasonable values by default and should be considered optional unless further customization is desired. The only
-*required* parameters are as follows:
-
-- ``ORTSPosition ( x y z )`` -- REQUIRED parameter which defines the (+/-) right/left, up/down,
-  forward/backward location of the emitter (in meters by default, other units are accepted)
-- ``ORTSInitialVelocity ( x y z )`` -- REQUIRED to define the (+/-) right/left, up/down, forward/backward
-  components of emission direction (no units of measure, the particle speed is multiplied by
-  this vector to determine the 3D velocity of particles. Speed can be divided by inserting values
-  less than 1, or multiplied by inserting values greater than 1.)
-- And ``ORTSParticleDiameter ( d )`` -- REQUIRED to set the nozzle width (default units meters, other units accepted),
-  which sets the initial size of each particle
-
-The *optional* parameters unique to OR are as follows:
-
-- ``ORTSPositionVariation ( x y z )`` -- Specifies the amplitude of random variation
-  in the right/left, up/down, and front/back emission location of a particle (default units
-  are meters). Useful for non-circular exhaust ports, as it allows one particle emitter
-  to be used to spawn particles from an area, rather than a single point. Note that
-  ``ORTSPositionVariation ( 1 0 0 )`` would allow particles to emit 1 meter right and
-  1 meter left of the initial position, for a total variation of 2 meters. Similar is
-  true of all other parameters related to randomness, the total variation is double what's
-  specified. Feature is disabled by default.
-- ``ORTSInitialVelocityVariation ( i )`` -- Defines the randomization of initial particle
-  velocity in all directions, multiplied by the particle's initial speed (no units of measure).
-  The default value is ( 0.1 ), meaning the speed in each direction can be increased or
-  decreased by 10% of the initial particle speed. Larger values make the particle exhaust seem
-  less directed and more diffuse. Alternately, 3 values can be provided in the format
-  ``ORTSInitialVelocityVariation ( x y z )`` to specify the initial velocity variation in each
-  individual direction.
-- ``ORTSFinalVelocity ( x y z )`` -- Determines the final right/left, up/down, and front/back
-  velocity of particles after they have settled (default units of meters per second). The default
-  is 1 m/s directly upward, and can be changed to fine tune the appearance of the particle trail
-  produced. Note that wind velocity is added to this value afterward.
-- ``ORTSFinalVelocityVariation ( f )`` -- Unlike initial velocity variation, final velocity
-  variation determines the amplitude of random variation of final velocity in absolute terms
-  (default units of meters per second). The default setting is +/- 0.75 m/s in all directions, but
-  changing this can adjust the amount of and shape of particle trail spread. Larger variations
-  make for exhaust that seems more chaotic and diffuse. Similar to initial velocity variation,
-  ``ORTSFinalVelocityVariation ( x y z )`` can be used to specify the variation in each direction
-  individually.
-- ``ORTSLifespanMultiplier ( x )`` -- Multiplies the lifetime of particles emitted from this
-  emitter by the given (unitless) value. Particle lifetime varies depending on simulation
-  data, but if particles seem to last too long a value less than 1 can be entered here, or a
-  value greater than 1 entered if particles don't seem to last long enough. The default value
-  is 1, producing particles that last as long as the simulation specifies.
-- ``ORTSLifespanVariation ( x )`` -- Sets the random variation of the particle lifetime multiplier
-  (unitless). Values greater than 1 can cause particles to randomly generate with a lifetime of
-  0 seconds, which will prevent those particles from being rendered.
-  The default is +/- 0.5 times the lifespan.
-- ``ORTSMomentumMultiplier ( x )`` -- Changes how long it takes for a particle to transition from
-  its initial velocity to its final velocity (unitless). Values above 1 make particles
-  have more momentum and move more smoothly, though also travel further from the emitter point before
-  being caught by the wind. Values below 1 give more sudden deceleration and prevent particles from
-  travelling very far before decelerating to their final speed.
-  The default setting is 1x.
-- ``ORTSMomentumVariation ( x )`` -- Similar to ORTSLifespanVariation, gives the amplitude of
-  random variation in the momentum multiplier (unitless). Larger values increase the
-  final spread of particles, which works well in combination with ORTSFinalVelocityVariation.
-  The default setting is +/- 0.1x.
-- ``ORTSInititalExpansion ( x )`` -- When particles are emitted at high speed, they expand
-  substantially as the exhaust pressure equalizes with the surrounding air. The (unitless)
-  value given here multiplies the amount of expansion that occurs in this initial phase.
-  Entering 0 disables this component of particle expansion, any value greater than 0 progressively
-  increases the amount particles expand by. The default setting is 1.
-- ``ORTSExpansionSpeed ( x )`` -- Every particle expands in diameter at a constant rate the longer
-  since it was emitted, making exhaust seem more spread out as it mixes with the air. The
-  (unitless) value entered in this parameter specifies how much the size of a particle increases
-  every second, relative to the original particle size (ie: the nozzle width). The default value is 4.0,
-  meaning every particle will expand by 4x the original width for every second its in the air. Entering
-  0 would disable expansion over time, and negative values would cause particles to shrink over time
-  (particles are not allowed to have a negative size, instead they disappear).
-- ``ORTSRotationVariation ( x )`` -- Particles rotate randomly to create some visual interest, this
-  parameter determines the max rotation speed (in radians per second) a particle is allowed to have,
-  either clockwise or counterclockwise. Higher speeds make for more chaotic looking effects. The
-  default setting allows for random rotation speeds between -0.25 and 0.25 radians per second.
-- ``ORTSWindMultiplier ( x )`` -- Affects how strongly wind changes the final velocity of
-  these particles (unitless). Values greater than 1 increase wind strength, values less than 1
-  decrease wind strength, with 0 completely disabling the wind effect from changing final velocity.
-  A value of 1 is used by default, such that the wind speed used by the simulation is used directly.
-  This can be adjusted to prevent particles that shouldn't be influenced by the wind (eg: cylinder
-  cocks close to ground level) from flying off in whatever direction the wind is going.
-- ``ORTSParticleOpacity ( o )`` -- Controls how transparent emitted particles are by multiplying
-  texture opacity by the given value (unitless number between 0 and 1). The default setting is 1,
-  which doesn't change particle appearance at all. Lower values make particles more transparent,
-  until 0 would make all particles invisible.
-- ``ORTSPipeArea ( a )`` -- Niche parameter to adjust the area of the exhaust pipe used by
-  the simulation (default units square feet). By default, the area is assumed to be a circle with
-  the same diameter as the exhaust particles. However, for non-circular exhausts this can be combined
-  with ORTSPositionVariation to give more believable results. Larger areas result in lower exhaust
-  speed without changing the number of particles emitted per second, which also allows this to
-  be used as a speed multiplier, though ORTSinitialVelocity is preferred for that purpose.
-- ``ORTSRateMultiplier ( x )`` -- Multiplies the number of particles emitted per second by the given
-  value (unitless). Values less than 1 reduce the rate of particle emission, while values greater than
-  1 increase the rate of particle emission. The particle rate is determined by the simulation, but may
-  not produce aesthetically pleasing results in some cases due to particles overlapping (emitted too
-  quickly) or spreading out (emitted too slowly), so some fine-tuning can be done using this parameter.
-  This is set to 1 by default, producing the exact number of particles estimated by the simulation.
-- ``ORTSUseChaoticRandomization ( 0/1 )`` -- Changes the randomization algorithm used for positions,
-  velocities, durations, and so on to be "chaotic" if given a true or 1 value. Default is false or 0,
-  giving "smooth" randomization. With the "chaotic" randomization algorithm, the random changes in
-  velocity/momentum/time are entirely random and do not depend on the random values generated for the
-  previous particle, resulting in sudden dramatic changes. In comparison, the default "smooth"
-  randomziation algorithm changes the random values by a small amount for each iteration. The "chaotic"
-  algorithm tends to make exhaust that is more spread out and discontinuous, which may be desireable in
-  some cases.
-
-The following *advanced* parameters have unusual effects that do not directly influence the motion of
-particles and may only be useful in very specific circumstances. Caution should be taken when using any
-of these to ensure the parameter is used correctly, as improper settings can produce displeasing results
-and poor framerates:
-
-- ``ORTSMaxParticles ( n )`` -- Override for the maximum number of particles this emitter should
-  have in the world simultaneously (unitless integer). The default value is 2500 particles, which works
-  in many cases but may not be appropriate in some unusual circumstances. The limit can be reduced
-  on less extreme particle emitters to reduce memory use, or can be increased for more extreme emitters
-  to prevent particles disappearing and/or the reduction in particle emission rate caused by reaching
-  the particle limit. Do NOT increase the limit if particles are already overlapping; it is often
-  better to simply reduce the number of particles emitted using ORTSRateMultiplier and/or other
-  parameters listed here.
-  By default, the limit is 150 meters per second, which will be suitable in most cases.
-- ``ORTSGraphic ( "tex" )`` -- Gives the name and path to the texture that should be used to render
-  particles from this emitter. The default texture is "smokemain.ace" for steam-type emitters and
-  "dieselsmoke.ace" for diesel-type emitters. If the texture cannot be found from the engine's/wagon's
-  folder, then the ``GLOBAL\TEXTURES`` folder is checked, and if the texture is not there the ``Content``
-  folder included with OR is checked. OR will search for any ``.ace`` or ``.dds`` textures with the name
-  specified, though .dds is preferred over .ace.
-  A path to a texture can also be used, such as ``ORTSGraphic ( "..\\SmokeTextures\\steam.dds" )``, to search
-  for textures not in the same folder as the engine or wagon.
-- ``ORTSGraphicAtlasLayout ( w h )`` -- Particle textures generally include multiple sprites in a single file
-  to allow for randomization of each particle's appearance. In MSTS, this was a sprite atlas 4 wide and 4 high,
-  for a total of 16 variations on the particle graphic. When using custom particle textures, it may be desired
-  to use a custom sprite sheet that is not 4x4, in which case the atlas layout can be set by ``ORTSGraphicAtlasLayout``.
-  For example, a sprite sheet with 4 variations on the particle texture all in a row (4x1) can be represented by
-  ``ORTSGraphicAtlasLayout ( 4 1 )``. Note that each sprite should be a perfect square as each particle is
-  rendered as a square. Rectangular textures will be stretched/squished. Do not change the atlas setting unless you
-  are certain of the texture used, as improper settings will be very aesthetically unpleasing.
-
-
-Note that legacy special effects from MSTS and prior versions of OR use different syntax, simply listing
-a series of numbers rather than using named parameters. The order and arrangement of these values is
-critical, and is interpreted in this order:
-
-- Effect location on the locomotive (given as 3 values forming an x, y, z offset in metres
-  from the origin of the wagon shape)
-- Effect direction of emission (given as 3 values giving a normal x, y and z)
-- Effect nozzle width (a single number given in metres)
-
-To make special effect settings easier to understand, it is recommended to use ``ORTSPosition``, ``ORTSInitialVelocity``,
-and ``ORTSParticleDiameter`` to provide these same values. However, if it is desired to continue using the legacy data,
-all ORTS parameters must be entered *after* the legacy numbers, like so::
-
-    FXName (
         -1.0485 1.0 2.8
         -1  0  0
         0.1
-
-        Comment ( ORTS parameters come after MSTS data! )
-
-        ORTSInitialVelocityVariation ( 0.25 )
-        ORTSFinalVelocityVariation ( 1.0m/s )
-        ...etc...
+        ORTSShapeHierarchy ( "MAIN" )
     )
+
+The code block consists of the following elements:
+
+- Effect name -- as described above,
+- Effect location on the locomotive (given as an x, y, z offset in metres
+  from the origin of the wagon shape)
+- Effect direction of emission (given as a normal x, y and z)
+- Effect nozzle width (in metres)
+
+.. index::
+   single: ORTSShapeHierarchy
+
+After including these settings, additional *optional* parameters unique to OR can
+be included to further customize effect emitters:
+
+- ``ORTSShapeHierarchy ( MATRIXNAME )`` -- Selects the sub object of the engine/wagon
+  shape the emitter should be attached to using the name of the sub object matrix.
+  The x, y, z location given earlier will then be measured relative to the sub object,
+  and the emitter will move as the sub object moves in real time.
+  Matrix names can be determined using shape viewing programs. If the given name
+  cannot be found, a warning is produced in the log and the emitter will be attached
+  to the main shape object. Similarly, if ``ORTSShapeHierarchy`` isn't defined, the emitter
+  will be attached to the main object, similar to the MSTS behavior.
 
 Auxiliary Water Tenders
 '''''''''''''''''''''''

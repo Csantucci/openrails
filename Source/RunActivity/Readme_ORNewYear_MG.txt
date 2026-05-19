@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.170
-December 27th, 2025
+﻿Open Rails NewYear README - Rev.172.2
+May 17th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,12 +9,12 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.5.1-2149, 
+This unofficial version has been derived from the latest official Testing release T1.6.1-363, 
 plus some of the features already present in the Unstable release.
+NEW: This version has been built in "Release" mode, which allows for significantly higher FPS in high-end computers
 
 
 This version includes some features not (yet) available in the Open Rails testing official version, that is:
-- addition of track sounds in the sound debug window (by dennisat)
 - F5 HUD scrolling (by mbm_or)
 - checkbox in General Options tab to enable or disable watchdog
 - increase of remote horn sound volume level
@@ -80,21 +80,22 @@ This version includes some features not (yet) available in the Open Rails testin
 - Bug fix for https://www.elvastower.com/forums/index.php?/topic/38761-ortsprecision-not-working-anymore/
 - Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
 - Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
+- added possibility to set max wind speed in the ORNYMG only option window
+- skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
+  *- Automatic speed control (Cruise Control) refactoring (updated merge including partial fix for Cruise Control sounds not working, by cesarBLG (PR #1091)
   *- Wagon Size and Centering Controls, by steelfill (PR #1122)
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
-  *- Particle Emitter Overhaul, by Steelfill (PR #1128)
-  *- Temporary fix for bug 2121985: F9 TCO out-of-range after resume , by rwf-rr (PR #1158)
-  *- Revise TrainCar.SetUpWheels to Better Handle Unusual Rolling Stock , by SteelFill (PR #1169)
-  *- NEW: Make data logger interval configurable, by rwf-rr (PR #1175)
-  *- NEW: Remove Implicit Requirement for Engine Name to Come After "Engine (", by SteelFill (PR #1176)
-  *- NEW: Fix Diesel RPM Rate of Change, by SteelFill (PR #1178)
-  *- NEW: Fix/avoid type initialization exception - 2nd try, by cjakeman (PR #1184)
-  *- NEW: Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
-  *- NEW: Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
+  *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
+  *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
+  *- NEW: Temporary fix for https://bugs.launchpad.net/or/+bug/2148824 Null crash in timetable mode (PR #1219)
+  *- NEW: Partial bug fix for https://bugs.launchpad.net/or/+bug/2148806 Switch state isn't synced in multiplayer mode (PR #1218)
+  *- NEW: Switchable brake system, by gpz (PR #1057)
+  *- NEW: ShapeHierarchy Attachment for More Wagon Addons, by steelfill (PR #1126)
+  *- NEW: Add missing sounds on control cars, cy cesarBLG (PR #1216)
+  *- NEW: New Sounds for Diesel Locomotives, plus refactoring of sound debug window, by steelfill (PR #1221)
 
 
 
@@ -105,9 +106,7 @@ The Monogame related code intentionally coincides only partly with the code of t
 
 CREDITS
 This unofficial version couldn't have been created without following contributions:
-- the whole Open Rails Development Team and Open Rails Management Team, that have generated the off, by cesarBLG (PR #1115)
-  *- NEW: Handle null control active locomotive, by cesarBLG (PR #1123)
-    *- NEW: Add missing es.po files, by cjakeman (PR #1129)icial Open Rails version
+- the whole Open Rails Development Team and Open Rails Management Team, that have generated the official Open Rails version
 - the Monogame Development Team                                                                                   #
 - Peter Gulyas, who created the first Monogame version of Open Rails
 - perpetualKid

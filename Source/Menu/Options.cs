@@ -126,6 +126,7 @@ namespace Menu
                 trackDayAmbientLight.BackColor = BackColor;
                 trackLODBias.BackColor = BackColor;
                 trackWindVariability.BackColor = BackColor;
+                trackMaxWindSpeed.BackColor = BackColor;
             }
 
             // General tab
@@ -293,13 +294,9 @@ namespace Menu
             precipitationBoxHeight.Value = Settings.PrecipitationBoxHeight;
             precipitationBoxWidth.Value = Settings.PrecipitationBoxWidth;
             precipitationBoxLength.Value = Settings.PrecipitationBoxLength;
-            NumberOfParticles.Value = Settings.NumberOfParticles;
-            
-            precipitationBoxHeight2.Value = Settings.PrecipitationBoxHeight2;
-            precipitationBoxWidth2.Value = Settings.PrecipitationBoxWidth2;
-            precipitationBoxLength2.Value = Settings.PrecipitationBoxLength2;
-            NumberOfParticles2.Value = Settings.NumberOfParticles2;
             trackWindVariability.Value = Settings.WindVariability;
+            trackMaxWindSpeed.Value = Settings.MaxWindSpeedMpS;
+            trackWindSpeed_ValueChanged(null, null);
             checkExtendedPerformanceDump.Checked = Settings.ExtendedPerformanceDump;
         }
 
@@ -514,12 +511,8 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             Settings.PrecipitationBoxHeight = (int)precipitationBoxHeight.Value;
             Settings.PrecipitationBoxWidth = (int)precipitationBoxWidth.Value;
             Settings.PrecipitationBoxLength = (int)precipitationBoxLength.Value;
-            Settings.NumberOfParticles = (int)NumberOfParticles.Value;
-            Settings.PrecipitationBoxHeight2 = (int)precipitationBoxHeight2.Value;
-            Settings.PrecipitationBoxWidth2 = (int)precipitationBoxWidth2.Value;
-            Settings.PrecipitationBoxLength2 = (int)precipitationBoxLength2.Value;
-            Settings.NumberOfParticles2 = (int)NumberOfParticles2.Value;
             Settings.WindVariability = (int)trackWindVariability.Value;
+            Settings.MaxWindSpeedMpS = (int)trackMaxWindSpeed.Value;
             Settings.ExtendedPerformanceDump = checkExtendedPerformanceDump.Checked;
 
             Settings.Save();
@@ -657,6 +650,11 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
         private void trackWindVariability_ValueChanged(object sender, EventArgs e)
         {
             windVariabilityValueLabel.Text = trackWindVariability.Value.ToString() + "%";
+        }
+
+        private void trackWindSpeed_ValueChanged(object sender, EventArgs e)
+        {
+            maxWindSpeedValueLabel.Text = trackMaxWindSpeed.Value.ToString() + " m/s";
         }
 
         private void checkAlerter_CheckedChanged(object sender, EventArgs e)

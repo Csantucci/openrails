@@ -162,14 +162,6 @@ namespace ORTS.Settings
         public bool AutoSaveActive { get; set; }
         [Default(15)]
         public int AutoSaveInterval { get; set; }
-        [Default(true)]
-        public bool EnableWatchdog { get; set; }
-        [Default(true)]
-        public bool RunAt32bit { get; set; }
-        [Default(false)]
-        public bool SaveCommands { get; set; }
-        [Default(true)]
-        public bool ReduceMemory { get; set; }
 
         // Audio settings:
         [Default(100)]
@@ -340,6 +332,16 @@ namespace ORTS.Settings
         //ORNYMG only settings
         [Default(100)]
         public int WindVariability { get; set; }
+        [Default(5)]
+        public int MaxWindSpeedMpS { get; set; }
+        [Default(true)]
+        public bool EnableWatchdog { get; set; }
+        [Default(false)]
+        public bool RunAt32bit { get; set; }
+        [Default(false)]
+        public bool SaveCommands { get; set; }
+        [Default(true)]
+        public bool ReduceMemory { get; set; }
 
         [Default(false)]
         public bool ExtendedPerformanceDump { get; set; }

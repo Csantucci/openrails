@@ -44,6 +44,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using Microsoft.Xna.Framework;
 using Orts.Common;
 using Orts.Formats.Msts;
 using Orts.Simulation;
@@ -52,6 +53,7 @@ using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.Signalling;
 using Orts.Viewer3D;
+using Orts.Viewer3D.RollingStock;
 using ORTS.Common;
 using ORTS.Settings;
 using Event = Orts.Common.Event;
@@ -81,6 +83,10 @@ namespace Orts.Viewer3D
         /// </summary>
         public MSTSWagon Car;
         /// <summary>
+        /// The viewer of the connected train car (if any)
+        /// </summary>
+        public MSTSWagonViewer CarViewer;
+        /// <summary>
         /// The listener is connected to this viewer
         /// </summary>
         public Viewer Viewer;
@@ -92,7 +98,7 @@ namespace Orts.Viewer3D
         /// If needs active management or can be left to OpenAL to deal with sound properties
         /// </summary>
         public bool NeedsFrequentUpdate;
-        public bool TrackSound = false;
+        public bool IsTrackSound = false;
 
         public abstract void Dispose();
     }
@@ -101,10 +107,10 @@ namespace Orts.Viewer3D
     {
         private int _prevTType = -1;
         private int _curTType = -1;
-        public SoundSource _activeInSource;
-        public SoundSource _activeOutSource;
-        private List<SoundSource> _inSources;
-        private List<SoundSource> _outSources;
+        private SoundSource _activeInSource;
+        private SoundSource _activeOutSource;
+        public List<SoundSource> InSources { get; private set; } = new List<SoundSource>();
+        public List<SoundSource> OutSources { get; private set; } = new List<SoundSource>();
 
         // data to evaluate if ttype selection is needed or not
         private float nextDist = -1; // initial distance to sound region forward
@@ -116,13 +122,12 @@ namespace Orts.Viewer3D
         private bool CarOnCurve = false;
 
 
-        public TrackSoundSource(MSTSWagon car, Viewer viewer)
+        public TrackSoundSource(MSTSWagonViewer carViewer, Viewer viewer)
         {
-            TrackSound = true;
-            Car = car;
+            IsTrackSound = true;
+            CarViewer = carViewer;
+            Car = (carViewer.Car as MSTSWagon);
             Viewer = viewer;
-            _inSources = new List<SoundSource>();
-            _outSources = new List<SoundSource>();
 
             foreach (Orts.Formats.Msts.TrackTypesFile.TrackType ttdf in viewer.TrackTypes)
             {
@@ -150,12 +155,9 @@ namespace Orts.Viewer3D
                 return;
             }
             if (isInside)
-            {
-                _inSources.Add(new SoundSource(Viewer, Car, fullPath));
-                _inSources.Last().IsInternalTrackSound = true;
-            }
+                InSources.Add(new SoundSource(Viewer, CarViewer, fullPath, true));
             else
-                _outSources.Add(new SoundSource(Viewer, Car, fullPath));
+                OutSources.Add(new SoundSource(Viewer, CarViewer, fullPath, true));
         }
 
         public override void Uninitialize()
@@ -169,11 +171,11 @@ namespace Orts.Viewer3D
 
         public override void InitInitials()
         {
-            if (_inSources != null && _inSources.Count > 0)
-                _activeInSource = _inSources[0];
+            if (InSources != null && InSources.Count > 0)
+                _activeInSource = InSources[0];
 
-            if (_outSources != null && _outSources.Count > 0)
-                _activeOutSource = _outSources[0];
+            if (OutSources != null && OutSources.Count > 0)
+                _activeOutSource = OutSources[0];
 
             _curTType = 0;
             _prevTType = 0;
@@ -305,8 +307,8 @@ namespace Orts.Viewer3D
                     {
                         _activeInSource.Uninitialize();
                         //_activeInSource.Car = null;
-                        if (0 <= _curTType && _curTType < _inSources.Count)
-                            _activeInSource = _inSources[_curTType];
+                        if (0 <= _curTType && _curTType < InSources.Count)
+                            _activeInSource = InSources[_curTType];
                         else
                             Trace.TraceWarning("Could not change inside sound region to {0}", _curTType);
                         //_activeInSource.Car = Car;
@@ -316,8 +318,8 @@ namespace Orts.Viewer3D
                     {
                         _activeOutSource.Uninitialize();
                         //_activeOutSource.Car = null;
-                        if (0 <= _curTType && _curTType < _outSources.Count)
-                            _activeOutSource = _outSources[_curTType];
+                        if (0 <= _curTType && _curTType < OutSources.Count)
+                            _activeOutSource = OutSources[_curTType];
                         else
                             Trace.TraceWarning("Could not change outside sound region to {0}", _curTType);
                         //_activeOutSource.Car = Car;
@@ -354,17 +356,17 @@ namespace Orts.Viewer3D
                 // Play base (default, ie TType=1 SMS file) sound continuously
                 if (_activeInSource != null)
                 {
-                    _activeInSource = _inSources[0];
+                    _activeInSource = InSources[0];
                     retval &= _activeInSource.Update();
                     NeedsFrequentUpdate |= _activeInSource.NeedsFrequentUpdate;
-                    _activeInSource = _inSources[_curTType];
+                    _activeInSource = InSources[_curTType];
                 }
                 if (_activeOutSource != null)
                 {
-                    _activeOutSource = _outSources[0];
+                    _activeOutSource = OutSources[0];
                     retval &= _activeOutSource.Update();
                     NeedsFrequentUpdate |= _activeOutSource.NeedsFrequentUpdate;
-                    _activeOutSource = _outSources[_curTType];
+                    _activeOutSource = OutSources[_curTType];
                 }
 
                 if (_curTType != 0) // if base sound is not being played, then play additional relevant track region sound
@@ -404,17 +406,17 @@ namespace Orts.Viewer3D
 
         public override void Dispose()
         {
-            if (_inSources != null)
+            if (InSources != null)
             {
-                foreach (SoundSource s in _inSources)
+                foreach (SoundSource s in InSources)
                     s.Dispose();
-                _inSources.Clear();
+                InSources.Clear();
             }
-            if (_outSources != null)
+            if (OutSources != null)
             {
-                foreach (SoundSource s in _outSources)
+                foreach (SoundSource s in OutSources)
                     s.Dispose();
-                _outSources.Clear();
+                OutSources.Clear();
             }
             Car = null;
         }
@@ -496,8 +498,8 @@ namespace Orts.Viewer3D
                     {
                         _activeInSource.Uninitialize();
                         //_activeInSource.Car = null;
-                        if (0 <= _curTType && _curTType < _inSources.Count)
-                            _activeInSource = _inSources[_curTType];
+                        if (0 <= _curTType && _curTType < InSources.Count)
+                            _activeInSource = InSources[_curTType];
                         else
                             Trace.TraceWarning("Could not change inside sound region to {0}", _curTType);
                         //_activeInSource.Car = Car;
@@ -507,8 +509,8 @@ namespace Orts.Viewer3D
                     {
                         _activeOutSource.Uninitialize();
                         //_activeOutSource.Car = null;
-                        if (0 <= _curTType && _curTType < _outSources.Count)
-                            _activeOutSource = _outSources[_curTType];
+                        if (0 <= _curTType && _curTType < OutSources.Count)
+                            _activeOutSource = OutSources[_curTType];
                         else
                             Trace.TraceWarning("Could not change outside sound region to {0}", _curTType);
                         //_activeOutSource.Car = Car;
@@ -539,9 +541,19 @@ namespace Orts.Viewer3D
     {
         /// <summary>
         /// Squared cutoff distance. No sound is audible above that, except for the actual player train,
-        /// where cutoff occurs at a distance wich is higher than the train length
+        /// where cutoff occurs at a distance wich is higher than the train length plus offset to 
+        /// approximately take into account distance from camera to car
         /// </summary>
-        private const int CUTOFFDISTANCE = 4000000;
+        private int CutOffDistanceM2
+        {
+            get
+            {
+                const int staticDistanceM2 = 4000000;
+                var isPlayer = Car?.Train?.IsActualPlayerTrain ?? false;
+                var correctedLength = isPlayer ? Car.Train.Length + 50 : 0; 
+                return (int)Math.Max(staticDistanceM2, correctedLength * correctedLength);
+            }
+        }
         /// <summary>
         /// Max distance for OpenAL inverse distance model. Equals to Math.Sqrt(CUTOFFDISTANCE)
         /// </summary>
@@ -568,15 +580,33 @@ namespace Orts.Viewer3D
         public float HornRolloffFactor = 0.05f;
 
         /// <summary>
+        /// Construct a SoundSource attached to a train car viewer.
+        /// </summary>
+        /// <param name="viewer"></param>
+        /// <param name="carViewer"></param>
+        /// <param name="smsFilePath"></param>
+        public SoundSource(Viewer viewer, MSTSWagonViewer carViewer, string smsFilePath, bool isTrack = false)
+        {
+            CarViewer = carViewer;
+            Car = (carViewer.Car as MSTSWagon);
+            IsTrackSound = isTrack;
+            Initialize(viewer, Car.WorldPosition.WorldLocation, Events.Source.MSTSCar, smsFilePath);
+        }
+
+        /// <summary>
         /// Construct a SoundSource attached to a train car.
         /// </summary>
         /// <param name="viewer"></param>
         /// <param name="car"></param>
         /// <param name="smsFilePath"></param>
-        public SoundSource(Viewer viewer, MSTSWagon car, string smsFilePath)
+        /// <param name="isTrack"></param>
+        public SoundSource(Viewer viewer, MSTSWagon car, string smsFilePath, bool isTrack = false)
         {
             Car = car;
-            Initialize(viewer, car.WorldPosition.WorldLocation, Events.Source.MSTSCar, smsFilePath);
+            IsTrackSound = isTrack;
+            viewer.World.Trains.Cars.TryGetValue(car, out TrainCarViewer carViewer);
+            CarViewer = carViewer as MSTSWagonViewer;
+            Initialize(viewer, Car.WorldPosition.WorldLocation, Events.Source.MSTSCar, smsFilePath);
         }
 
         /// <summary>
@@ -697,11 +727,10 @@ namespace Orts.Viewer3D
         public string WavFolder;
         public string WavFileName;
         public bool Active;
-        private Orts.Formats.Msts.Activation ActivationConditions;
-        private Orts.Formats.Msts.Deactivation DeactivationConditions;
+        private Activation ActivationConditions;
+        private Deactivation DeactivationConditions;
         public bool IsEnvSound;
         public bool IsExternal = true;
-        public bool IsInternalTrackSound = false;
         public bool Ignore3D;
         /// <summary>
         /// MSTS treats Stereo() tagged mono wav files specially. This is a flag
@@ -710,9 +739,9 @@ namespace Orts.Viewer3D
         public bool MstsMonoTreatment;
 
         /// <summary>
-        /// Current distance to camera, squared meter. Is used for comparision to <see cref="CUTOFFDISTANCE"/>, to determine if is out-of-scope
+        /// Current distance to camera, squared meter. Is used for comparision to <see cref="CutOffDistanceM2"/>, to determine if is out-of-scope
         /// </summary>
-        public float DistanceSquared = CUTOFFDISTANCE + 1;
+        public float DistanceSquared = float.MaxValue;
         /// <summary>
         /// Out-of-scope state in previous <see cref="Update"/> loop
         /// </summary>
@@ -744,7 +773,7 @@ namespace Orts.Viewer3D
 
             SMSFolder = Path.GetDirectoryName(smsFilePath);
             SMSFileName = Path.GetFileName(smsFilePath);
-            Orts.Formats.Msts.SoundManagmentFile smsFile = Orts.Formats.Msts.SharedSMSFileManager.Get(smsFilePath);
+            SoundManagmentFile smsFile = SharedSMSFileManager.Get(smsFilePath);
 
 
             // find correct ScalabiltyGroup
@@ -757,7 +786,7 @@ namespace Orts.Viewer3D
             }
             if (iSG < smsFile.Tr_SMS.ScalabiltyGroups.Count && smsFile.Tr_SMS.ScalabiltyGroups[iSG].Streams != null)  // else we want less sound so don't provide any
             {
-                Orts.Formats.Msts.ScalabiltyGroup mstsScalabiltyGroup = smsFile.Tr_SMS.ScalabiltyGroups[iSG];
+                ScalabiltyGroup mstsScalabiltyGroup = smsFile.Tr_SMS.ScalabiltyGroups[iSG];
 
                 ActivationConditions = mstsScalabiltyGroup.Activation;
                 DeactivationConditions = mstsScalabiltyGroup.Deactivation;
@@ -768,8 +797,40 @@ namespace Orts.Viewer3D
 
                 SetRolloffFactor();
 
-                foreach (Orts.Formats.Msts.SMSStream mstsStream in mstsScalabiltyGroup.Streams)
+                foreach (SMSStream mstsStream in mstsScalabiltyGroup.Streams)
                 {
+                    // Initialization step for sound stream shape attachment
+                    if (CarViewer != null && Car != null)
+                    {
+                        if (mstsStream.ShapeIndex != -1)
+                        {
+                            if (mstsStream.ShapeIndex < 0 || mstsStream.ShapeIndex >= CarViewer.TrainCarShape.ResultMatrices.Count())
+                            {
+                                Trace.TraceWarning("Sound stream in car {0} has invalid shape index defined, shape index {1} does not exist",
+                                    Car.WagFilePath, mstsStream.ShapeIndex);
+                                mstsStream.ShapeIndex = 0;
+                            }
+                        }
+                        else
+                        {
+                            if (!String.IsNullOrEmpty(mstsStream.ShapeHierarchy))
+                            {
+                                if (CarViewer.TrainCarShape.SharedShape.MatrixNames.Contains(mstsStream.ShapeHierarchy))
+                                {
+                                    mstsStream.ShapeIndex = CarViewer.TrainCarShape.SharedShape.MatrixNames.IndexOf(mstsStream.ShapeHierarchy);
+                                }
+                                else
+                                {
+                                    Trace.TraceWarning("Sound stream in car {0} has invalid shape index defined, matrix name {1} does not exist",
+                                        Car.WagFilePath, mstsStream.ShapeHierarchy);
+                                    mstsStream.ShapeIndex = 0;
+                                }
+                            }
+                            else
+                                mstsStream.ShapeIndex = 0;
+                        }
+                    }
+
                     SoundStreams.Add(new SoundStream(mstsStream, eventSource, this, Viewer.Settings));
                 }
             }
@@ -1035,7 +1096,28 @@ namespace Orts.Viewer3D
             {
                 foreach (SoundStream stream in SoundStreams)
                 {
-                    stream.Update();
+                    // For train cars, calculate the position and velocity of exterior sounds
+                    if (CarViewer != null && !Ignore3D)
+                    {
+                        // Convert position offset into train-car space offset
+                        Vector3 pos = stream.MSTSStream.Position;
+                        int shapeHierarchy = MathHelper.Clamp(stream.MSTSStream.ShapeIndex, 0, CarViewer.TrainCarShape.ResultMatrices.Count() - 1);
+                        Matrix mat = CarViewer.TrainCarShape.ResultMatrices[shapeHierarchy];
+                        pos = Vector3.Transform(pos, mat);
+
+                        // Convert position offset into global space offset
+                        mat = Car.WorldPosition.XNAMatrix;
+                        mat.Translation = Vector3.Zero;
+                        pos = Vector3.Transform(pos, mat);
+                        pos.Z *= -1; // Invert Z coordinate to match WorldLocation system
+                        pos += CarViewer.SoundLocation.Location;
+
+                        float[] position = new float[] { pos.X, pos.Y, pos.Z};
+
+                        stream.Update(position, CarViewer.Velocity);
+                    }
+                    else // Interior sounds ignore 3D position, do not try to update 3D position 
+                        stream.Update();
                     needsFrequentUpdate |= stream.NeedsFrequentUpdate;
                 }
             }
@@ -1045,7 +1127,7 @@ namespace Orts.Viewer3D
         } // Update
 
         /// <summary>
-        /// Calculate current distance to camera, and compare it to <see cref="CUTOFFDISTANCE"/>
+        /// Calculate current distance to camera, and compare it to <see cref="CutOffDistanceM2"/>
         /// </summary>
         /// <returns>True, if is now out-of-scope</returns>
         public bool isOutOfDistance()
@@ -1060,15 +1142,13 @@ namespace Orts.Viewer3D
                 float.IsNaN(WorldLocation.Location.Y) ||
                 float.IsNaN(WorldLocation.Location.Z))
             {
-                DistanceSquared = (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ?
-                Math.Max(CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) : CUTOFFDISTANCE) + 1;
+                DistanceSquared = float.MaxValue;
                 return true;
             }
 
             DistanceSquared = WorldLocation.GetDistanceSquared(WorldLocation, Viewer.Camera.CameraWorldLocation);
 
-            return DistanceSquared > (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ? 
-                Math.Max (CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) +2500f : CUTOFFDISTANCE);
+            return DistanceSquared > CutOffDistanceM2;
         }
 
         /// <summary>
@@ -1087,8 +1167,7 @@ namespace Orts.Viewer3D
                 {
                     // (ActivationConditions.Distance == 0) means distance checking disabled
                     if ((ActivationConditions.Distance == 0 || DistanceSquared < ActivationConditions.Distance * ActivationConditions.Distance) &&
-                        DistanceSquared < (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ?
-                        Math.Max(CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) +2500f : CUTOFFDISTANCE))
+                        DistanceSquared < CutOffDistanceM2)
                         return true;
                 }
                 else
@@ -1113,8 +1192,7 @@ namespace Orts.Viewer3D
             if (WorldLocation != WorldLocation.None)
             {
                 if (DeactivationConditions.Distance != 0 && DistanceSquared > DeactivationConditions.Distance * DeactivationConditions.Distance ||
-                    DistanceSquared > (Car != null && Car.Train != null && Car.Train.IsActualPlayerTrain ?
-                    Math.Max(CUTOFFDISTANCE, Car.Train.Length * Car.Train.Length) + 2500f : CUTOFFDISTANCE))
+                    DistanceSquared > CutOffDistanceM2)
                     return true;
             }
 
@@ -1222,7 +1300,7 @@ namespace Orts.Viewer3D
         /// <summary>
         /// A stream as is represented in sms file
         /// </summary>
-        protected Orts.Formats.Msts.SMSStream MSTSStream;
+        public SMSStream MSTSStream;
         /// <summary>
         /// Each stream can contain only one initial trigger, which should be audible
         /// in case the SoundSource is in scope, and no other variable trigger is active
@@ -1256,7 +1334,7 @@ namespace Orts.Viewer3D
         /// </summary>
         IEnumerable<ORTSTrigger> TriggersList;
 
-        public SoundStream(Orts.Formats.Msts.SMSStream mstsStream, Events.Source eventSource, SoundSource soundSource, UserSettings settings)
+        public SoundStream(SMSStream mstsStream, Events.Source eventSource, SoundSource soundSource, UserSettings settings)
         {
             SoundSource = soundSource;
             MSTSStream = mstsStream;
@@ -1277,7 +1355,7 @@ namespace Orts.Viewer3D
             ALSoundSource = new ALSoundSource(soundSource.IsEnvSound, rolloffFactor);
 
             if (mstsStream.Triggers != null)
-                foreach (Orts.Formats.Msts.Trigger trigger in mstsStream.Triggers)
+                foreach (Trigger trigger in mstsStream.Triggers)
                 {
                     if (trigger.SoundCommand == null) // ignore improperly formed SMS files
                     {
@@ -1432,6 +1510,19 @@ namespace Orts.Viewer3D
         }
 
         /// <summary>
+        /// Update OpenAL sound source position and velocity, then calls the main <see cref="Update()"/> function
+        /// Position is relative to camera tile's center
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="velocity"></param>
+        public void Update(float[] position, float[] velocity)
+        {
+            OpenAL.alSourcefv(ALSoundSource.SoundSourceID, OpenAL.AL_POSITION, position);
+            OpenAL.alSourcefv(ALSoundSource.SoundSourceID, OpenAL.AL_VELOCITY, velocity);
+            Update();
+        }
+
+        /// <summary>
         /// Try triggers, update frequency and volume according to curves, call queue management
         /// </summary>
         public void Update()
@@ -1487,20 +1578,15 @@ namespace Orts.Viewer3D
             if (ALSoundSource == null)
                 return;
 
-            if (MSTSStream != null && MSTSStream.FrequencyCurve != null)
+            if (MSTSStream != null && MSTSStream.FrequencyCurve != null) 
             {
                 if (SoundSource.Car != null || SoundSource.Viewer.Camera.AttachedCar != null)
                 {
                     float x = 0;
                     if (SoundSource.Car != null)
-                    {
-                        x = ReadValue(MSTSStream.FrequencyCurve.Control, SoundSource.Car);
-                    }
+                        x = ReadValue(MSTSStream.FrequencyCurve, SoundSource.Car);
                     else if (SoundSource.Viewer.Camera.AttachedCar != null)
-                    {
-                        x = ReadValue(MSTSStream.FrequencyCurve.Control, (MSTSWagon)SoundSource.Viewer.Camera.AttachedCar);
-                    }
-
+                        x = ReadValue(MSTSStream.FrequencyCurve, (MSTSWagon)SoundSource.Viewer.Camera.AttachedCar);
                     float y = Interpolate(x, MSTSStream.FrequencyCurve);
 
                     // negative x : engine winding down or winding up with RPM < idle RPM
@@ -1527,9 +1613,9 @@ namespace Orts.Viewer3D
                 {
                     float x;
                     if (SoundSource.Car != null)
-                        x = ReadValue(MSTSStream.VolumeCurves[i].Control, SoundSource.Car);
+                        x = ReadValue(MSTSStream.VolumeCurves[i], SoundSource.Car);
                     else if (SoundSource.Viewer.Camera.AttachedCar != null)
-                        x = ReadValue(MSTSStream.VolumeCurves[i].Control, (MSTSWagon)SoundSource.Viewer.Camera.AttachedCar);
+                        x = ReadValue(MSTSStream.VolumeCurves[i], (MSTSWagon)SoundSource.Viewer.Camera.AttachedCar);
                     else
                         x = SoundSource.DistanceSquared;
 
@@ -1557,14 +1643,14 @@ namespace Orts.Viewer3D
                     else volume *= wag.ExternalSoundPassThruPercent * 0.01f + (1 - wag.ExternalSoundPassThruPercent * 0.01f) * soundHeardInternallyCorrection;
                 }
 
-                if (SoundSource.IsInternalTrackSound)
+                if (SoundSource.IsTrackSound && !SoundSource.IsExternal)
                 {
                     if (wag?.TrackSoundPassThruPercent != -1)
                         volume *= wag.TrackSoundPassThruPercent * 0.01f + (1 - wag.TrackSoundPassThruPercent * 0.01f) * soundHeardInternallyCorrection;
                 }
             }
 
-            if (SoundSource.IsInternalTrackSound && SoundSource.Viewer.Camera.Style != Camera.Styles.External)
+            if (SoundSource.IsTrackSound && !SoundSource.IsExternal && SoundSource.Viewer.Camera.Style != Camera.Styles.External)
             {
                 if (((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar)?.TrackSoundPassThruPercent != -1)
                     volume *= ((MSTSWagon)SoundSource.Viewer.Camera.AttachedCar).TrackSoundPassThruPercent * 0.01f;
@@ -1643,43 +1729,32 @@ namespace Orts.Viewer3D
         /// <summary>
         /// Read a variable from the attached TrainCar data
         /// </summary>
-        /// <param name="control"></param>
+        /// <param name="curve"></param>
         /// <param name="car"></param>
         /// <returns></returns>
-        private float ReadValue(Orts.Formats.Msts.VolumeCurve.Controls control, MSTSWagon car)
+        private float ReadValue(VolumeCurve curve, MSTSWagon car)
         {
-            switch (control)
+            switch (curve.Control)
             {
-                case Orts.Formats.Msts.VolumeCurve.Controls.DistanceControlled: return SoundSource.DistanceSquared;
-                case Orts.Formats.Msts.VolumeCurve.Controls.SpeedControlled: return car.AbsSpeedMpS;
-                case Orts.Formats.Msts.VolumeCurve.Controls.Variable1Controlled: return car.Variable1;
-                case Orts.Formats.Msts.VolumeCurve.Controls.Variable1_2Controlled: return car.Variable1_2;
-                case Orts.Formats.Msts.VolumeCurve.Controls.Variable1_3Controlled: return car.Variable1_3;
-                case Orts.Formats.Msts.VolumeCurve.Controls.Variable1_4Controlled: return car.Variable1_4;
-                case Orts.Formats.Msts.VolumeCurve.Controls.Variable2BoosterControlled: return car.Variable2_Booster;
-
-                case Orts.Formats.Msts.VolumeCurve.Controls.Variable2Controlled:
-                    {
-                        var returnvar = car.Variable2;
-                        if (car is MSTSDieselLocomotive && car.Train.TrainType != Train.TRAINTYPE.REMOTE)
-                        {
-                            var thisEngine = car as MSTSDieselLocomotive;
-                            if (thisEngine.DieselEngines[0].RealRPM < thisEngine.IdleRPM)
-                            {
-                                // ensure variable is <0 and >= -1 when engine is revving up or down
-                                returnvar = (-0.0001f - 0.9999f * (thisEngine.DieselEngines[0].RealRPM / thisEngine.IdleRPM));
-                            }
-                        }
-                        return (returnvar);
-                    }
-                case Orts.Formats.Msts.VolumeCurve.Controls.Variable3Controlled: return car.Variable3;
-                case Orts.Formats.Msts.VolumeCurve.Controls.BrakeCylControlled: return car.BrakeSystem.GetCylPressurePSI();
-                case Orts.Formats.Msts.VolumeCurve.Controls.CurveForceControlled: return car.CurveForceNFiltered;
-                case Orts.Formats.Msts.VolumeCurve.Controls.AngleofAttackControlled: return car.CurveSquealAoAmRadFiltered;
-                case Orts.Formats.Msts.VolumeCurve.Controls.CarFrictionControlled: return car.Train.WagonCoefficientFriction;
-                case Orts.Formats.Msts.VolumeCurve.Controls.WheelRpMControlled: var wheelRpM = pS.TopM((float)(car.AbsSpeedMpS / (2 * Math.PI * car.WheelRadiusM))); return wheelRpM;
-                case Orts.Formats.Msts.VolumeCurve.Controls.CarDistanceTrackControlled: return car.CarTrackControlledDistanceM;
-                case Orts.Formats.Msts.VolumeCurve.Controls.CarTunnelDistanceControlled: return car.CarTunnelDistanceM;
+                case VolumeCurve.Controls.DistanceControlled: return SoundSource.DistanceSquared;
+                case VolumeCurve.Controls.SpeedControlled: return car.AbsSpeedMpS;
+                case VolumeCurve.Controls.Variable1Controlled: return car.Variable1.ElementAtOrDefault(curve.SourceID);
+                case VolumeCurve.Controls.Variable2BoosterControlled: return car.Variable2_Booster;
+                case VolumeCurve.Controls.Variable2Controlled: return car.Variable2;
+                case VolumeCurve.Controls.Variable3Controlled: return car.Variable3;
+                case VolumeCurve.Controls.BrakeCylControlled: return car.BrakeSystem.GetCylPressurePSI();
+                case VolumeCurve.Controls.CurveForceControlled: return car.CurveForceNFiltered;
+                case VolumeCurve.Controls.AngleofAttackControlled: return car.CurveSquealAoAmRadFiltered;
+                case VolumeCurve.Controls.CarFrictionControlled: return car.Train.WagonCoefficientFriction;
+                case VolumeCurve.Controls.WheelRpMControlled: var wheelRpM = pS.TopM((float)(car.AbsSpeedMpS / (2 * Math.PI * car.WheelRadiusM))); return wheelRpM;
+                case VolumeCurve.Controls.CarDistanceTrackControlled: return car.CarTrackControlledDistanceM;
+                case VolumeCurve.Controls.CarTunnelDistanceControlled: return car.CarTunnelDistanceM;
+                case VolumeCurve.Controls.BackPressureControlled: return car.BackPressurePSIG;
+                case VolumeCurve.Controls.TractiveEffortControlled: return car.MotiveForceN / 1000.0f * Math.Sign(car.WheelSpeedMpS); // Convert to kN, ensure positive for traction, negative for dynamics
+                case VolumeCurve.Controls.TractivePowerControlled: return car.MotiveForceN * car.WheelSpeedMpS / 1000.0f; // Convert to kW
+                case VolumeCurve.Controls.EngineRPMControlled: return car.EnginesRPM.ElementAtOrDefault(curve.SourceID);
+                case VolumeCurve.Controls.EnginePowerControlled: return car.EnginesPower.ElementAtOrDefault(curve.SourceID);
+                case VolumeCurve.Controls.EngineTorqueControlled: return car.EnginesTorque.ElementAtOrDefault(curve.SourceID);
                 default: return 0;
             }
         }
@@ -1740,6 +1815,7 @@ namespace Orts.Viewer3D
             if (ALSoundSource != null)
             {
                 ALSoundSource.HardDeactivate();
+                ALSoundSource.ForceResetQueue();
             }
             Sweep();
         }
@@ -1750,6 +1826,7 @@ namespace Orts.Viewer3D
             {
                 ALSoundSource.HardDeactivate();
                 ALSoundSource.Dispose();
+                ALSoundSource.ForceResetQueue();
                 ALSoundSource = null;
             }
             Sweep();
@@ -1760,10 +1837,21 @@ namespace Orts.Viewer3D
         /// </summary>
         private void Sweep()
         {
-            foreach (var trigger in Triggers)
-                if (trigger.SoundCommand is ORTSSoundPlayCommand)
-                    foreach (var name in (trigger.SoundCommand as ORTSSoundPlayCommand).Files)
-                        SoundItem.Sweep(name, SoundSource.IsExternal, IsReleasedWithJump);
+            string[] pathArray = {SoundSource.SMSFolder ?? "",
+                                     Program.Simulator.RoutePath + @"\SOUND",
+                                     Program.Simulator.BasePath + @"\SOUND"};
+
+            foreach (ORTSTrigger trigger in Triggers)
+            {
+                if (trigger.SoundCommand is ORTSSoundPlayCommand soundPlayCommand)
+                {
+                    foreach (string name in soundPlayCommand.Files)
+                    {
+                        string fullPath = ORTSPaths.GetFileFromFolders(pathArray, name);
+                        SoundItem.Sweep(fullPath, SoundSource.IsExternal, IsReleasedWithJump);
+                    }
+                }
+            }
         }
 
     } // class ORTSStream
@@ -2652,21 +2740,23 @@ namespace Orts.Viewer3D
 
             switch (SMS.Event)
             {
-                case Orts.Formats.Msts.Variable_Trigger.Events.Distance_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Speed_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_2_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_3_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_4_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.CurveForce_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRpM_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.ConcreteSleepers_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.CarInTunnel_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Power_Off:
+                case Variable_Trigger.Events.Distance_Dec_Past:
+                case Variable_Trigger.Events.Speed_Dec_Past:
+                case Variable_Trigger.Events.Variable1_Dec_Past:
+                case Variable_Trigger.Events.Variable2_Dec_Past:
+                case Variable_Trigger.Events.Variable3_Dec_Past:
+                case Variable_Trigger.Events.BrakeCyl_Dec_Past:
+                case Variable_Trigger.Events.CurveForce_Dec_Past:
+                case Variable_Trigger.Events.AngleofAttack_Dec_Past:
+                case Variable_Trigger.Events.WheelRPM_Dec_Past:
+                case Variable_Trigger.Events.ConcreteSleepers_Dec_Past:
+                case Variable_Trigger.Events.CarInTunnel_Dec_Past:
+                case Variable_Trigger.Events.TractiveEffort_Dec_Past:
+                case Variable_Trigger.Events.TractivePower_Dec_Past:
+                case Variable_Trigger.Events.EngineRPM_Dec_Past:
+                case Variable_Trigger.Events.EnginePower_Dec_Past:
+                case Variable_Trigger.Events.EngineTorque_Dec_Past:
+                case Variable_Trigger.Events.Power_Off:
                     if (newValue < SMS.Threshold)
                     {
                         Signaled = true;
@@ -2674,21 +2764,23 @@ namespace Orts.Viewer3D
                             triggered = true;
                     }
                     break;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Distance_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Speed_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_2_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_3_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_4_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.CurveForce_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRPM_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.ConcreteSleepers_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.CarInTunnel_Inc_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Power_On:
+                case Variable_Trigger.Events.Distance_Inc_Past:
+                case Variable_Trigger.Events.Speed_Inc_Past:
+                case Variable_Trigger.Events.Variable1_Inc_Past:
+                case Variable_Trigger.Events.Variable2_Inc_Past:
+                case Variable_Trigger.Events.Variable3_Inc_Past:
+                case Variable_Trigger.Events.BrakeCyl_Inc_Past:
+                case Variable_Trigger.Events.CurveForce_Inc_Past:
+                case Variable_Trigger.Events.AngleofAttack_Inc_Past:
+                case Variable_Trigger.Events.WheelRPM_Inc_Past:
+                case Variable_Trigger.Events.ConcreteSleepers_Inc_Past:
+                case Variable_Trigger.Events.CarInTunnel_Inc_Past:
+                case Variable_Trigger.Events.TractiveEffort_Inc_Past:
+                case Variable_Trigger.Events.TractivePower_Inc_Past:
+                case Variable_Trigger.Events.EngineRPM_Inc_Past:
+                case Variable_Trigger.Events.EnginePower_Inc_Past:
+                case Variable_Trigger.Events.EngineTorque_Inc_Past:
+                case Variable_Trigger.Events.Power_On:
                     if (newValue > SMS.Threshold)
                     {
                         Signaled = true;
@@ -2742,50 +2834,56 @@ namespace Orts.Viewer3D
         {
             switch (SMS.Event)
             {
-                case Orts.Formats.Msts.Variable_Trigger.Events.Distance_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Distance_Inc_Past:
+                case Variable_Trigger.Events.Distance_Dec_Past:
+                case Variable_Trigger.Events.Distance_Inc_Past:
                     return SoundStream.SoundSource.DistanceSquared;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Speed_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Speed_Inc_Past:
+                case Variable_Trigger.Events.Speed_Dec_Past:
+                case Variable_Trigger.Events.Speed_Inc_Past:
                     return car.AbsSpeedMpS;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_Inc_Past:
-                    return car.Variable1;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_2_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_2_Inc_Past:
-                    return car.Variable1_2;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_3_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_3_Inc_Past:
-                    return car.Variable1_3;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_4_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable1_4_Inc_Past:
-                    return car.Variable1_4;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable2_Inc_Past:
+                case Variable_Trigger.Events.Variable1_Dec_Past:
+                case Variable_Trigger.Events.Variable1_Inc_Past:
+                    return car.Variable1.ElementAtOrDefault(SMS.SourceID);
+                case Variable_Trigger.Events.Variable2_Dec_Past:
+                case Variable_Trigger.Events.Variable2_Inc_Past:
                     return car.Variable2;
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.Variable3_Inc_Past:
+                case Variable_Trigger.Events.Variable3_Dec_Past:
+                case Variable_Trigger.Events.Variable3_Inc_Past:
                     return car.Variable3;
-                case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.BrakeCyl_Inc_Past:
+                case Variable_Trigger.Events.BrakeCyl_Dec_Past:
+                case Variable_Trigger.Events.BrakeCyl_Inc_Past:
                     return car.BrakeSystem.GetCylPressurePSI();
-                case Orts.Formats.Msts.Variable_Trigger.Events.CurveForce_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.CurveForce_Inc_Past:
+                case Variable_Trigger.Events.CurveForce_Dec_Past:
+                case Variable_Trigger.Events.CurveForce_Inc_Past:
                     return car.CurveForceNFiltered;
-                case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.AngleofAttack_Inc_Past:
+                case Variable_Trigger.Events.AngleofAttack_Dec_Past:
+                case Variable_Trigger.Events.AngleofAttack_Inc_Past:
                     return car.CurveSquealAoAmRadFiltered;
-                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRpM_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.WheelRPM_Inc_Past:
+                case Variable_Trigger.Events.WheelRPM_Dec_Past:
+                case Variable_Trigger.Events.WheelRPM_Inc_Past:
                     var wheelRpM = pS.TopM((float)(car.AbsSpeedMpS /
                     (2 * Math.PI * car.WheelRadiusM)));
                     return wheelRpM;
-                case Orts.Formats.Msts.Variable_Trigger.Events.ConcreteSleepers_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.ConcreteSleepers_Inc_Past:
+                case Variable_Trigger.Events.ConcreteSleepers_Dec_Past:
+                case Variable_Trigger.Events.ConcreteSleepers_Inc_Past:
                     return SharedSMSFileManager.ConcreteSleepers;
-                case Orts.Formats.Msts.Variable_Trigger.Events.CarInTunnel_Dec_Past:
-                case Orts.Formats.Msts.Variable_Trigger.Events.CarInTunnel_Inc_Past:
+                case Variable_Trigger.Events.CarInTunnel_Dec_Past:
+                case Variable_Trigger.Events.CarInTunnel_Inc_Past:
                     return car.TrackSoundInTunnelTriggered;
+                case Variable_Trigger.Events.TractiveEffort_Inc_Past:
+                case Variable_Trigger.Events.TractiveEffort_Dec_Past:
+                    return car.MotiveForceN / 1000.0f * Math.Sign(car.WheelSpeedMpS); // Convert to kN, ensure positive for traction, negative for dynamics
+                case Variable_Trigger.Events.TractivePower_Inc_Past:
+                case Variable_Trigger.Events.TractivePower_Dec_Past:
+                    return car.MotiveForceN * car.WheelSpeedMpS / 1000.0f; // Convert to kW
+                case Variable_Trigger.Events.EngineRPM_Inc_Past:
+                case Variable_Trigger.Events.EngineRPM_Dec_Past:
+                    return car.EnginesRPM.ElementAtOrDefault(SMS.SourceID);
+                case Variable_Trigger.Events.EnginePower_Inc_Past:
+                case Variable_Trigger.Events.EnginePower_Dec_Past:
+                    return car.EnginesPower.ElementAtOrDefault(SMS.SourceID);
+                case Variable_Trigger.Events.EngineTorque_Inc_Past:
+                case Variable_Trigger.Events.EngineTorque_Dec_Past:
+                    return car.EnginesTorque.ElementAtOrDefault(SMS.SourceID);
                 case Orts.Formats.Msts.Variable_Trigger.Events.Power_On:
                 case Orts.Formats.Msts.Variable_Trigger.Events.Power_Off:
                     return car.GetPowerEventValue();
@@ -3553,7 +3651,6 @@ namespace Orts.Viewer3D
                                 Program.Viewer.Simulator.PlayerLocomotive : train.Cars[0];
                             var worldLocation = loco.WorldPosition.WorldLocation;
                             worldLocation.Location.Y = worldLocation.Location.Y + 3; // Sound does not come from earth!
-//                            string wsName = Program.Viewer.Simulator.RoutePath + @"\WORLD\" + WorldFile.WorldFileNameFromTileCoordinates(worldLocation.TileX, worldLocation.TileZ) + "s";
                             ActivitySounds = new SoundSource(Program.Viewer, worldLocation, Events.Source.None, ORTSActSoundFile, true);
                             Program.Viewer.SoundProcess.AddSoundSources(localEventID, new List<SoundSourceBase>() { ActivitySounds });
                             break;
@@ -3596,7 +3693,6 @@ namespace Orts.Viewer3D
                                 Program.Viewer.Simulator.PlayerLocomotive : train.Cars[0];
                             var worldLocation = loco.WorldPosition.WorldLocation;
                             worldLocation.Location.Y = worldLocation.Location.Y + 3; // Sound does not come from earth!
- //                           string wsName = Program.Viewer.Simulator.RoutePath + @"\WORLD\" + WorldFile.WorldFileNameFromTileCoordinates(worldLocation.TileX, worldLocation.TileZ) + "s";
                             ActivitySounds = new SoundSource(Program.Viewer, worldLocation, Events.Source.None, ORTSActSoundFile, true, ORTSActSoundFileType, true);
                             Program.Viewer.SoundProcess.AddSoundSources(localEventID, new List<SoundSourceBase>() { ActivitySounds });
                             break;
