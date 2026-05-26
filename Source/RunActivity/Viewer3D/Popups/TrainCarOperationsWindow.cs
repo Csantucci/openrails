@@ -588,12 +588,18 @@ namespace Orts.Viewer3D.Popups
                 if (!Owner.Viewer.FirstLoop || Owner.Viewer.IsCameraPositionUpdated)
                 {
                     Owner.Viewer.CameraF9Reference = Owner.Viewer.FrontCamera.IsCameraFront;
-                    var currentCameraCarID = Owner.Viewer.Camera.AttachedCar.CarID;
+                    var currentCameraCarID = "";
+                    if (Owner.Viewer.Camera.AttachedCar != null)
+                    {
+                       currentCameraCarID = Owner.Viewer.Camera.AttachedCar.CarID;
+                    }
                     var currentCameraPosition = 0;
                     if (PlayerTrain != null)
                     {
-                        currentCameraPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != currentCameraCarID).Count();
+                        if (Owner.Viewer.Camera.AttachedCar != null)
+                            currentCameraPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != currentCameraCarID).Count();
                     }
+
 
                     Owner.Viewer.FirstLoop = true;
                     if (Owner.Viewer.CameraF9Reference)
