@@ -1175,7 +1175,7 @@ namespace Orts.Viewer3D.Processes
             ActivityFile act = null;
             try
             {
-                act = new ActivityFile(path);
+                act = new ActivityFile(path, false);
             }
             catch { }
             return act?.Tr_Activity?.Tr_Activity_Header?.Name;
@@ -1203,7 +1203,7 @@ namespace Orts.Viewer3D.Processes
             ConsistFile con = null;
             try
             {
-                con = new ConsistFile(path);
+                con = new ConsistFile(path, false);
             }
             catch { }
             return con?.Name;
