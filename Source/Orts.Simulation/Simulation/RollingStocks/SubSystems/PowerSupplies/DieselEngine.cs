@@ -102,7 +102,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 case "engine(ortsdieselengines":
                     stf.MustMatch("(");
                     int count = stf.ReadInt(0);
-                    DEList.Clear();
+                    DEList.Clear(); // Remove any existing diesel engines to prevent errors
                     for (int i = 0; i < count; i++)
                     {
                         string setting = stf.ReadString().ToLower();
@@ -422,7 +422,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 }
                 else
                 {
- //                   result.AppendFormat("\t{0}\t{1}", Simulator.Catalog.GetParticularString("HUD", "Power"), FormatStrings.FormatPower(MaxOutputPowerW, Locomotive.IsMetric, false, false));
+                    //                   result.AppendFormat("\t{0}\t{1}", Simulator.Catalog.GetParticularString("HUD", "Power"), FormatStrings.FormatPower(MaxOutputPowerW, Locomotive.IsMetric, false, false));
                     result.AppendFormat("\t{0}", FormatStrings.FormatPower(eng.CurrentDieselOutputPowerW, Locomotive.IsMetric, false, false));
                 }
 
@@ -551,7 +551,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
             }
         }
 
-#region Parameters and variables
+        #region Parameters and variables
         float dRPM;
         /// <summary>
         /// Actual change rate of the engine's RPM - useful for exhaust effects
@@ -879,7 +879,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// The engine is connected to the gearbox
         /// </summary>
         public bool HasGearBox { get { return GearBox != null; } }
-#endregion
+        #endregion
 
         public DieselEngine(MSTSDieselLocomotive locomotive)
         {
@@ -1033,7 +1033,13 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
             if (State == DieselEngineState.Running)
             {
                 float abstempTractiveForce = Locomotive.TractionForceN;
-                float relativePower = CurrentDieselOutputPowerW / Locomotive.DieselEngines.MaxOutputPowerW;
+                float relativePower;
+
+                if (Locomotive.DieselEngines.MaxOutputPowerW > 0)
+                    relativePower = CurrentDieselOutputPowerW / Locomotive.DieselEngines.MaxOutputPowerW;
+                else
+                    relativePower = 0;
+
                 OutputPowerW = ((abstempTractiveForce > 0 ? abstempTractiveForce * Locomotive.AbsWheelSpeedMpS : 0) + Locomotive.LocomotivePowerSupply.ElectricTrainSupplyPowerW) * relativePower;
             }
             else
@@ -1430,7 +1436,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 State = DieselEngineState.Stopped;
 
             // fuel consumption will occur when engine is running above the starting rpm
-            if ((State == DieselEngineState.Stopped) || ((State == DieselEngineState.Stopping) && (RealRPM < StartingRPM)) || ((State == DieselEngineState.Starting) && (RealRPM < StartingRPM)))
+            if (State == DieselEngineState.Stopped || (State == DieselEngineState.Stopping && RealRPM < StartingRPM) || (State == DieselEngineState.Starting && RealRPM < StartingRPM))
             {
                 ExhaustParticles = 0;
                 DieselFlowLps = 0;
