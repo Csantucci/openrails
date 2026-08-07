@@ -44,11 +44,14 @@ namespace Orts.Viewer3D
         Dictionary<string, Texture2D> Textures = new Dictionary<string, Texture2D>();
         Dictionary<string, bool> TextureMarks = new Dictionary<string, bool>();
 
+        internal static bool HighlightMissingTextures = false;
+
         [CallOnThread("Render")]
         internal SharedTextureManager(Viewer viewer, GraphicsDevice graphicsDevice)
         {
             Viewer = viewer;
             GraphicsDevice = graphicsDevice;
+            if (Viewer.Settings?.SuppressShapeWarnings == false) HighlightMissingTextures = true;
         }
 
         public Texture2D Get(string path, bool required = false)
