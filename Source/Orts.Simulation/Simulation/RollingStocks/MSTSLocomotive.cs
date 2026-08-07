@@ -2573,7 +2573,7 @@ namespace Orts.Simulation.RollingStocks
             {
                 ConfirmWheelslip(elapsedClockSeconds);
                 if (ThrottleController.CurrentNotch < throttleCurrentNotch && ThrottleController.ToZero)
-                    SignalEvent(Event.ThrottleChange);
+                    HandleThrottleChangedSound();
                 ThrottlePercent = LocalThrottlePercent;
                 DynamicBrakePercent = LocalDynamicBrakePercent;
                 DPThrottleController.Update(elapsedClockSeconds);
@@ -3805,6 +3805,11 @@ namespace Orts.Simulation.RollingStocks
         #endregion
 
         #region ThrottleController
+        public void HandleThrottleChangedSound()
+        {
+            if (CruiseControl != null && CruiseControl.SpeedRegMode == CruiseControl.SpeedRegulatorMode.Auto && CruiseControl.UseThrottleAsForceSelector) SignalEvent(Event.CruiseControlMaxForce);
+            else SignalEvent(Event.ThrottleChange);
+        }
         public void StartThrottleIncrease(float? target)
         {
             if (ThrottleController.CurrentValue >= ThrottleController.MaximumValue)
@@ -3812,7 +3817,7 @@ namespace Orts.Simulation.RollingStocks
             if (target != null) ThrottleController.StartIncrease(target);
             else new NotchedThrottleCommand(Simulator.Log, true);
 
-            SignalEvent(Event.ThrottleChange);
+            HandleThrottleChangedSound();
             AlerterReset(TCSEvent.ThrottleChanged);
             CommandStartTime = Simulator.ClockTime;
         }
@@ -3886,7 +3891,7 @@ namespace Orts.Simulation.RollingStocks
             if (target != null) ThrottleController.StartDecrease(target);
             else new NotchedThrottleCommand(Simulator.Log, false);
 
-            SignalEvent(Event.ThrottleChange);
+            HandleThrottleChangedSound();
             AlerterReset(TCSEvent.ThrottleChanged);
             CommandStartTime = Simulator.ClockTime;
         }
@@ -4102,7 +4107,7 @@ namespace Orts.Simulation.RollingStocks
             if (change != 0)
             {
                 new ContinuousThrottleCommand(Simulator.Log, change > 0, controller.CurrentValue, Simulator.ClockTime);
-                SignalEvent(Event.ThrottleChange);
+                HandleThrottleChangedSound();
                 AlerterReset(TCSEvent.ThrottleChanged);
             }
             if (oldValue != controller.IntermediateValue)
@@ -4141,7 +4146,7 @@ namespace Orts.Simulation.RollingStocks
             var oldThrottlePercent = ThrottleController.CurrentValue * 100;
             SetThrottlePercent(percent);
             if (Math.Abs(oldThrottlePercent - ThrottleController.CurrentValue * 100) > 2)
-                SignalEvent(Event.ThrottleChange);
+                HandleThrottleChangedSound();
         }
 
         public void ThrottleToZero()
@@ -4160,7 +4165,7 @@ namespace Orts.Simulation.RollingStocks
                 return;
 
             ThrottleController.StartDecrease(target, true);
-            if (ThrottleController.NotchCount() <= 0) SignalEvent(Event.ThrottleChange);
+            if (ThrottleController.NotchCount() <= 0) HandleThrottleChangedSound();
             AlerterReset(TCSEvent.ThrottleChanged);
             CommandStartTime = Simulator.ClockTime;
         }
