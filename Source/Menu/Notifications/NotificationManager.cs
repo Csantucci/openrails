@@ -533,7 +533,7 @@ namespace Menu.Notifications
                         replacement = Runtime.ToString();
                         break;
                     case "system":
-                        replacement = SystemInfo.OperatingSystem.ToString();
+                        replacement = SystemInfo.OperatingSystem.Name;
                         break;
                     case "memory":
                         replacement = Direct3DFeatureLevels.ToString();
