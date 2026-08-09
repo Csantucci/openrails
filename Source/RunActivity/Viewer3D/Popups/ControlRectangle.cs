@@ -124,12 +124,11 @@ namespace Orts.Viewer3D.Popups
                     {
                         foreach (var targetNode in animatedPart.MatrixIndexes)
                         {
-                            if (!trainCarShape.SharedShape.StoredResultMatrixes.TryGetValue(targetNode, out var matrix))
+                            if (targetNode > trainCarShape.ResultMatrices.Length)
                                 continue;
                             var matrixWorldLocation = trainCarShape.Location.WorldLocation;
-                            matrixWorldLocation.Location.X = matrix.Translation.X;
-                            matrixWorldLocation.Location.Y = matrix.Translation.Y;
-                            matrixWorldLocation.Location.Z = -matrix.Translation.Z;
+                            matrixWorldLocation.Location = (trainCarShape.ResultMatrices[targetNode] * trainCarShape.Location.XNAMatrix).Translation;
+                            matrixWorldLocation.Location.Z *= -1;
                             Vector3 xnaCenter = camera.XnaLocation(matrixWorldLocation);
                             Vector3 position = Viewer.DefaultViewport.Project(xnaCenter, camera.XnaProjection, camera.XnaView, Matrix.CreateTranslation(0, 0, 0));
                             Vector3 nearsource = new Vector3(position.X, position.Y, 0f);
