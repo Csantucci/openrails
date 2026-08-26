@@ -165,7 +165,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         public void EstablishParameters()
         {
             float totalTractionPower = 0;
-            float totalETSPower = 0;
 
             foreach (DieselEngine de in DEList)
             {
@@ -173,13 +172,11 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
                 if (de.ProvidesTraction)
                     totalTractionPower += de.MaximumDieselPowerW;
-                if (de.ProvidesETS)
-                    totalETSPower += de.MaximumDieselPowerW;
             }
 
             // Can only determine some engine ratings after all parameters are established
             foreach (DieselEngine de in DEList)
-                de.InitRailPower(totalTractionPower, totalETSPower);
+                de.InitRailPower(totalTractionPower);
         }
 
         /// <summary>
@@ -278,7 +275,8 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
             {
                 float temp = 0f;
                 foreach (DieselEngine de in DEList)
-                    temp += de.ProvidesETS ? de.CurrentMaximumPowerW - de.AuxPowerTab[de.RealRPM] : 0.0f;
+                    if (de.ProvidesETS && de.RealRPM >= Locomotive.DieselPowerSupply?.DieselEngineMinRpmForElectricTrainSupply)
+                        temp += de.CurrentMaximumPowerW - de.AuxPowerTab[de.RealRPM];
                 return temp;
             }
         }
@@ -327,7 +325,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         }
 
         /// <summary>
-        /// Maximum rail output power for all deiesl engines
+        /// Maximum rail output power for all diesel engines
         /// </summary>
         public float MaximumRailOutputPowerW
         {
@@ -524,7 +522,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 foreach (DieselEngine eng in DEList)
                 {
                     if (eng.State == DieselEngineState.Running)
-                        percent += eng.CurrentMaximumPowerW / totalMaxPower;
+                        percent += eng.MaximumDieselPowerW / totalMaxPower;
                 }
                 return percent;
             }
@@ -607,13 +605,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// <summary>
         /// Holds in engine braking mode
         /// </summary>
-        public bool engineBrakingLockout = false;
+        public bool EngineBrakingLockout = false;
 
         /// <summary>
         /// The RPM controller tries to reach this value
         /// </summary>
         public float DemandedRPM;
-        float throttleAcclerationFactor = 1.0f;
 
         /// <summary>
         /// Demanded throttle percent, usually taken from parent locomotive
@@ -663,6 +660,10 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// Engine mass moment of inertia in kg * m^2
         /// </summary>
         public float InertiaKgM2;
+        /// <summary>
+        /// Multiplier applied to the acceleration of engine RPM
+        /// </summary>
+        float ThrottleAccelerationFactor = 1.0f;
 
         /// <summary>
         /// Maximum overall rated power output of the diesel engine
@@ -749,7 +750,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         {
             get
             {
-                if (ProvidesETS)
+                if (ProvidesETS && RealRPM >= Locomotive.DieselPowerSupply?.DieselEngineMinRpmForElectricTrainSupply)
                 {
                     if (Locomotive.DieselEngines.Count > 1)
                     {
@@ -778,10 +779,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// Auxiliary power table - Auxiliary power draw vs. RPM
         /// </summary>
         public Interpolator AuxPowerTab;
-        /// <summary>
-        /// Rail power table - Max rail output power vs. RPM
-        /// </summary>
-        public Interpolator RailPowerTab;
         /// <summary>
         /// Engine fuel consumption table operating at rated power - Fuel consumption vs. RPM
         /// </summary>
@@ -946,7 +943,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         public float CoolingPower;
 
         /// <summary>
-        /// Load of the engine (actual power output divided by maximum possible power output)
+        /// Transmission load on the engine (actual power output divided by maximum possible power output)
         /// expressed as percentage, normally 0%-100%
         /// </summary>
         public float LoadPercent
@@ -1048,7 +1045,6 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
             ProvidesETS = other.ProvidesETS;
             MaximumDieselPowerW = other.MaximumDieselPowerW;
             MaximumRailOutputPowerW = other.MaximumRailOutputPowerW;
-            RailPowerTab = new Interpolator(other.RailPowerTab);
             DieselPowerTab = new Interpolator(other.DieselPowerTab);
             AuxPowerTab = new Interpolator(other.AuxPowerTab);
             DieselUsedPerHourAtIdleL = other.DieselUsedPerHourAtIdleL;
@@ -1300,7 +1296,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// <returns>The current target RPM value, limited between IdleRPM and MaxRPM</returns>
         public float GetTargetRPM(float elapsedClockSeconds)
         {
-            float targetRPM = 0f;
+            float targetRPM = DemandedRPM;
 
             if (State == DieselEngineState.Running)
             {
@@ -1324,7 +1320,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 targetRPM = MathHelper.Clamp(targetRPM, IdleRPM, MaxRPM);
             }
 
-            // TODO: Add processing for custom engine RPM overrides
+            // FUTURE: Add processing for custom engine RPM overrides
 
             if (GearBox != null)
                 targetRPM = GetGearboxRPM(elapsedClockSeconds, targetRPM);
@@ -1390,7 +1386,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     }
                     else if (GearBox.ManualGearBoxChangeOn)
                     {
-                        engineBrakingLockout = true;
+                        EngineBrakingLockout = true;
 
                         // once engine speed is less then shaft speed reset gear change, or is at idle rpm, reset gear change
                         if ((RealRPM <= GearBox.ShaftRPM && GearBox.ShaftRPM < MaxRPM) || RealRPM == IdleRPM)
@@ -1433,14 +1429,14 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     else if (tempthrottle < 0.5 && tempthrottle > 0)
                         targetRPM = (2.0f * tempthrottle * (MaxRPM - IdleRPM)) + IdleRPM;
 
-                    throttleAcclerationFactor = (1.0f + tempthrottle) * 4.0f;
+                    ThrottleAccelerationFactor = (1.0f + tempthrottle) * 4.0f;
                 }
                 else if (!GearBox.IsClutchOn)
                 {
                     // When clutch is slipping, engine rpm will increase initially quickly (whilst clutch under no load) until clutch starts to engage, and then slow down as clutch engages.
                     var tempClutchFraction = GearBox.ClutchPercent / 100.0f; // 100% = clutch slipping, 0% = clutch engaged
                     tempClutchFraction = MathHelper.Clamp(tempClutchFraction, 0.1f, 1.0f);  // maintain a value between 0.1 (never want throttle increase value to be zero) and 1.0
-                    throttleAcclerationFactor = 1.0f + tempClutchFraction; // decreases as clutch engages, thus when clutch disengaged engine rpm change high, clutch engaged, engine rpm low
+                    ThrottleAccelerationFactor = 1.0f + tempClutchFraction; // decreases as clutch engages, thus when clutch disengaged engine rpm change high, clutch engaged, engine rpm low
 
                     // Whilst clutch slipping use a similar approach as above to set RPM for "unloaded" engine.
                     var tempthrottle = demandedThrottlePercent / 100.0f;
@@ -1452,15 +1448,15 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 else
                 {
                     // under "normal" circumstances
-                    throttleAcclerationFactor = 1.0f;
+                    ThrottleAccelerationFactor = 1.0f;
                 }
 
                 // brakes engine when doing gear change
                 // During a manual gear change brake engine shaft speed to match wheel shaft speed
-                if (engineBrakingLockout && RealRPM > GearBox.ShaftRPM && RealRPM > IdleRPM)
+                if (EngineBrakingLockout && RealRPM > GearBox.ShaftRPM && RealRPM > IdleRPM)
                     targetRPM = IdleRPM;
-                else if ((engineBrakingLockout && RealRPM < GearBox.ShaftRPM) || RealRPM <= IdleRPM || Locomotive.AbsSpeedMpS < 0.1f)
-                    engineBrakingLockout = false;
+                else if ((EngineBrakingLockout && RealRPM < GearBox.ShaftRPM) || RealRPM <= IdleRPM || Locomotive.AbsSpeedMpS < 0.1f)
+                    EngineBrakingLockout = false;
 
                 // Speeds engine rpm to simulate clutch starting to engage and pulling speed up as clutch slips for friction clutch
                 var clutchEngagementBandwidthRPM = 10.0f;
@@ -1533,7 +1529,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         {
             if (RealRPM < DemandedRPM)
             {
-                float maxJerk = RateOfChangeUpRPMpSS * throttleAcclerationFactor;
+                float maxJerk = RateOfChangeUpRPMpSS * ThrottleAccelerationFactor;
                 float maxInstantJerk = maxJerk * elapsedClockSeconds;
 
                 // RPM increase exponentially decays, but clamped between 1% and 100% of the linear rate of change
@@ -1554,7 +1550,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
             }
             else if (RealRPM > DemandedRPM)
             {
-                float maxJerk = RateOfChangeDownRPMpSS * throttleAcclerationFactor;
+                float maxJerk = RateOfChangeDownRPMpSS * ThrottleAccelerationFactor;
                 float maxInstantJerk = maxJerk * elapsedClockSeconds;
 
                 // RPM decrease exponentially decays, but clamped between 1% and 100% of the linear rate of change
@@ -1996,11 +1992,9 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
         /// (if there are any others), particularly how much power at rail each engine is responsible for.
         /// </summary>
         /// <param name="totalTractionPower">Total power available for traction from all engines</param>
-        /// <param name="totalETSPower">Total power available for electric train supply from all engines</param>
-        public void InitRailPower(float totalTractionPower, float totalETSPower)
+        public void InitRailPower(float totalTractionPower)
         {
             float maxTractionPowerProportion = ProvidesTraction ? MaximumDieselPowerW / totalTractionPower : 0.0f;
-            float maxETSPowerProportion = ProvidesETS ? MaximumDieselPowerW / totalETSPower : 0.0f;
 
             // Set rail power parameters if not already set
             (float, float)[] throttleRailPower; // Pairs of throttle settings and corresponding rail power
@@ -2050,9 +2044,10 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                 }
             }
 
-            // Set rail power vs RPM from calculated rail powers
-            if (RailPowerTab == null)
-            {
+            // Determine rail power vs RPM, used for other calculations
+            Interpolator railPowerTab = null;
+
+            { // Limit scope of temporary variables
                 int size = throttleRailPower.Length;
                 List<(float, float)> tempRailPowerPairs = new List<(float, float)>();
 
@@ -2095,7 +2090,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
                     railPower.Add(railPower[0]);
                 }
 
-                RailPowerTab = new Interpolator(rpm.ToArray(), railPower.ToArray());
+                railPowerTab = new Interpolator(rpm.ToArray(), railPower.ToArray());
             }
 
             // Set auxiliary power vs RPM if not already set
@@ -2117,7 +2112,7 @@ namespace Orts.Simulation.RollingStocks.SubSystems.PowerSupplies
 
                     for (int i = size - 1; i >= 0; i--)
                     {
-                        float tempAux = DieselPowerTab[rpm[i]] - RailPowerTab[rpm[i]] / Locomotive.DieselTransmissionEfficiency;
+                        float tempAux = DieselPowerTab[rpm[i]] - railPowerTab[rpm[i]] / Locomotive.DieselTransmissionEfficiency;
                         // Prevent nonsensical negative auxiliary draw, as well as nonsensically high auxiliary draw
                         auxPower[i] = MathHelper.Clamp(tempAux, 0.0f, maxAuxPower);
                         // Assume auxiliary draw is strictly increasing with engine RPM
