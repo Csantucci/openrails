@@ -37,6 +37,7 @@ using Color = Microsoft.Xna.Framework.Color;
 using Point = Microsoft.Xna.Framework.Point;
 using Rectangle = Microsoft.Xna.Framework.Rectangle;
 using ORTS.Scripting.Api;
+using Orts.Viewer3D;
 
 namespace Orts.Viewer3D.Popups
 {
@@ -499,7 +500,7 @@ namespace Orts.Viewer3D.Popups
                     {
                         CabCameraEnabled = false;
                     }
-                    else if (OldCarPosition != CarPosition || (trainCarOperations.CarIdClicked && CarPosition == 0))
+                    else if (OldCarPosition != CarPosition && !Owner.Viewer.FrontCamera.CameraFollowCutCar && !Owner.Viewer.BackCamera.CameraFollowCutCar || (trainCarOperations.CarIdClicked && CarPosition == 0))
                     {
                         if (Owner.Viewer.FrontCamera.AttachedCar != null && Owner.Viewer.FrontCamera.IsCameraFront)
                             Owner.Viewer.FrontCamera.Activate();
@@ -571,6 +572,7 @@ namespace Orts.Viewer3D.Popups
             readonly TrainCarOperationsWindow TrainCar;
             readonly TrainCarOperationsViewerWindow TrainCarViewer;
             readonly int CarPosition;
+            bool CameraFollowCutCar;
             public buttonCouplerFront(int x, int y, int size, Viewer viewer, TrainCar car, int carPosition)
                 : base(x, y, size, size)
             {
@@ -611,7 +613,7 @@ namespace Orts.Viewer3D.Popups
                 }
                 else
                 {
-                    new UncoupleCommand(Viewer.Log, CarPosition - 1);
+                    new UncoupleCommand(Viewer.Log, CarPosition - 1, UserInput.IsDown(UserCommand.CameraFollowCutCar));
                     TrainCarViewer.CouplerChanged = TrainCar.CouplerClicked = true;
                     TrainCarViewer.NewCarPosition = CarPosition - 1;
                     if (Viewer.CarOperationsWindow.CarPosition > CarPosition - 1)
@@ -624,6 +626,7 @@ namespace Orts.Viewer3D.Popups
             readonly Viewer Viewer;
             readonly TrainCarOperationsWindow TrainCar;
             readonly int CarPosition;
+            bool CameraFollowCutCar;
             public buttonCouplerRear(int x, int y, int size, Viewer viewer, TrainCar car, int carPosition)
                 : base(x, y, size, size)
             {
@@ -658,7 +661,7 @@ namespace Orts.Viewer3D.Popups
                 }
                 else
                 {
-                    new UncoupleCommand(Viewer.Log, CarPosition);
+                    new UncoupleCommand(Viewer.Log, CarPosition, UserInput.IsDown(UserCommand.CameraFollowCutCar));
                     TrainCar.CouplerClicked = true;
                     if (Viewer.CarOperationsWindow.CarPosition > CarPosition)
                         Viewer.CarOperationsWindow.Visible = false;
