@@ -33,6 +33,7 @@ using ORTS.Common;
 using ORTS.Menu;
 using ORTS.Settings;
 using ORTS.Updater;
+using static Menu.Notifications.NotificationPage;
 using Activity = ORTS.Menu.Activity;
 using Path = ORTS.Menu.Path;
 
@@ -270,7 +271,7 @@ namespace Menu
 
                 var item = new ToolStripMenuItem($"Online documents (opens browser)", null, (object sender2, EventArgs e2) =>
                     {
-                        Process.Start("https://www.openrails.org/learn/docs-list/");
+                        Process.Start(new ProcessStartInfo { FileName = "https://www.openrails.org/learn/documents/", UseShellExecute = true });
                     }
                 );
                 contextMenuStripDocuments.Items.Add(new ToolStripSeparator());
@@ -303,7 +304,7 @@ namespace Menu
                     docs.Add(new ToolStripMenuItem($"{name}{ext}{codeLabel}", null, (object sender2, EventArgs e2) =>
                     {
                         var docPath = (sender2 as ToolStripItem).Tag as string;
-                        Process.Start(docPath);
+                        Process.Start(new ProcessStartInfo { FileName = docPath, UseShellExecute = true });
                     })
                     { Tag = filePath });
                 }
