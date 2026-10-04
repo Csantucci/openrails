@@ -685,6 +685,62 @@ namespace Orts.Simulation.RollingStocks
 
             CentreOfGravityM = InitialCentreOfGravityM;
 
+            // Initialize the switchable brake system
+            if (BrakeModeNames?.Length > 0)
+            {
+                // If the filter is set, enforce it
+                foreach (var key in BrakeSystems.Keys.ToArray())
+                    if (!BrakeModeNames.Contains(key.BrakeMode.ToString()))
+                        BrakeSystems.Remove(key);
+            }
+            BrakeModeNames = BrakeSystems.Keys.Select(k => k.BrakeMode.ToString()).Distinct().ToArray();
+            BrakeSystem = BrakeSystemAlt = BrakeSystem ?? MSTSBrakeSystem.Create(CarBrakeSystemType, this);
+
+            BrakeSystem.InitialMaxBrakeForceN = ParsetimeBrakeForces.MaxBrakeForceN;
+            BrakeSystem.InitialMaxHandbrakeForceN = ParsetimeBrakeForces.MaxHandbrakeForceN;
+            BrakeSystem.MaxBrakeShoeForceN = ParsetimeBrakeForces.MaxBrakeShoeForceN;
+
+            if (BrakeSystem is AirSinglePipe airBrake)
+            {
+                if (BrakeSystems?.Count > 0)
+                {
+                    foreach (var key in BrakeSystems.Keys)
+                    {
+                        if (BrakeSystems[key] is AirSinglePipe subSystem)
+                        {
+                            BrakeSystems.TryGetValue((BrakeModes.P, key.MinMass), out var pMode);
+                            var pModeBrakeMass = (pMode as AirSinglePipe)?.BrakeMass;
+                            if (subSystem.BrakeMass == 0 && (pModeBrakeMass == null || pModeBrakeMass == 0))
+                            {
+                                // We will reverse calculate the brake mass from the brake forces
+                                subSystem.MaxBrakeShoeForceN = BrakeSystem.MaxBrakeShoeForceN;
+                                subSystem.InitialMaxBrakeForceN = BrakeSystem.InitialMaxBrakeForceN;
+                            }
+                            subSystem.BrakeMassToShoeForce(pModeBrakeMass);
+                        }
+                    }
+                }
+                else
+                {
+                    airBrake.BrakeMassToShoeForce(null);
+                }
+            }
+
+            // Calling SetBrakeSystemMode() is also a prerequisite for initializing the freightanim-style load compensation, by setting the default values for the Load... variables
+            var (brakeMode, maxMass) = BrakeSystems?.Count > 0 ? BrakeSystems.Keys.FirstOrDefault() : default;
+            SetBrakeSystemMode(brakeMode, maxMass, forceSwitch: true);
+
+            // Determine whether or not to use the Davis friction model. Must come after freight animations are initialized.
+            IsDavisFriction = DavisAN.HasValue && DavisBNSpM.HasValue && DavisCNSSpMM.HasValue && DavisDragConstant.HasValue;
+
+            LoadFullMassKg = LoadEmptyMassKg = MassKG;
+            LoadFullORTSDavis_A = LoadEmptyORTSDavis_A = DavisAN = DavisAN ?? 0;
+            LoadFullORTSDavis_B = LoadEmptyORTSDavis_B = DavisBNSpM = DavisBNSpM ?? 0;
+            LoadFullORTSDavis_C = LoadEmptyORTSDavis_C = DavisCNSSpMM = DavisCNSSpMM ?? 0;
+            LoadFullDavisDragConstant = LoadEmptyDavisDragConstant = DavisDragConstant = DavisDragConstant ?? 0;
+            LoadFullWagonFrontalAreaM2 = LoadEmptyWagonFrontalAreaM2 = WagonFrontalAreaM2;
+            LoadFullCentreOfGravityM_Y = LoadEmptyCentreOfGravityM_Y = CentreOfGravityM.Y;
+
             // Override Z value of CoG with shape nudge, if defined
             if (ShapeNudge != null)
                 CentreOfGravityM.Z = ShapeNudge.Value;
