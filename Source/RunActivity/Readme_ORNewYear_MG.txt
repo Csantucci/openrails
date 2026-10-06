@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.175
-October 4th, 2026
+﻿Open Rails NewYear README - Rev.175.1
+October 6th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -84,6 +84,7 @@ This version includes some features not (yet) available in the Open Rails testin
 - added possibility to set max wind speed in the ORNYMG only option window
 - bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__326393 crash opening F9 after restore
 - skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
+- NEW: add some ORNYMG fixes to get scripts working, to get .png, .jpg and .jpeg textures operating and to remove bug of tiles within a certain number range not displayed
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
