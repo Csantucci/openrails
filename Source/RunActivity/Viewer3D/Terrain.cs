@@ -64,7 +64,6 @@ namespace Orts.Viewer3D
                 TileX = VisibleTileX;
                 TileZ = VisibleTileZ;
                 var terrainTiles = TerrainTiles;
-                var tempNewTerrainTiles = new List<TerrainTile>();
                 var newTerrainTiles = new List<TerrainTile>();
 
                 var tiles = new List<Tile>();
@@ -74,15 +73,8 @@ namespace Orts.Viewer3D
                 // First we establish the regular tiles we need to cover the current viewable area.
                 for (var x = TileX - needed; x <= TileX + needed; x++)
                     for (var z = TileZ - needed; z <= TileZ + needed; z++)
-                    {
-                        var cameraTile = CameraTile;
-                        CameraTileX = (int)(cameraTile / 100000);
-                        CameraTileZ = (int)(Math.Abs(cameraTile) - (long)Math.Abs(CameraTileX) * 100000);
-                        if ((CameraTileX != TileX || CameraTileZ != TileZ) && (Math.Abs(CameraTileX - x) > needed || Math.Abs(CameraTileZ - z) > needed))
-                            continue;
                         if (!cancellation.IsCancellationRequested)
                             tiles.Add(Viewer.Tiles.LoadAndGetTile(x, z, x == TileX && z == TileZ));
-                    }
 
                 if (Viewer.Settings.DistantMountains)
                 {
@@ -97,31 +89,17 @@ namespace Orts.Viewer3D
                 if (cancellation.IsCancellationRequested)
                     return;
 
-
                 // Now we turn each unique (distinct) loaded tile in to a terrain tile.
-                needed = (int)Math.Ceiling((float)Viewer.Settings.ViewingDistance / 2048);
-                tempNewTerrainTiles = tiles
+                newTerrainTiles = tiles
                     .Where(t => t != null).Distinct()
-                    .Select(tile => terrainTiles.FirstOrDefault(tt => tt.TileX == tile.TileX && tt.TileZ == tile.TileZ && tt.Size == tile.Size) ?? ConditionallyCreateTerrainTile(tile, needed))
+                    .Select(tile => terrainTiles.FirstOrDefault(tt => tt.TileX == tile.TileX && tt.TileZ == tile.TileZ && tt.Size == tile.Size) ?? new TerrainTile(Viewer, Viewer.Tiles, tile))
                     .Union(loTiles
                         .Where(t => t != null).Distinct()
                         .Select(tile => terrainTiles.FirstOrDefault(tt => tt.TileX == tile.TileX && tt.TileZ == tile.TileZ && tt.Size == tile.Size) ?? new TerrainTile(Viewer, Viewer.LoTiles, tile))
                     ).ToList();
 
-                foreach (var tempNewTerrainTile in tempNewTerrainTiles)
-                    if (tempNewTerrainTile != null) newTerrainTiles.Add(tempNewTerrainTile);
                 TerrainTiles = newTerrainTiles;
             }
-        }
-
-        private TerrainTile ConditionallyCreateTerrainTile(Tile tile, int needed)
-        {
-            var cameraTile = CameraTile;
-            CameraTileX = (int)(cameraTile / 100000);
-            CameraTileZ = (int)(Math.Abs(cameraTile) - (long)Math.Abs(CameraTileX) * 100000);
-            if ((CameraTileX != TileX || CameraTileZ != TileZ) && (Math.Abs(CameraTileX - tile.TileX) > needed || Math.Abs(CameraTileZ - tile.TileZ) > needed))
-                return null;
-            return new TerrainTile(Viewer, Viewer.Tiles, tile);
         }
 
         [CallOnThread("Updater")]
@@ -129,12 +107,6 @@ namespace Orts.Viewer3D
         {
             VisibleTileX = Viewer.Camera.TileX;
             VisibleTileZ = Viewer.Camera.TileZ;
-        }
-
-        [CallOnThread("Updater")]
-        public void GetCameraTile(long cameraTile)
-        {
-            CameraTile = cameraTile;
         }
 
         [CallOnThread("Updater")]

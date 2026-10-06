@@ -222,14 +222,5 @@ namespace Orts.Viewer3D
             Containers.PrepareFrame(frame, elapsedTime);
             RoadCars.PrepareFrame(frame, elapsedTime);
         }
-
-        [CallOnThread("Updater")]
-        public void GetCameraTile()
-        {
-            long cameraTile = (Math.Abs(Viewer.Camera.TileX) * 100000 + Viewer.Camera.TileZ) * Math.Sign(Viewer.Camera.TileX);
-            CameraTile = cameraTile;
-            Terrain.GetCameraTile(CameraTile);
-            Scenery.GetCameraTile(CameraTile);
-        }
     }
 }

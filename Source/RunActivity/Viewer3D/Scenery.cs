@@ -97,11 +97,6 @@ namespace Orts.Viewer3D
                         if (cancellation.IsCancellationRequested)
                             break;
                         var tile = worldFiles.FirstOrDefault(t => t.TileX == TileX + x && t.TileZ == TileZ + z);
-                        var cameraTile = CameraTile;
-                        CameraTileX = (int)(cameraTile / 100000);
-                        CameraTileZ = (int)(Math.Abs(cameraTile) - (long)Math.Abs(CameraTileX) * 100000);
-                        if ((CameraTileX != TileX || CameraTileZ != TileZ) && (Math.Abs(CameraTileX - (TileX + x)) > needed || Math.Abs(CameraTileZ - (TileZ + z)) > needed))
-                            continue;
                         if (tile == null)
                             tile = LoadWorldFile(TileX + x, TileZ + z, x == 0 && z == 0);
                         if (tile != null)
@@ -209,11 +204,6 @@ namespace Orts.Viewer3D
             VisibleTileZ = Viewer.Camera.TileZ;
         }
 
-        [CallOnThread("Updater")]
-        public void GetCameraTile(long cameraTile)
-        {
-            CameraTile = cameraTile;
-        }
         [CallOnThread("Updater")]
         public void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)
         {

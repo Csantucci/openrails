@@ -82,7 +82,6 @@ namespace Orts.Viewer3D.Processes
                 Viewer.World.LoadPrep();
                 Game.LoaderProcess.StartLoad();
             }
-            Viewer.World.GetCameraTile();
 
             // The first time we update, the TotalRealSeconds will be ~time
             // taken to load everything. We'd rather not skip that far through

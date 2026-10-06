@@ -59,7 +59,7 @@ namespace Orts.Viewer3D
             return (Get(path, SharedMaterialManager.MissingTexture, required));
         }
 
-        public Texture2D Get(string path, Texture2D defaultTexture, bool required = false)
+        public Texture2D Get(string path, Texture2D defaultTexture, bool required = false, bool srgb = false)
         {
             if (Thread.CurrentThread.Name != "Loader Process")
                 Trace.TraceError("SharedTextureManager.Get incorrectly called by {0}; must be Loader Process or crashes will occur.", Thread.CurrentThread.Name);
@@ -72,8 +72,9 @@ namespace Orts.Viewer3D
             {
                 try
                 {
+                    var pathExtension = Path.GetExtension(path);
                     Texture2D texture;
-                    if (Path.GetExtension(path) == ".dds")
+                    if (pathExtension == ".dds")
                     {
                         if (File.Exists(path))
                         {
@@ -92,7 +93,7 @@ namespace Orts.Viewer3D
                             else return defaultTexture;
                         }
                     }
-                    else if (Path.GetExtension(path) == ".ace")
+                    else if (pathExtension == ".ace")
                     {
                         var alternativeTexture = Path.ChangeExtension(path, ".dds");
                         
@@ -147,6 +148,16 @@ namespace Orts.Viewer3D
                             }
                         }
                     }
+                    else if (pathExtension == ".jpg"  || pathExtension == ".jpeg" || pathExtension == ".png")
+                        using (var stream = File.OpenRead(path))
+                        {
+                            texture = srgb
+                                ? GetSrgbTexture(GraphicsDevice, stream)
+                                : Texture2D.FromStream(GraphicsDevice, stream);
+                            if (Debugger.IsAttached) texture.Name = path;
+                            //return Textures[textureKey] = texture; // FIXME: loads a wrong texture for some glTF files.
+                            return texture;
+                        }
                     else
                     {
                         Trace.TraceWarning("Unsupported texture format: {0}", path);
@@ -176,6 +187,18 @@ namespace Orts.Viewer3D
             }
         }
 
+        public Texture2D GetSrgbTexture(GraphicsDevice graphicsDevice, Stream stream)
+        {
+            using (var temp = Texture2D.FromStream(graphicsDevice, stream))
+            {
+                var srgbTex = new Texture2D(graphicsDevice, temp.Width, temp.Height, false, SurfaceFormat.ColorSRgb);
+                var data = new Color[temp.Width * temp.Height];
+                temp.GetData(data);
+                srgbTex.SetData(data);
+
+                return srgbTex;
+            }
+        }
         public static Texture2D Get(GraphicsDevice graphicsDevice, string path)
         {
             if (path == null || path == "")
