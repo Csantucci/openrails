@@ -136,16 +136,18 @@ namespace Menu.Notifications
     }
 
     // These criteria are all doing an actual comparison
-    class Contains : Criteria { public override bool IsMatch() => Property.Contains(Value); }
-    class Equals : Criteria { public override bool IsMatch() => Property == Value; }
-    class LessThan : NumericCriteria { public override bool IsMatch() => PropertyAsInt < ValueAsInt; }
-    class MoreThan : NumericCriteria { public override bool IsMatch() => PropertyAsInt > ValueAsInt; }
+    class Contains : Criteria { }
+    class NotContains : Criteria { }
+//    class Contains : Criteria { public override bool IsMatch() => Property.Contains(Value); }
+//    class Equals : Criteria { public override bool IsMatch() => Property == Value; }
+//    class LessThan : NumericCriteria { public override bool IsMatch() => PropertyAsInt < ValueAsInt; }
+//    class MoreThan : NumericCriteria { public override bool IsMatch() => PropertyAsInt > ValueAsInt; }
 
     // These criteria are all negated versions of those above
-    class NotContains : Contains { public override bool IsMatch() => !base.IsMatch(); }
-    class NotEquals : Equals { public override bool IsMatch() => !base.IsMatch(); }
-    class MoreThanOrEquals : LessThan { public override bool IsMatch() => !base.IsMatch(); }
-    class LessThanOrEquals : MoreThan { public override bool IsMatch() => !base.IsMatch(); }
+//    class NotContains : Contains { public override bool IsMatch() => !base.IsMatch(); }
+ //   class NotEquals : Equals { public override bool IsMatch() => !base.IsMatch(); }
+//    class MoreThanOrEquals : LessThan { public override bool IsMatch() => !base.IsMatch(); }
+//    class LessThanOrEquals : MoreThan { public override bool IsMatch() => !base.IsMatch(); }
 
     abstract class NumericCriteria : Criteria
     {
@@ -158,7 +160,7 @@ namespace Menu.Notifications
                                                 // System Information "examples"
         public string Property { get; set; }    // installed_version, direct3d, runtime, system, memory, cpu, gpu
         public string Value { get; set; }       // {{new_version}}, {{10_0}}
-        public abstract bool IsMatch();
+//        public abstract bool IsMatch();
         internal void ReplaceParameters(Func<string, string> replaceFunc)
         {
             Property = replaceFunc(Property);
