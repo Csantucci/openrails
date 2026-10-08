@@ -95,11 +95,12 @@ namespace Orts.Viewer3D
         [CallOnThread("Loader")]
         public void Load()
         {
-            Terrain.Load();
-            Scenery.Load();
-            Trains.Load();
-            RoadCars.Load();
-            Containers.Load();
+            // Trigger the WatchDog after each phase
+            Terrain.Load(); if (Viewer.LoaderProcess.CancellationToken.IsCancellationRequested) return;
+            Scenery.Load(); if (Viewer.LoaderProcess.CancellationToken.IsCancellationRequested) return;
+            Trains.Load(); if (Viewer.LoaderProcess.CancellationToken.IsCancellationRequested) return;
+            RoadCars.Load(); if (Viewer.LoaderProcess.CancellationToken.IsCancellationRequested) return;
+            Containers.Load(); if (Viewer.LoaderProcess.CancellationToken.IsCancellationRequested) return;
             if (TileX != VisibleTileX || TileZ != VisibleTileZ)
             {
                 TileX = VisibleTileX;
@@ -220,15 +221,6 @@ namespace Orts.Viewer3D
             Trains.PrepareFrame(frame, elapsedTime);
             Containers.PrepareFrame(frame, elapsedTime);
             RoadCars.PrepareFrame(frame, elapsedTime);
-        }
-
-        [CallOnThread("Updater")]
-        public void GetCameraTile()
-        {
-            long cameraTile = (Math.Abs(Viewer.Camera.TileX) * 100000 + Viewer.Camera.TileZ) * Math.Sign(Viewer.Camera.TileX);
-            CameraTile = cameraTile;
-            Terrain.GetCameraTile(CameraTile);
-            Scenery.GetCameraTile(CameraTile);
         }
     }
 }

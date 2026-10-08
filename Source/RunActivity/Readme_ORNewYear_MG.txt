@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.172.2
-May 17th, 2026
+﻿Open Rails NewYear README - Rev.175.1
+October 6th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,9 +9,10 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.6.1-363, 
-plus some of the features already present in the Unstable release.
-NEW: This version has been built in "Release" mode, which allows for significantly higher FPS in high-end computers
+This unofficial version has been derived from the latest official Testing release T1.6.1-498, 
+plus some of the features already present in the Unstable release and/or present as pull requests in the OpenRails github.
+Note that I haven't yet migrated to .NET 6.0 to keep OR running on Windows 7.0 (not tested however). 
+
 
 
 This version includes some features not (yet) available in the Open Rails testing official version, that is:
@@ -81,24 +82,32 @@ This version includes some features not (yet) available in the Open Rails testin
 - Fix for crash during couple, see  https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__322467
 - Temporary fix for custom light glows not appearing, see  https://www.elvastower.com/forums/index.php?/topic/38247-actual-lightglowpng-generates-too-small-lights-in-existing-trainsets/page__view__findpost__p__322524
 - added possibility to set max wind speed in the ORNYMG only option window
+- bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__326393 crash opening F9 after restore
 - skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
+- NEW: add some ORNYMG fixes to get scripts working, to get .png, .jpg and .jpeg textures operating and to remove bug of tiles within a certain number range not displayed
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
-  *- Automatic speed control (Cruise Control) refactoring (updated merge including partial fix for Cruise Control sounds not working, by cesarBLG (PR #1091)
-  *- Wagon Size and Centering Controls, by steelfill (PR #1122)
-  *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
   *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
-  *- NEW: Temporary fix for https://bugs.launchpad.net/or/+bug/2148824 Null crash in timetable mode (PR #1219)
-  *- NEW: Partial bug fix for https://bugs.launchpad.net/or/+bug/2148806 Switch state isn't synced in multiplayer mode (PR #1218)
-  *- NEW: Switchable brake system, by gpz (PR #1057)
-  *- NEW: ShapeHierarchy Attachment for More Wagon Addons, by steelfill (PR #1126)
-  *- NEW: Add missing sounds on control cars, cy cesarBLG (PR #1216)
-  *- NEW: New Sounds for Diesel Locomotives, plus refactoring of sound debug window, by steelfill (PR #1221)
-
-
-
+  *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
+  *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
+  *- ShapeHierarchy Attachment for More Wagon Addons, by steelfill (PR #1126)
+  *- Add missing sounds on control cars, cy cesarBLG (PR #1216)
+  *- Partial bug fix for https://bugs.launchpad.net/or/+bug/2148806 Switch state isn't synced in multiplayer mode (PR #1218)
+  *- Added Control Rectangles (Ctrl+F5) for 3d locomotives, by sweiland (PR #1237)
+  *- NEW: Support for higher resolution terrain, by twpol (PR #1246)
+  *- NEW: Russian localization update, by myaroslav54 (PR #1253)
+  *- NEW: Fix multiplayer server crash from concurrent access to onlinePlayers, by edwar64896 (PR #1254)
+  *- NEW: Parse degF values safely and culture-invariantly in STFReader, by edwar64896 (PR #1256)
+  *- NEW: Report an empty timetable file instead of crashing, by edwar64896 (PR #1257)
+  *- NEW: Replace Thread.Abort with cancellation in the route image fetch, by edwar64896 (PR #1258)
+  *- NEW: Fix bugs in data logger: steam interval, steam data, by rwf-rr (PR #1262)
+  *- NEW: Harmless Part of Particle Emitter Overhaul, by steelfill (PR #1263)
+  *- NEW: Steam Locomotive Steam Cylinder Exhaust Sounds, by Peter Newell (PR #1266)
+  *- NEW: Support full SIMIS token IDs, by GokuMK (PR #1268)
+  *- NEW: Expand procedural profiles for tracks, roads and line objects, by GokuMK (PR #1269)
+  
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
 
@@ -128,6 +137,9 @@ This unofficial version couldn't have been created without following contributio
 - roeter
 - rwf-rr
 - TheGwyd
+- GokuMK
+- edwar64896
+- myaroslav54
 - Carlo Santucci
 
 - all those who contributed with ideas and provided contents for testing and pointed to malfunctions.

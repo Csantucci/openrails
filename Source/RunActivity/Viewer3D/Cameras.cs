@@ -271,12 +271,17 @@ namespace Orts.Viewer3D
         // TODO: Add a way to record this zoom operation for Replay.
         protected void ZoomByMouseWheel(float speed)
         {
-            // Will not zoom-in-out when help windows is up.
             // TODO: Property input processing through WindowManager.
-            if (UserInput.IsMouseWheelChanged && (!UserInput.IsDown(UserCommand.GameSwitchWithMouse) || !(this is ThreeDimCabCamera)) && !Viewer.HelpWindow.Visible)
+            if (UserInput.IsMouseWheelChanged && (!UserInput.IsDown(UserCommand.GameSwitchWithMouse) || !(this is ThreeDimCabCamera)))
             {
-                var fieldOfView = MathHelper.Clamp(FieldOfView - speed * UserInput.MouseWheelChange / 10, 1, 135);
-                new FieldOfViewCommand(Viewer.Log, fieldOfView);
+                Point mousePosition = new Point(UserInput.MouseX, UserInput.MouseY);
+                Window mouseActiveWindow = Viewer.WindowManager.VisibleWindows.LastOrDefault(w => w.Interactive && w.Location.Contains(mousePosition));
+                // Will not zoom-in-out when mouse pointer above a window
+                if (mouseActiveWindow == null) 
+                {
+                    var fieldOfView = MathHelper.Clamp(FieldOfView - speed * UserInput.MouseWheelChange / 10, 1, 135);
+                    new FieldOfViewCommand(Viewer.Log, fieldOfView);
+                }
             }
         }
 
@@ -796,6 +801,7 @@ namespace Orts.Viewer3D
         public bool tiltingLand;
         protected Vector3 attachedLocation;
         protected WorldPosition LookedAtPosition = new WorldPosition();
+        public bool CameraFollowCutCar;
         protected AttachedCamera(Viewer viewer)
             : base(viewer)
         {
@@ -1166,6 +1172,8 @@ namespace Orts.Viewer3D
             var carPosition = !(TrainCarViewer.CarPosition < trainCars.Count()) ? TrainCarViewer.CarPosition - 1 : TrainCarViewer.CarPosition;
             var isDownCameraOutsideFront = UserInput.IsDown(UserCommand.CameraOutsideFront);
             var isDownCameraOutsideRear = UserInput.IsDown(UserCommand.CameraOutsideRear);
+            CameraFollowCutCar = cameraFollowCutCar;
+
 
             if (Viewer.TrainCarOperationsWebpage == null) 
             {
@@ -1183,7 +1191,7 @@ namespace Orts.Viewer3D
                 oldCarPosition = oldCarPosition == 0 && carPosition == 0 ? -1 : oldCarPosition;
             }
 
-            if (attachedCar != null && !IsVisibleTrainCarViewerOrWebpage)
+            if (attachedCar != null && !IsVisibleTrainCarViewerOrWebpage && !cameraFollowCutCar)
             {   // Reset behaviour of camera 2 and camera 3, after closing F9-window and F9-web.
                 var attachedCarPosition = Front ? Viewer.CameraOutsideFrontPosition : Viewer.CameraOutsideRearPosition;
 
@@ -1220,7 +1228,7 @@ namespace Orts.Viewer3D
                 Viewer.IsCameraPositionUpdated = Viewer.CameraFrontUpdated && Viewer.CameraRearUpdated;
             }
 
-            if (attachedCar == null || attachedCar.Train != Viewer.SelectedTrain && !cameraFollowCutCar || carPosition != oldCarPosition)
+            if (attachedCar == null || ((attachedCar.Train != Viewer.SelectedTrain  || carPosition != oldCarPosition) && !cameraFollowCutCar))
             {
                 if (Front)
                 {

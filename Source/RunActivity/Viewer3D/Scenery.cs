@@ -97,11 +97,6 @@ namespace Orts.Viewer3D
                         if (cancellation.IsCancellationRequested)
                             break;
                         var tile = worldFiles.FirstOrDefault(t => t.TileX == TileX + x && t.TileZ == TileZ + z);
-                        var cameraTile = CameraTile;
-                        CameraTileX = (int)(cameraTile / 100000);
-                        CameraTileZ = (int)(Math.Abs(cameraTile) - (long)Math.Abs(CameraTileX) * 100000);
-                        if ((CameraTileX != TileX || CameraTileZ != TileZ) && (Math.Abs(CameraTileX - (TileX + x)) > needed || Math.Abs(CameraTileZ - (TileZ + z)) > needed))
-                            continue;
                         if (tile == null)
                             tile = LoadWorldFile(TileX + x, TileZ + z, x == 0 && z == 0);
                         if (tile != null)
@@ -164,7 +159,10 @@ namespace Orts.Viewer3D
         {
             var worldFiles = WorldFiles;
             foreach (var tile in worldFiles)
+            {
                 tile.Mark();
+                if (Viewer.LoaderProcess.CancellationToken.IsCancellationRequested) break;
+            }
         }
 
         [CallOnThread("Updater")]
@@ -206,11 +204,6 @@ namespace Orts.Viewer3D
             VisibleTileZ = Viewer.Camera.TileZ;
         }
 
-        [CallOnThread("Updater")]
-        public void GetCameraTile(long cameraTile)
-        {
-            CameraTile = cameraTile;
-        }
         [CallOnThread("Updater")]
         public void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)
         {
@@ -324,7 +317,20 @@ namespace Orts.Viewer3D
 
                 // Get the position of the scenery object into ORTS coordinate space.
                 WorldPosition worldMatrix;
-                if (worldObject.Matrix3x3 != null && worldObject.Position != null)
+                if (worldObject is TelepoleObj)
+                {
+                    worldMatrix = new WorldPosition
+                    {
+                        TileX = WFile.TileX,
+                        TileZ = WFile.TileZ,
+                    };
+                    if (worldObject.Position != null)
+                        worldMatrix.Location = new Vector3(
+                            worldObject.Position.X,
+                            worldObject.Position.Y,
+                            worldObject.Position.Z);
+                }
+                else if (worldObject.Matrix3x3 != null && worldObject.Position != null)
                     worldMatrix = WorldPositionFromMSTSLocation(WFile.TileX, WFile.TileZ, worldObject.Position, worldObject.Matrix3x3);
                 else if (worldObject.QDirection != null && worldObject.Position != null)
                     worldMatrix = WorldPositionFromMSTSLocation(WFile.TileX, WFile.TileZ, worldObject.Position, worldObject.QDirection);
@@ -395,8 +401,14 @@ namespace Orts.Viewer3D
                         }
                         else
                         {
+                            bool isMovingTable = containsMovingTable &&
+                                Program.Simulator.MovingTables.Any(movingTable =>
+                                    worldObject.UID == movingTable.UID &&
+                                    WFileName == movingTable.WFile);
+
                             // See if superelevation should be used on this piece of track
-                            if ((viewer.Simulator.UseSuperElevation || viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
+                            if (!isMovingTable
+                                && (viewer.Simulator.UseSuperElevation || viewer.Simulator.TRK.Tr_RouteFile.ChangeTrackGauge)
                                 && SuperElevationManager.DecomposeStaticSuperElevation(viewer, trackObj, worldMatrix, dTrackList, shapeFilePath))
                             {
                                 // Don't add scenery for this section of track, dynamic superelevated track will be created instead
@@ -444,10 +456,30 @@ namespace Orts.Viewer3D
                     }
                     else if (worldObject.GetType() == typeof(DyntrackObj))
                     {
-                        if (viewer.Simulator.Settings.Wire == true && viewer.Simulator.TRK.Tr_RouteFile.Electrified == true)
-                            Wire.DecomposeDynamicWire(viewer, dTrackList, (DyntrackObj)worldObject, worldMatrix);
+                        DyntrackObj dyntrackObj = (DyntrackObj)worldObject;
+                        if (!dyntrackObj.IsRoad &&
+                            viewer.Simulator.Settings.Wire == true &&
+                            viewer.Simulator.TRK.Tr_RouteFile.Electrified == true)
+                            Wire.DecomposeDynamicWire(viewer, dTrackList, dyntrackObj, worldMatrix);
                         // Add DyntrackDrawers for individual subsections
-                        SuperElevationManager.DecomposeDynamicSuperElevation(viewer, dTrackList, (DyntrackObj)worldObject, worldMatrix);
+                        SuperElevationManager.DecomposeDynamicSuperElevation(
+                            viewer, dTrackList, dyntrackObj, worldMatrix);
+                    }
+                    else if (worldObject.GetType() == typeof(RulerObj))
+                    {
+                        RulerShape.Decompose(viewer, dTrackList,
+                            sceneryObjects, (RulerObj)worldObject,
+                            worldMatrix, shapeFilePath,
+                            shadowCaster ? ShapeFlags.ShadowCaster :
+                                ShapeFlags.None);
+                    }
+                    else if (worldObject.GetType() == typeof(TelepoleObj))
+                    {
+                        TelepoleShape.Decompose(viewer, dTrackList,
+                            sceneryObjects, (TelepoleObj)worldObject,
+                            WFile.TileX, WFile.TileZ,
+                            shadowCaster ? ShapeFlags.ShadowCaster :
+                                ShapeFlags.None);
                     }
                     // Objects other than tracks
                     else if (worldObject.GetType() == typeof(ForestObj))

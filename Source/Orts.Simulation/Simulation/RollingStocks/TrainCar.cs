@@ -194,9 +194,6 @@ namespace Orts.Simulation.RollingStocks
         public float CarWidthM = 2.5f;
         public float CarLengthM = 40;       // derived classes must overwrite these defaults
         public float CarHeightM = 4;        // derived classes must overwrite these defaults
-        public (Vector3 Mins, Vector3 Maxes) ShapeBoundingLimits;
-        public bool AutoSize = false;       // Are the dimensions of this wagon to be calculated automatically from the shape file?
-        public Vector3 AutoSizeOffsetM;
         public int FrontArticulation = -1;  // -1: Determine front articulation automatically, 0: Force no front articulation, 1: Force front articulation
         public int RearArticulation = -1;   // -1: Determine rear articulation automatically, 0: Force no rear articulation, 1: Force rear articulation
         public float MassKG = 10000;        // Mass in KG at runtime; coincides with InitialMassKG if there is no load and no ORTS freight anim
@@ -656,7 +653,7 @@ namespace Orts.Simulation.RollingStocks
         int jointTrigger;
         float jointTriggerDelayedS = 0.1f; // Set delay to 0.1 seconds
         float jointSpeedMpS;
-        public float SoundAxleCount;
+        public int SoundAxleCount;
         public float CarTrackControlledDistanceM = 0;
         public float CarTunnelDistanceM;
 
@@ -727,7 +724,7 @@ namespace Orts.Simulation.RollingStocks
         protected float TrackGaugeM;  // Track gauge - read in MSTSWagon, otherwise uses value given by the route
         protected Vector3 InitialCentreOfGravityM = new Vector3(0, 1.8f, 0); // get centre of gravity - read in MSTSWagon
         public Vector3 CentreOfGravityM = new Vector3(0, 1.8f, 0); // get centre of gravity after adjusted for freight animation
-        protected bool AutoCenter = false; // Should CentreOfGravityM.Z be set automatically to center the wagon?
+        public float? ShapeNudge = null; // Front/back offset applied to shape
         public float SuperElevationM; // Super elevation on the curve
         protected float MaxUnbalancedSuperElevationM;  // Maximum comfortable cant deficiency, read from MSTS Wagon File
         public float SuperElevationAngleRad;
@@ -939,10 +936,18 @@ namespace Orts.Simulation.RollingStocks
             realTimeTrackJointDistanceM = (float)Simulator.TRK.Tr_RouteFile.DistanceBetweenTrackJointsM; // Initialise track joint distance
             SoundAxleCount = (LocoNumDrvAxles + WagonNumAxles);
 
-            // make sure that axle count does not exceed maximum possible trigger
-            if (SoundAxleCount > 8)
+            // Where sound axle count does not align with sound triggers, then set to next highest value, also limit to 8 axles
+            if (SoundAxleCount == 5) // No trigger for 5 axles, so increase to 6
             {
-                SoundAxleCount = 8f;
+                SoundAxleCount = 6;
+            }
+            else if (SoundAxleCount == 7) // No trigger for 7 axles, so increase to 8
+            {
+                SoundAxleCount = 8;
+            }
+            else if (SoundAxleCount > 8)
+            {
+                SoundAxleCount = 8;
             }
 
         }

@@ -232,8 +232,8 @@ namespace ORTS.Settings
         // Data logger settings:
         [Default("comma")]
         public string DataLoggerSeparator { set; get; }
-        [Default("route")]
-        public string DataLogSpeedUnits { get; set; }
+        [Default(false)]
+        public bool DataLogUseInternalUnits { get; set; }
         [Default(false)]
         public bool DataLogStart { get; set; }
         [Default(true)]

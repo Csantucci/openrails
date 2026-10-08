@@ -128,6 +128,7 @@ namespace Orts.Viewer3D
         public EnvironmentFile ENVFile { get; private set; }
         public SignalConfigurationFile SIGCFG { get; private set; }
         public TrackTypesFile TrackTypes { get; private set; }
+        public TelepoleDataFile TelepoleDataFile { get; private set; }
         public SpeedpostDatFile SpeedpostDatFile;
         public bool MilepostUnitsMetric { get; private set; }
         // Cameras
@@ -382,6 +383,11 @@ namespace Orts.Viewer3D
             Trace.Write(" TTYPE");
             TrackTypes = new TrackTypesFile(Simulator.RoutePath + @"\TTYPE.DAT");
 
+            string telepoleDataPath = Simulator.RoutePath + @"\telepole.dat";
+            if (File.Exists(telepoleDataPath))
+                TelepoleDataFile = new TelepoleDataFile(telepoleDataPath,
+                    Simulator.RoutePath + @"\shapes\");
+
             Tiles = new TileManager(Simulator.RoutePath + @"\TILES\", false);
             LoTiles = new TileManager(Simulator.RoutePath + @"\LO_TILES\", true);
             MilepostUnitsMetric = Simulator.TRK.Tr_RouteFile.MilepostUnitsMetric;
@@ -633,7 +639,6 @@ namespace Orts.Viewer3D
             // This ensures that a) we have all the required objects loaded when the 3D view first appears and b) that
             // all loading is performed on a single thread that we can handle in debugging and tracing.
             World.LoadPrep();
-            World.GetCameraTile();
             MaterialManager.LoadPrep();
             LoadMemoryThreshold = Game.HostProcess.CPUMemoryVirtualLimit - 512 * 1024 * 1024;
             Load();
@@ -1693,7 +1698,11 @@ namespace Orts.Viewer3D
             if (UserInput.IsMouseMoved || RenderProcess.IsMouseVisible && UserInput.IsMouseWheelChanged)
                 MouseVisibleTillRealTime = RealTime + 1;
 
-            RenderProcess.IsMouseVisible = ForceMouseVisible || RealTime < MouseVisibleTillRealTime || !Game.IsActive;
+            // keep mouse pointer visible when mouse pointer is within a window (for instance the F1 help window)
+            Point mousePosition = new Point(UserInput.MouseX, UserInput.MouseY);
+            bool inWindow = WindowManager.VisibleWindows.LastOrDefault(w => w.Interactive && w.Location.Contains(mousePosition)) != null;
+
+            RenderProcess.IsMouseVisible = ForceMouseVisible || RealTime < MouseVisibleTillRealTime || !Game.IsActive || inWindow;
 
             UserInput.Handled();
         }

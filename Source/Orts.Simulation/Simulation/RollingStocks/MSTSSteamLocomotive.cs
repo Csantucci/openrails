@@ -602,13 +602,6 @@ namespace Orts.Simulation.RollingStocks
         float CylinderWork_fa_InLbs; // Work done during PreAdmission stage of cylinder
         float CylinderWork_de_InLbs; // Work done during Exhaust stage of cylinder
 
-        // Values for logging and displaying Steam pressure
-        public float LogInitialPressurePSI;
-        public float LogCutoffPressurePSI;
-        public float LogBackPressurePSI;
-        public float LogReleasePressurePSI;
-        public float LogSteamChestPressurePSI;
-
         float BackPressureCorrectionFactor = 0.15f; // Factor to adjust back pressure for steam usage by exhaust injectors
         float LocomotiveBackPressurePSIG; // Back pressure in locomotive including effect of cylinders and blast pipe
 
@@ -620,16 +613,7 @@ namespace Orts.Simulation.RollingStocks
         //float ValveSteamLap;
         //double ValveAdvanceAngleDeg;
 
-        public float LogLPInitialPressurePSI;
-        public float LogLPCutoffPressurePSI;
-        public float LogLPBackPressurePSI;
-        public float LogLPReleasePressurePSI;
-        public float LogLPSteamChestPressurePSI;
-
         public bool LogIsCompoundLoco = false;
-
-        float LogPreCompressionPressurePSI;
-        float LogPreAdmissionPressurePSI;
 
         // Compound Cylinder Information - HP Cylinder - Compound Operation
 
@@ -639,7 +623,6 @@ namespace Orts.Simulation.RollingStocks
         float HPCompPressure_k_AtmPSI; //  Pre-Admission pressure prior to exhaust valve closing
         float HPCompPressure_u_AtmPSI;  // Admission pressure
         float HPCompMeanPressure_gh_AtmPSI;     // Back pressure on HP cylinder
-        public float HPCylinderMEPPSI;                 // Mean effective Pressure of HP Cylinder
         float HPCylinderClearancePC = 0.19f;    // Assume cylinder clearance of 19% of the piston displacement for HP cylinder
         float CompoundRecieverVolumePCHP = 0.3f; // Volume of receiver or passages between HP and LP cylinder as a fraction of the HP cylinder volume.
         float HPCylinderVolumeFactor = 1.0f;    // Represents the full volume of the HP steam cylinder    
@@ -648,7 +631,6 @@ namespace Orts.Simulation.RollingStocks
         float LPIndicatedHorsePowerHP;
 
         float SteamReleasePressure_AtmPSI;   // Pressure in LP cylinder when steam release valve opens
-        public float LPCylinderMEPPSI;       // Mean effective pressure of LP Cylinder - required for logger
         float LPCylinderClearancePC = 0.066f;    // Assume cylinder clearance of 6.6% of the piston displacement for LP cylinder
 
         // Simple locomotive cylinder information
@@ -3015,8 +2997,8 @@ public readonly SmoothedData StackSteamVelocityMpS = new SmoothedData(2);
             base.InitializeMoving();
             WheelSpeedMpS = SpeedMpS;
             DynamicBrakePercent = -1;
-            CutoffController.SetValue(Train.MUReverserPercent / 100);
-            ThrottleController.SetValue(Train.MUThrottlePercent / 100);
+            CutoffController.SetValue(Train.MUReverserPercent / 100, true);
+            ThrottleController.SetValue(Train.MUThrottlePercent / 100, true);
             HotStart = true;
         }
 
@@ -3516,36 +3498,44 @@ public readonly SmoothedData StackSteamVelocityMpS = new SmoothedData(2);
                         if (i == 0 && ((normalisedCrankAngleRad >= exhaustCrankAngleRadFor && normalisedCrankAngleRad <= MathHelper.Pi) || (normalisedCrankAngleRad >= exhaustCrankAngleRadRev && normalisedCrankAngleRad < 2 * MathHelper.Pi )))
                         {
                             CylinderSteamExhaust1On = true;
+                            SignalEvent(Event.CylinderExhaust1ValveOpen);
                         }
                         else if (i == 0)
                         {
                             CylinderSteamExhaust1On = false;
+                            SignalEvent(Event.CylinderExhaust1ValveClose);
                         }
 
                         else if (i == 1 && ((normalisedCrankAngleRad >= exhaustCrankAngleRadFor && normalisedCrankAngleRad <= MathHelper.Pi) || (normalisedCrankAngleRad >= exhaustCrankAngleRadRev && normalisedCrankAngleRad < 2 * MathHelper.Pi)))
                         {
                             CylinderSteamExhaust2On = true;
+                            SignalEvent(Event.CylinderExhaust2ValveOpen);
                         }
                         else if (i == 1)
                         {
                             CylinderSteamExhaust2On = false;
+                            SignalEvent(Event.CylinderExhaust2ValveClose);
                         }
                         else if (i == 2 && ((normalisedCrankAngleRad >= exhaustCrankAngleRadFor && normalisedCrankAngleRad <= MathHelper.Pi) || (normalisedCrankAngleRad >= exhaustCrankAngleRadRev && normalisedCrankAngleRad < 2 * MathHelper.Pi)))
                         {
                             CylinderSteamExhaust3On = true;
+                            SignalEvent(Event.CylinderExhaust3ValveOpen);
                         }
                         else if (i == 2)
                         {
                             CylinderSteamExhaust3On = false;
+                            SignalEvent(Event.CylinderExhaust3ValveClose);
                         }
 
                         else if (i == 3 && ((normalisedCrankAngleRad >= exhaustCrankAngleRadFor && normalisedCrankAngleRad <= MathHelper.Pi) || (normalisedCrankAngleRad >= exhaustCrankAngleRadRev && normalisedCrankAngleRad < 2 * MathHelper.Pi)))
                         {
                             CylinderSteamExhaust4On = true;
+                            SignalEvent(Event.CylinderExhaust4ValveOpen);
                         }
                         else if (i == 3)
                         {
                             CylinderSteamExhaust4On = false;
+                            SignalEvent(Event.CylinderExhaust4ValveClose);
                         }
                     }
 
@@ -5894,7 +5884,6 @@ public readonly SmoothedData StackSteamVelocityMpS = new SmoothedData(2);
                     SteamEngines[numberofengine].HPCylinderMEPPSI = MathHelper.Clamp(SteamEngines[numberofengine].HPCylinderMEPPSI, 0.00f, SteamEngines[numberofengine].HPCylinderMEPPSI); // Clamp MEP so that LP MEP does not go negative
 
                     SteamEngines[numberofengine].MeanEffectivePressurePSI = SteamEngines[numberofengine].HPCylinderMEPPSI + SteamEngines[numberofengine].LPCylinderMEPPSI; // Calculate Total MEP
-                    LPCylinderMEPPSI = SteamEngines[numberofengine].LPCylinderMEPPSI; // for logger only
 
 #if DEBUG_LOCO_STEAM_COMPOUND_LP_MEP
                     if (DebugWheelRevs >= 40.0 && DebugWheelRevs < 40.05 | DebugWheelRevs >= 80.0 && DebugWheelRevs < 80.05 | DebugWheelRevs >= 160.0 && DebugWheelRevs < 160.05 | DebugWheelRevs >= 240.0 && DebugWheelRevs < 240.05 | DebugWheelRevs >= 320.0 && DebugWheelRevs < 320.05)
@@ -6287,7 +6276,6 @@ public readonly SmoothedData StackSteamVelocityMpS = new SmoothedData(2);
                 }
 
                 SteamEngines[numberofengine].MeanEffectivePressurePSI = SteamEngines[numberofengine].HPCylinderMEPPSI + SteamEngines[numberofengine].LPCylinderMEPPSI; // Calculate Total MEP
-                LPCylinderMEPPSI = SteamEngines[numberofengine].LPCylinderMEPPSI; // for logger only
             }
 
             #endregion
@@ -7262,19 +7250,6 @@ public readonly SmoothedData StackSteamVelocityMpS = new SmoothedData(2);
                     SteamEngines[numberofengine].IndicatedHorsePowerHP = (N.ToLbf(SteamEngines[numberofengine].RealTractiveForceN) * pS.TopH(Me.ToMi(Math.Abs((float)SteamEngines[numberofengine].AttachedAxle.AxleSpeedMpS)))) / 375.0f;
                 }
 
-                // Calculate the elapse time for the steam performance monitoring
-                if (Simulator.Settings.DataLogExclusiveSteamPerformance)
-                {
-                    if (SpeedMpS > 0.05)
-                    {
-                        SteamPerformanceTimeS += elapsedClockSeconds;
-                    }
-                    else if (SpeedMpS < 0.04)
-                    {
-                        SteamPerformanceTimeS = 0.0f;   // set time to zero if loco stops
-                    }
-                }
-
                 // On starting allow maximum motive force to be used, unless gear is in neutral (normally only geared locomotive will be zero). Decrease force if steam pressure is not at maximum
                 if (Math.Abs((float)SteamEngines[numberofengine].AttachedAxle.AxleSpeedMpS) < 1.0f && cutoff > 0.70f && locomotivethrottle > 0.98f && MotiveForceGearRatio != 0)
                 {
@@ -7286,6 +7261,19 @@ public readonly SmoothedData StackSteamVelocityMpS = new SmoothedData(2);
             }
 
             #endregion
+
+            // Calculate the elapse time for the steam performance monitoring
+            if (Simulator.Settings.DataLogExclusiveSteamPerformance)
+            {
+                if (SpeedMpS > 0.05)
+                {
+                    SteamPerformanceTimeS += elapsedClockSeconds;
+                }
+                else if (SpeedMpS < 0.04)
+                {
+                    SteamPerformanceTimeS = 0.0f;   // set time to zero if loco stops
+                }
+            }
 
             // Derate when priming is occurring.
             if (BoilerIsPriming)
@@ -10850,7 +10838,7 @@ public readonly SmoothedData StackSteamVelocityMpS = new SmoothedData(2);
         public override void SetStepSize(PickupObj matchPickup)
         {
             uint type = matchPickup.PickupType;
-            if (type == (uint)PickupType.FuelCoal && type == (uint)PickupType.FuelWood && type == (uint)PickupType.FuelDiesel && MaxTenderFuelMassKG != 0)
+            if ((type == (uint)PickupType.FuelCoal || type == (uint)PickupType.FuelWood || type == (uint)PickupType.FuelDiesel) && MaxTenderFuelMassKG != 0)
                 FuelController.SetStepSize(matchPickup.PickupCapacity.FeedRateKGpS / MSTSNotchController.StandardBoost / MaxTenderFuelMassKG);
             else if (type == (uint)PickupType.FuelWater && MaxLocoTenderWaterMassKG != 0)
                 WaterController.SetStepSize(matchPickup.PickupCapacity.FeedRateKGpS / MSTSNotchController.StandardBoost / MaxLocoTenderWaterMassKG);

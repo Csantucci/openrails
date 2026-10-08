@@ -64,7 +64,6 @@ namespace Orts.Viewer3D
                 TileX = VisibleTileX;
                 TileZ = VisibleTileZ;
                 var terrainTiles = TerrainTiles;
-                var tempNewTerrainTiles = new List<TerrainTile>();
                 var newTerrainTiles = new List<TerrainTile>();
 
                 var tiles = new List<Tile>();
@@ -74,15 +73,8 @@ namespace Orts.Viewer3D
                 // First we establish the regular tiles we need to cover the current viewable area.
                 for (var x = TileX - needed; x <= TileX + needed; x++)
                     for (var z = TileZ - needed; z <= TileZ + needed; z++)
-                    {
-                        var cameraTile = CameraTile;
-                        CameraTileX = (int)(cameraTile / 100000);
-                        CameraTileZ = (int)(Math.Abs(cameraTile) - (long)Math.Abs(CameraTileX) * 100000);
-                        if ((CameraTileX != TileX || CameraTileZ != TileZ) && (Math.Abs(CameraTileX - x) > needed || Math.Abs(CameraTileZ - z) > needed))
-                            continue;
                         if (!cancellation.IsCancellationRequested)
                             tiles.Add(Viewer.Tiles.LoadAndGetTile(x, z, x == TileX && z == TileZ));
-                    }
 
                 if (Viewer.Settings.DistantMountains)
                 {
@@ -97,31 +89,17 @@ namespace Orts.Viewer3D
                 if (cancellation.IsCancellationRequested)
                     return;
 
-
                 // Now we turn each unique (distinct) loaded tile in to a terrain tile.
-                needed = (int)Math.Ceiling((float)Viewer.Settings.ViewingDistance / 2048);
-                tempNewTerrainTiles = tiles
+                newTerrainTiles = tiles
                     .Where(t => t != null).Distinct()
-                    .Select(tile => terrainTiles.FirstOrDefault(tt => tt.TileX == tile.TileX && tt.TileZ == tile.TileZ && tt.Size == tile.Size) ?? ConditionallyCreateTerrainTile(tile, needed))
+                    .Select(tile => terrainTiles.FirstOrDefault(tt => tt.TileX == tile.TileX && tt.TileZ == tile.TileZ && tt.Size == tile.Size) ?? new TerrainTile(Viewer, Viewer.Tiles, tile))
                     .Union(loTiles
                         .Where(t => t != null).Distinct()
                         .Select(tile => terrainTiles.FirstOrDefault(tt => tt.TileX == tile.TileX && tt.TileZ == tile.TileZ && tt.Size == tile.Size) ?? new TerrainTile(Viewer, Viewer.LoTiles, tile))
                     ).ToList();
 
-                foreach (var tempNewTerrainTile in tempNewTerrainTiles)
-                    if (tempNewTerrainTile != null) newTerrainTiles.Add(tempNewTerrainTile);
                 TerrainTiles = newTerrainTiles;
             }
-        }
-
-        private TerrainTile ConditionallyCreateTerrainTile(Tile tile, int needed)
-        {
-            var cameraTile = CameraTile;
-            CameraTileX = (int)(cameraTile / 100000);
-            CameraTileZ = (int)(Math.Abs(cameraTile) - (long)Math.Abs(CameraTileX) * 100000);
-            if ((CameraTileX != TileX || CameraTileZ != TileZ) && (Math.Abs(CameraTileX - tile.TileX) > needed || Math.Abs(CameraTileZ - tile.TileZ) > needed))
-                return null;
-            return new TerrainTile(Viewer, Viewer.Tiles, tile);
         }
 
         [CallOnThread("Updater")]
@@ -129,12 +107,6 @@ namespace Orts.Viewer3D
         {
             VisibleTileX = Viewer.Camera.TileX;
             VisibleTileZ = Viewer.Camera.TileZ;
-        }
-
-        [CallOnThread("Updater")]
-        public void GetCameraTile(long cameraTile)
-        {
-            CameraTile = cameraTile;
         }
 
         [CallOnThread("Updater")]
@@ -149,7 +121,10 @@ namespace Orts.Viewer3D
         {
             var tiles = TerrainTiles;
             foreach (var tile in tiles)
+            {
                 tile.Mark();
+                if (Viewer.LoaderProcess.CancellationToken.IsCancellationRequested) break;
+            }
         }
 
         [CallOnThread("Updater")]
@@ -221,7 +196,7 @@ namespace Orts.Viewer3D
     public class TerrainPrimitive : RenderPrimitive
     {
         readonly Viewer Viewer;
-        readonly int TileX, TileZ, Size, PatchX, PatchZ, PatchSize;
+        readonly int TileX, TileZ, Size, PatchX, PatchZ, PatchSize, PatchSampleCount;
         readonly float AverageElevation;
 
         readonly Vector3 PatchLocation;        // In MSTS world coordinates relative to the center of the tile
@@ -232,8 +207,7 @@ namespace Orts.Viewer3D
         readonly VertexBufferBinding[] VertexBufferBindings;
 
         // These can be shared since they are the same for all patches
-        public static IndexBuffer SharedPatchIndexBuffer;
-        public static int SharedPatchVertexStride;
+        static readonly Dictionary<int, IndexBuffer> SharedPatchIndexBuffers = new Dictionary<int, IndexBuffer>();
 
         // These are only used while the contructor runs and are discarded after.
         readonly TileManager TileManager;
@@ -250,6 +224,7 @@ namespace Orts.Viewer3D
             PatchX = x;
             PatchZ = z;
             PatchSize = tile.Size * 2048 / tile.PatchCount;
+            PatchSampleCount = tile.SampleCount / tile.PatchCount;
 
             TileManager = tileManager;
             Tile = tile;
@@ -270,8 +245,8 @@ namespace Orts.Viewer3D
             else
                 PatchMaterial = viewer.MaterialManager.Load(terrainMaterial, Helpers.GetTerrainTextureFile(viewer.Simulator, ts[0].Filename) + "\0" + Helpers.GetTerrainTextureFile(viewer.Simulator, "microtex.ace"));
 
-            if (SharedPatchIndexBuffer == null)
-                SetupSharedData(Viewer.GraphicsDevice);
+            if (!SharedPatchIndexBuffers.ContainsKey(PatchSampleCount))
+                SetupSharedData(Viewer.GraphicsDevice, PatchSampleCount);
 
             Tile = null;
             Patch = null;
@@ -294,19 +269,18 @@ namespace Orts.Viewer3D
         public override void Draw(GraphicsDevice graphicsDevice)
         {
             graphicsDevice.SetVertexBuffers(VertexBufferBindings);
-            if (PatchIndexBuffer != null)
-                graphicsDevice.Indices = PatchIndexBuffer;
-            graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, 0, 0, PatchPrimitiveCount);
+            graphicsDevice.Indices = PatchIndexBuffer ?? SharedPatchIndexBuffers[PatchSampleCount];
+            graphicsDevice.DrawIndexedPrimitives(PrimitiveType.TriangleList, baseVertex: 0, startIndex: 0, PatchPrimitiveCount);
         }
 
         float Elevation(int x, int z)
         {
-            return TileManager.GetElevation(Tile, PatchX * 16 + x, PatchZ * 16 + z);
+            return TileManager.GetElevation(Tile, PatchX * PatchSampleCount + x, PatchZ * PatchSampleCount + z);
         }
 
         bool IsVertexHidden(int x, int z)
         {
-            return TileManager.IsVertexHidden(Tile, PatchX * 16 + x, PatchZ * 16 + z);
+            return TileManager.IsVertexHidden(Tile, PatchX * PatchSampleCount + x, PatchZ * PatchSampleCount + z);
         }
 
         Vector3 TerrainNormal(int x, int z)
@@ -389,17 +363,17 @@ namespace Orts.Viewer3D
 
         IndexBuffer GetIndexBuffer(out int primitiveCount)
         {
-            // 16 x 16 squares * 2 triangles per square * 3 indices per triangle
-            var indexData = new List<short>(16 * 16 * 2 * 3);
+            // 16 x 16 squares (or more...) * 2 triangles per square * 3 indices per triangle
+            var indexData = new List<short>(PatchSampleCount * PatchSampleCount * 2 * 3);
 
             // For each 8 meter rectangle
-            for (var z = 0; z < 16; ++z)
+            for (var z = 0; z < PatchSampleCount; ++z)
             {
-                for (var x = 0; x < 16; ++x)
+                for (var x = 0; x < PatchSampleCount; ++x)
                 {
-                    var nw = (short)(z * 17 + x);  // Vertex index in the north west corner
+                    var nw = (short)(z * (1 + PatchSampleCount) + x);  // Vertex index in the north west corner
                     var ne = (short)(nw + 1);
-                    var sw = (short)(nw + 17);
+                    var sw = (short)(nw + (1 + PatchSampleCount));
                     var se = (short)(sw + 1);
 
                     if ((z & 1) == (x & 1))  // Triangles alternate
@@ -438,7 +412,7 @@ namespace Orts.Viewer3D
             primitiveCount = indexData.Count / 3;
 
             // If this patch has no holes, use the shared IndexBuffer for better performance.
-            if (indexData.Count == 16 * 16 * 6)
+            if (indexData.Count == PatchSampleCount * PatchSampleCount * 6)
                 return null;
 
             var indexBuffer = new IndexBuffer(Viewer.GraphicsDevice, typeof(short), indexData.Count, BufferUsage.WriteOnly);
@@ -449,11 +423,12 @@ namespace Orts.Viewer3D
         VertexBuffer GetVertexBuffer(out float averageElevation)
         {
             var totalElevation = 0f;
-            var vertexData = new List<VertexPositionNormalTexture>(17 * 17);
+            var patchSampleCountPlus = 1 + PatchSampleCount;
+            var vertexData = new List<VertexPositionNormalTexture>(patchSampleCountPlus * patchSampleCountPlus);
             var step = Tile.SampleSize;
-            for (var z = 0; z < 17; ++z)
+            for (var z = 0; z < patchSampleCountPlus; ++z)
             {
-                for (var x = 0; x < 17; ++x)
+                for (var x = 0; x < patchSampleCountPlus; ++x)
                 {
                     var e = -Patch.RadiusM + x * step;
                     var n = -Patch.RadiusM + z * step;
@@ -486,19 +461,19 @@ namespace Orts.Viewer3D
             PatchMaterial.Mark();
         }
 
-        static void SetupSharedData(GraphicsDevice graphicsDevice)
+        static void SetupSharedData(GraphicsDevice graphicsDevice, int patchSampleCount)
         {
-            // 16 x 16 squares * 2 triangles per square * 3 indices per triangle
-            var indexData = new List<short>(16 * 16 * 2 * 3);
+            // 16 x 16 squares (or more...) * 2 triangles per square * 3 indices per triangle
+            var indexData = new List<short>(patchSampleCount * patchSampleCount * 2 * 3);
 
             // For each 8 meter rectangle
-            for (var z = 0; z < 16; ++z)
+            for (var z = 0; z < patchSampleCount; ++z)
             {
-                for (var x = 0; x < 16; ++x)
+                for (var x = 0; x < patchSampleCount; ++x)
                 {
-                    var nw = (short)(z * 17 + x);  // Vertex index in the north west corner
+                    var nw = (short)(z * (1 + patchSampleCount) + x);  // Vertex index in the north west corner
                     var ne = (short)(nw + 1);
-                    var sw = (short)(nw + 17);
+                    var sw = (short)(nw + (1 + patchSampleCount));
                     var se = (short)(sw + 1);
 
                     if ((z & 1) == (x & 1))  // Triangles alternate
@@ -522,8 +497,8 @@ namespace Orts.Viewer3D
                 }
             }
 
-            SharedPatchIndexBuffer = new IndexBuffer(graphicsDevice, typeof(short), indexData.Count, BufferUsage.WriteOnly);
-            SharedPatchIndexBuffer.SetData(indexData.ToArray());
+            SharedPatchIndexBuffers[patchSampleCount] = new IndexBuffer(graphicsDevice, typeof(short), indexData.Count, BufferUsage.WriteOnly);
+            SharedPatchIndexBuffers[patchSampleCount].SetData(indexData.ToArray());
         }
     }
 
@@ -599,7 +574,6 @@ namespace Orts.Viewer3D
         public override void SetState(GraphicsDevice graphicsDevice, Material previousMaterial)
         {
             base.SetState(graphicsDevice, previousMaterial);
-            graphicsDevice.Indices = TerrainPrimitive.SharedPatchIndexBuffer;
         }
     }
 
@@ -613,7 +587,6 @@ namespace Orts.Viewer3D
         public override void SetState(GraphicsDevice graphicsDevice, Material previousMaterial)
         {
             base.SetState(graphicsDevice, previousMaterial);
-            graphicsDevice.Indices = TerrainPrimitive.SharedPatchIndexBuffer;
 
             graphicsDevice.BlendState = BlendState.Opaque; // Override the normal terrain blending!
             graphicsDevice.RasterizerState = RasterizerState.CullNone;

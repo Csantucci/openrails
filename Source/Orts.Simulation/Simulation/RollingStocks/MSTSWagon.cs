@@ -132,9 +132,9 @@ namespace Orts.Simulation.RollingStocks
         public float FreightAnimFlag = 1;   // if absent or >= 0 causes the freightanim to drop in tenders
         public string Cab3DShapeFileName; // 3DCab view shape file name
         public string InteriorShapeFileName; // passenger view shape file name
-        public string MainSoundFileName;
-        public string InteriorSoundFileName;
-        public string Cab3DSoundFileName;
+        public List<string> MainSoundFileNames;
+        public List<string> InteriorSoundFileNames;
+        public List<string> Cab3DSoundFileNames;
         public float ExternalSoundPassThruPercent = -1;
         public float TrackSoundPassThruPercent = -1;
         public float WheelRadiusM = Me.FromIn(18.0f);  // Provide some defaults in case it's missing from the wag - Wagon wheels could vary in size from approx 10" to 25".
@@ -449,147 +449,6 @@ namespace Orts.Simulation.RollingStocks
                 RearAirHose.Connected.ShapeFileName = null;
             }
 
-            // If requested, use the shape file to determine the size of the wagon
-            bool manualBounds = ShapeBoundingLimits.Mins != Vector3.Zero || ShapeBoundingLimits.Maxes != Vector3.Zero;
-
-            if ((AutoSize || AutoCenter) && (!string.IsNullOrEmpty(MainShapeFileName) || manualBounds))
-            {
-                try // Shape file discrepancies might cause errors, we don't want to cause a crash here
-                {
-                    // This might be a bad idea, usually we wait to deal with shape files until within viewing range
-                    // The additional shape file loading necessarily adds to computation and memory load, but only initially - Phillip
-                    ShapeFile wagShape = new ShapeFile(wagonFolderSlash + MainShapeFileName, true);
-
-                    (Vector3 mainMins, Vector3 mainMaxes) = ShapeBoundingLimits;
-
-                    if (!manualBounds)
-                    {
-                        (mainMins, mainMaxes) = wagShape.GetBoundingLimits();
-
-                        bool mstsFreightAnim = true;
-
-                        // And also repeat for ORTS freight animations
-                        if (FreightAnimations != null)
-                        {
-                            if (!FreightAnimations.MSTSFreightAnimEnabled)
-                                mstsFreightAnim = false;
-
-                            foreach (var freightAnim in FreightAnimations.Animations)
-                            {
-                                // We will ignore freight animations not attached to the main shape object for simplicity
-                                if (!string.IsNullOrEmpty(freightAnim.ShapeFileName) && freightAnim.ShapeIndex <= 0 && string.IsNullOrEmpty(freightAnim.ShapeHierarchy))
-                                {
-                                    ShapeFile ortsFreightShape = new ShapeFile(wagonFolderSlash + freightAnim.ShapeFileName, true);
-
-                                    (Vector3 ortsFreightMins, Vector3 ortsFreightMaxes) = ortsFreightShape.GetBoundingLimits();
-
-                                    // Account for flipped freight animation by inverting x and z components
-                                    if (freightAnim.Flipped)
-                                    {
-                                        Vector3 temp = ortsFreightMins;
-                                        temp.X *= -1;
-                                        temp.Y = ortsFreightMaxes.Y;
-                                        temp.Z *= -1;
-
-                                        ortsFreightMaxes.X *= -1;
-                                        ortsFreightMaxes.Y = ortsFreightMins.Y;
-                                        ortsFreightMaxes.Z *= -1;
-
-                                        ortsFreightMins = ortsFreightMaxes;
-                                        ortsFreightMaxes = temp;
-                                    }
-
-                                    // Account for offsets
-                                    // Z-axis offset is inverted to match MSTS coordinate system
-                                    Vector3 modOffset = new Vector3(freightAnim.Offset.X, freightAnim.Offset.Y, -freightAnim.Offset.Z);
-                                    ortsFreightMins += modOffset;
-                                    ortsFreightMaxes += modOffset;
-
-                                    mainMins = Vector3.Min(mainMins, ortsFreightMins);
-                                    mainMaxes = Vector3.Max(mainMaxes, ortsFreightMaxes);
-                                }
-                            }
-                        }
-
-                        // And also repeat for MSTS freight animation bounds (if enabled)
-                        if (mstsFreightAnim && !string.IsNullOrEmpty(FreightShapeFileName))
-                        {
-                            ShapeFile freightShape = new ShapeFile(wagonFolderSlash + FreightShapeFileName, true);
-
-                            (Vector3 freightMins, Vector3 freightMaxes) = freightShape.GetBoundingLimits();
-
-                            // MSTS freight animations don't have offsets, so can be simply compared
-                            mainMins = Vector3.Min(mainMins, freightMins);
-                            mainMaxes = Vector3.Max(mainMaxes, freightMaxes);
-                        }
-                    }
-
-                    // Set dimensions of wagon if configured as such
-                    if (AutoSize)
-                    {
-                        CarWidthM = Math.Max((mainMaxes.X - mainMins.X) + AutoSizeOffsetM.X, 0.1f);
-                        CarHeightM = Math.Max((mainMaxes.Y - mainMins.Y) + AutoSizeOffsetM.Y, 0.1f);
-                        CarLengthM = Math.Max((mainMaxes.Z - mainMins.Z) + AutoSizeOffsetM.Z, 0.1f);
-
-                        if (Simulator.Settings.VerboseConfigurationMessages)
-                        {
-                            Trace.TraceInformation("Rolling stock {0} size automatically calculated using ORTSAutoSize ( {1}, {2}, {3} ).", shortPath,
-                                FormatStrings.FormatVeryShortDistanceDisplay(AutoSizeOffsetM.X, IsMetric),
-                                FormatStrings.FormatVeryShortDistanceDisplay(AutoSizeOffsetM.Y, IsMetric),
-                                FormatStrings.FormatVeryShortDistanceDisplay(AutoSizeOffsetM.Z, IsMetric));
-                            if (!manualBounds) // Inform user of bounding limits only if calculated automatically
-                                Trace.TraceInformation("Overall 3D model bounds calculated to be Min X: {0}, Min Y: {1}, Min Z: {2}, " +
-                                    "Max X: {3}, Max Y: {4}, Max Z: {5}.\nTo skip calculation next time, enter " +
-                                    "ORTSShapeBounds ( {6} {7} {8} {9} {10} {11} ) in the Wagon() section.",
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMins.X, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMins.Y, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMins.Z, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMaxes.X, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMaxes.Y, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMaxes.Z, IsMetric),
-                                    String.Format("{0:N3}", mainMins.X),
-                                    String.Format("{0:N3}", mainMins.Y),
-                                    String.Format("{0:N3}", mainMins.Z),
-                                    String.Format("{0:N3}", mainMaxes.X),
-                                    String.Format("{0:N3}", mainMaxes.Y),
-                                    String.Format("{0:N3}", mainMaxes.Z));
-                            Trace.TraceInformation("Overall 3D model size calculated to be {0} wide, {1} tall, and {2} long. " +
-                                "Resulting Size ( ) is {3} wide, {4} tall, and {5} long.\n",
-                                FormatStrings.FormatVeryShortDistanceDisplay((mainMaxes.X - mainMins.X), IsMetric),
-                                FormatStrings.FormatVeryShortDistanceDisplay((mainMaxes.Y - mainMins.Y), IsMetric),
-                                FormatStrings.FormatVeryShortDistanceDisplay((mainMaxes.Z - mainMins.Z), IsMetric),
-                                FormatStrings.FormatVeryShortDistanceDisplay(CarWidthM, IsMetric),
-                                FormatStrings.FormatVeryShortDistanceDisplay(CarHeightM, IsMetric),
-                                FormatStrings.FormatVeryShortDistanceDisplay(CarLengthM, IsMetric));
-                        }
-                    }
-
-                    // Automatically determine the center of gravity offset required to perfectly center the shape (lengthwise)
-                    if (AutoCenter)
-                    {
-                        InitialCentreOfGravityM.Z = (mainMaxes.Z + mainMins.Z) / 2.0f;
-
-                        if (Simulator.Settings.VerboseConfigurationMessages)
-                        {
-                            Trace.TraceInformation("Rolling stock {0} CoG z-value automatically calculated using ORTSAutoCenter.", shortPath);
-                            if (Math.Abs(InitialCentreOfGravityM.Z) < 0.0001f)
-                                Trace.TraceInformation("Overall 3D model bounds calculated to be {0} to {1}. Shape is already centered, CoG offset reset to zero.\n",
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMins.Z, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMaxes.Z, IsMetric));
-                            else
-                                Trace.TraceInformation("Overall 3D model bounds calculated to be {0} to {1}. CoG offset used to center shape is {2}.\n",
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMins.Z, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(mainMaxes.Z, IsMetric),
-                                    FormatStrings.FormatVeryShortDistanceDisplay(InitialCentreOfGravityM.Z, IsMetric));
-                        }
-                    }
-                }
-                catch
-                {
-                    Trace.TraceWarning("Could not automatically determine size of shape {0} in wagon {1}, there may be an error in the shape.", MainShapeFileName, shortPath);
-                }
-            }
-
             // If trailing loco resistance constant has not been  defined in WAG/ENG file then assign default value based upon orig Davis values
             if (TrailLocoResistanceFactor == 0)
             {
@@ -881,6 +740,10 @@ namespace Orts.Simulation.RollingStocks
             LoadFullDavisDragConstant = LoadEmptyDavisDragConstant = DavisDragConstant = DavisDragConstant ?? 0;
             LoadFullWagonFrontalAreaM2 = LoadEmptyWagonFrontalAreaM2 = WagonFrontalAreaM2;
             LoadFullCentreOfGravityM_Y = LoadEmptyCentreOfGravityM_Y = CentreOfGravityM.Y;
+
+            // Override Z value of CoG with shape nudge, if defined
+            if (ShapeNudge != null)
+                CentreOfGravityM.Z = ShapeNudge.Value;
 
             if (FreightAnimations != null)
             {
@@ -1246,23 +1109,6 @@ namespace Orts.Simulation.RollingStocks
                     CarLengthM = stf.ReadFloat(STFReader.UNITS.Distance, null);
                     stf.SkipRestOfBlock();
                     break;
-                case "wagon(ortsautosize":
-                    AutoSize = true;
-                    AutoSizeOffsetM = stf.ReadVector3Block(STFReader.UNITS.Distance, Vector3.Zero);
-                    break;
-                case "wagon(ortsshapebounds":
-                    stf.MustMatch("(");
-                    ShapeBoundingLimits.Mins = stf.ReadVector3(STFReader.UNITS.Distance, Vector3.Zero);
-                    ShapeBoundingLimits.Maxes = stf.ReadVector3(STFReader.UNITS.Distance, Vector3.Zero);
-                    stf.SkipRestOfBlock();
-                    // Sanity check for correct order of values
-                    if (ShapeBoundingLimits.Maxes.X < ShapeBoundingLimits.Mins.X)
-                        (ShapeBoundingLimits.Maxes.X, ShapeBoundingLimits.Mins.X) = (ShapeBoundingLimits.Mins.X, ShapeBoundingLimits.Maxes.X);
-                    if (ShapeBoundingLimits.Maxes.Y < ShapeBoundingLimits.Mins.Y)
-                        (ShapeBoundingLimits.Maxes.Y, ShapeBoundingLimits.Mins.Y) = (ShapeBoundingLimits.Mins.Y, ShapeBoundingLimits.Maxes.Y);
-                    if (ShapeBoundingLimits.Maxes.Z < ShapeBoundingLimits.Mins.Z)
-                        (ShapeBoundingLimits.Maxes.Z, ShapeBoundingLimits.Mins.Z) = (ShapeBoundingLimits.Mins.Z, ShapeBoundingLimits.Maxes.Z);
-                    break;
                 case "wagon(ortsfrontarticulation": FrontArticulation = stf.ReadIntBlock(null); break;
                 case "wagon(ortsreararticulation": RearArticulation = stf.ReadIntBlock(null); break;
                 case "wagon(ortslengthbogiecentre": CarBogieCentreLengthM = stf.ReadFloatBlock(STFReader.UNITS.Distance, null); break;
@@ -1282,7 +1128,7 @@ namespace Orts.Simulation.RollingStocks
                         stf.SkipRestOfBlock();
                     }
                     break;
-                case "wagon(centerofgravity":
+                case "wagon(centerofgravity": // Alternate spelling
                 case "wagon(centreofgravity":
                     stf.MustMatch("(");
                     float initialValue = stf.ReadFloat(STFReader.UNITS.Distance, 0);
@@ -1305,9 +1151,7 @@ namespace Orts.Simulation.RollingStocks
                         InitialCentreOfGravityM.Y = initialValue;
                     }
                     break;
-                case "wagon(ortsshapenudge": InitialCentreOfGravityM.Z = stf.ReadFloatBlock(STFReader.UNITS.Distance, null); break;
-                case "wagon(ortsautocentre":
-                case "wagon(ortsautocenter": AutoCenter = stf.ReadBoolBlock(true); break;
+                case "wagon(ortsshapenudge": ShapeNudge = stf.ReadFloatBlock(STFReader.UNITS.Distance, null); break;
                 case "wagon(ortsunbalancedsuperelevation": MaxUnbalancedSuperElevationM = stf.ReadFloatBlock(STFReader.UNITS.Distance, null); break;
                 case "wagon(ortsrigidwheelbase":
                     stf.MustMatch("(");
@@ -1338,7 +1182,12 @@ namespace Orts.Simulation.RollingStocks
                 case "wagon(ortsheatingboilerfuelusage": TrainHeatBoilerFuelUsageGalukpH = new Interpolator(stf); break;
                 case "wagon(wheelradius": WheelRadiusM = stf.ReadFloatBlock(STFReader.UNITS.Distance, null); break;
                 case "engine(wheelradius": DriverWheelRadiusM = stf.ReadFloatBlock(STFReader.UNITS.Distance, null); break;
-                case "wagon(sound": MainSoundFileName = stf.ReadStringBlock(null); break;
+                case "wagon(sound":
+                    stf.MustMatch("(");
+                    MainSoundFileNames = new List<string> { stf.ReadString() }; // Reset any existing sound files
+                    while (!stf.EndOfBlock()) // Additional sound files have been defined, add these to the list
+                        MainSoundFileNames.Add(stf.ReadString());
+                    break;
                 case "wagon(ortsbrakeshoefriction": BrakeShoeFrictionFactor = new Interpolator(stf); break;
                 case "wagon(ortsnumbercarbrakeshoes": NumberCarBrakeShoes = stf.ReadIntBlock(null); break;
                 case "wagon(ortsbrakeshoetype":
@@ -1827,7 +1676,7 @@ namespace Orts.Simulation.RollingStocks
             InitialMassKG = copy.InitialMassKG;
             WheelRadiusM = copy.WheelRadiusM;
             DriverWheelRadiusM = copy.DriverWheelRadiusM;
-            MainSoundFileName = copy.MainSoundFileName;
+            MainSoundFileNames = copy.MainSoundFileNames;
             BrakeShoeFrictionFactor = copy.BrakeShoeFrictionFactor;
             WheelBrakeSlideProtectionFitted = copy.WheelBrakeSlideProtectionFitted;
             WheelBrakeSlideProtectionLimitDisabled = copy.WheelBrakeSlideProtectionLimitDisabled;
@@ -1867,9 +1716,9 @@ namespace Orts.Simulation.RollingStocks
             BearingType = copy.BearingType;
             CarBrakeSystemType = copy.CarBrakeSystemType;
             InteriorShapeFileName = copy.InteriorShapeFileName;
-            InteriorSoundFileName = copy.InteriorSoundFileName;
+            InteriorSoundFileNames = copy.InteriorSoundFileNames;
             Cab3DShapeFileName = copy.Cab3DShapeFileName;
-            Cab3DSoundFileName = copy.Cab3DSoundFileName;
+            Cab3DSoundFileNames = copy.Cab3DSoundFileNames;
             Adhesion1 = copy.Adhesion1;
             Adhesion2 = copy.Adhesion2;
             Adhesion3 = copy.Adhesion3;
@@ -1973,7 +1822,12 @@ namespace Orts.Simulation.RollingStocks
             PassengerViewPoint passengerViewPoint = new PassengerViewPoint();
             stf.MustMatch("(");
             stf.ParseBlock(new STFReader.TokenProcessor[] {
-                new STFReader.TokenProcessor("sound", ()=>{ InteriorSoundFileName = stf.ReadStringBlock(null); }),
+                new STFReader.TokenProcessor("sound", ()=>{
+                    stf.MustMatch("(");
+                    InteriorSoundFileNames = new List<string> { stf.ReadString() }; // Reset any existing sound files
+                    while (!stf.EndOfBlock()) // Additional sound files have been defined, add these to the list
+                        InteriorSoundFileNames.Add(stf.ReadString());
+                }),
                 new STFReader.TokenProcessor("passengercabinfile", ()=>{ InteriorShapeFileName = stf.ReadStringBlock(null); }),
                 new STFReader.TokenProcessor("passengercabinheadpos", ()=>{ passengerViewPoint.Location = stf.ReadVector3Block(STFReader.UNITS.Distance, new Vector3()); }),
                 new STFReader.TokenProcessor("rotationlimit", ()=>{ passengerViewPoint.RotationLimit = stf.ReadVector3Block(STFReader.UNITS.None, new Vector3()); }),
@@ -1993,7 +1847,12 @@ namespace Orts.Simulation.RollingStocks
             PassengerViewPoint cabViewPoint = new PassengerViewPoint();
             stf.MustMatch("(");
             stf.ParseBlock(new STFReader.TokenProcessor[] {
-                new STFReader.TokenProcessor("sound", ()=>{ Cab3DSoundFileName = stf.ReadStringBlock(null); }),
+                new STFReader.TokenProcessor("sound", ()=>{
+                    stf.MustMatch("(");
+                    Cab3DSoundFileNames = new List<string> { stf.ReadString() }; // Reset any existing sound files
+                    while (!stf.EndOfBlock()) // Additional sound files have been defined, add these to the list
+                        Cab3DSoundFileNames.Add(stf.ReadString());
+                }),
                 new STFReader.TokenProcessor("orts3dcabfile", ()=>{ Cab3DShapeFileName = stf.ReadStringBlock(null); }),
                 new STFReader.TokenProcessor("orts3dcabheadpos", ()=>{ cabViewPoint.Location = stf.ReadVector3Block(STFReader.UNITS.Distance, new Vector3()); }),
                 new STFReader.TokenProcessor("ortsshapeoffset", ()=>{ cabViewPoint.ShapeOffset = stf.ReadVector3Block(STFReader.UNITS.Distance, new Vector3()); }),
@@ -2278,6 +2137,15 @@ namespace Orts.Simulation.RollingStocks
             Trace.TraceInformation("***************************************** DEBUG_AUXTENDER (MSTSWagon.cs) ***************************************************************");
             Trace.TraceInformation("Car ID {0} Aux Tender Water Mass {1} Wagon Type {2}", CarID, AuxTenderWaterMassKG, AuxWagonType);
 #endif
+
+            if (WagonType != WagonTypes.Engine)
+            {
+                // Calculate wheel speed for wagons, locomotives use axle speed
+                if (BrakeSkid)
+                    WheelSpeedMpS = 0.0f;
+                else
+                    WheelSpeedMpS = SpeedMpS;
+            }
 
             AbsWheelSpeedMpS = Math.Abs(WheelSpeedMpS);
 
