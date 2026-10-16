@@ -904,7 +904,7 @@ namespace Orts.Viewer3D
             // Update animations and sound for all train cars before proceeding
             foreach (TrainCarViewer car in World.Trains.Cars.Values)
             {
-                car.UpdateAnimations(elapsedTime);
+ //               car.UpdateAnimations(elapsedTime);
                 car.UpdateSoundPosition();
             }
 
@@ -1624,13 +1624,13 @@ namespace Orts.Viewer3D
                             && (controlRenderer.Control.Screens == null || controlRenderer.Control.Screens.Count == 0 || controlRenderer.Control.Screens[0] == "all" ||
                                 controlRenderer.Control.Screens.Contains(locoViewer.ThreeDimentionCabRenderer.ActiveScreen[controlRenderer.Control.Display])))
                         {
-                            foreach (var targetNode in animatedPart.MatrixIndexes)
+                            foreach (var index in animatedPart.MatrixIndexes)
                             {
-                                if (targetNode > trainCarShape.ResultMatrices.Length)
+                                if (!trainCarShape.SharedShape.StoredResultMatrixes.TryGetValue(trainCarShape.SharedShape.GetAnimationTargetNode(index), out var matrix))
                                     continue;
                                 var matrixWorldLocation = trainCarShape.Location.WorldLocation;
-                                matrixWorldLocation.Location = (trainCarShape.ResultMatrices[targetNode] * trainCarShape.Location.XNAMatrix).Translation;
-                                matrixWorldLocation.Location.Z *= -1;
+                                matrixWorldLocation.Location.Y = matrix.Translation.Y;
+                                matrixWorldLocation.Location.Z = -matrix.Translation.Z;
                                 Vector3 xnaCenter = Camera.XnaLocation(matrixWorldLocation);
                                 float d = ORTSMath.LineSegmentDistanceSq(xnaCenter, NearPoint, FarPoint);
                                 if (bestD > d)

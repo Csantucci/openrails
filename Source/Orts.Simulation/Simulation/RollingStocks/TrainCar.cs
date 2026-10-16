@@ -717,7 +717,7 @@ namespace Orts.Simulation.RollingStocks
 
         // For use by cameras, initialized in MSTSWagon class and its derived classes
         public List<PassengerViewPoint> PassengerViewpoints = new List<PassengerViewPoint>();
-        public List<PassengerViewPoint> CabViewpoints = new List<PassengerViewPoint>(); //three dimensional cab view point
+        public List<PassengerViewPoint> CabViewpoints;
         public List<ViewPoint> HeadOutViewpoints = new List<ViewPoint>();
 
         // Used by Curve Speed Method

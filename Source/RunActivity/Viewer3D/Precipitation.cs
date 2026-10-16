@@ -536,59 +536,62 @@ namespace Orts.Viewer3D
 
     public class PrecipitationMaterial : Material
     {
+        EffectTechnique Technique;
         Texture2D RainTexture;
         Texture2D SnowTexture;
         Texture2D[] DynamicPrecipitationTexture = new Texture2D[12];
-        IEnumerator<EffectPass> ShaderPasses;
 
         public PrecipitationMaterial(Viewer viewer)
             : base(viewer, null)
         {
             // TODO: This should happen on the loader thread.
-            RainTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Raindrop.png"));
-            SnowTexture = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Snowflake.png"));
+            RainTexture = SharedTextureManager.LoadInternal(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Raindrop.png"));
+            SnowTexture = SharedTextureManager.LoadInternal(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, "Snowflake.png"));
             DynamicPrecipitationTexture[0] = SnowTexture;
             DynamicPrecipitationTexture[11] = RainTexture;
             for (int i = 1; i <= 10; i++)
             {
                 var path = "Raindrop" + i.ToString() + ".png";
-                DynamicPrecipitationTexture[11 - i] = SharedTextureManager.Get(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, path));
+                DynamicPrecipitationTexture[11 - i] = SharedTextureManager.LoadInternal(Viewer.RenderProcess.GraphicsDevice, System.IO.Path.Combine(Viewer.ContentPath, path));
             }
+            Technique = Viewer.MaterialManager.PrecipitationShader.Techniques["Precipitation"];
+
+            SetSortingEffectId(Technique);
         }
 
         public override void SetState(GraphicsDevice graphicsDevice, Material previousMaterial)
         {
             var shader = Viewer.MaterialManager.PrecipitationShader;
-            shader.CurrentTechnique = shader.Techniques["Precipitation"];
-            if (ShaderPasses == null)
-            {
-                ShaderPasses = shader.Techniques["Precipitation"].Passes.GetEnumerator();
-            }
+            shader.CurrentTechnique = Technique;
 
             shader.LightVector.SetValue(Viewer.Settings.UseMSTSEnv ? Viewer.World.MSTSSky.mstsskysolarDirection : Viewer.World.Sky.SolarDirection);
             shader.ParticleSize.SetValue(1f);
+            Texture2D texture;
             if (Viewer.Simulator.Weather.PrecipitationLiquidity == 0 || Viewer.Simulator.Weather.PrecipitationLiquidity == 1)
             {
-                shader.PrecipitationTex.SetValue(Viewer.Simulator.WeatherType == Orts.Formats.Msts.WeatherType.Snow ? SnowTexture :
+                texture = Viewer.Simulator.WeatherType == Orts.Formats.Msts.WeatherType.Snow ? SnowTexture :
                     Viewer.Simulator.WeatherType == Orts.Formats.Msts.WeatherType.Rain ? RainTexture :
-                    Viewer.Simulator.Weather.PrecipitationLiquidity == 0 ? SnowTexture : RainTexture);
+                    Viewer.Simulator.Weather.PrecipitationLiquidity == 0 ? SnowTexture : RainTexture;
             }
             else
             {
                 var precipitation_TexIndex = (int)(Viewer.Simulator.Weather.PrecipitationLiquidity * 11);
-                shader.PrecipitationTex.SetValue(DynamicPrecipitationTexture[precipitation_TexIndex]);
+                texture = DynamicPrecipitationTexture[precipitation_TexIndex];
             }
+            if (shader.PrecipitationTextureCache != texture) shader.PrecipitationTex.SetValue(shader.PrecipitationTextureCache = texture);
 
             graphicsDevice.BlendState = BlendState.NonPremultiplied;
             graphicsDevice.DepthStencilState = DepthStencilState.DepthRead;
+
+            SetSortingTextureId(texture);
         }
 
         public override void Render(GraphicsDevice graphicsDevice, IEnumerable<RenderItem> renderItems, ref Matrix XNAViewMatrix, ref Matrix XNAProjectionMatrix)
         {
             var shader = Viewer.MaterialManager.PrecipitationShader;
 
-            ShaderPasses.Reset();
-            while (ShaderPasses.MoveNext())
+            var passes = shader.CurrentTechnique.Passes;
+            for (int i = 0; i < passes.Count; i++)
             {
                 foreach (var item in renderItems)
                 {
@@ -597,7 +600,7 @@ namespace Orts.Viewer3D
                     shader.CurrentTime.SetValue(item.XNAMatrix.M11);
 
                     shader.SetMatrix(Matrix.Identity, ref XNAViewMatrix, ref XNAProjectionMatrix);
-                    ShaderPasses.Current.Apply();
+                    passes[i].Apply();
                     item.RenderPrimitive.Draw(graphicsDevice);
                 }
             }
@@ -637,6 +640,8 @@ namespace Orts.Viewer3D
         internal readonly EffectParameter CameraTileXZ;
         internal readonly EffectParameter CurrentTime;
         internal readonly EffectParameter PrecipitationTex;
+
+        public Texture2D PrecipitationTextureCache;
 
         public PrecipitationShader(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, "PrecipitationShader")

@@ -431,20 +431,6 @@ namespace Orts.Viewer3D.RollingStock
             base.PrepareFrame(frame, elapsedTime);
         }
 
-        /// <summary>
-        /// Calculate positions for animated objects. Call before PrepareFrame.
-        /// </summary>
-        public override void UpdateAnimations(ElapsedTime elapsedTime)
-        {
-            // Wipers and bell animation
-            Wipers.UpdateLoop(Locomotive.Wiper, elapsedTime);
-            Bell.UpdateLoop(Locomotive.Bell, elapsedTime, TrainCarShape.SharedShape.CustomAnimationFPS);
-            Item1Continuous.UpdateLoop(Locomotive.GenericItem1, elapsedTime, TrainCarShape.SharedShape.CustomAnimationFPS);
-            Item2Continuous.UpdateLoop(Locomotive.GenericItem2, elapsedTime, TrainCarShape.SharedShape.CustomAnimationFPS);
-
-            base.UpdateAnimations(elapsedTime);
-        }
-
         internal override void LoadForPlayer()
         {
             if (!_hasCabRenderer)
@@ -1426,7 +1412,7 @@ namespace Orts.Viewer3D.RollingStock
                     // Initialization step for cab viewpoint shape attachment
                     if (view.ShapeIndex != -1)
                     {
-                        if (view.ShapeIndex < 0 || view.ShapeIndex >= carViewer.TrainCarShape.ResultMatrices.Count())
+                        if (view.ShapeIndex < 0 || view.ShapeIndex >= carViewer.TrainCarShape.XNAMatrices.Count())
                         {
                             Trace.TraceWarning("Cab camera viewpoint in car {0} has invalid shape index defined, shape index {1} does not exist",
                                 _Locomotive.WagFilePath, view.ShapeIndex);
@@ -3499,11 +3485,10 @@ namespace Orts.Viewer3D.RollingStock
         Dictionary<(CabViewControlType, int), ThreeDimCabDigit> DigitParts3D = null;
         Dictionary<(CabViewControlType, int), ThreeDimCabDPI> DPIDisplays3D = null;
         Dictionary<(CabViewControlType, int), ThreeDimCabScreen> ScreenDisplays3D = null;
-        AnimatedPart ExternalWipers = null; // setting to zero to prevent a warning. Probably this will be used later. TODO
         protected MSTSLocomotive MSTSLocomotive { get { return (MSTSLocomotive)Car; } }
         MSTSLocomotiveViewer LocoViewer;
         private SpriteBatchMaterial _Sprite2DCabView;
-        public bool[] MatrixVisible;
+        public Dictionary<int, bool> MatrixVisibleTargetNode;
         public ThreeDimentionCabViewer(Viewer viewer, MSTSLocomotive car, MSTSLocomotiveViewer locoViewer)
             : base(viewer, car)
         {
@@ -3526,11 +3511,12 @@ namespace Orts.Viewer3D.RollingStock
             OnDemandAnimateParts = new Dictionary<(CabViewControlType, int), AnimatedPart>();
 
             // Find the animated parts
-            if (TrainCarShape != null && TrainCarShape.SharedShape.Animations != null)
+            if (TrainCarShape?.SharedShape?.HasAnimations() ?? false)
             {
-                MatrixVisible = new bool[TrainCarShape.SharedShape.MatrixNames.Count + 1];
-                for (int i = 0; i < MatrixVisible.Length; i++)
-                    MatrixVisible[i] = true;
+                MatrixVisibleTargetNode = new Dictionary<int, bool>();
+                for (int i = 0; i < TrainCarShape.SharedShape.MatrixNames.Count; i++)
+                    MatrixVisibleTargetNode.Add(TrainCarShape.SharedShape.GetAnimationTargetNode(i), true);
+                
                 string matrixName = ""; string typeName = ""; AnimatedPartMultiState tmpPart = null;
                 for (int iMatrix = 0; iMatrix < TrainCarShape.SharedShape.MatrixNames.Count; ++iMatrix)
                 {
@@ -3588,13 +3574,14 @@ namespace Orts.Viewer3D.RollingStock
                             break;
                     }
 
-                    // This is the case for .s files, for glTF-s it will not be true
-                    var targetNode = iMatrix;
+                    var targetNode = TrainCarShape.SharedShape.GetAnimationTargetNode(iMatrix);
 
                     if (style != null && style is CabViewDigitalRenderer)//digits?
                     {
                         //DigitParts.Add(key, new DigitalDisplay(viewer, TrainCarShape, iMatrix, parameter, locoViewer.ThreeDimentionCabRenderer.ControlMap[key]));
-                        DigitParts3D.Add(key, new ThreeDimCabDigit(viewer, iMatrix, parameter1, parameter2, this.TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key], Locomotive));
+                        DigitParts3D.Add(key, new ThreeDimCabDigit(viewer, targetNode, parameter1, parameter2, this.TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key], Locomotive));
+                        if (!TrainCarShape.SharedShape.StoredResultMatrixes.ContainsKey(targetNode))
+                            TrainCarShape.SharedShape.StoredResultMatrixes.Add(targetNode, Matrix.Identity);
                     }
                     else if (style != null && style is CabViewGaugeRenderer)
                     {
@@ -3602,7 +3589,9 @@ namespace Orts.Viewer3D.RollingStock
 
                         if (CVFR.GetGauge().ControlStyle != CABViewControlStyles.POINTER) //pointer will be animated, others will be drawn dynamicaly
                         {
-                            Gauges.Add(key, new ThreeDimCabGaugeNative(viewer, iMatrix, parameter1, parameter2, this.TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key]));
+                            Gauges.Add(key, new ThreeDimCabGaugeNative(viewer, targetNode, parameter1, parameter2, this.TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key]));
+                            if (!TrainCarShape.SharedShape.StoredResultMatrixes.ContainsKey(targetNode))
+                                TrainCarShape.SharedShape.StoredResultMatrixes.Add(targetNode, Matrix.Identity);
                         }
                         else
                         {//for pointer animation
@@ -3618,7 +3607,9 @@ namespace Orts.Viewer3D.RollingStock
                     }
                     else if (style != null && style is DistributedPowerInterfaceRenderer)
                     {
-                        DPIDisplays3D.Add(key, new ThreeDimCabDPI(viewer, iMatrix, parameter1, parameter2, this.TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key]));
+                        DPIDisplays3D.Add(key, new ThreeDimCabDPI(viewer, targetNode, parameter1, parameter2, this.TrainCarShape, locoViewer.ThreeDimentionCabRenderer.ControlMap[key]));
+                        if (!TrainCarShape.SharedShape.StoredResultMatrixes.ContainsKey(targetNode))
+                            TrainCarShape.SharedShape.StoredResultMatrixes.Add(targetNode, Matrix.Identity);
                     }
                     else
                     {
@@ -3630,6 +3621,14 @@ namespace Orts.Viewer3D.RollingStock
                         }
                         else tmpPart = AnimateParts[key];
                         tmpPart.AddMatrix(iMatrix); //tmpPart.SetPosition(false);
+
+                        if (key.cvcType.Type == CABViewControlTypes.EXTERNALWIPERS ||
+                            key.cvcType.Type == CABViewControlTypes.ORTS_ITEM1CONTINUOUS ||
+                            key.cvcType.Type == CABViewControlTypes.ORTS_ITEM2CONTINUOUS)
+                            tmpPart.SetMstsSpeed(1.5f, AnimatedPart.MstsOptions.SpeedFromFrameRatePer30);
+
+                        if (!TrainCarShape.SharedShape.StoredResultMatrixes.ContainsKey(targetNode))
+                            TrainCarShape.SharedShape.StoredResultMatrixes.Add(targetNode, Matrix.Identity);
                     }
                 }
             }
@@ -3677,6 +3676,7 @@ namespace Orts.Viewer3D.RollingStock
         /// </summary>
         public override void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)
         {
+            /*
             // First, update the position of the 3D cab shape
             if (TrainCarShape != null)
             {
@@ -3689,7 +3689,7 @@ namespace Orts.Viewer3D.RollingStock
                 TrainCarShape.XNAMatrices[0].Translation = Car.CabViewpoints[viewPoint].ShapeOffset;
                 if (Car.CabViewpoints[viewPoint].ShapeIndex >= 0 && Car.CabViewpoints[viewPoint].ShapeIndex < LocoViewer.TrainCarShape.ResultMatrices.Length)
                     TrainCarShape.Location.XNAMatrix = LocoViewer.TrainCarShape.ResultMatrices[Car.CabViewpoints[viewPoint].ShapeIndex] * TrainCarShape.Location.XNAMatrix;
-            }
+            }*/
 
             Locomotive.SoundHeardInternallyCorrection[0] = Locomotive.SoundHeardInternallyCorrection[1] = 0;
             foreach (var p in AnimateParts)
@@ -3699,7 +3699,7 @@ namespace Orts.Viewer3D.RollingStock
                     switch (p.Value.Type.Type)
                     {
                         case CABViewControlTypes.EXTERNALWIPERS:
-                            p.Value.UpdateLoop(Locomotive.Wiper, elapsedTime);
+                            p.Value.UpdateLoop(Locomotive.Wiper ? 1 : 0, elapsedTime);
                             break;
                         case CABViewControlTypes.LEFTDOOR:
                         case CABViewControlTypes.RIGHTDOOR:
@@ -3725,10 +3725,10 @@ namespace Orts.Viewer3D.RollingStock
                             PrepareFrameForWindow(MSTSWagon.RightWindowRearIndex, p.Value, elapsedTime);
                             break;
                         case CABViewControlTypes.ORTS_ITEM1CONTINUOUS:
-                            p.Value.UpdateLoop(Locomotive.GenericItem1, elapsedTime);
+                            p.Value.UpdateLoop(Locomotive.GenericItem1 ? 1 : 0, elapsedTime);
                             break;
                         case CABViewControlTypes.ORTS_ITEM2CONTINUOUS:
-                            p.Value.UpdateLoop(Locomotive.GenericItem2, elapsedTime);
+                            p.Value.UpdateLoop(Locomotive.GenericItem2 ? 1 : 0, elapsedTime);
                             break;
                         case CABViewControlTypes.ORTS_ITEM1TWOSTATE:
                             p.Value.UpdateState(Locomotive.GenericItem1, elapsedTime);
@@ -3761,11 +3761,14 @@ namespace Orts.Viewer3D.RollingStock
                     }
 
                     foreach (var matrixIndex in p.Value.MatrixIndexes)
-                        MatrixVisible[matrixIndex] = doShow;
+                        MatrixVisibleTargetNode[LocoViewer.TrainCarShape.SharedShape.GetAnimationTargetNode(matrixIndex)] = doShow;
 
                     p.Value.Update(LocoViewer, elapsedTime); //for all other instruments with animations
                 }
             }
+
+            if (TrainCarShape != null)
+                TrainCarShape.ConditionallyPrepareFrame(frame, elapsedTime, MatrixVisibleTargetNode);
 
             foreach (var p in DigitParts3D)
             {
@@ -3839,13 +3842,13 @@ namespace Orts.Viewer3D.RollingStock
                 p.Value.PrepareFrame(frame, elapsedTime);
             }
 
-            ExternalWipers?.UpdateLoop(Locomotive.Wiper, elapsedTime);
+ //           ExternalWipers?.UpdateLoop(Locomotive.Wiper, elapsedTime);
             /*
             foreach (var p in DigitParts)
             {
                 p.Value.PrepareFrame(frame, elapsedTime);
             }*/ //removed with 3D digits
-
+/*
 
             // Finally, handle the 3D cab shape
             TrainCarShape?.ConditionallyPrepareFrame(frame, elapsedTime, MatrixVisible);
@@ -3854,13 +3857,17 @@ namespace Orts.Viewer3D.RollingStock
         public override void UpdateAnimations(ElapsedTime elapsedTime)
         {
             // 3D Cabs don't handle animations in the same way that other train car shapes do
+*/
         }
 
         internal void PrepareFrameForWindow(int windowIndex, AnimatedPartMultiState anim, ElapsedTime elapsedTime)
         {
             if (Locomotive.WindowStates[windowIndex] == MSTSWagon.WindowState.Closed) anim.SetState(false);
             else if (Locomotive.WindowStates[windowIndex] == MSTSWagon.WindowState.Open) anim.SetState(true);
-            var animationFraction =  anim.UpdateAndReturnState(Locomotive.WindowStates[windowIndex] >= MSTSWagon.WindowState.Opening, elapsedTime);
+
+            anim.UpdateState(Locomotive.WindowStates[windowIndex] >= MSTSWagon.WindowState.Opening, elapsedTime);
+
+            var animationFraction = anim.AnimationKeyFraction();
             if (animationFraction == 0 && Locomotive.WindowStates[windowIndex] < MSTSWagon.WindowState.Opening)
                 Locomotive.WindowStates[windowIndex] = MSTSWagon.WindowState.Closed;
             else if (animationFraction == 1 && Locomotive.WindowStates[windowIndex] >= MSTSWagon.WindowState.Opening)
@@ -3891,7 +3898,7 @@ namespace Orts.Viewer3D.RollingStock
         int NumVertices;
         int NumIndices;
         public short[] TriangleListIndices;// Array of indices to vertices for triangles
-        Matrix XNAMatrix;
+        int TargetNode;
         Viewer Viewer;
         MutableShapePrimitive shapePrimitive;
         public CabViewDigitalRenderer CVFR;
@@ -3899,7 +3906,7 @@ namespace Orts.Viewer3D.RollingStock
         Material AlertMaterial;
         float Size;
         string AceFile;
-        public ThreeDimCabDigit(Viewer viewer, int iMatrix, string size, string aceFile, PoseableShape trainCarShape, CabViewControlRenderer c, MSTSLocomotive locomotive)
+        public ThreeDimCabDigit(Viewer viewer, int targetNode, string size, string aceFile, PoseableShape trainCarShape, CabViewControlRenderer c, MSTSLocomotive locomotive)
         {
 
             Size = int.Parse(size) * 0.001f;//input size is in mm
@@ -3915,7 +3922,7 @@ namespace Orts.Viewer3D.RollingStock
             if (digital.ControlType.Type == CABViewControlTypes.CLOCK && digital.Accuracy > 0) MaxDigits = 8;
             Viewer = viewer;
             TrainCarShape = trainCarShape;
-            XNAMatrix = TrainCarShape.SharedShape.Matrices[iMatrix];
+            TargetNode = targetNode;
             var maxVertex = (MaxDigits + 2) * 4;// every face has max 8 digits, each has 2 triangles
             //Material = viewer.MaterialManager.Load("Scenery", Helpers.GetRouteTextureFile(viewer.Simulator, Helpers.TextureFlags.None, texture), (int)(SceneryMaterialOptions.None | SceneryMaterialOptions.AlphaBlendingBlend), 0);
             Material = FindMaterial(false);//determine normal material
@@ -4150,10 +4157,12 @@ namespace Orts.Viewer3D.RollingStock
                 return;
 
             UpdateDigit();
-            Matrix mx = TrainCarShape.Location.XNAMatrix;
-            mx.M41 += (TrainCarShape.Location.TileX - Viewer.Camera.TileX) * 2048;
-            mx.M43 += (-TrainCarShape.Location.TileZ + Viewer.Camera.TileZ) * 2048;
-            Matrix m = XNAMatrix * mx;
+
+            var m = TrainCarShape.SharedShape.StoredResultMatrixes[TargetNode];
+            m.Decompose(out var scale, out var rotation, out var translation);
+            m = Matrix.CreateScale(scale) *
+                Matrix.CreateFromQuaternion(rotation) * TrainCarShape.SharedShape.ForwardZDirection *
+                Matrix.CreateTranslation(translation);
 
             // TODO: Make this use AddAutoPrimitive instead.
             frame.AddPrimitive(this.shapePrimitive.Material, this.shapePrimitive, RenderPrimitiveGroup.Interior, ref m, ShapeFlags.None);
@@ -4172,7 +4181,7 @@ namespace Orts.Viewer3D.RollingStock
         int NumVertices;
         int NumIndices;
         public short[] TriangleListIndices;// Array of indices to vertices for triangles
-        Matrix XNAMatrix;
+        int TargetNode;
         Viewer Viewer;
         MutableShapePrimitive shapePrimitive;
         public CabViewGaugeRenderer CVFR;
@@ -4180,7 +4189,7 @@ namespace Orts.Viewer3D.RollingStock
         Material NegativeMaterial;
         float width, maxLen; //width of the gauge, and the max length of the gauge
         int Direction, Orientation;
-        public ThreeDimCabGaugeNative(Viewer viewer, int iMatrix, string size, string len, PoseableShape trainCarShape, CabViewControlRenderer c)
+        public ThreeDimCabGaugeNative(Viewer viewer, int targetNode, string size, string len, PoseableShape trainCarShape, CabViewControlRenderer c)
         {
             if (size != string.Empty) width = float.Parse(size) / 1000f; //in mm
             if (len != string.Empty) maxLen = float.Parse(len) / 1000f; //in mm
@@ -4191,7 +4200,7 @@ namespace Orts.Viewer3D.RollingStock
 
             Viewer = viewer;
             TrainCarShape = trainCarShape;
-            XNAMatrix = TrainCarShape.SharedShape.Matrices[iMatrix];
+            TargetNode = targetNode;
             CVCGauge gauge = CVFR.GetGauge();
             var maxVertex = 4;// a rectangle
             //Material = viewer.MaterialManager.Load("Scenery", Helpers.GetRouteTextureFile(viewer.Simulator, Helpers.TextureFlags.None, texture), (int)(SceneryMaterialOptions.None | SceneryMaterialOptions.AlphaBlendingBlend), 0);
@@ -4369,10 +4378,12 @@ namespace Orts.Viewer3D.RollingStock
                 return;
 
             UpdateDigit();
-            Matrix mx = TrainCarShape.Location.XNAMatrix;
-            mx.M41 += (TrainCarShape.Location.TileX - Viewer.Camera.TileX) * 2048;
-            mx.M43 += (-TrainCarShape.Location.TileZ + Viewer.Camera.TileZ) * 2048;
-            Matrix m = XNAMatrix * mx;
+
+            var m = TrainCarShape.SharedShape.StoredResultMatrixes[TargetNode];
+            m.Decompose(out var scale, out var rotation, out var translation);
+            m = Matrix.CreateScale(scale) *
+                Matrix.CreateFromQuaternion(rotation) * TrainCarShape.SharedShape.ForwardZDirection *
+                Matrix.CreateTranslation(translation);
 
             // TODO: Make this use AddAutoPrimitive instead.
             frame.AddPrimitive(this.shapePrimitive.Material, this.shapePrimitive, RenderPrimitiveGroup.Interior, ref m, ShapeFlags.None);

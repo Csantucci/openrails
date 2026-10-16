@@ -66,6 +66,8 @@ namespace Orts.Viewer3D
         Vector3 frustumLeft;
         Vector3 frustumRight;
 
+        public float Exposure { get; protected set; } = 1.0f;
+
         // This sucks. It's really not camera-related at all.
         public static Matrix XNASkyProjection;
 
@@ -205,6 +207,30 @@ namespace Orts.Viewer3D
             frustumRight.Y = xnaView.M21 * frustumRightProjected.X + xnaView.M23 * frustumRightProjected.Z;
             frustumRight.Z = xnaView.M31 * frustumRightProjected.X + xnaView.M33 * frustumRightProjected.Z;
             frustumRight.Normalize();
+
+            UpdateExposure(frame.SolarDirection, elapsedTime);
+        }
+
+        public void UpdateExposure(Vector3 solarDirection, ElapsedTime elapsedTime)
+        {
+            const float maxDayExposure = 0.8f;
+            const float nightExposure = 2.5f;
+            const float overcastMultiplier = 0.7f;
+            const float adaptationSpeed = 2.0f;
+
+            // By Sun height
+            float sunHeight = MathHelper.Clamp(solarDirection.Y, -1f, 1f);
+            float dayNightLerp = MathHelper.Clamp((-sunHeight + 1f) / 2f, 0f, 1f);
+            float baseExposure = MathHelper.Lerp(maxDayExposure, nightExposure, dayNightLerp);
+
+            // By weather
+            float weatherMultiplier = MathHelper.Lerp(1.0f, overcastMultiplier, Viewer.Simulator.Weather.OverallDimmingFactor);
+            weatherMultiplier = Math.Max(weatherMultiplier, 0.5f);
+
+            float targetExposure = baseExposure / weatherMultiplier;
+
+            float dt = elapsedTime.RealSeconds;
+            Exposure = MathHelper.Lerp(Exposure, targetExposure, dt * adaptationSpeed);
         }
 
         // Cull for fov
@@ -937,34 +963,6 @@ namespace Orts.Viewer3D
             var lookAtPosition = Vector3.UnitZ;
             lookAtPosition = Vector3.Transform(lookAtPosition, Matrix.CreateRotationX(RotationXRadians));
             lookAtPosition = Vector3.Transform(lookAtPosition, Matrix.CreateRotationY(RotationYRadians + (flipped ? MathHelper.Pi : 0)));
-
-            // Consider that the train car shape might introduce some transformation
-            Matrix carTransform = Matrix.Identity;
-            int shapeIndex = 0;
-            // Account for settings specific to viewpoints (head out, 2D cab, and 3D interior cameras)
-            if (this is InsideThreeDimCamera cam3D)
-            {
-                if (cam3D is PassengerCamera)
-                    shapeIndex = attachedCar.PassengerViewpoints[cam3D.ActViewPoint].ShapeIndex;
-                else if (cam3D is ThreeDimCabCamera)
-                    shapeIndex = attachedCar.CabViewpoints[cam3D.ActViewPoint].ShapeIndex;
-            }
-            else if (this is HeadOutCamera camHead)
-            {
-                shapeIndex = attachedCar.HeadOutViewpoints[camHead.CurrentViewpointIndex].ShapeIndex;
-            }
-            else if (this is CabCamera camCab)
-            {
-                // Need to consider that front and rear cab may not be the same
-                shapeIndex = (attachedCar as MSTSLocomotive).CabViewList[(attachedCar as MSTSLocomotive).UsingRearCab ? (int)CabViewType.Rear :
-                    (int)CabViewType.Front].ViewPointList[camCab.SideLocation].ShapeIndex;
-            }
-            if ((attachedCarViewer as MSTSWagonViewer)?.TrainCarShape.ResultMatrices != null)
-            {
-                shapeIndex = MathHelper.Clamp(shapeIndex, 0, (attachedCarViewer as MSTSWagonViewer).TrainCarShape.ResultMatrices.Length);
-                carTransform = (attachedCarViewer as MSTSWagonViewer).TrainCarShape.ResultMatrices[shapeIndex];
-            }
-
             if (flipped)
             {
                 lookAtPosition.X -= attachedLocation.X;
@@ -978,20 +976,79 @@ namespace Orts.Viewer3D
                 lookAtPosition.Z += attachedLocation.Z;
             }
             lookAtPosition.Z *= -1;
-            lookAtPosition = Vector3.Transform(lookAtPosition, Viewer.Camera is TrackingCamera ? LookedAtPosition.XNAMatrix :
-                carTransform * attachedCar.WorldPosition.XNAMatrix);
+            lookAtPosition = Vector3.Transform(lookAtPosition, Viewer.Camera is TrackingCamera ? LookedAtPosition.XNAMatrix : attachedCar.WorldPosition.XNAMatrix);
             // Don't forget to rotate the up vector so the camera rotates with us.
             Vector3 up;
             if (Viewer.Camera is TrackingCamera)
                 up = Vector3.Up;
             else
             {
-                var upRotation = carTransform * attachedCar.WorldPosition.XNAMatrix;
+                var upRotation = attachedCar.WorldPosition.XNAMatrix;
                 upRotation.Translation = Vector3.Zero;
                 up = Vector3.Transform(Vector3.Up, upRotation);
             }
             return Matrix.CreateLookAt(XnaLocation(cameraLocation), lookAtPosition, up);
         }
+        /*        {
+                    var flipped = IsCameraFlipped();
+                    var lookAtPosition = Vector3.UnitZ;
+                    lookAtPosition = Vector3.Transform(lookAtPosition, Matrix.CreateRotationX(RotationXRadians));
+                    lookAtPosition = Vector3.Transform(lookAtPosition, Matrix.CreateRotationY(RotationYRadians + (flipped ? MathHelper.Pi : 0)));
+
+                    // Consider that the train car shape might introduce some transformation
+                    Matrix carTransform = Matrix.Identity;
+                    int shapeIndex = 0;
+                    // Account for settings specific to viewpoints (head out, 2D cab, and 3D interior cameras)
+                    if (this is InsideThreeDimCamera cam3D)
+                    {
+                        if (cam3D is PassengerCamera)
+                            shapeIndex = attachedCar.PassengerViewpoints[cam3D.ActViewPoint].ShapeIndex;
+                        else if (cam3D is ThreeDimCabCamera)
+                            shapeIndex = attachedCar.CabViewpoints[cam3D.ActViewPoint].ShapeIndex;
+                    }
+                    else if (this is HeadOutCamera camHead)
+                    {
+                        shapeIndex = attachedCar.HeadOutViewpoints[camHead.CurrentViewpointIndex].ShapeIndex;
+                    }
+                    else if (this is CabCamera camCab)
+                    {
+                        // Need to consider that front and rear cab may not be the same
+                        shapeIndex = (attachedCar as MSTSLocomotive).CabViewList[(attachedCar as MSTSLocomotive).UsingRearCab ? (int)CabViewType.Rear :
+                            (int)CabViewType.Front].ViewPointList[camCab.SideLocation].ShapeIndex;
+                    }
+                    if ((attachedCarViewer as MSTSWagonViewer)?.TrainCarShape.ResultMatrices != null)
+                    {
+                        shapeIndex = MathHelper.Clamp(shapeIndex, 0, (attachedCarViewer as MSTSWagonViewer).TrainCarShape.ResultMatrices.Length);
+                        carTransform = (attachedCarViewer as MSTSWagonViewer).TrainCarShape.ResultMatrices[shapeIndex];
+                    }
+
+                    if (flipped)
+                    {
+                        lookAtPosition.X -= attachedLocation.X;
+                        lookAtPosition.Y += attachedLocation.Y;
+                        lookAtPosition.Z -= attachedLocation.Z;
+                    }
+                    else
+                    {
+                        lookAtPosition.X += attachedLocation.X;
+                        lookAtPosition.Y += attachedLocation.Y;
+                        lookAtPosition.Z += attachedLocation.Z;
+                    }
+                    lookAtPosition.Z *= -1;
+                    lookAtPosition = Vector3.Transform(lookAtPosition, Viewer.Camera is TrackingCamera ? LookedAtPosition.XNAMatrix :
+                        carTransform * attachedCar.WorldPosition.XNAMatrix);
+                    // Don't forget to rotate the up vector so the camera rotates with us.
+                    Vector3 up;
+                    if (Viewer.Camera is TrackingCamera)
+                        up = Vector3.Up;
+                    else
+                    {
+                        var upRotation = carTransform * attachedCar.WorldPosition.XNAMatrix;
+                        upRotation.Translation = Vector3.Zero;
+                        up = Vector3.Transform(Vector3.Up, upRotation);
+                    }
+                    return Matrix.CreateLookAt(XnaLocation(cameraLocation), lookAtPosition, up);
+                }*/
 
         public override void Update(ElapsedTime elapsedTime)
         {

@@ -1458,7 +1458,7 @@ namespace Orts.Viewer3D.Processes
 
             virtual protected Texture2D GetTexture(Game game)
             {
-                return SharedTextureManager.Get(game.RenderProcess.GraphicsDevice, Path.Combine(game.ContentPath, "Loading.png"));
+                return SharedTextureManager.LoadInternal(game.RenderProcess.GraphicsDevice, Path.Combine(game.ContentPath, "Loading.png"));
             }
 
             public override void SetState(GraphicsDevice graphicsDevice, Material previousMaterial)
@@ -1516,7 +1516,7 @@ namespace Orts.Viewer3D.Processes
                 var path = Path.Combine(Simulator.RoutePath, loadingScreen);
                 if (Path.GetExtension(path) == ".dds" && File.Exists(path))
                 {
-                    DDSLib.DDSFromFile(path, gd, true, out texture);
+                    DDSLib.DDSFromFile(path, gd, true, out texture, false);
                 }
                 else if (Path.GetExtension(path) == ".ace")
                 {
@@ -1524,7 +1524,7 @@ namespace Orts.Viewer3D.Processes
 
                     if (File.Exists(alternativeTexture))
                     {
-                        DDSLib.DDSFromFile(alternativeTexture, gd, true, out texture);
+                        DDSLib.DDSFromFile(alternativeTexture, gd, true, out texture, false);
                     }
                     else if (File.Exists(path))
                     {

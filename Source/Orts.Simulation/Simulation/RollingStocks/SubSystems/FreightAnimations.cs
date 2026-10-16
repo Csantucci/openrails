@@ -1122,7 +1122,12 @@ namespace Orts.Simulation.RollingStocks.SubSystems
     public class FreightAnimationStatic : FreightAnimation
     {
         public float FreightWeight = 0;
+        public bool Flipped = false;
         public bool Cab3DFreightAnim = false;
+        public bool[] Visibility = { true, false, false };
+        public float XOffset = 0;
+        public float YOffset = 0;
+        public float ZOffset = 0;
 
         // additions to manage consequences of variable weight on friction and brake forces
         public float? FullStaticORTSDavis_A = null;
