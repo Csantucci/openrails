@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework Condition="'$(BuildDotNet)' == 'true'">net6-windows</TargetFramework>
-    <TargetFramework Condition="'$(TargetFramework)' == ''">net472</TargetFramework>
+    <TargetFramework>net6-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>..\ORTS.ico</ApplicationIcon>
     <UseWindowsForms>true</UseWindowsForms>
@@ -69,7 +68,7 @@
   <PropertyGroup />
   <ItemGroup>
     <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
-    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">

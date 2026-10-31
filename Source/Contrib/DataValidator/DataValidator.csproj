@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework Condition="'$(BuildDotNet)' == 'true'">net6-windows</TargetFramework>
-    <TargetFramework Condition="'$(TargetFramework)' == ''">net472</TargetFramework>
+    <TargetFramework>net6-windows</TargetFramework>
     <OutputType>Exe</OutputType>
     <AssemblyName>Contrib.DataValidator</AssemblyName>
     <IsPublishable>False</IsPublishable>
@@ -16,8 +15,5 @@
     <ProjectReference Include="..\..\Orts.Formats.Msts\Orts.Formats.Msts.csproj" />
     <ProjectReference Include="..\..\Orts.Parsers.Msts\Orts.Parsers.Msts.csproj" />
     <ProjectReference Include="..\..\Orts.Simulation\Orts.Simulation.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
   </ItemGroup>
 </Project>
