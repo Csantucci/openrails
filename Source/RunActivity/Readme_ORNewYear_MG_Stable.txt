@@ -1,5 +1,5 @@
-﻿Open Rails NewYear Stable README - Rev.171.4
-May 17th, 2026
+﻿Open Rails NewYear Stable README - Rev.171.5
+November 6th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -94,12 +94,12 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
   
 Further bug fixes included:
-- NEW: Fix for null crash in timetable mode, see https://bugs.launchpad.net/or/+bug/2148824 Null crash in timetable mode (PR #1219)
-- NEW: Partial fix for cruise control sounds not working, by cesarBLG, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__324967
-- NEW: Partial fix for remote control of switches not working in multiplayer,  see https://www.elvastower.com/forums/index.php?/topic/39601-switches-and-signals-dont-respond-correctly-in-multiplayer/ (PR #1218)
-- NEW: Fix for compound locomotive starting valve not working (PR #1210), bu steamer_ctn, already present in official testing releases
-- NEW: Don't Assume MSTS ENG and WAG Files (PR #1215), by steelfill, already present in official testing releases
-
+- Fix for null crash in timetable mode, see https://bugs.launchpad.net/or/+bug/2148824 Null crash in timetable mode (PR #1219)
+- Partial fix for cruise control sounds not working, by cesarBLG, see https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__324967
+- Partial fix for remote control of switches not working in multiplayer,  see https://www.elvastower.com/forums/index.php?/topic/39601-switches-and-signals-dont-respond-correctly-in-multiplayer/ (PR #1218)
+- Fix for compound locomotive starting valve not working (PR #1210), bu steamer_ctn, already present in official testing releases
+- Don't Assume MSTS ENG and WAG Files (PR #1215), by steelfill, already present in official testing releases
+- Fix for this crash https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__329795
 
 
 
