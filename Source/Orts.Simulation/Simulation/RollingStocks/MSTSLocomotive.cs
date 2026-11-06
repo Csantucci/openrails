@@ -2788,7 +2788,8 @@ namespace Orts.Simulation.RollingStocks
             ApplyDirectionToTractiveForce(ref TractiveForceN);
 
             UpdateDynamicBrakeForce(elapsedClockSeconds);
-            TractiveForceN -= Math.Sign(WheelSpeedMpS) * DynamicBrakeForceN;
+            if (!(WheelSpeedMpS is float.NaN))
+                TractiveForceN -= Math.Sign(WheelSpeedMpS) * DynamicBrakeForceN;
 
             for (int i=0; i<LocomotiveAxles.Count; i++)
             {
