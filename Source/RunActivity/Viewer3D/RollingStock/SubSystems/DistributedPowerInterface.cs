@@ -578,9 +578,12 @@ namespace Orts.Viewer3D.RollingStock.SubSystems
 
         public override void Draw(GraphicsDevice graphicsDevice)
         {
-            DPI.Draw(CabShaderControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
-            CabShaderControlView.SpriteBatch.End();
-            CabShaderControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
+            DPI.Draw(ControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
+            ControlView.SpriteBatch.End();
+            ControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
+//            DPI.Draw(CabShaderControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
+//            CabShaderControlView.SpriteBatch.End();
+//            CabShaderControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
         }
     }
 

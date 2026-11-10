@@ -757,9 +757,12 @@ namespace Orts.Viewer3D.RollingStock.Subsystems.ETCS
         }
         public override void Draw(GraphicsDevice graphicsDevice)
         {
-            DMI.Draw(CabShaderControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
-            CabShaderControlView.SpriteBatch.End();
-            CabShaderControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
+            DMI.Draw(ControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
+            ControlView.SpriteBatch.End();
+            ControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
+ //           DMI.Draw(CabShaderControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
+ //           CabShaderControlView.SpriteBatch.End();
+ //           CabShaderControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
         }
 
         public Rectangle DestinationRectangleGet()
@@ -868,9 +871,12 @@ namespace Orts.Viewer3D.RollingStock.Subsystems.ETCS
 
         public override void Draw(GraphicsDevice graphicsDevice)
         {
-            DMI.Draw(CabShaderControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
-            CabShaderControlView.SpriteBatch.End();
-            CabShaderControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
+            DMI.Draw(ControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
+            ControlView.SpriteBatch.End();
+            ControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
+//            DMI.Draw(CabShaderControlView.SpriteBatch, new Point(DrawPosition.X, DrawPosition.Y));
+//            CabShaderControlView.SpriteBatch.End();
+//            CabShaderControlView.SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied, null, DepthStencilState.Default, null, Shader);
         }
 
         public Rectangle DestinationRectangleGet()
