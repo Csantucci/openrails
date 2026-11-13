@@ -30,6 +30,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Orts.Viewer3D.Processes;
 using ORTS.Common;
 using ORTS.Common.Input;
+using ORTS.Settings;
 using Game = Orts.Viewer3D.Processes.Game;
 
 namespace Orts.Viewer3D
@@ -545,21 +546,24 @@ namespace Orts.Viewer3D
                 RenderSurface.MultiSampleCount,
                 RenderTargetUsage.PreserveContents
             );
-            BloomSurfaceMip1 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
+            if (Game.Settings.ApplyBloom)
+            {
+                BloomSurfaceMip1 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
                 width / 2,
                 height / 2, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            BloomSurfaceMip2 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
-                width / 4,
-                height / 4, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            BloomSurfaceMip3 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
-                width / 8,
-                height / 8, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            BloomSurfaceMip4 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
-                width / 16,
-                height / 16, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            BloomSurfaceMip5 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
-                width / 32,
-                height / 32, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                BloomSurfaceMip2 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
+                    width / 4,
+                    height / 4, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                BloomSurfaceMip3 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
+                    width / 8,
+                    height / 8, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                BloomSurfaceMip4 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
+                    width / 16,
+                    height / 16, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                BloomSurfaceMip5 = new RenderTarget2D(Game.RenderProcess.GraphicsDevice,
+                    width / 32,
+                    height / 32, false, RenderSurface.Format, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            }
         }
 
         void DisposeRenderSurfaces()
@@ -611,8 +615,11 @@ namespace Orts.Viewer3D
             SceneryShader = SceneryShader ?? viewer.MaterialManager.SceneryShader;
             ShadowMapMaterial = ShadowMapMaterial ?? (ShadowMapMaterial)viewer.MaterialManager.Load("ShadowMap");
             ShadowMapShader = ShadowMapShader ?? viewer.MaterialManager.ShadowMapShader;
-            BloomMaterial = BloomMaterial ?? (BloomMaterial)viewer.MaterialManager.Load("Bloom");
-            BloomShader = BloomShader ?? viewer.MaterialManager.BloomShader;
+            if (Game.Settings.ApplyBloom)
+            {
+                BloomMaterial = BloomMaterial ?? (BloomMaterial)viewer.MaterialManager.Load("Bloom");
+                BloomShader = BloomShader ?? viewer.MaterialManager.BloomShader;
+            }
 
             SolarDirection = viewer.Settings.UseMSTSEnv ? viewer.World.MSTSSky.mstsskysolarDirection : viewer.World.Sky.SolarDirection;
 
@@ -1045,8 +1052,11 @@ namespace Orts.Viewer3D
 
             if (RenderSurfaceMaterial != null)
             {
-                BloomMaterial.ApplyBloom(graphicsDevice, RenderSurface, BloomSurfaceMip0, BloomSurfaceMip1, BloomSurfaceMip2, BloomSurfaceMip3, BloomSurfaceMip4, BloomSurfaceMip5, RenderSurfaceBloomCombine);
-                (RenderSurface, RenderSurfaceBloomCombine) = (RenderSurfaceBloomCombine, RenderSurface);
+                if (Game.Settings.ApplyBloom)
+                {
+                    BloomMaterial.ApplyBloom(graphicsDevice, RenderSurface, BloomSurfaceMip0, BloomSurfaceMip1, BloomSurfaceMip2, BloomSurfaceMip3, BloomSurfaceMip4, BloomSurfaceMip5, RenderSurfaceBloomCombine);
+                    (RenderSurface, RenderSurfaceBloomCombine) = (RenderSurfaceBloomCombine, RenderSurface);
+                }
 
                 graphicsDevice.SetRenderTarget(null);
                 graphicsDevice.Clear(ClearOptions.Target | ClearOptions.DepthBuffer | ClearOptions.Stencil, Color.Transparent, 1, 0);
@@ -1059,7 +1069,8 @@ namespace Orts.Viewer3D
         void DrawSequences(GraphicsDevice graphicsDevice, ref Matrix projection, bool logging, Func<Material, bool> excludeMaterial)
         {
             SceneryShader?.SetPerFrame(ref XNACameraView, ref projection);
-            BloomShader?.SetPerFrame(Camera.Exposure);
+            if (Game.Settings.ApplyBloom)
+                BloomShader?.SetPerFrame(Camera.Exposure);
             
             for (var i = 0; i < (int)RenderPrimitiveSequence.Sentinel; i++)
             {

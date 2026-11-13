@@ -412,7 +412,14 @@ namespace Orts.Viewer3D
             }
             ShadowMapShader = new ShadowMapShader(viewer.RenderProcess.GraphicsDevice);
             SkyShader = new SkyShader(viewer.RenderProcess.GraphicsDevice);
-            BloomShader = new BloomShader(viewer.RenderProcess.GraphicsDevice);
+            if (Viewer.Settings.ApplyBloom)
+            {
+                BloomShader = new BloomShader(viewer.RenderProcess.GraphicsDevice);
+            }
+            else
+            {
+                BloomShader = null;
+            }
             DebugShader = new DebugShader(viewer.RenderProcess.GraphicsDevice);
             CabShader = new CabShader(viewer.RenderProcess.GraphicsDevice, Vector4.One, Vector4.One, Vector3.One, Vector3.One);
 
