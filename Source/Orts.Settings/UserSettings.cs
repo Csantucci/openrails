@@ -333,7 +333,7 @@ namespace ORTS.Settings
         public bool SaveCommands { get; set; }
         [Default(true)]
         public bool ReduceMemory { get; set; }
-        [Default(false)]
+        [Default(true)]
         public bool ApplyBloom { get; set; }
         [Default(false)]
         public bool ExtendedPerformanceDump { get; set; }

@@ -28,3450 +28,3399 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.buttonOK = new System.Windows.Forms.Button();
-            this.buttonCancel = new System.Windows.Forms.Button();
-            this.pbLAA = new System.Windows.Forms.PictureBox();
-            this.labelAutoSaveInterval = new System.Windows.Forms.Label();
-            this.ButtonAutoSave60 = new System.Windows.Forms.RadioButton();
-            this.ButtonAutoSave30 = new System.Windows.Forms.RadioButton();
-            this.ButtonAutoSave15 = new System.Windows.Forms.RadioButton();
-            this.checkAutoSaveActive = new System.Windows.Forms.CheckBox();
-            this.pbViewingFOV = new System.Windows.Forms.PictureBox();
-            this.labelDefaultDetail = new System.Windows.Forms.Label();
-            this.pbWindowGlass = new System.Windows.Forms.PictureBox();
-            this.pbWebServerPort = new System.Windows.Forms.PictureBox();
-            this.pbPerformanceTuner = new System.Windows.Forms.PictureBox();
-            this.pbLODBias = new System.Windows.Forms.PictureBox();
-            this.pbWorldObjectDensity = new System.Windows.Forms.PictureBox();
-            this.pbAntiAliasing = new System.Windows.Forms.PictureBox();
-            this.pbVerticalSync = new System.Windows.Forms.PictureBox();
-            this.pbModelInstancing = new System.Windows.Forms.PictureBox();
-            this.pbDayAmbientLight = new System.Windows.Forms.PictureBox();
-            this.pbSignalLightGlow = new System.Windows.Forms.PictureBox();
-            this.pbDoubleWire = new System.Windows.Forms.PictureBox();
-            this.pbWire = new System.Windows.Forms.PictureBox();
-            this.pbShadowAllShapes = new System.Windows.Forms.PictureBox();
-            this.pbDynamicShadows = new System.Windows.Forms.PictureBox();
-            this.pbLODViewingExtension = new System.Windows.Forms.PictureBox();
-            this.pbDistantMountains = new System.Windows.Forms.PictureBox();
-            this.pbViewingDistance = new System.Windows.Forms.PictureBox();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
-            this.checkUseSuperElevation = new System.Windows.Forms.CheckBox();
-            this.trackLODBias = new System.Windows.Forms.TrackBar();
-            this.numericPerformanceTunerTarget = new System.Windows.Forms.NumericUpDown();
-            this.trackAdhesionFactor = new System.Windows.Forms.TrackBar();
-            this.trackAdhesionFactorChange = new System.Windows.Forms.TrackBar();
-            this.numericActRandomizationLevel = new System.Windows.Forms.NumericUpDown();
-            this.numericActWeatherRandomizationLevel = new System.Windows.Forms.NumericUpDown();
-            this.checkFullRangeThrottle = new System.Windows.Forms.CheckBox();
-            this.btnShowRDLegend = new System.Windows.Forms.Button();
-            this.btnStartRDCalibration = new System.Windows.Forms.Button();
-            this.btnRDReset = new System.Windows.Forms.Button();
-            this.btnCheck = new System.Windows.Forms.Button();
-            this.btnRDSettingsExport = new System.Windows.Forms.Button();
-            this.buttonCheckKeys = new System.Windows.Forms.Button();
-            this.buttonDefaultKeys = new System.Windows.Forms.Button();
-            this.buttonExport = new System.Windows.Forms.Button();
-            this.numericDistantMountainsViewingDistance = new System.Windows.Forms.NumericUpDown();
-            this.trackDayAmbientLight = new System.Windows.Forms.TrackBar();
-            this.trackAntiAliasing = new System.Windows.Forms.TrackBar();
-            this.numericSoundVolumePercent = new System.Windows.Forms.NumericUpDown();
-            this.numericExternalSoundPassThruPercent = new System.Windows.Forms.NumericUpDown();
-            this.numericCab2DStretch = new System.Windows.Forms.NumericUpDown();
-            this.numericSuperElevationGauge = new System.Windows.Forms.NumericUpDown();
-            this.dataLoggerInterval = new System.Windows.Forms.NumericUpDown();
-            this.trackWindVariability = new System.Windows.Forms.TrackBar();
-            this.trackMaxWindSpeed = new System.Windows.Forms.TrackBar();
-            this.checkLODViewingExtension = new System.Windows.Forms.CheckBox();
-            this.labelWindowSize = new System.Windows.Forms.Label();
-            this.labelWebServerPort = new System.Windows.Forms.Label();
-            this.labelWorldObjectDensity = new System.Windows.Forms.Label();
-            this.labelViewingVerticalFOV = new System.Windows.Forms.Label();
-            this.tabPageExperimental = new System.Windows.Forms.TabPage();
-            this.pbAdhesionFactorRandomChange = new System.Windows.Forms.PictureBox();
-            this.pbAdhesionFactorCorrection = new System.Windows.Forms.PictureBox();
-            this.pbMstsEnvironments = new System.Windows.Forms.PictureBox();
-            this.pbActivityWeatherRandomization = new System.Windows.Forms.PictureBox();
-            this.pbActivityRandomization = new System.Windows.Forms.PictureBox();
-            this.pbCorrectQuestionableBrakingParameters = new System.Windows.Forms.PictureBox();
-            this.pbShowShapeWarnings = new System.Windows.Forms.PictureBox();
-            this.label27 = new System.Windows.Forms.Label();
-            this.label26 = new System.Windows.Forms.Label();
-            this.label13 = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.checkCorrectQuestionableBrakingParams = new System.Windows.Forms.CheckBox();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.AdhesionFactorChangeValueLabel = new System.Windows.Forms.Label();
-            this.AdhesionFactorValueLabel = new System.Windows.Forms.Label();
-            this.checkShapeWarnings = new System.Windows.Forms.CheckBox();
-            this.AdhesionLevelValue = new System.Windows.Forms.Label();
-            this.AdhesionLevelLabel = new System.Windows.Forms.Label();
-            this.checkUseMSTSEnv = new System.Windows.Forms.CheckBox();
-            this.label8 = new System.Windows.Forms.Label();
-            this.pbSuperElevation = new System.Windows.Forms.PictureBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.ElevationText = new System.Windows.Forms.Label();
-            this.labelLODBias = new System.Windows.Forms.Label();
-            this.labelPerformanceTunerTarget = new System.Windows.Forms.Label();
-            this.checkPerformanceTuner = new System.Windows.Forms.CheckBox();
-            this.tabPageSystem = new System.Windows.Forms.TabPage();
-            this.pbControlConfirmations = new System.Windows.Forms.PictureBox();
-            this.comboControlConfirmations = new System.Windows.Forms.ComboBox();
-            this.labelControlConfirmations = new System.Windows.Forms.Label();
-            this.labelPortNumber = new System.Windows.Forms.Label();
-            this.numericWebServerPort = new System.Windows.Forms.NumericUpDown();
-            this.pbLanguage = new System.Windows.Forms.PictureBox();
-            this.labelLanguage = new System.Windows.Forms.Label();
-            this.comboLanguage = new System.Windows.Forms.ComboBox();
-            this.comboWindowSize = new System.Windows.Forms.ComboBox();
-            this.label3 = new System.Windows.Forms.Label();
-            this.checkWindowGlass = new System.Windows.Forms.CheckBox();
-            this.tabPageEvaluate = new System.Windows.Forms.TabPage();
-            this.checkListDataLogTSContents = new System.Windows.Forms.CheckedListBox();
-            this.labelDataLogTSInterval = new System.Windows.Forms.Label();
-            this.checkDataLogStationStops = new System.Windows.Forms.CheckBox();
-            this.numericDataLogTSInterval = new System.Windows.Forms.NumericUpDown();
-            this.checkDataLogTrainSpeed = new System.Windows.Forms.CheckBox();
-            this.tabPageDataLogger = new System.Windows.Forms.TabPage();
-            this.checkDataLogSteamPowerCurve = new System.Windows.Forms.CheckBox();
-            this.pbDataLoggerOptions = new System.Windows.Forms.PictureBox();
-            this.comboDataLoggerSeparator = new System.Windows.Forms.ComboBox();
-            this.checkDataLogUseInternalUnits = new System.Windows.Forms.CheckBox();
-            this.label18 = new System.Windows.Forms.Label();
-            this.checkDataLogPerformance = new System.Windows.Forms.CheckBox();
-            this.checkDataLogger = new System.Windows.Forms.CheckBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.checkDataLogPhysics = new System.Windows.Forms.CheckBox();
-            this.checkDataLogSteamPerformance = new System.Windows.Forms.CheckBox();
-            this.dataLoggerIntervalLabel = new System.Windows.Forms.Label();
-            this.checkVerboseConfigurationMessages = new System.Windows.Forms.CheckBox();
-            this.tabPageRailDriver = new System.Windows.Forms.TabPage();
-            this.pbRailDriverOptions = new System.Windows.Forms.PictureBox();
-            this.panelRDSettings = new System.Windows.Forms.Panel();
-            this.panelRDOptions = new System.Windows.Forms.Panel();
-            this.groupBoxReverseRDLevers = new System.Windows.Forms.GroupBox();
-            this.checkReverseIndependentBrake = new System.Windows.Forms.CheckBox();
-            this.checkReverseAutoBrake = new System.Windows.Forms.CheckBox();
-            this.checkReverseThrottle = new System.Windows.Forms.CheckBox();
-            this.checkReverseReverser = new System.Windows.Forms.CheckBox();
-            this.panelRDButtons = new System.Windows.Forms.Panel();
-            this.tabPageKeyboard = new System.Windows.Forms.TabPage();
-            this.pbKeyboardOptions = new System.Windows.Forms.PictureBox();
-            this.panelKeys = new System.Windows.Forms.Panel();
-            this.tabPageSimulation = new System.Windows.Forms.TabPage();
-            this.pbAdvancedAdhesionModel = new System.Windows.Forms.PictureBox();
-            this.pbBreakCouplers = new System.Windows.Forms.PictureBox();
-            this.pbCurveDependentSpeedLimit = new System.Windows.Forms.PictureBox();
-            this.pbAtGameStartSteamPreHeatBoiler = new System.Windows.Forms.PictureBox();
-            this.pbAtGameStartDieselRunEngines = new System.Windows.Forms.PictureBox();
-            this.pbAtGameStartElectricPowerConnected = new System.Windows.Forms.PictureBox();
-            this.pbSimpleControlAndPhysics = new System.Windows.Forms.PictureBox();
-            this.label4 = new System.Windows.Forms.Label();
-            this.checkBoilerPreheated = new System.Windows.Forms.CheckBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.pbForcedRedAtStationStops = new System.Windows.Forms.PictureBox();
-            this.pbLocationLinkedPassingPathProcessing = new System.Windows.Forms.PictureBox();
-            this.pbOpenCloseDoorsOnAiTrains = new System.Windows.Forms.PictureBox();
-            this.checkUseLocationPassingPaths = new System.Windows.Forms.CheckBox();
-            this.checkDoorsAITrains = new System.Windows.Forms.CheckBox();
-            this.checkForcedRedAtStationStops = new System.Windows.Forms.CheckBox();
-            this.checkElectricPowerConnected = new System.Windows.Forms.CheckBox();
-            this.checkSimpleControlsPhysics = new System.Windows.Forms.CheckBox();
-            this.checkCurveSpeedDependent = new System.Windows.Forms.CheckBox();
-            this.checkBreakCouplers = new System.Windows.Forms.CheckBox();
-            this.checkDieselEnginesStarted = new System.Windows.Forms.CheckBox();
-            this.checkUseAdvancedAdhesion = new System.Windows.Forms.CheckBox();
-            this.tabPageVideo = new System.Windows.Forms.TabPage();
-            this.checkSignalLightGlow = new System.Windows.Forms.CheckBox();
-            this.labelAntiAliasingValue = new System.Windows.Forms.Label();
-            this.labelAntiAliasing = new System.Windows.Forms.Label();
-            this.checkShadowAllShapes = new System.Windows.Forms.CheckBox();
-            this.checkDoubleWire = new System.Windows.Forms.CheckBox();
-            this.labelDayAmbientLight = new System.Windows.Forms.Label();
-            this.checkModelInstancing = new System.Windows.Forms.CheckBox();
-            this.checkVerticalSync = new System.Windows.Forms.CheckBox();
-            this.labelDistantMountainsViewingDistance = new System.Windows.Forms.Label();
-            this.checkDistantMountains = new System.Windows.Forms.CheckBox();
-            this.labelViewingDistance = new System.Windows.Forms.Label();
-            this.numericViewingDistance = new System.Windows.Forms.NumericUpDown();
-            this.labelFOVHelp = new System.Windows.Forms.Label();
-            this.numericViewingFOV = new System.Windows.Forms.NumericUpDown();
-            this.label10 = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
-            this.numericWorldObjectDensity = new System.Windows.Forms.NumericUpDown();
-            this.checkDynamicShadows = new System.Windows.Forms.CheckBox();
-            this.checkWire = new System.Windows.Forms.CheckBox();
-            this.labelAmbientDaylightBrightness = new System.Windows.Forms.Label();
-            this.tabPageAudio = new System.Windows.Forms.TabPage();
-            this.pbExternalSoundPassThruPercent = new System.Windows.Forms.PictureBox();
-            this.pbSoundDetailLevel = new System.Windows.Forms.PictureBox();
-            this.pbSoundVolumePercent = new System.Windows.Forms.PictureBox();
-            this.labelExternalSound = new System.Windows.Forms.Label();
-            this.labelSoundVolume = new System.Windows.Forms.Label();
-            this.labelSoundDetailLevel = new System.Windows.Forms.Label();
-            this.numericSoundDetailLevel = new System.Windows.Forms.NumericUpDown();
-            this.tabPageGeneral = new System.Windows.Forms.TabPage();
-            this.pbAutoSave = new System.Windows.Forms.PictureBox();
-            this.pbOverspeedMonitor = new System.Windows.Forms.PictureBox();
-            this.pbEnableTcsScripts = new System.Windows.Forms.PictureBox();
-            this.pbOtherUnits = new System.Windows.Forms.PictureBox();
-            this.pbPressureUnit = new System.Windows.Forms.PictureBox();
-            this.pbBrakePipeChargingRate = new System.Windows.Forms.PictureBox();
-            this.pbGraduatedRelease = new System.Windows.Forms.PictureBox();
-            this.pbRetainers = new System.Windows.Forms.PictureBox();
-            this.pbAlerter = new System.Windows.Forms.PictureBox();
-            this.checkOverspeedMonitor = new System.Windows.Forms.CheckBox();
-            this.checkEnableTCSScripts = new System.Windows.Forms.CheckBox();
-            this.labelOtherUnits = new System.Windows.Forms.Label();
-            this.labelPressureUnit = new System.Windows.Forms.Label();
-            this.comboOtherUnits = new System.Windows.Forms.ComboBox();
-            this.comboPressureUnit = new System.Windows.Forms.ComboBox();
-            this.checkAlerterExternal = new System.Windows.Forms.CheckBox();
-            this.numericBrakePipeChargingRate = new System.Windows.Forms.NumericUpDown();
-            this.checkRetainers = new System.Windows.Forms.CheckBox();
-            this.checkGraduatedRelease = new System.Windows.Forms.CheckBox();
-            this.lBrakePipeChargingRate = new System.Windows.Forms.Label();
-            this.checkAlerter = new System.Windows.Forms.CheckBox();
-            this.tabOptions = new System.Windows.Forms.TabControl();
-            this.tabPageORNYMG = new System.Windows.Forms.TabPage();
-            this.checkExtendedPerformanceDump = new System.Windows.Forms.CheckBox();
-            this.label25 = new System.Windows.Forms.Label();
-            this.precipitationBoxLength = new System.Windows.Forms.NumericUpDown();
-            this.label24 = new System.Windows.Forms.Label();
-            this.precipitationBoxWidth = new System.Windows.Forms.NumericUpDown();
-            this.label23 = new System.Windows.Forms.Label();
-            this.precipitationBoxHeight = new System.Windows.Forms.NumericUpDown();
-            this.pbEnableWebServer = new System.Windows.Forms.PictureBox();
-            this.checkEnableWebServer = new System.Windows.Forms.CheckBox();
-            this.labelCab2DStretch = new System.Windows.Forms.Label();
-            this.checkTunnelResistanceDependent = new System.Windows.Forms.CheckBox();
-            this.checkWindResistanceDependent = new System.Windows.Forms.CheckBox();
-            this.checkCurveResistanceDependent = new System.Windows.Forms.CheckBox();
-            this.checkReduceMemory = new System.Windows.Forms.CheckBox();
-            this.checkSaveCommands = new System.Windows.Forms.CheckBox();
-            this.checkRunAt32bit = new System.Windows.Forms.CheckBox();
-            this.checkEnableWatchdog = new System.Windows.Forms.CheckBox();
-            this.checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
-            this.labelWindVariability = new System.Windows.Forms.Label();
-            this.windVariabilityValueLabel = new System.Windows.Forms.Label();
-            this.labelMaxWindSpeed = new System.Windows.Forms.Label();
-            this.maxWindSpeedValueLabel = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWindowGlass)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWebServerPort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbPerformanceTuner)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLODBias)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWorldObjectDensity)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAntiAliasing)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbVerticalSync)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbModelInstancing)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDayAmbientLight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSignalLightGlow)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDoubleWire)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWire)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbShadowAllShapes)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDynamicShadows)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLODViewingExtension)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDistantMountains)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbViewingDistance)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackLODBias)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericPerformanceTunerTarget)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactorChange)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericActRandomizationLevel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericActWeatherRandomizationLevel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericDistantMountainsViewingDistance)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackDayAmbientLight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAntiAliasing)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSoundVolumePercent)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackMaxWindSpeed)).BeginInit();
-            this.tabPageExperimental.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorRandomChange)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorCorrection)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbMstsEnvironments)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbActivityWeatherRandomization)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbActivityRandomization)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCorrectQuestionableBrakingParameters)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbShowShapeWarnings)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSuperElevation)).BeginInit();
-            this.tabPageSystem.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).BeginInit();
-            this.tabPageEvaluate.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericDataLogTSInterval)).BeginInit();
-            this.tabPageDataLogger.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).BeginInit();
-            this.tabPageRailDriver.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).BeginInit();
-            this.panelRDSettings.SuspendLayout();
-            this.panelRDOptions.SuspendLayout();
-            this.groupBoxReverseRDLevers.SuspendLayout();
-            this.tabPageKeyboard.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbKeyboardOptions)).BeginInit();
-            this.tabPageSimulation.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAdvancedAdhesionModel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbBreakCouplers)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCurveDependentSpeedLimit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAtGameStartSteamPreHeatBoiler)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAtGameStartDieselRunEngines)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAtGameStartElectricPowerConnected)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSimpleControlAndPhysics)).BeginInit();
-            this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbForcedRedAtStationStops)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLocationLinkedPassingPathProcessing)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbOpenCloseDoorsOnAiTrains)).BeginInit();
-            this.tabPageVideo.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericViewingDistance)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericViewingFOV)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericWorldObjectDensity)).BeginInit();
-            this.tabPageAudio.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbExternalSoundPassThruPercent)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSoundDetailLevel)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSoundVolumePercent)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSoundDetailLevel)).BeginInit();
-            this.tabPageGeneral.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbOverspeedMonitor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbEnableTcsScripts)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbOtherUnits)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbPressureUnit)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbBrakePipeChargingRate)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbGraduatedRelease)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbRetainers)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAlerter)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericBrakePipeChargingRate)).BeginInit();
-            this.tabOptions.SuspendLayout();
-            this.tabPageORNYMG.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).BeginInit();
-            this.SuspendLayout();
+            components = new System.ComponentModel.Container();
+            buttonOK = new System.Windows.Forms.Button();
+            buttonCancel = new System.Windows.Forms.Button();
+            pbLAA = new System.Windows.Forms.PictureBox();
+            labelAutoSaveInterval = new System.Windows.Forms.Label();
+            ButtonAutoSave60 = new System.Windows.Forms.RadioButton();
+            ButtonAutoSave30 = new System.Windows.Forms.RadioButton();
+            ButtonAutoSave15 = new System.Windows.Forms.RadioButton();
+            checkAutoSaveActive = new System.Windows.Forms.CheckBox();
+            pbViewingFOV = new System.Windows.Forms.PictureBox();
+            labelDefaultDetail = new System.Windows.Forms.Label();
+            pbWindowGlass = new System.Windows.Forms.PictureBox();
+            pbWebServerPort = new System.Windows.Forms.PictureBox();
+            pbPerformanceTuner = new System.Windows.Forms.PictureBox();
+            pbLODBias = new System.Windows.Forms.PictureBox();
+            pbWorldObjectDensity = new System.Windows.Forms.PictureBox();
+            pbAntiAliasing = new System.Windows.Forms.PictureBox();
+            pbVerticalSync = new System.Windows.Forms.PictureBox();
+            pbModelInstancing = new System.Windows.Forms.PictureBox();
+            pbDayAmbientLight = new System.Windows.Forms.PictureBox();
+            pbSignalLightGlow = new System.Windows.Forms.PictureBox();
+            pbDoubleWire = new System.Windows.Forms.PictureBox();
+            pbWire = new System.Windows.Forms.PictureBox();
+            pbShadowAllShapes = new System.Windows.Forms.PictureBox();
+            pbDynamicShadows = new System.Windows.Forms.PictureBox();
+            pbLODViewingExtension = new System.Windows.Forms.PictureBox();
+            pbDistantMountains = new System.Windows.Forms.PictureBox();
+            pbViewingDistance = new System.Windows.Forms.PictureBox();
+            toolTip1 = new System.Windows.Forms.ToolTip(components);
+            checkUseSuperElevation = new System.Windows.Forms.CheckBox();
+            trackLODBias = new System.Windows.Forms.TrackBar();
+            numericPerformanceTunerTarget = new System.Windows.Forms.NumericUpDown();
+            trackAdhesionFactor = new System.Windows.Forms.TrackBar();
+            trackAdhesionFactorChange = new System.Windows.Forms.TrackBar();
+            numericActRandomizationLevel = new System.Windows.Forms.NumericUpDown();
+            numericActWeatherRandomizationLevel = new System.Windows.Forms.NumericUpDown();
+            checkFullRangeThrottle = new System.Windows.Forms.CheckBox();
+            btnShowRDLegend = new System.Windows.Forms.Button();
+            btnStartRDCalibration = new System.Windows.Forms.Button();
+            btnRDReset = new System.Windows.Forms.Button();
+            btnCheck = new System.Windows.Forms.Button();
+            btnRDSettingsExport = new System.Windows.Forms.Button();
+            buttonCheckKeys = new System.Windows.Forms.Button();
+            buttonDefaultKeys = new System.Windows.Forms.Button();
+            buttonExport = new System.Windows.Forms.Button();
+            numericDistantMountainsViewingDistance = new System.Windows.Forms.NumericUpDown();
+            trackDayAmbientLight = new System.Windows.Forms.TrackBar();
+            trackAntiAliasing = new System.Windows.Forms.TrackBar();
+            numericSoundVolumePercent = new System.Windows.Forms.NumericUpDown();
+            numericExternalSoundPassThruPercent = new System.Windows.Forms.NumericUpDown();
+            numericCab2DStretch = new System.Windows.Forms.NumericUpDown();
+            numericSuperElevationGauge = new System.Windows.Forms.NumericUpDown();
+            dataLoggerInterval = new System.Windows.Forms.NumericUpDown();
+            checkDataLogUseInternalUnits = new System.Windows.Forms.CheckBox();
+            trackWindVariability = new System.Windows.Forms.TrackBar();
+            trackMaxWindSpeed = new System.Windows.Forms.TrackBar();
+            checkLODViewingExtension = new System.Windows.Forms.CheckBox();
+            labelWindowSize = new System.Windows.Forms.Label();
+            labelWebServerPort = new System.Windows.Forms.Label();
+            labelWorldObjectDensity = new System.Windows.Forms.Label();
+            labelViewingVerticalFOV = new System.Windows.Forms.Label();
+            tabPageExperimental = new System.Windows.Forms.TabPage();
+            pbAdhesionFactorRandomChange = new System.Windows.Forms.PictureBox();
+            pbAdhesionFactorCorrection = new System.Windows.Forms.PictureBox();
+            pbMstsEnvironments = new System.Windows.Forms.PictureBox();
+            pbActivityWeatherRandomization = new System.Windows.Forms.PictureBox();
+            pbActivityRandomization = new System.Windows.Forms.PictureBox();
+            pbCorrectQuestionableBrakingParameters = new System.Windows.Forms.PictureBox();
+            pbShowShapeWarnings = new System.Windows.Forms.PictureBox();
+            label27 = new System.Windows.Forms.Label();
+            label26 = new System.Windows.Forms.Label();
+            label13 = new System.Windows.Forms.Label();
+            label12 = new System.Windows.Forms.Label();
+            checkCorrectQuestionableBrakingParams = new System.Windows.Forms.CheckBox();
+            label16 = new System.Windows.Forms.Label();
+            label9 = new System.Windows.Forms.Label();
+            AdhesionFactorChangeValueLabel = new System.Windows.Forms.Label();
+            AdhesionFactorValueLabel = new System.Windows.Forms.Label();
+            checkShapeWarnings = new System.Windows.Forms.CheckBox();
+            AdhesionLevelValue = new System.Windows.Forms.Label();
+            AdhesionLevelLabel = new System.Windows.Forms.Label();
+            checkUseMSTSEnv = new System.Windows.Forms.CheckBox();
+            label8 = new System.Windows.Forms.Label();
+            pbSuperElevation = new System.Windows.Forms.PictureBox();
+            label5 = new System.Windows.Forms.Label();
+            ElevationText = new System.Windows.Forms.Label();
+            labelLODBias = new System.Windows.Forms.Label();
+            labelPerformanceTunerTarget = new System.Windows.Forms.Label();
+            checkPerformanceTuner = new System.Windows.Forms.CheckBox();
+            tabPageSystem = new System.Windows.Forms.TabPage();
+            pbControlConfirmations = new System.Windows.Forms.PictureBox();
+            comboControlConfirmations = new System.Windows.Forms.ComboBox();
+            labelControlConfirmations = new System.Windows.Forms.Label();
+            labelPortNumber = new System.Windows.Forms.Label();
+            numericWebServerPort = new System.Windows.Forms.NumericUpDown();
+            pbLanguage = new System.Windows.Forms.PictureBox();
+            labelLanguage = new System.Windows.Forms.Label();
+            comboLanguage = new System.Windows.Forms.ComboBox();
+            comboWindowSize = new System.Windows.Forms.ComboBox();
+            label3 = new System.Windows.Forms.Label();
+            checkWindowGlass = new System.Windows.Forms.CheckBox();
+            tabPageEvaluate = new System.Windows.Forms.TabPage();
+            checkListDataLogTSContents = new System.Windows.Forms.CheckedListBox();
+            labelDataLogTSInterval = new System.Windows.Forms.Label();
+            checkDataLogStationStops = new System.Windows.Forms.CheckBox();
+            numericDataLogTSInterval = new System.Windows.Forms.NumericUpDown();
+            checkDataLogTrainSpeed = new System.Windows.Forms.CheckBox();
+            tabPageDataLogger = new System.Windows.Forms.TabPage();
+            checkDataLogSteamPowerCurve = new System.Windows.Forms.CheckBox();
+            pbDataLoggerOptions = new System.Windows.Forms.PictureBox();
+            comboDataLoggerSeparator = new System.Windows.Forms.ComboBox();
+            label18 = new System.Windows.Forms.Label();
+            checkDataLogPerformance = new System.Windows.Forms.CheckBox();
+            checkDataLogger = new System.Windows.Forms.CheckBox();
+            label17 = new System.Windows.Forms.Label();
+            checkDataLogPhysics = new System.Windows.Forms.CheckBox();
+            checkDataLogSteamPerformance = new System.Windows.Forms.CheckBox();
+            dataLoggerIntervalLabel = new System.Windows.Forms.Label();
+            checkVerboseConfigurationMessages = new System.Windows.Forms.CheckBox();
+            tabPageRailDriver = new System.Windows.Forms.TabPage();
+            pbRailDriverOptions = new System.Windows.Forms.PictureBox();
+            panelRDSettings = new System.Windows.Forms.Panel();
+            panelRDOptions = new System.Windows.Forms.Panel();
+            groupBoxReverseRDLevers = new System.Windows.Forms.GroupBox();
+            checkReverseIndependentBrake = new System.Windows.Forms.CheckBox();
+            checkReverseAutoBrake = new System.Windows.Forms.CheckBox();
+            checkReverseThrottle = new System.Windows.Forms.CheckBox();
+            checkReverseReverser = new System.Windows.Forms.CheckBox();
+            panelRDButtons = new System.Windows.Forms.Panel();
+            tabPageKeyboard = new System.Windows.Forms.TabPage();
+            pbKeyboardOptions = new System.Windows.Forms.PictureBox();
+            panelKeys = new System.Windows.Forms.Panel();
+            tabPageSimulation = new System.Windows.Forms.TabPage();
+            pbAdvancedAdhesionModel = new System.Windows.Forms.PictureBox();
+            pbBreakCouplers = new System.Windows.Forms.PictureBox();
+            pbCurveDependentSpeedLimit = new System.Windows.Forms.PictureBox();
+            pbAtGameStartSteamPreHeatBoiler = new System.Windows.Forms.PictureBox();
+            pbAtGameStartDieselRunEngines = new System.Windows.Forms.PictureBox();
+            pbAtGameStartElectricPowerConnected = new System.Windows.Forms.PictureBox();
+            pbSimpleControlAndPhysics = new System.Windows.Forms.PictureBox();
+            label4 = new System.Windows.Forms.Label();
+            checkBoilerPreheated = new System.Windows.Forms.CheckBox();
+            groupBox1 = new System.Windows.Forms.GroupBox();
+            pbForcedRedAtStationStops = new System.Windows.Forms.PictureBox();
+            pbLocationLinkedPassingPathProcessing = new System.Windows.Forms.PictureBox();
+            pbOpenCloseDoorsOnAiTrains = new System.Windows.Forms.PictureBox();
+            checkUseLocationPassingPaths = new System.Windows.Forms.CheckBox();
+            checkDoorsAITrains = new System.Windows.Forms.CheckBox();
+            checkForcedRedAtStationStops = new System.Windows.Forms.CheckBox();
+            checkElectricPowerConnected = new System.Windows.Forms.CheckBox();
+            checkSimpleControlsPhysics = new System.Windows.Forms.CheckBox();
+            checkCurveSpeedDependent = new System.Windows.Forms.CheckBox();
+            checkBreakCouplers = new System.Windows.Forms.CheckBox();
+            checkDieselEnginesStarted = new System.Windows.Forms.CheckBox();
+            checkUseAdvancedAdhesion = new System.Windows.Forms.CheckBox();
+            tabPageVideo = new System.Windows.Forms.TabPage();
+            checkSignalLightGlow = new System.Windows.Forms.CheckBox();
+            labelAntiAliasingValue = new System.Windows.Forms.Label();
+            labelAntiAliasing = new System.Windows.Forms.Label();
+            checkShadowAllShapes = new System.Windows.Forms.CheckBox();
+            checkDoubleWire = new System.Windows.Forms.CheckBox();
+            labelDayAmbientLight = new System.Windows.Forms.Label();
+            checkModelInstancing = new System.Windows.Forms.CheckBox();
+            checkVerticalSync = new System.Windows.Forms.CheckBox();
+            labelDistantMountainsViewingDistance = new System.Windows.Forms.Label();
+            checkDistantMountains = new System.Windows.Forms.CheckBox();
+            labelViewingDistance = new System.Windows.Forms.Label();
+            numericViewingDistance = new System.Windows.Forms.NumericUpDown();
+            labelFOVHelp = new System.Windows.Forms.Label();
+            numericViewingFOV = new System.Windows.Forms.NumericUpDown();
+            label10 = new System.Windows.Forms.Label();
+            label1 = new System.Windows.Forms.Label();
+            numericWorldObjectDensity = new System.Windows.Forms.NumericUpDown();
+            checkDynamicShadows = new System.Windows.Forms.CheckBox();
+            checkWire = new System.Windows.Forms.CheckBox();
+            labelAmbientDaylightBrightness = new System.Windows.Forms.Label();
+            tabPageAudio = new System.Windows.Forms.TabPage();
+            pbExternalSoundPassThruPercent = new System.Windows.Forms.PictureBox();
+            pbSoundDetailLevel = new System.Windows.Forms.PictureBox();
+            pbSoundVolumePercent = new System.Windows.Forms.PictureBox();
+            labelExternalSound = new System.Windows.Forms.Label();
+            labelSoundVolume = new System.Windows.Forms.Label();
+            labelSoundDetailLevel = new System.Windows.Forms.Label();
+            numericSoundDetailLevel = new System.Windows.Forms.NumericUpDown();
+            tabPageGeneral = new System.Windows.Forms.TabPage();
+            pbAutoSave = new System.Windows.Forms.PictureBox();
+            pbOverspeedMonitor = new System.Windows.Forms.PictureBox();
+            pbEnableTcsScripts = new System.Windows.Forms.PictureBox();
+            pbOtherUnits = new System.Windows.Forms.PictureBox();
+            pbPressureUnit = new System.Windows.Forms.PictureBox();
+            pbBrakePipeChargingRate = new System.Windows.Forms.PictureBox();
+            pbGraduatedRelease = new System.Windows.Forms.PictureBox();
+            pbRetainers = new System.Windows.Forms.PictureBox();
+            pbAlerter = new System.Windows.Forms.PictureBox();
+            checkOverspeedMonitor = new System.Windows.Forms.CheckBox();
+            checkEnableTCSScripts = new System.Windows.Forms.CheckBox();
+            labelOtherUnits = new System.Windows.Forms.Label();
+            labelPressureUnit = new System.Windows.Forms.Label();
+            comboOtherUnits = new System.Windows.Forms.ComboBox();
+            comboPressureUnit = new System.Windows.Forms.ComboBox();
+            checkAlerterExternal = new System.Windows.Forms.CheckBox();
+            numericBrakePipeChargingRate = new System.Windows.Forms.NumericUpDown();
+            checkRetainers = new System.Windows.Forms.CheckBox();
+            checkGraduatedRelease = new System.Windows.Forms.CheckBox();
+            lBrakePipeChargingRate = new System.Windows.Forms.Label();
+            checkAlerter = new System.Windows.Forms.CheckBox();
+            tabOptions = new System.Windows.Forms.TabControl();
+            tabPageORNYMG = new System.Windows.Forms.TabPage();
+            checkExtendedPerformanceDump = new System.Windows.Forms.CheckBox();
+            label25 = new System.Windows.Forms.Label();
+            precipitationBoxLength = new System.Windows.Forms.NumericUpDown();
+            label24 = new System.Windows.Forms.Label();
+            precipitationBoxWidth = new System.Windows.Forms.NumericUpDown();
+            label23 = new System.Windows.Forms.Label();
+            precipitationBoxHeight = new System.Windows.Forms.NumericUpDown();
+            pbEnableWebServer = new System.Windows.Forms.PictureBox();
+            checkEnableWebServer = new System.Windows.Forms.CheckBox();
+            labelCab2DStretch = new System.Windows.Forms.Label();
+            checkTunnelResistanceDependent = new System.Windows.Forms.CheckBox();
+            checkWindResistanceDependent = new System.Windows.Forms.CheckBox();
+            checkCurveResistanceDependent = new System.Windows.Forms.CheckBox();
+            checkReduceMemory = new System.Windows.Forms.CheckBox();
+            checkSaveCommands = new System.Windows.Forms.CheckBox();
+            checkRunAt32bit = new System.Windows.Forms.CheckBox();
+            checkEnableWatchdog = new System.Windows.Forms.CheckBox();
+            checkFastFullScreenAltTab = new System.Windows.Forms.CheckBox();
+            labelWindVariability = new System.Windows.Forms.Label();
+            windVariabilityValueLabel = new System.Windows.Forms.Label();
+            labelMaxWindSpeed = new System.Windows.Forms.Label();
+            maxWindSpeedValueLabel = new System.Windows.Forms.Label();
+            checkApplyBloom = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)pbLAA).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbViewingFOV).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbWindowGlass).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbWebServerPort).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbPerformanceTuner).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbLODBias).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbWorldObjectDensity).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAntiAliasing).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbVerticalSync).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbModelInstancing).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbDayAmbientLight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbSignalLightGlow).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbDoubleWire).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbWire).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbShadowAllShapes).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbDynamicShadows).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbLODViewingExtension).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbDistantMountains).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbViewingDistance).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackLODBias).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericPerformanceTunerTarget).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackAdhesionFactor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackAdhesionFactorChange).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericActRandomizationLevel).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericActWeatherRandomizationLevel).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericDistantMountainsViewingDistance).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackDayAmbientLight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackAntiAliasing).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericSoundVolumePercent).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericExternalSoundPassThruPercent).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericCab2DStretch).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericSuperElevationGauge).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)dataLoggerInterval).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackWindVariability).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)trackMaxWindSpeed).BeginInit();
+            tabPageExperimental.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbAdhesionFactorRandomChange).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAdhesionFactorCorrection).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbMstsEnvironments).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbActivityWeatherRandomization).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbActivityRandomization).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbCorrectQuestionableBrakingParameters).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbShowShapeWarnings).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbSuperElevation).BeginInit();
+            tabPageSystem.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbControlConfirmations).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericWebServerPort).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbLanguage).BeginInit();
+            tabPageEvaluate.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericDataLogTSInterval).BeginInit();
+            tabPageDataLogger.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbDataLoggerOptions).BeginInit();
+            tabPageRailDriver.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbRailDriverOptions).BeginInit();
+            panelRDSettings.SuspendLayout();
+            panelRDOptions.SuspendLayout();
+            groupBoxReverseRDLevers.SuspendLayout();
+            tabPageKeyboard.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbKeyboardOptions).BeginInit();
+            tabPageSimulation.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbAdvancedAdhesionModel).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbBreakCouplers).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbCurveDependentSpeedLimit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAtGameStartSteamPreHeatBoiler).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAtGameStartDieselRunEngines).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAtGameStartElectricPowerConnected).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbSimpleControlAndPhysics).BeginInit();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbForcedRedAtStationStops).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbLocationLinkedPassingPathProcessing).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbOpenCloseDoorsOnAiTrains).BeginInit();
+            tabPageVideo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numericViewingDistance).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericViewingFOV).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericWorldObjectDensity).BeginInit();
+            tabPageAudio.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbExternalSoundPassThruPercent).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbSoundDetailLevel).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbSoundVolumePercent).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericSoundDetailLevel).BeginInit();
+            tabPageGeneral.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)pbAutoSave).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbOverspeedMonitor).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbEnableTcsScripts).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbOtherUnits).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbPressureUnit).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbBrakePipeChargingRate).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbGraduatedRelease).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbRetainers).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbAlerter).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numericBrakePipeChargingRate).BeginInit();
+            tabOptions.SuspendLayout();
+            tabPageORNYMG.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)precipitationBoxLength).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)precipitationBoxWidth).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)precipitationBoxHeight).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)pbEnableWebServer).BeginInit();
+            SuspendLayout();
             // 
             // buttonOK
             // 
-            this.buttonOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonOK.Location = new System.Drawing.Point(466, 446);
-            this.buttonOK.Name = "buttonOK";
-            this.buttonOK.Size = new System.Drawing.Size(75, 23);
-            this.buttonOK.TabIndex = 1;
-            this.buttonOK.Text = "OK";
-            this.buttonOK.UseVisualStyleBackColor = true;
-            this.buttonOK.Click += new System.EventHandler(this.buttonOK_Click);
+            buttonOK.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            buttonOK.Location = new System.Drawing.Point(544, 515);
+            buttonOK.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonOK.Name = "buttonOK";
+            buttonOK.Size = new System.Drawing.Size(88, 27);
+            buttonOK.TabIndex = 1;
+            buttonOK.Text = "OK";
+            buttonOK.UseVisualStyleBackColor = true;
+            buttonOK.Click += buttonOK_Click;
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(547, 446);
-            this.buttonCancel.Name = "buttonCancel";
-            this.buttonCancel.Size = new System.Drawing.Size(75, 23);
-            this.buttonCancel.TabIndex = 2;
-            this.buttonCancel.Text = "Cancel";
-            this.buttonCancel.UseVisualStyleBackColor = true;
+            buttonCancel.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            buttonCancel.Location = new System.Drawing.Point(638, 515);
+            buttonCancel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonCancel.Name = "buttonCancel";
+            buttonCancel.Size = new System.Drawing.Size(88, 27);
+            buttonCancel.TabIndex = 2;
+            buttonCancel.Text = "Cancel";
+            buttonCancel.UseVisualStyleBackColor = true;
             // 
             // pbLAA
             // 
-            this.pbLAA.Location = new System.Drawing.Point(0, 0);
-            this.pbLAA.Name = "pbLAA";
-            this.pbLAA.Size = new System.Drawing.Size(100, 50);
-            this.pbLAA.TabIndex = 0;
-            this.pbLAA.TabStop = false;
+            pbLAA.Location = new System.Drawing.Point(0, 0);
+            pbLAA.Name = "pbLAA";
+            pbLAA.Size = new System.Drawing.Size(100, 50);
+            pbLAA.TabIndex = 0;
+            pbLAA.TabStop = false;
             // 
             // labelAutoSaveInterval
             // 
-            this.labelAutoSaveInterval.AutoSize = true;
-            this.labelAutoSaveInterval.Location = new System.Drawing.Point(111, 303);
-            this.labelAutoSaveInterval.Name = "labelAutoSaveInterval";
-            this.labelAutoSaveInterval.Size = new System.Drawing.Size(48, 13);
-            this.labelAutoSaveInterval.TabIndex = 35;
-            this.labelAutoSaveInterval.Text = "Interval :";
+            labelAutoSaveInterval.AutoSize = true;
+            labelAutoSaveInterval.Location = new System.Drawing.Point(130, 350);
+            labelAutoSaveInterval.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelAutoSaveInterval.Name = "labelAutoSaveInterval";
+            labelAutoSaveInterval.Size = new System.Drawing.Size(52, 15);
+            labelAutoSaveInterval.TabIndex = 35;
+            labelAutoSaveInterval.Text = "Interval :";
             // 
             // ButtonAutoSave60
             // 
-            this.ButtonAutoSave60.AutoSize = true;
-            this.ButtonAutoSave60.Location = new System.Drawing.Point(159, 347);
-            this.ButtonAutoSave60.Name = "ButtonAutoSave60";
-            this.ButtonAutoSave60.Size = new System.Drawing.Size(61, 17);
-            this.ButtonAutoSave60.TabIndex = 34;
-            this.ButtonAutoSave60.TabStop = true;
-            this.ButtonAutoSave60.Text = "60 mins";
-            this.ButtonAutoSave60.UseVisualStyleBackColor = true;
-            this.ButtonAutoSave60.CheckedChanged += new System.EventHandler(this.buttonAutoSaveInterval_checkchanged);
+            ButtonAutoSave60.AutoSize = true;
+            ButtonAutoSave60.Location = new System.Drawing.Point(186, 400);
+            ButtonAutoSave60.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonAutoSave60.Name = "ButtonAutoSave60";
+            ButtonAutoSave60.Size = new System.Drawing.Size(66, 19);
+            ButtonAutoSave60.TabIndex = 34;
+            ButtonAutoSave60.TabStop = true;
+            ButtonAutoSave60.Text = "60 mins";
+            ButtonAutoSave60.UseVisualStyleBackColor = true;
+            ButtonAutoSave60.CheckedChanged += buttonAutoSaveInterval_checkchanged;
             // 
             // ButtonAutoSave30
             // 
-            this.ButtonAutoSave30.AutoSize = true;
-            this.ButtonAutoSave30.Location = new System.Drawing.Point(159, 324);
-            this.ButtonAutoSave30.Name = "ButtonAutoSave30";
-            this.ButtonAutoSave30.Size = new System.Drawing.Size(61, 17);
-            this.ButtonAutoSave30.TabIndex = 33;
-            this.ButtonAutoSave30.TabStop = true;
-            this.ButtonAutoSave30.Text = "30 mins";
-            this.ButtonAutoSave30.UseVisualStyleBackColor = true;
-            this.ButtonAutoSave30.CheckedChanged += new System.EventHandler(this.buttonAutoSaveInterval_checkchanged);
+            ButtonAutoSave30.AutoSize = true;
+            ButtonAutoSave30.Location = new System.Drawing.Point(186, 374);
+            ButtonAutoSave30.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonAutoSave30.Name = "ButtonAutoSave30";
+            ButtonAutoSave30.Size = new System.Drawing.Size(66, 19);
+            ButtonAutoSave30.TabIndex = 33;
+            ButtonAutoSave30.TabStop = true;
+            ButtonAutoSave30.Text = "30 mins";
+            ButtonAutoSave30.UseVisualStyleBackColor = true;
+            ButtonAutoSave30.CheckedChanged += buttonAutoSaveInterval_checkchanged;
             // 
             // ButtonAutoSave15
             // 
-            this.ButtonAutoSave15.AutoSize = true;
-            this.ButtonAutoSave15.Location = new System.Drawing.Point(159, 301);
-            this.ButtonAutoSave15.Name = "ButtonAutoSave15";
-            this.ButtonAutoSave15.Size = new System.Drawing.Size(61, 17);
-            this.ButtonAutoSave15.TabIndex = 32;
-            this.ButtonAutoSave15.TabStop = true;
-            this.ButtonAutoSave15.Text = "15 mins";
-            this.ButtonAutoSave15.UseVisualStyleBackColor = true;
-            this.ButtonAutoSave15.CheckedChanged += new System.EventHandler(this.buttonAutoSaveInterval_checkchanged);
+            ButtonAutoSave15.AutoSize = true;
+            ButtonAutoSave15.Location = new System.Drawing.Point(186, 347);
+            ButtonAutoSave15.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ButtonAutoSave15.Name = "ButtonAutoSave15";
+            ButtonAutoSave15.Size = new System.Drawing.Size(66, 19);
+            ButtonAutoSave15.TabIndex = 32;
+            ButtonAutoSave15.TabStop = true;
+            ButtonAutoSave15.Text = "15 mins";
+            ButtonAutoSave15.UseVisualStyleBackColor = true;
+            ButtonAutoSave15.CheckedChanged += buttonAutoSaveInterval_checkchanged;
             // 
             // checkAutoSaveActive
             // 
-            this.checkAutoSaveActive.AutoSize = true;
-            this.checkAutoSaveActive.Location = new System.Drawing.Point(32, 302);
-            this.checkAutoSaveActive.Name = "checkAutoSaveActive";
-            this.checkAutoSaveActive.Size = new System.Drawing.Size(73, 17);
-            this.checkAutoSaveActive.TabIndex = 31;
-            this.checkAutoSaveActive.Text = "AutoSave";
-            this.checkAutoSaveActive.UseVisualStyleBackColor = true;
-            this.checkAutoSaveActive.CheckedChanged += new System.EventHandler(this.checkAutoSave_checkchanged);
+            checkAutoSaveActive.AutoSize = true;
+            checkAutoSaveActive.Location = new System.Drawing.Point(37, 348);
+            checkAutoSaveActive.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkAutoSaveActive.Name = "checkAutoSaveActive";
+            checkAutoSaveActive.Size = new System.Drawing.Size(76, 19);
+            checkAutoSaveActive.TabIndex = 31;
+            checkAutoSaveActive.Text = "AutoSave";
+            checkAutoSaveActive.UseVisualStyleBackColor = true;
+            checkAutoSaveActive.CheckedChanged += checkAutoSave_checkchanged;
             // 
             // pbViewingFOV
             // 
-            this.pbViewingFOV.Image = global::Menu.Properties.Resources.info_18;
-            this.pbViewingFOV.Location = new System.Drawing.Point(312, 233);
-            this.pbViewingFOV.Name = "pbViewingFOV";
-            this.pbViewingFOV.Size = new System.Drawing.Size(18, 18);
-            this.pbViewingFOV.TabIndex = 45;
-            this.pbViewingFOV.TabStop = false;
-            this.pbViewingFOV.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbViewingFOV.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbViewingFOV.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbViewingFOV.Image = Properties.Resources.info_18;
+            pbViewingFOV.Location = new System.Drawing.Point(364, 269);
+            pbViewingFOV.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbViewingFOV.Name = "pbViewingFOV";
+            pbViewingFOV.Size = new System.Drawing.Size(21, 21);
+            pbViewingFOV.TabIndex = 45;
+            pbViewingFOV.TabStop = false;
+            pbViewingFOV.Click += HelpIcon_Click;
+            pbViewingFOV.MouseEnter += HelpIcon_MouseEnter;
+            pbViewingFOV.MouseLeave += HelpIcon_MouseLeave;
             // 
             // labelDefaultDetail
             // 
-            this.labelDefaultDetail.Location = new System.Drawing.Point(455, 169);
-            this.labelDefaultDetail.Margin = new System.Windows.Forms.Padding(3);
-            this.labelDefaultDetail.Name = "labelDefaultDetail";
-            this.labelDefaultDetail.Size = new System.Drawing.Size(141, 16);
-            this.labelDefaultDetail.TabIndex = 44;
-            this.labelDefaultDetail.Text = "Default detail (+0%)";
-            this.labelDefaultDetail.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            labelDefaultDetail.Location = new System.Drawing.Point(531, 195);
+            labelDefaultDetail.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelDefaultDetail.Name = "labelDefaultDetail";
+            labelDefaultDetail.Size = new System.Drawing.Size(164, 18);
+            labelDefaultDetail.TabIndex = 44;
+            labelDefaultDetail.Text = "Default detail (+0%)";
+            labelDefaultDetail.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // pbWindowGlass
             // 
-            this.pbWindowGlass.Image = global::Menu.Properties.Resources.info_18;
-            this.pbWindowGlass.Location = new System.Drawing.Point(11, 234);
-            this.pbWindowGlass.Name = "pbWindowGlass";
-            this.pbWindowGlass.Size = new System.Drawing.Size(18, 18);
-            this.pbWindowGlass.TabIndex = 36;
-            this.pbWindowGlass.TabStop = false;
-            this.pbWindowGlass.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbWindowGlass.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbWindowGlass.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbWindowGlass.Image = Properties.Resources.info_18;
+            pbWindowGlass.Location = new System.Drawing.Point(13, 270);
+            pbWindowGlass.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbWindowGlass.Name = "pbWindowGlass";
+            pbWindowGlass.Size = new System.Drawing.Size(21, 21);
+            pbWindowGlass.TabIndex = 36;
+            pbWindowGlass.TabStop = false;
+            pbWindowGlass.Click += HelpIcon_Click;
+            pbWindowGlass.MouseEnter += HelpIcon_MouseEnter;
+            pbWindowGlass.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbWebServerPort
             // 
-            this.pbWebServerPort.Image = global::Menu.Properties.Resources.info_18;
-            this.pbWebServerPort.Location = new System.Drawing.Point(11, 298);
-            this.pbWebServerPort.Name = "pbWebServerPort";
-            this.pbWebServerPort.Size = new System.Drawing.Size(18, 18);
-            this.pbWebServerPort.TabIndex = 41;
-            this.pbWebServerPort.TabStop = false;
-            this.pbWebServerPort.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbWebServerPort.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbWebServerPort.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbWebServerPort.Image = Properties.Resources.info_18;
+            pbWebServerPort.Location = new System.Drawing.Point(13, 344);
+            pbWebServerPort.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbWebServerPort.Name = "pbWebServerPort";
+            pbWebServerPort.Size = new System.Drawing.Size(21, 21);
+            pbWebServerPort.TabIndex = 41;
+            pbWebServerPort.TabStop = false;
+            pbWebServerPort.Click += HelpIcon_Click;
+            pbWebServerPort.MouseEnter += HelpIcon_MouseEnter;
+            pbWebServerPort.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbPerformanceTuner
             // 
-            this.pbPerformanceTuner.Image = global::Menu.Properties.Resources.info_18;
-            this.pbPerformanceTuner.Location = new System.Drawing.Point(11, 330);
-            this.pbPerformanceTuner.Name = "pbPerformanceTuner";
-            this.pbPerformanceTuner.Size = new System.Drawing.Size(18, 18);
-            this.pbPerformanceTuner.TabIndex = 45;
-            this.pbPerformanceTuner.TabStop = false;
-            this.pbPerformanceTuner.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbPerformanceTuner.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbPerformanceTuner.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbPerformanceTuner.Image = Properties.Resources.info_18;
+            pbPerformanceTuner.Location = new System.Drawing.Point(13, 381);
+            pbPerformanceTuner.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbPerformanceTuner.Name = "pbPerformanceTuner";
+            pbPerformanceTuner.Size = new System.Drawing.Size(21, 21);
+            pbPerformanceTuner.TabIndex = 45;
+            pbPerformanceTuner.TabStop = false;
+            pbPerformanceTuner.Click += HelpIcon_Click;
+            pbPerformanceTuner.MouseEnter += HelpIcon_MouseEnter;
+            pbPerformanceTuner.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbLODBias
             // 
-            this.pbLODBias.Image = global::Menu.Properties.Resources.info_18;
-            this.pbLODBias.Location = new System.Drawing.Point(312, 169);
-            this.pbLODBias.Name = "pbLODBias";
-            this.pbLODBias.Size = new System.Drawing.Size(18, 18);
-            this.pbLODBias.TabIndex = 43;
-            this.pbLODBias.TabStop = false;
-            this.pbLODBias.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbLODBias.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbLODBias.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbLODBias.Image = Properties.Resources.info_18;
+            pbLODBias.Location = new System.Drawing.Point(364, 195);
+            pbLODBias.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbLODBias.Name = "pbLODBias";
+            pbLODBias.Size = new System.Drawing.Size(21, 21);
+            pbLODBias.TabIndex = 43;
+            pbLODBias.TabStop = false;
+            pbLODBias.Click += HelpIcon_Click;
+            pbLODBias.MouseEnter += HelpIcon_MouseEnter;
+            pbLODBias.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbWorldObjectDensity
             // 
-            this.pbWorldObjectDensity.Image = global::Menu.Properties.Resources.info_18;
-            this.pbWorldObjectDensity.Location = new System.Drawing.Point(312, 137);
-            this.pbWorldObjectDensity.Name = "pbWorldObjectDensity";
-            this.pbWorldObjectDensity.Size = new System.Drawing.Size(18, 18);
-            this.pbWorldObjectDensity.TabIndex = 42;
-            this.pbWorldObjectDensity.TabStop = false;
-            this.pbWorldObjectDensity.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbWorldObjectDensity.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbWorldObjectDensity.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbWorldObjectDensity.Image = Properties.Resources.info_18;
+            pbWorldObjectDensity.Location = new System.Drawing.Point(364, 158);
+            pbWorldObjectDensity.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbWorldObjectDensity.Name = "pbWorldObjectDensity";
+            pbWorldObjectDensity.Size = new System.Drawing.Size(21, 21);
+            pbWorldObjectDensity.TabIndex = 42;
+            pbWorldObjectDensity.TabStop = false;
+            pbWorldObjectDensity.Click += HelpIcon_Click;
+            pbWorldObjectDensity.MouseEnter += HelpIcon_MouseEnter;
+            pbWorldObjectDensity.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbAntiAliasing
             // 
-            this.pbAntiAliasing.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAntiAliasing.Location = new System.Drawing.Point(312, 73);
-            this.pbAntiAliasing.Name = "pbAntiAliasing";
-            this.pbAntiAliasing.Size = new System.Drawing.Size(18, 18);
-            this.pbAntiAliasing.TabIndex = 41;
-            this.pbAntiAliasing.TabStop = false;
-            this.pbAntiAliasing.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAntiAliasing.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAntiAliasing.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbAntiAliasing.Image = Properties.Resources.info_18;
+            pbAntiAliasing.Location = new System.Drawing.Point(364, 84);
+            pbAntiAliasing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAntiAliasing.Name = "pbAntiAliasing";
+            pbAntiAliasing.Size = new System.Drawing.Size(21, 21);
+            pbAntiAliasing.TabIndex = 41;
+            pbAntiAliasing.TabStop = false;
+            pbAntiAliasing.Click += HelpIcon_Click;
+            pbAntiAliasing.MouseEnter += HelpIcon_MouseEnter;
+            pbAntiAliasing.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbVerticalSync
             // 
-            this.pbVerticalSync.Image = global::Menu.Properties.Resources.info_18;
-            this.pbVerticalSync.Location = new System.Drawing.Point(312, 41);
-            this.pbVerticalSync.Name = "pbVerticalSync";
-            this.pbVerticalSync.Size = new System.Drawing.Size(18, 18);
-            this.pbVerticalSync.TabIndex = 40;
-            this.pbVerticalSync.TabStop = false;
-            this.pbVerticalSync.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbVerticalSync.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbVerticalSync.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbVerticalSync.Image = Properties.Resources.info_18;
+            pbVerticalSync.Location = new System.Drawing.Point(364, 47);
+            pbVerticalSync.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbVerticalSync.Name = "pbVerticalSync";
+            pbVerticalSync.Size = new System.Drawing.Size(21, 21);
+            pbVerticalSync.TabIndex = 40;
+            pbVerticalSync.TabStop = false;
+            pbVerticalSync.Click += HelpIcon_Click;
+            pbVerticalSync.MouseEnter += HelpIcon_MouseEnter;
+            pbVerticalSync.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbModelInstancing
             // 
-            this.pbModelInstancing.Image = global::Menu.Properties.Resources.info_18;
-            this.pbModelInstancing.Location = new System.Drawing.Point(312, 9);
-            this.pbModelInstancing.Name = "pbModelInstancing";
-            this.pbModelInstancing.Size = new System.Drawing.Size(18, 18);
-            this.pbModelInstancing.TabIndex = 39;
-            this.pbModelInstancing.TabStop = false;
-            this.pbModelInstancing.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbModelInstancing.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbModelInstancing.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbModelInstancing.Image = Properties.Resources.info_18;
+            pbModelInstancing.Location = new System.Drawing.Point(364, 10);
+            pbModelInstancing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbModelInstancing.Name = "pbModelInstancing";
+            pbModelInstancing.Size = new System.Drawing.Size(21, 21);
+            pbModelInstancing.TabIndex = 39;
+            pbModelInstancing.TabStop = false;
+            pbModelInstancing.Click += HelpIcon_Click;
+            pbModelInstancing.MouseEnter += HelpIcon_MouseEnter;
+            pbModelInstancing.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbDayAmbientLight
             // 
-            this.pbDayAmbientLight.Image = global::Menu.Properties.Resources.info_18;
-            this.pbDayAmbientLight.Location = new System.Drawing.Point(11, 297);
-            this.pbDayAmbientLight.Name = "pbDayAmbientLight";
-            this.pbDayAmbientLight.Size = new System.Drawing.Size(18, 18);
-            this.pbDayAmbientLight.TabIndex = 38;
-            this.pbDayAmbientLight.TabStop = false;
-            this.pbDayAmbientLight.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbDayAmbientLight.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbDayAmbientLight.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbDayAmbientLight.Image = Properties.Resources.info_18;
+            pbDayAmbientLight.Location = new System.Drawing.Point(13, 343);
+            pbDayAmbientLight.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbDayAmbientLight.Name = "pbDayAmbientLight";
+            pbDayAmbientLight.Size = new System.Drawing.Size(21, 21);
+            pbDayAmbientLight.TabIndex = 38;
+            pbDayAmbientLight.TabStop = false;
+            pbDayAmbientLight.Click += HelpIcon_Click;
+            pbDayAmbientLight.MouseEnter += HelpIcon_MouseEnter;
+            pbDayAmbientLight.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbSignalLightGlow
             // 
-            this.pbSignalLightGlow.Image = global::Menu.Properties.Resources.info_18;
-            this.pbSignalLightGlow.Location = new System.Drawing.Point(11, 265);
-            this.pbSignalLightGlow.Name = "pbSignalLightGlow";
-            this.pbSignalLightGlow.Size = new System.Drawing.Size(18, 18);
-            this.pbSignalLightGlow.TabIndex = 37;
-            this.pbSignalLightGlow.TabStop = false;
-            this.pbSignalLightGlow.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbSignalLightGlow.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbSignalLightGlow.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbSignalLightGlow.Image = Properties.Resources.info_18;
+            pbSignalLightGlow.Location = new System.Drawing.Point(13, 306);
+            pbSignalLightGlow.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbSignalLightGlow.Name = "pbSignalLightGlow";
+            pbSignalLightGlow.Size = new System.Drawing.Size(21, 21);
+            pbSignalLightGlow.TabIndex = 37;
+            pbSignalLightGlow.TabStop = false;
+            pbSignalLightGlow.Click += HelpIcon_Click;
+            pbSignalLightGlow.MouseEnter += HelpIcon_MouseEnter;
+            pbSignalLightGlow.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbDoubleWire
             // 
-            this.pbDoubleWire.Image = global::Menu.Properties.Resources.info_18;
-            this.pbDoubleWire.Location = new System.Drawing.Point(11, 233);
-            this.pbDoubleWire.Name = "pbDoubleWire";
-            this.pbDoubleWire.Size = new System.Drawing.Size(18, 18);
-            this.pbDoubleWire.TabIndex = 36;
-            this.pbDoubleWire.TabStop = false;
-            this.pbDoubleWire.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbDoubleWire.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbDoubleWire.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbDoubleWire.Image = Properties.Resources.info_18;
+            pbDoubleWire.Location = new System.Drawing.Point(13, 269);
+            pbDoubleWire.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbDoubleWire.Name = "pbDoubleWire";
+            pbDoubleWire.Size = new System.Drawing.Size(21, 21);
+            pbDoubleWire.TabIndex = 36;
+            pbDoubleWire.TabStop = false;
+            pbDoubleWire.Click += HelpIcon_Click;
+            pbDoubleWire.MouseEnter += HelpIcon_MouseEnter;
+            pbDoubleWire.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbWire
             // 
-            this.pbWire.Image = global::Menu.Properties.Resources.info_18;
-            this.pbWire.Location = new System.Drawing.Point(11, 201);
-            this.pbWire.Name = "pbWire";
-            this.pbWire.Size = new System.Drawing.Size(18, 18);
-            this.pbWire.TabIndex = 35;
-            this.pbWire.TabStop = false;
-            this.pbWire.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbWire.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbWire.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbWire.Image = Properties.Resources.info_18;
+            pbWire.Location = new System.Drawing.Point(13, 232);
+            pbWire.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbWire.Name = "pbWire";
+            pbWire.Size = new System.Drawing.Size(21, 21);
+            pbWire.TabIndex = 35;
+            pbWire.TabStop = false;
+            pbWire.Click += HelpIcon_Click;
+            pbWire.MouseEnter += HelpIcon_MouseEnter;
+            pbWire.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbShadowAllShapes
             // 
-            this.pbShadowAllShapes.Image = global::Menu.Properties.Resources.info_18;
-            this.pbShadowAllShapes.Location = new System.Drawing.Point(11, 169);
-            this.pbShadowAllShapes.Name = "pbShadowAllShapes";
-            this.pbShadowAllShapes.Size = new System.Drawing.Size(18, 18);
-            this.pbShadowAllShapes.TabIndex = 34;
-            this.pbShadowAllShapes.TabStop = false;
-            this.pbShadowAllShapes.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbShadowAllShapes.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbShadowAllShapes.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbShadowAllShapes.Image = Properties.Resources.info_18;
+            pbShadowAllShapes.Location = new System.Drawing.Point(13, 195);
+            pbShadowAllShapes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbShadowAllShapes.Name = "pbShadowAllShapes";
+            pbShadowAllShapes.Size = new System.Drawing.Size(21, 21);
+            pbShadowAllShapes.TabIndex = 34;
+            pbShadowAllShapes.TabStop = false;
+            pbShadowAllShapes.Click += HelpIcon_Click;
+            pbShadowAllShapes.MouseEnter += HelpIcon_MouseEnter;
+            pbShadowAllShapes.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbDynamicShadows
             // 
-            this.pbDynamicShadows.Image = global::Menu.Properties.Resources.info_18;
-            this.pbDynamicShadows.Location = new System.Drawing.Point(11, 137);
-            this.pbDynamicShadows.Name = "pbDynamicShadows";
-            this.pbDynamicShadows.Size = new System.Drawing.Size(18, 18);
-            this.pbDynamicShadows.TabIndex = 33;
-            this.pbDynamicShadows.TabStop = false;
-            this.pbDynamicShadows.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbDynamicShadows.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbDynamicShadows.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbDynamicShadows.Image = Properties.Resources.info_18;
+            pbDynamicShadows.Location = new System.Drawing.Point(13, 158);
+            pbDynamicShadows.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbDynamicShadows.Name = "pbDynamicShadows";
+            pbDynamicShadows.Size = new System.Drawing.Size(21, 21);
+            pbDynamicShadows.TabIndex = 33;
+            pbDynamicShadows.TabStop = false;
+            pbDynamicShadows.Click += HelpIcon_Click;
+            pbDynamicShadows.MouseEnter += HelpIcon_MouseEnter;
+            pbDynamicShadows.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbLODViewingExtension
             // 
-            this.pbLODViewingExtension.Image = global::Menu.Properties.Resources.info_18;
-            this.pbLODViewingExtension.Location = new System.Drawing.Point(11, 105);
-            this.pbLODViewingExtension.Name = "pbLODViewingExtension";
-            this.pbLODViewingExtension.Size = new System.Drawing.Size(18, 18);
-            this.pbLODViewingExtension.TabIndex = 32;
-            this.pbLODViewingExtension.TabStop = false;
-            this.pbLODViewingExtension.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbLODViewingExtension.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbLODViewingExtension.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbLODViewingExtension.Image = Properties.Resources.info_18;
+            pbLODViewingExtension.Location = new System.Drawing.Point(13, 121);
+            pbLODViewingExtension.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbLODViewingExtension.Name = "pbLODViewingExtension";
+            pbLODViewingExtension.Size = new System.Drawing.Size(21, 21);
+            pbLODViewingExtension.TabIndex = 32;
+            pbLODViewingExtension.TabStop = false;
+            pbLODViewingExtension.Click += HelpIcon_Click;
+            pbLODViewingExtension.MouseEnter += HelpIcon_MouseEnter;
+            pbLODViewingExtension.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbDistantMountains
             // 
-            this.pbDistantMountains.Image = global::Menu.Properties.Resources.info_18;
-            this.pbDistantMountains.Location = new System.Drawing.Point(11, 41);
-            this.pbDistantMountains.Name = "pbDistantMountains";
-            this.pbDistantMountains.Size = new System.Drawing.Size(18, 18);
-            this.pbDistantMountains.TabIndex = 31;
-            this.pbDistantMountains.TabStop = false;
-            this.pbDistantMountains.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbDistantMountains.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbDistantMountains.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbDistantMountains.Image = Properties.Resources.info_18;
+            pbDistantMountains.Location = new System.Drawing.Point(13, 47);
+            pbDistantMountains.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbDistantMountains.Name = "pbDistantMountains";
+            pbDistantMountains.Size = new System.Drawing.Size(21, 21);
+            pbDistantMountains.TabIndex = 31;
+            pbDistantMountains.TabStop = false;
+            pbDistantMountains.Click += HelpIcon_Click;
+            pbDistantMountains.MouseEnter += HelpIcon_MouseEnter;
+            pbDistantMountains.MouseLeave += HelpIcon_MouseLeave;
             // 
             // pbViewingDistance
             // 
-            this.pbViewingDistance.Image = global::Menu.Properties.Resources.info_18;
-            this.pbViewingDistance.Location = new System.Drawing.Point(11, 9);
-            this.pbViewingDistance.Name = "pbViewingDistance";
-            this.pbViewingDistance.Size = new System.Drawing.Size(18, 18);
-            this.pbViewingDistance.TabIndex = 30;
-            this.pbViewingDistance.TabStop = false;
-            this.pbViewingDistance.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbViewingDistance.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbViewingDistance.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            pbViewingDistance.Image = Properties.Resources.info_18;
+            pbViewingDistance.Location = new System.Drawing.Point(13, 10);
+            pbViewingDistance.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbViewingDistance.Name = "pbViewingDistance";
+            pbViewingDistance.Size = new System.Drawing.Size(21, 21);
+            pbViewingDistance.TabIndex = 30;
+            pbViewingDistance.TabStop = false;
+            pbViewingDistance.Click += HelpIcon_Click;
+            pbViewingDistance.MouseEnter += HelpIcon_MouseEnter;
+            pbViewingDistance.MouseLeave += HelpIcon_MouseLeave;
             // 
             // checkUseSuperElevation
             // 
-            this.checkUseSuperElevation.AutoSize = true;
-            this.checkUseSuperElevation.Location = new System.Drawing.Point(26, 42);
-            this.checkUseSuperElevation.Name = "checkUseSuperElevation";
-            this.checkUseSuperElevation.Size = new System.Drawing.Size(135, 17);
-            this.checkUseSuperElevation.TabIndex = 2;
-            this.checkUseSuperElevation.Text = "Legacy Superelevation";
-            this.toolTip1.SetToolTip(this.checkUseSuperElevation, "Enables visual elements of superelevation on legacy routes. May lead to suboptima" +
-        "l track rendering.");
-            this.checkUseSuperElevation.UseVisualStyleBackColor = true;
-            this.checkUseSuperElevation.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkUseSuperElevation.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            checkUseSuperElevation.AutoSize = true;
+            checkUseSuperElevation.Location = new System.Drawing.Point(30, 48);
+            checkUseSuperElevation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkUseSuperElevation.Name = "checkUseSuperElevation";
+            checkUseSuperElevation.Size = new System.Drawing.Size(144, 19);
+            checkUseSuperElevation.TabIndex = 2;
+            checkUseSuperElevation.Text = "Legacy Superelevation";
+            toolTip1.SetToolTip(checkUseSuperElevation, "Enables visual elements of superelevation on legacy routes. May lead to suboptimal track rendering.");
+            checkUseSuperElevation.UseVisualStyleBackColor = true;
+            checkUseSuperElevation.MouseEnter += HelpIcon_MouseEnter;
+            checkUseSuperElevation.MouseLeave += HelpIcon_MouseLeave;
             // 
             // trackLODBias
             // 
-            this.trackLODBias.AutoSize = false;
-            this.trackLODBias.BackColor = System.Drawing.SystemColors.Window;
-            this.trackLODBias.LargeChange = 10;
-            this.trackLODBias.Location = new System.Drawing.Point(336, 192);
-            this.trackLODBias.Maximum = 100;
-            this.trackLODBias.Minimum = -100;
-            this.trackLODBias.Name = "trackLODBias";
-            this.trackLODBias.Size = new System.Drawing.Size(263, 26);
-            this.trackLODBias.TabIndex = 27;
-            this.trackLODBias.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackLODBias, "Default is 0%");
-            this.trackLODBias.ValueChanged += new System.EventHandler(this.trackLODBias_ValueChanged);
+            trackLODBias.AutoSize = false;
+            trackLODBias.BackColor = System.Drawing.SystemColors.Window;
+            trackLODBias.LargeChange = 10;
+            trackLODBias.Location = new System.Drawing.Point(392, 222);
+            trackLODBias.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            trackLODBias.Maximum = 100;
+            trackLODBias.Minimum = -100;
+            trackLODBias.Name = "trackLODBias";
+            trackLODBias.Size = new System.Drawing.Size(307, 30);
+            trackLODBias.TabIndex = 27;
+            trackLODBias.TickFrequency = 10;
+            toolTip1.SetToolTip(trackLODBias, "Default is 0%");
+            trackLODBias.ValueChanged += trackLODBias_ValueChanged;
             // 
             // numericPerformanceTunerTarget
             // 
-            this.numericPerformanceTunerTarget.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericPerformanceTunerTarget.Location = new System.Drawing.Point(55, 352);
-            this.numericPerformanceTunerTarget.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericPerformanceTunerTarget.Maximum = new decimal(new int[] {
-            300,
-            0,
-            0,
-            0});
-            this.numericPerformanceTunerTarget.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericPerformanceTunerTarget.Name = "numericPerformanceTunerTarget";
-            this.numericPerformanceTunerTarget.Size = new System.Drawing.Size(54, 20);
-            this.numericPerformanceTunerTarget.TabIndex = 9;
-            this.toolTip1.SetToolTip(this.numericPerformanceTunerTarget, "Distance to see mountains");
-            this.numericPerformanceTunerTarget.Value = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
+            numericPerformanceTunerTarget.Increment = new decimal(new int[] { 5, 0, 0, 0 });
+            numericPerformanceTunerTarget.Location = new System.Drawing.Point(64, 406);
+            numericPerformanceTunerTarget.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            numericPerformanceTunerTarget.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
+            numericPerformanceTunerTarget.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
+            numericPerformanceTunerTarget.Name = "numericPerformanceTunerTarget";
+            numericPerformanceTunerTarget.Size = new System.Drawing.Size(63, 23);
+            numericPerformanceTunerTarget.TabIndex = 9;
+            toolTip1.SetToolTip(numericPerformanceTunerTarget, "Distance to see mountains");
+            numericPerformanceTunerTarget.Value = new decimal(new int[] { 60, 0, 0, 0 });
             // 
             // trackAdhesionFactor
             // 
-            this.trackAdhesionFactor.AutoSize = false;
-            this.trackAdhesionFactor.BackColor = System.Drawing.SystemColors.Window;
-            this.trackAdhesionFactor.LargeChange = 10;
-            this.trackAdhesionFactor.Location = new System.Drawing.Point(301, 277);
-            this.trackAdhesionFactor.Maximum = 200;
-            this.trackAdhesionFactor.Minimum = 10;
-            this.trackAdhesionFactor.Name = "trackAdhesionFactor";
-            this.trackAdhesionFactor.Size = new System.Drawing.Size(292, 26);
-            this.trackAdhesionFactor.TabIndex = 28;
-            this.trackAdhesionFactor.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackAdhesionFactor, "Default is 100%");
-            this.trackAdhesionFactor.Value = 100;
-            this.trackAdhesionFactor.ValueChanged += new System.EventHandler(this.trackAdhesionFactor_ValueChanged);
-            this.trackAdhesionFactor.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.trackAdhesionFactor.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            trackAdhesionFactor.AutoSize = false;
+            trackAdhesionFactor.BackColor = System.Drawing.SystemColors.Window;
+            trackAdhesionFactor.LargeChange = 10;
+            trackAdhesionFactor.Location = new System.Drawing.Point(351, 320);
+            trackAdhesionFactor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            trackAdhesionFactor.Maximum = 200;
+            trackAdhesionFactor.Minimum = 10;
+            trackAdhesionFactor.Name = "trackAdhesionFactor";
+            trackAdhesionFactor.Size = new System.Drawing.Size(341, 30);
+            trackAdhesionFactor.TabIndex = 28;
+            trackAdhesionFactor.TickFrequency = 10;
+            toolTip1.SetToolTip(trackAdhesionFactor, "Default is 100%");
+            trackAdhesionFactor.Value = 100;
+            trackAdhesionFactor.ValueChanged += trackAdhesionFactor_ValueChanged;
+            trackAdhesionFactor.MouseEnter += HelpIcon_MouseEnter;
+            trackAdhesionFactor.MouseLeave += HelpIcon_MouseLeave;
             // 
             // trackAdhesionFactorChange
             // 
-            this.trackAdhesionFactorChange.AutoSize = false;
-            this.trackAdhesionFactorChange.BackColor = System.Drawing.SystemColors.Window;
-            this.trackAdhesionFactorChange.LargeChange = 10;
-            this.trackAdhesionFactorChange.Location = new System.Drawing.Point(301, 328);
-            this.trackAdhesionFactorChange.Maximum = 100;
-            this.trackAdhesionFactorChange.Name = "trackAdhesionFactorChange";
-            this.trackAdhesionFactorChange.Size = new System.Drawing.Size(292, 26);
-            this.trackAdhesionFactorChange.TabIndex = 32;
-            this.trackAdhesionFactorChange.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackAdhesionFactorChange, "Default is 10%");
-            this.trackAdhesionFactorChange.Value = 10;
-            this.trackAdhesionFactorChange.ValueChanged += new System.EventHandler(this.trackAdhesionFactor_ValueChanged);
-            this.trackAdhesionFactorChange.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.trackAdhesionFactorChange.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            trackAdhesionFactorChange.AutoSize = false;
+            trackAdhesionFactorChange.BackColor = System.Drawing.SystemColors.Window;
+            trackAdhesionFactorChange.LargeChange = 10;
+            trackAdhesionFactorChange.Location = new System.Drawing.Point(351, 378);
+            trackAdhesionFactorChange.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            trackAdhesionFactorChange.Maximum = 100;
+            trackAdhesionFactorChange.Name = "trackAdhesionFactorChange";
+            trackAdhesionFactorChange.Size = new System.Drawing.Size(341, 30);
+            trackAdhesionFactorChange.TabIndex = 32;
+            trackAdhesionFactorChange.TickFrequency = 10;
+            toolTip1.SetToolTip(trackAdhesionFactorChange, "Default is 10%");
+            trackAdhesionFactorChange.Value = 10;
+            trackAdhesionFactorChange.ValueChanged += trackAdhesionFactor_ValueChanged;
+            trackAdhesionFactorChange.MouseEnter += HelpIcon_MouseEnter;
+            trackAdhesionFactorChange.MouseLeave += HelpIcon_MouseLeave;
             // 
             // numericActRandomizationLevel
             // 
-            this.numericActRandomizationLevel.Location = new System.Drawing.Point(325, 117);
-            this.numericActRandomizationLevel.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericActRandomizationLevel.Maximum = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
-            this.numericActRandomizationLevel.Name = "numericActRandomizationLevel";
-            this.numericActRandomizationLevel.Size = new System.Drawing.Size(54, 20);
-            this.numericActRandomizationLevel.TabIndex = 46;
-            this.toolTip1.SetToolTip(this.numericActRandomizationLevel, "0: no randomization, 1: moderate, 2: significant; 3: high (may be unrealistic)");
+            numericActRandomizationLevel.Location = new System.Drawing.Point(379, 135);
+            numericActRandomizationLevel.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            numericActRandomizationLevel.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            numericActRandomizationLevel.Name = "numericActRandomizationLevel";
+            numericActRandomizationLevel.Size = new System.Drawing.Size(63, 23);
+            numericActRandomizationLevel.TabIndex = 46;
+            toolTip1.SetToolTip(numericActRandomizationLevel, "0: no randomization, 1: moderate, 2: significant; 3: high (may be unrealistic)");
             // 
             // numericActWeatherRandomizationLevel
             // 
-            this.numericActWeatherRandomizationLevel.Location = new System.Drawing.Point(466, 117);
-            this.numericActWeatherRandomizationLevel.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericActWeatherRandomizationLevel.Maximum = new decimal(new int[] {
-            3,
-            0,
-            0,
-            0});
-            this.numericActWeatherRandomizationLevel.Name = "numericActWeatherRandomizationLevel";
-            this.numericActWeatherRandomizationLevel.Size = new System.Drawing.Size(54, 20);
-            this.numericActWeatherRandomizationLevel.TabIndex = 50;
-            this.toolTip1.SetToolTip(this.numericActWeatherRandomizationLevel, "0: no randomization, 1: moderate, 2: significant; 3: high (may be unrealistic)");
+            numericActWeatherRandomizationLevel.Location = new System.Drawing.Point(544, 135);
+            numericActWeatherRandomizationLevel.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            numericActWeatherRandomizationLevel.Maximum = new decimal(new int[] { 3, 0, 0, 0 });
+            numericActWeatherRandomizationLevel.Name = "numericActWeatherRandomizationLevel";
+            numericActWeatherRandomizationLevel.Size = new System.Drawing.Size(63, 23);
+            numericActWeatherRandomizationLevel.TabIndex = 50;
+            toolTip1.SetToolTip(numericActWeatherRandomizationLevel, "0: no randomization, 1: moderate, 2: significant; 3: high (may be unrealistic)");
             // 
             // checkFullRangeThrottle
             // 
-            this.checkFullRangeThrottle.AutoSize = true;
-            this.checkFullRangeThrottle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkFullRangeThrottle.Location = new System.Drawing.Point(7, 121);
-            this.checkFullRangeThrottle.Name = "checkFullRangeThrottle";
-            this.checkFullRangeThrottle.Size = new System.Drawing.Size(116, 17);
-            this.checkFullRangeThrottle.TabIndex = 4;
-            this.checkFullRangeThrottle.Text = "Full Range Throttle";
-            this.toolTip1.SetToolTip(this.checkFullRangeThrottle, "Use the full range of the Throttle Lever. There will be no Auto Brake!");
-            this.checkFullRangeThrottle.UseVisualStyleBackColor = true;
+            checkFullRangeThrottle.AutoSize = true;
+            checkFullRangeThrottle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkFullRangeThrottle.Location = new System.Drawing.Point(8, 140);
+            checkFullRangeThrottle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkFullRangeThrottle.Name = "checkFullRangeThrottle";
+            checkFullRangeThrottle.Size = new System.Drawing.Size(116, 17);
+            checkFullRangeThrottle.TabIndex = 4;
+            checkFullRangeThrottle.Text = "Full Range Throttle";
+            toolTip1.SetToolTip(checkFullRangeThrottle, "Use the full range of the Throttle Lever. There will be no Auto Brake!");
+            checkFullRangeThrottle.UseVisualStyleBackColor = true;
             // 
             // btnShowRDLegend
             // 
-            this.btnShowRDLegend.Location = new System.Drawing.Point(6, 372);
-            this.btnShowRDLegend.Name = "btnShowRDLegend";
-            this.btnShowRDLegend.Size = new System.Drawing.Size(75, 23);
-            this.btnShowRDLegend.TabIndex = 1;
-            this.btnShowRDLegend.Text = "Legend";
-            this.toolTip1.SetToolTip(this.btnShowRDLegend, "Show a legend of RailDriver board with button and lever description. Press cancel" +
-        " to close again.");
-            this.btnShowRDLegend.UseVisualStyleBackColor = true;
-            this.btnShowRDLegend.Click += new System.EventHandler(this.BtnShowRDLegend_Click);
+            btnShowRDLegend.Location = new System.Drawing.Point(7, 429);
+            btnShowRDLegend.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnShowRDLegend.Name = "btnShowRDLegend";
+            btnShowRDLegend.Size = new System.Drawing.Size(88, 27);
+            btnShowRDLegend.TabIndex = 1;
+            btnShowRDLegend.Text = "Legend";
+            toolTip1.SetToolTip(btnShowRDLegend, "Show a legend of RailDriver board with button and lever description. Press cancel to close again.");
+            btnShowRDLegend.UseVisualStyleBackColor = true;
+            btnShowRDLegend.Click += BtnShowRDLegend_Click;
             // 
             // btnStartRDCalibration
             // 
-            this.btnStartRDCalibration.Location = new System.Drawing.Point(86, 372);
-            this.btnStartRDCalibration.Margin = new System.Windows.Forms.Padding(2);
-            this.btnStartRDCalibration.Name = "btnStartRDCalibration";
-            this.btnStartRDCalibration.Size = new System.Drawing.Size(75, 23);
-            this.btnStartRDCalibration.TabIndex = 3;
-            this.btnStartRDCalibration.Text = "Calibration";
-            this.toolTip1.SetToolTip(this.btnStartRDCalibration, "Calibrate the lever position reading");
-            this.btnStartRDCalibration.UseVisualStyleBackColor = true;
-            this.btnStartRDCalibration.Click += new System.EventHandler(this.StartRDCalibration_Click);
+            btnStartRDCalibration.Location = new System.Drawing.Point(100, 429);
+            btnStartRDCalibration.Margin = new System.Windows.Forms.Padding(2);
+            btnStartRDCalibration.Name = "btnStartRDCalibration";
+            btnStartRDCalibration.Size = new System.Drawing.Size(88, 27);
+            btnStartRDCalibration.TabIndex = 3;
+            btnStartRDCalibration.Text = "Calibration";
+            toolTip1.SetToolTip(btnStartRDCalibration, "Calibrate the lever position reading");
+            btnStartRDCalibration.UseVisualStyleBackColor = true;
+            btnStartRDCalibration.Click += StartRDCalibration_Click;
             // 
             // btnRDReset
             // 
-            this.btnRDReset.Location = new System.Drawing.Point(166, 372);
-            this.btnRDReset.Name = "btnRDReset";
-            this.btnRDReset.Size = new System.Drawing.Size(75, 23);
-            this.btnRDReset.TabIndex = 2;
-            this.btnRDReset.Text = "Defaults";
-            this.toolTip1.SetToolTip(this.btnRDReset, "Load the factory default button assignments.");
-            this.btnRDReset.UseVisualStyleBackColor = true;
-            this.btnRDReset.Click += new System.EventHandler(this.BtnRDReset_Click);
+            btnRDReset.Location = new System.Drawing.Point(194, 429);
+            btnRDReset.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnRDReset.Name = "btnRDReset";
+            btnRDReset.Size = new System.Drawing.Size(88, 27);
+            btnRDReset.TabIndex = 2;
+            btnRDReset.Text = "Defaults";
+            toolTip1.SetToolTip(btnRDReset, "Load the factory default button assignments.");
+            btnRDReset.UseVisualStyleBackColor = true;
+            btnRDReset.Click += BtnRDReset_Click;
             // 
             // btnCheck
             // 
-            this.btnCheck.Location = new System.Drawing.Point(247, 372);
-            this.btnCheck.Name = "btnCheck";
-            this.btnCheck.Size = new System.Drawing.Size(75, 23);
-            this.btnCheck.TabIndex = 4;
-            this.btnCheck.Text = "Check";
-            this.toolTip1.SetToolTip(this.btnCheck, "Load the factory default button assignments.");
-            this.btnCheck.UseVisualStyleBackColor = true;
-            this.btnCheck.Click += new System.EventHandler(this.BtnCheck_Click);
+            btnCheck.Location = new System.Drawing.Point(288, 429);
+            btnCheck.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnCheck.Name = "btnCheck";
+            btnCheck.Size = new System.Drawing.Size(88, 27);
+            btnCheck.TabIndex = 4;
+            btnCheck.Text = "Check";
+            toolTip1.SetToolTip(btnCheck, "Load the factory default button assignments.");
+            btnCheck.UseVisualStyleBackColor = true;
+            btnCheck.Click += BtnCheck_Click;
             // 
             // btnRDSettingsExport
             // 
-            this.btnRDSettingsExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnRDSettingsExport.Location = new System.Drawing.Point(521, 373);
-            this.btnRDSettingsExport.Name = "btnRDSettingsExport";
-            this.btnRDSettingsExport.Size = new System.Drawing.Size(75, 23);
-            this.btnRDSettingsExport.TabIndex = 5;
-            this.btnRDSettingsExport.Text = "Export";
-            this.toolTip1.SetToolTip(this.btnRDSettingsExport, "Generate a listing of your keyboard assignments.  \r\nThe output is placed on your " +
-        "desktop.");
-            this.btnRDSettingsExport.UseVisualStyleBackColor = true;
-            this.btnRDSettingsExport.Click += new System.EventHandler(this.BtnRDSettingsExport_Click);
+            btnRDSettingsExport.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            btnRDSettingsExport.Location = new System.Drawing.Point(608, 430);
+            btnRDSettingsExport.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            btnRDSettingsExport.Name = "btnRDSettingsExport";
+            btnRDSettingsExport.Size = new System.Drawing.Size(88, 27);
+            btnRDSettingsExport.TabIndex = 5;
+            btnRDSettingsExport.Text = "Export";
+            toolTip1.SetToolTip(btnRDSettingsExport, "Generate a listing of your keyboard assignments.  \r\nThe output is placed on your desktop.");
+            btnRDSettingsExport.UseVisualStyleBackColor = true;
+            btnRDSettingsExport.Click += BtnRDSettingsExport_Click;
             // 
             // buttonCheckKeys
             // 
-            this.buttonCheckKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonCheckKeys.Location = new System.Drawing.Point(6, 373);
-            this.buttonCheckKeys.Name = "buttonCheckKeys";
-            this.buttonCheckKeys.Size = new System.Drawing.Size(75, 23);
-            this.buttonCheckKeys.TabIndex = 1;
-            this.buttonCheckKeys.Text = "Check";
-            this.toolTip1.SetToolTip(this.buttonCheckKeys, "Check for incorrect key assignments.");
-            this.buttonCheckKeys.UseVisualStyleBackColor = true;
-            this.buttonCheckKeys.Click += new System.EventHandler(this.buttonCheckKeys_Click);
+            buttonCheckKeys.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            buttonCheckKeys.Location = new System.Drawing.Point(7, 430);
+            buttonCheckKeys.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonCheckKeys.Name = "buttonCheckKeys";
+            buttonCheckKeys.Size = new System.Drawing.Size(88, 27);
+            buttonCheckKeys.TabIndex = 1;
+            buttonCheckKeys.Text = "Check";
+            toolTip1.SetToolTip(buttonCheckKeys, "Check for incorrect key assignments.");
+            buttonCheckKeys.UseVisualStyleBackColor = true;
+            buttonCheckKeys.Click += buttonCheckKeys_Click;
             // 
             // buttonDefaultKeys
             // 
-            this.buttonDefaultKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonDefaultKeys.Location = new System.Drawing.Point(87, 373);
-            this.buttonDefaultKeys.Name = "buttonDefaultKeys";
-            this.buttonDefaultKeys.Size = new System.Drawing.Size(75, 23);
-            this.buttonDefaultKeys.TabIndex = 2;
-            this.buttonDefaultKeys.Text = "Defaults";
-            this.toolTip1.SetToolTip(this.buttonDefaultKeys, "Load the factory default key assignments.");
-            this.buttonDefaultKeys.UseVisualStyleBackColor = true;
-            this.buttonDefaultKeys.Click += new System.EventHandler(this.buttonDefaultKeys_Click);
+            buttonDefaultKeys.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left;
+            buttonDefaultKeys.Location = new System.Drawing.Point(102, 430);
+            buttonDefaultKeys.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonDefaultKeys.Name = "buttonDefaultKeys";
+            buttonDefaultKeys.Size = new System.Drawing.Size(88, 27);
+            buttonDefaultKeys.TabIndex = 2;
+            buttonDefaultKeys.Text = "Defaults";
+            toolTip1.SetToolTip(buttonDefaultKeys, "Load the factory default key assignments.");
+            buttonDefaultKeys.UseVisualStyleBackColor = true;
+            buttonDefaultKeys.Click += buttonDefaultKeys_Click;
             // 
             // buttonExport
             // 
-            this.buttonExport.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.buttonExport.Location = new System.Drawing.Point(521, 373);
-            this.buttonExport.Name = "buttonExport";
-            this.buttonExport.Size = new System.Drawing.Size(75, 23);
-            this.buttonExport.TabIndex = 4;
-            this.buttonExport.Text = "Export";
-            this.toolTip1.SetToolTip(this.buttonExport, "Generate a listing of your keyboard assignments.  \r\nThe output is placed on your " +
-        "desktop.");
-            this.buttonExport.UseVisualStyleBackColor = true;
-            this.buttonExport.Click += new System.EventHandler(this.buttonExport_Click);
+            buttonExport.Anchor = System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right;
+            buttonExport.Location = new System.Drawing.Point(608, 430);
+            buttonExport.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            buttonExport.Name = "buttonExport";
+            buttonExport.Size = new System.Drawing.Size(88, 27);
+            buttonExport.TabIndex = 4;
+            buttonExport.Text = "Export";
+            toolTip1.SetToolTip(buttonExport, "Generate a listing of your keyboard assignments.  \r\nThe output is placed on your desktop.");
+            buttonExport.UseVisualStyleBackColor = true;
+            buttonExport.Click += buttonExport_Click;
             // 
             // numericDistantMountainsViewingDistance
             // 
-            this.numericDistantMountainsViewingDistance.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericDistantMountainsViewingDistance.Location = new System.Drawing.Point(69, 65);
-            this.numericDistantMountainsViewingDistance.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericDistantMountainsViewingDistance.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericDistantMountainsViewingDistance.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericDistantMountainsViewingDistance.Name = "numericDistantMountainsViewingDistance";
-            this.numericDistantMountainsViewingDistance.Size = new System.Drawing.Size(54, 20);
-            this.numericDistantMountainsViewingDistance.TabIndex = 11;
-            this.toolTip1.SetToolTip(this.numericDistantMountainsViewingDistance, "Distance to see mountains");
-            this.numericDistantMountainsViewingDistance.Value = new decimal(new int[] {
-            40,
-            0,
-            0,
-            0});
+            numericDistantMountainsViewingDistance.Increment = new decimal(new int[] { 5, 0, 0, 0 });
+            numericDistantMountainsViewingDistance.Location = new System.Drawing.Point(80, 75);
+            numericDistantMountainsViewingDistance.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            numericDistantMountainsViewingDistance.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            numericDistantMountainsViewingDistance.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
+            numericDistantMountainsViewingDistance.Name = "numericDistantMountainsViewingDistance";
+            numericDistantMountainsViewingDistance.Size = new System.Drawing.Size(63, 23);
+            numericDistantMountainsViewingDistance.TabIndex = 11;
+            toolTip1.SetToolTip(numericDistantMountainsViewingDistance, "Distance to see mountains");
+            numericDistantMountainsViewingDistance.Value = new decimal(new int[] { 40, 0, 0, 0 });
             // 
             // trackDayAmbientLight
             // 
-            this.trackDayAmbientLight.AutoSize = false;
-            this.trackDayAmbientLight.BackColor = System.Drawing.SystemColors.Window;
-            this.trackDayAmbientLight.LargeChange = 4;
-            this.trackDayAmbientLight.Location = new System.Drawing.Point(11, 321);
-            this.trackDayAmbientLight.Margin = new System.Windows.Forms.Padding(6, 3, 6, 3);
-            this.trackDayAmbientLight.Maximum = 30;
-            this.trackDayAmbientLight.Minimum = 15;
-            this.trackDayAmbientLight.Name = "trackDayAmbientLight";
-            this.trackDayAmbientLight.Size = new System.Drawing.Size(270, 26);
-            this.trackDayAmbientLight.SmallChange = 2;
-            this.trackDayAmbientLight.TabIndex = 21;
-            this.toolTip1.SetToolTip(this.trackDayAmbientLight, "Default is 100%");
-            this.trackDayAmbientLight.Value = 20;
-            this.trackDayAmbientLight.ValueChanged += new System.EventHandler(this.trackDayAmbientLight_ValueChanged);
+            trackDayAmbientLight.AutoSize = false;
+            trackDayAmbientLight.BackColor = System.Drawing.SystemColors.Window;
+            trackDayAmbientLight.LargeChange = 4;
+            trackDayAmbientLight.Location = new System.Drawing.Point(13, 370);
+            trackDayAmbientLight.Margin = new System.Windows.Forms.Padding(7, 3, 7, 3);
+            trackDayAmbientLight.Maximum = 30;
+            trackDayAmbientLight.Minimum = 15;
+            trackDayAmbientLight.Name = "trackDayAmbientLight";
+            trackDayAmbientLight.Size = new System.Drawing.Size(315, 30);
+            trackDayAmbientLight.SmallChange = 2;
+            trackDayAmbientLight.TabIndex = 21;
+            toolTip1.SetToolTip(trackDayAmbientLight, "Default is 100%");
+            trackDayAmbientLight.Value = 20;
+            trackDayAmbientLight.ValueChanged += trackDayAmbientLight_ValueChanged;
             // 
             // trackAntiAliasing
             // 
-            this.trackAntiAliasing.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.trackAntiAliasing.AutoSize = false;
-            this.trackAntiAliasing.BackColor = System.Drawing.SystemColors.Window;
-            this.trackAntiAliasing.LargeChange = 2;
-            this.trackAntiAliasing.Location = new System.Drawing.Point(323, 104);
-            this.trackAntiAliasing.Margin = new System.Windows.Forms.Padding(6, 3, 6, 3);
-            this.trackAntiAliasing.Maximum = 6;
-            this.trackAntiAliasing.Minimum = 1;
-            this.trackAntiAliasing.Name = "trackAntiAliasing";
-            this.trackAntiAliasing.Size = new System.Drawing.Size(270, 26);
-            this.trackAntiAliasing.TabIndex = 24;
-            this.toolTip1.SetToolTip(this.trackAntiAliasing, "Default is 2x MSAA");
-            this.trackAntiAliasing.Value = 2;
-            this.trackAntiAliasing.ValueChanged += new System.EventHandler(this.trackAntiAliasing_ValueChanged);
+            trackAntiAliasing.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            trackAntiAliasing.AutoSize = false;
+            trackAntiAliasing.BackColor = System.Drawing.SystemColors.Window;
+            trackAntiAliasing.LargeChange = 2;
+            trackAntiAliasing.Location = new System.Drawing.Point(377, 120);
+            trackAntiAliasing.Margin = new System.Windows.Forms.Padding(7, 3, 7, 3);
+            trackAntiAliasing.Maximum = 6;
+            trackAntiAliasing.Minimum = 1;
+            trackAntiAliasing.Name = "trackAntiAliasing";
+            trackAntiAliasing.Size = new System.Drawing.Size(315, 30);
+            trackAntiAliasing.TabIndex = 24;
+            toolTip1.SetToolTip(trackAntiAliasing, "Default is 2x MSAA");
+            trackAntiAliasing.Value = 2;
+            trackAntiAliasing.ValueChanged += trackAntiAliasing_ValueChanged;
             // 
             // numericSoundVolumePercent
             // 
-            this.numericSoundVolumePercent.Increment = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericSoundVolumePercent.Location = new System.Drawing.Point(35, 9);
-            this.numericSoundVolumePercent.Minimum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericSoundVolumePercent.Name = "numericSoundVolumePercent";
-            this.numericSoundVolumePercent.Size = new System.Drawing.Size(54, 20);
-            this.numericSoundVolumePercent.TabIndex = 1;
-            this.toolTip1.SetToolTip(this.numericSoundVolumePercent, "Sound Volume 0-100");
-            this.numericSoundVolumePercent.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericSoundVolumePercent.Enter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.numericSoundVolumePercent.Leave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            numericSoundVolumePercent.Increment = new decimal(new int[] { 10, 0, 0, 0 });
+            numericSoundVolumePercent.Location = new System.Drawing.Point(41, 10);
+            numericSoundVolumePercent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericSoundVolumePercent.Minimum = new decimal(new int[] { 10, 0, 0, 0 });
+            numericSoundVolumePercent.Name = "numericSoundVolumePercent";
+            numericSoundVolumePercent.Size = new System.Drawing.Size(63, 23);
+            numericSoundVolumePercent.TabIndex = 1;
+            toolTip1.SetToolTip(numericSoundVolumePercent, "Sound Volume 0-100");
+            numericSoundVolumePercent.Value = new decimal(new int[] { 10, 0, 0, 0 });
+            numericSoundVolumePercent.Enter += HelpIcon_MouseEnter;
+            numericSoundVolumePercent.Leave += HelpIcon_MouseLeave;
             // 
             // numericExternalSoundPassThruPercent
             // 
-            this.numericExternalSoundPassThruPercent.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericExternalSoundPassThruPercent.Location = new System.Drawing.Point(35, 73);
-            this.numericExternalSoundPassThruPercent.Name = "numericExternalSoundPassThruPercent";
-            this.numericExternalSoundPassThruPercent.Size = new System.Drawing.Size(54, 20);
-            this.numericExternalSoundPassThruPercent.TabIndex = 5;
-            this.toolTip1.SetToolTip(this.numericExternalSoundPassThruPercent, "Min 0 Max 100. Higher: louder sound\r\n\r\n");
-            this.numericExternalSoundPassThruPercent.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.numericExternalSoundPassThruPercent.Enter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.numericExternalSoundPassThruPercent.Leave += new System.EventHandler(this.HelpIcon_MouseLeave);
+            numericExternalSoundPassThruPercent.Increment = new decimal(new int[] { 5, 0, 0, 0 });
+            numericExternalSoundPassThruPercent.Location = new System.Drawing.Point(41, 84);
+            numericExternalSoundPassThruPercent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericExternalSoundPassThruPercent.Name = "numericExternalSoundPassThruPercent";
+            numericExternalSoundPassThruPercent.Size = new System.Drawing.Size(63, 23);
+            numericExternalSoundPassThruPercent.TabIndex = 5;
+            toolTip1.SetToolTip(numericExternalSoundPassThruPercent, "Min 0 Max 100. Higher: louder sound\r\n\r\n");
+            numericExternalSoundPassThruPercent.Value = new decimal(new int[] { 50, 0, 0, 0 });
+            numericExternalSoundPassThruPercent.Enter += HelpIcon_MouseEnter;
+            numericExternalSoundPassThruPercent.Leave += HelpIcon_MouseLeave;
             // 
             // numericCab2DStretch
             // 
-            this.numericCab2DStretch.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.numericCab2DStretch.Location = new System.Drawing.Point(15, 235);
-            this.numericCab2DStretch.Name = "numericCab2DStretch";
-            this.numericCab2DStretch.Size = new System.Drawing.Size(54, 20);
-            this.numericCab2DStretch.TabIndex = 28;
-            this.toolTip1.SetToolTip(this.numericCab2DStretch, "0 to clip cab view, 100 to stretch it. For cab views that match the display, use " +
-        "100.");
+            numericCab2DStretch.Increment = new decimal(new int[] { 25, 0, 0, 0 });
+            numericCab2DStretch.Location = new System.Drawing.Point(18, 271);
+            numericCab2DStretch.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericCab2DStretch.Name = "numericCab2DStretch";
+            numericCab2DStretch.Size = new System.Drawing.Size(63, 23);
+            numericCab2DStretch.TabIndex = 28;
+            toolTip1.SetToolTip(numericCab2DStretch, "0 to clip cab view, 100 to stretch it. For cab views that match the display, use 100.");
             // 
             // numericSuperElevationGauge
             // 
-            this.numericSuperElevationGauge.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericSuperElevationGauge.Location = new System.Drawing.Point(26, 68);
-            this.numericSuperElevationGauge.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericSuperElevationGauge.Maximum = new decimal(new int[] {
-            1800,
-            0,
-            0,
-            0});
-            this.numericSuperElevationGauge.Minimum = new decimal(new int[] {
-            600,
-            0,
-            0,
-            0});
-            this.numericSuperElevationGauge.Name = "numericSuperElevationGauge";
-            this.numericSuperElevationGauge.Size = new System.Drawing.Size(54, 20);
-            this.numericSuperElevationGauge.TabIndex = 6;
-            this.toolTip1.SetToolTip(this.numericSuperElevationGauge, "The gauge (distance between rails) in millimeters used by the superelevation syst" +
-        "em when gauge data is missing from the route. Set to the most common track gauge" +
-        " used on your route.");
-            this.numericSuperElevationGauge.Value = new decimal(new int[] {
-            600,
-            0,
-            0,
-            0});
+            numericSuperElevationGauge.Increment = new decimal(new int[] { 5, 0, 0, 0 });
+            numericSuperElevationGauge.Location = new System.Drawing.Point(30, 78);
+            numericSuperElevationGauge.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            numericSuperElevationGauge.Maximum = new decimal(new int[] { 1800, 0, 0, 0 });
+            numericSuperElevationGauge.Minimum = new decimal(new int[] { 600, 0, 0, 0 });
+            numericSuperElevationGauge.Name = "numericSuperElevationGauge";
+            numericSuperElevationGauge.Size = new System.Drawing.Size(63, 23);
+            numericSuperElevationGauge.TabIndex = 6;
+            toolTip1.SetToolTip(numericSuperElevationGauge, "The gauge (distance between rails) in millimeters used by the superelevation system when gauge data is missing from the route. Set to the most common track gauge used on your route.");
+            numericSuperElevationGauge.Value = new decimal(new int[] { 600, 0, 0, 0 });
             // 
             // dataLoggerInterval
             // 
-            this.dataLoggerInterval.Increment = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            this.dataLoggerInterval.Location = new System.Drawing.Point(310, 40);
-            this.dataLoggerInterval.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.dataLoggerInterval.Maximum = new decimal(new int[] {
-            60000,
-            0,
-            0,
-            0});
-            this.dataLoggerInterval.Name = "dataLoggerInterval";
-            this.dataLoggerInterval.Size = new System.Drawing.Size(54, 20);
-            this.dataLoggerInterval.TabIndex = 25;
-            this.dataLoggerInterval.ThousandsSeparator = true;
-            this.toolTip1.SetToolTip(this.dataLoggerInterval, "Interval at which to log data. In milliseconds, 0 means log at frame rate.");
-            // 
-            // checkLODViewingExtension
-            // 
-            this.checkLODViewingExtension.AutoSize = true;
-            this.checkLODViewingExtension.Location = new System.Drawing.Point(41, 106);
-            this.checkLODViewingExtension.Name = "checkLODViewingExtension";
-            this.checkLODViewingExtension.Size = new System.Drawing.Size(268, 17);
-            this.checkLODViewingExtension.TabIndex = 28;
-            this.checkLODViewingExtension.Text = "Extend object maximum viewing distance to horizon";
-            this.checkLODViewingExtension.UseVisualStyleBackColor = true;
-            // 
-            // labelWindowSize
-            // 
-            this.labelWindowSize.Location = new System.Drawing.Point(0, 0);
-            this.labelWindowSize.Name = "labelWindowSize";
-            this.labelWindowSize.Size = new System.Drawing.Size(100, 23);
-            this.labelWindowSize.TabIndex = 47;
-            // 
-            // labelWebServerPort
-            // 
-            this.labelWebServerPort.Location = new System.Drawing.Point(0, 0);
-            this.labelWebServerPort.Name = "labelWebServerPort";
-            this.labelWebServerPort.Size = new System.Drawing.Size(100, 23);
-            this.labelWebServerPort.TabIndex = 46;
-            // 
-            // labelWorldObjectDensity
-            // 
-            this.labelWorldObjectDensity.Location = new System.Drawing.Point(0, 0);
-            this.labelWorldObjectDensity.Name = "labelWorldObjectDensity";
-            this.labelWorldObjectDensity.Size = new System.Drawing.Size(100, 23);
-            this.labelWorldObjectDensity.TabIndex = 0;
-            // 
-            // labelViewingVerticalFOV
-            // 
-            this.labelViewingVerticalFOV.Location = new System.Drawing.Point(0, 0);
-            this.labelViewingVerticalFOV.Name = "labelViewingVerticalFOV";
-            this.labelViewingVerticalFOV.Size = new System.Drawing.Size(100, 23);
-            this.labelViewingVerticalFOV.TabIndex = 46;
-            // 
-            // tabPageExperimental
-            // 
-            this.tabPageExperimental.Controls.Add(this.pbAdhesionFactorRandomChange);
-            this.tabPageExperimental.Controls.Add(this.pbAdhesionFactorCorrection);
-            this.tabPageExperimental.Controls.Add(this.pbMstsEnvironments);
-            this.tabPageExperimental.Controls.Add(this.pbActivityWeatherRandomization);
-            this.tabPageExperimental.Controls.Add(this.pbActivityRandomization);
-            this.tabPageExperimental.Controls.Add(this.pbCorrectQuestionableBrakingParameters);
-            this.tabPageExperimental.Controls.Add(this.pbShowShapeWarnings);
-            this.tabPageExperimental.Controls.Add(this.label27);
-            this.tabPageExperimental.Controls.Add(this.numericActWeatherRandomizationLevel);
-            this.tabPageExperimental.Controls.Add(this.label26);
-            this.tabPageExperimental.Controls.Add(this.label13);
-            this.tabPageExperimental.Controls.Add(this.label12);
-            this.tabPageExperimental.Controls.Add(this.numericActRandomizationLevel);
-            this.tabPageExperimental.Controls.Add(this.checkCorrectQuestionableBrakingParams);
-            this.tabPageExperimental.Controls.Add(this.label16);
-            this.tabPageExperimental.Controls.Add(this.label9);
-            this.tabPageExperimental.Controls.Add(this.AdhesionFactorChangeValueLabel);
-            this.tabPageExperimental.Controls.Add(this.AdhesionFactorValueLabel);
-            this.tabPageExperimental.Controls.Add(this.checkShapeWarnings);
-            this.tabPageExperimental.Controls.Add(this.AdhesionLevelValue);
-            this.tabPageExperimental.Controls.Add(this.AdhesionLevelLabel);
-            this.tabPageExperimental.Controls.Add(this.trackAdhesionFactorChange);
-            this.tabPageExperimental.Controls.Add(this.trackAdhesionFactor);
-            this.tabPageExperimental.Controls.Add(this.checkUseMSTSEnv);
-            this.tabPageExperimental.Controls.Add(this.label8);
-            this.tabPageExperimental.Controls.Add(this.pbSuperElevation);
-            this.tabPageExperimental.Controls.Add(this.numericSuperElevationGauge);
-            this.tabPageExperimental.Controls.Add(this.label5);
-            this.tabPageExperimental.Controls.Add(this.checkUseSuperElevation);
-            this.tabPageExperimental.Controls.Add(this.ElevationText);
-            this.tabPageExperimental.Location = new System.Drawing.Point(4, 22);
-            this.tabPageExperimental.Name = "tabPageExperimental";
-            this.tabPageExperimental.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageExperimental.Size = new System.Drawing.Size(602, 402);
-            this.tabPageExperimental.TabIndex = 3;
-            this.tabPageExperimental.Text = "Experimental";
-            this.tabPageExperimental.UseVisualStyleBackColor = true;
-            // 
-            // pbAdhesionFactorRandomChange
-            // 
-            this.pbAdhesionFactorRandomChange.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAdhesionFactorRandomChange.Location = new System.Drawing.Point(280, 309);
-            this.pbAdhesionFactorRandomChange.Name = "pbAdhesionFactorRandomChange";
-            this.pbAdhesionFactorRandomChange.Size = new System.Drawing.Size(18, 18);
-            this.pbAdhesionFactorRandomChange.TabIndex = 38;
-            this.pbAdhesionFactorRandomChange.TabStop = false;
-            this.pbAdhesionFactorRandomChange.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAdhesionFactorRandomChange.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAdhesionFactorRandomChange.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbAdhesionFactorCorrection
-            // 
-            this.pbAdhesionFactorCorrection.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAdhesionFactorCorrection.Location = new System.Drawing.Point(280, 258);
-            this.pbAdhesionFactorCorrection.Name = "pbAdhesionFactorCorrection";
-            this.pbAdhesionFactorCorrection.Size = new System.Drawing.Size(18, 18);
-            this.pbAdhesionFactorCorrection.TabIndex = 37;
-            this.pbAdhesionFactorCorrection.TabStop = false;
-            this.pbAdhesionFactorCorrection.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAdhesionFactorCorrection.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAdhesionFactorCorrection.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbMstsEnvironments
-            // 
-            this.pbMstsEnvironments.Image = global::Menu.Properties.Resources.info_18;
-            this.pbMstsEnvironments.Location = new System.Drawing.Point(280, 212);
-            this.pbMstsEnvironments.Name = "pbMstsEnvironments";
-            this.pbMstsEnvironments.Size = new System.Drawing.Size(18, 18);
-            this.pbMstsEnvironments.TabIndex = 36;
-            this.pbMstsEnvironments.TabStop = false;
-            this.pbMstsEnvironments.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbMstsEnvironments.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbMstsEnvironments.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbActivityWeatherRandomization
-            // 
-            this.pbActivityWeatherRandomization.Image = global::Menu.Properties.Resources.info_18;
-            this.pbActivityWeatherRandomization.Location = new System.Drawing.Point(441, 117);
-            this.pbActivityWeatherRandomization.Name = "pbActivityWeatherRandomization";
-            this.pbActivityWeatherRandomization.Size = new System.Drawing.Size(18, 18);
-            this.pbActivityWeatherRandomization.TabIndex = 35;
-            this.pbActivityWeatherRandomization.TabStop = false;
-            this.pbActivityWeatherRandomization.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbActivityWeatherRandomization.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbActivityWeatherRandomization.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbActivityRandomization
-            // 
-            this.pbActivityRandomization.Image = global::Menu.Properties.Resources.info_18;
-            this.pbActivityRandomization.Location = new System.Drawing.Point(301, 117);
-            this.pbActivityRandomization.Name = "pbActivityRandomization";
-            this.pbActivityRandomization.Size = new System.Drawing.Size(18, 18);
-            this.pbActivityRandomization.TabIndex = 34;
-            this.pbActivityRandomization.TabStop = false;
-            this.pbActivityRandomization.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbActivityRandomization.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbActivityRandomization.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbCorrectQuestionableBrakingParameters
-            // 
-            this.pbCorrectQuestionableBrakingParameters.Image = global::Menu.Properties.Resources.info_18;
-            this.pbCorrectQuestionableBrakingParameters.Location = new System.Drawing.Point(280, 74);
-            this.pbCorrectQuestionableBrakingParameters.Name = "pbCorrectQuestionableBrakingParameters";
-            this.pbCorrectQuestionableBrakingParameters.Size = new System.Drawing.Size(18, 18);
-            this.pbCorrectQuestionableBrakingParameters.TabIndex = 33;
-            this.pbCorrectQuestionableBrakingParameters.TabStop = false;
-            this.pbCorrectQuestionableBrakingParameters.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbCorrectQuestionableBrakingParameters.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbCorrectQuestionableBrakingParameters.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbShowShapeWarnings
-            // 
-            this.pbShowShapeWarnings.Image = global::Menu.Properties.Resources.info_18;
-            this.pbShowShapeWarnings.Location = new System.Drawing.Point(6, 189);
-            this.pbShowShapeWarnings.Name = "pbShowShapeWarnings";
-            this.pbShowShapeWarnings.Size = new System.Drawing.Size(18, 18);
-            this.pbShowShapeWarnings.TabIndex = 32;
-            this.pbShowShapeWarnings.TabStop = false;
-            this.pbShowShapeWarnings.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbShowShapeWarnings.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbShowShapeWarnings.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label27
-            // 
-            this.label27.AutoSize = true;
-            this.label27.Location = new System.Drawing.Point(526, 119);
-            this.label27.Margin = new System.Windows.Forms.Padding(3);
-            this.label27.Name = "label27";
-            this.label27.Size = new System.Drawing.Size(33, 13);
-            this.label27.TabIndex = 51;
-            this.label27.Text = "Level";
-            this.label27.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.label27.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label26
-            // 
-            this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(438, 96);
-            this.label26.Margin = new System.Windows.Forms.Padding(3);
-            this.label26.Name = "label26";
-            this.label26.Size = new System.Drawing.Size(150, 13);
-            this.label26.TabIndex = 49;
-            this.label26.Text = "Activity weather randomization";
-            this.label26.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.label26.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(301, 96);
-            this.label13.Margin = new System.Windows.Forms.Padding(3);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(109, 13);
-            this.label13.TabIndex = 48;
-            this.label13.Text = "Activity randomization";
-            this.label13.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.label13.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(385, 119);
-            this.label12.Margin = new System.Windows.Forms.Padding(3);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(33, 13);
-            this.label12.TabIndex = 47;
-            this.label12.Text = "Level";
-            this.label12.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.label12.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkCorrectQuestionableBrakingParams
-            // 
-            this.checkCorrectQuestionableBrakingParams.AutoSize = true;
-            this.checkCorrectQuestionableBrakingParams.Location = new System.Drawing.Point(304, 74);
-            this.checkCorrectQuestionableBrakingParams.Name = "checkCorrectQuestionableBrakingParams";
-            this.checkCorrectQuestionableBrakingParams.Size = new System.Drawing.Size(216, 17);
-            this.checkCorrectQuestionableBrakingParams.TabIndex = 43;
-            this.checkCorrectQuestionableBrakingParams.Text = "Correct questionable braking parameters";
-            this.checkCorrectQuestionableBrakingParams.UseVisualStyleBackColor = true;
-            this.checkCorrectQuestionableBrakingParams.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkCorrectQuestionableBrakingParams.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(301, 309);
-            this.label16.Margin = new System.Windows.Forms.Padding(3);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(161, 13);
-            this.label16.TabIndex = 30;
-            this.label16.Text = "Adhesion factor random change:";
-            this.label16.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.label16.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(301, 258);
-            this.label9.Margin = new System.Windows.Forms.Padding(3);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(134, 13);
-            this.label9.TabIndex = 26;
-            this.label9.Text = "Adhesion factor correction:";
-            this.label9.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.label9.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // AdhesionFactorChangeValueLabel
-            // 
-            this.AdhesionFactorChangeValueLabel.Location = new System.Drawing.Point(301, 309);
-            this.AdhesionFactorChangeValueLabel.Margin = new System.Windows.Forms.Padding(3);
-            this.AdhesionFactorChangeValueLabel.Name = "AdhesionFactorChangeValueLabel";
-            this.AdhesionFactorChangeValueLabel.Size = new System.Drawing.Size(292, 13);
-            this.AdhesionFactorChangeValueLabel.TabIndex = 31;
-            this.AdhesionFactorChangeValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // AdhesionFactorValueLabel
-            // 
-            this.AdhesionFactorValueLabel.Location = new System.Drawing.Point(301, 258);
-            this.AdhesionFactorValueLabel.Margin = new System.Windows.Forms.Padding(3);
-            this.AdhesionFactorValueLabel.Name = "AdhesionFactorValueLabel";
-            this.AdhesionFactorValueLabel.Size = new System.Drawing.Size(292, 13);
-            this.AdhesionFactorValueLabel.TabIndex = 27;
-            this.AdhesionFactorValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // checkShapeWarnings
-            // 
-            this.checkShapeWarnings.AutoSize = true;
-            this.checkShapeWarnings.Location = new System.Drawing.Point(27, 189);
-            this.checkShapeWarnings.Name = "checkShapeWarnings";
-            this.checkShapeWarnings.Size = new System.Drawing.Size(130, 17);
-            this.checkShapeWarnings.TabIndex = 36;
-            this.checkShapeWarnings.Text = "Show shape warnings";
-            this.checkShapeWarnings.UseVisualStyleBackColor = true;
-            this.checkShapeWarnings.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkShapeWarnings.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // AdhesionLevelValue
-            // 
-            this.AdhesionLevelValue.Location = new System.Drawing.Point(357, 360);
-            this.AdhesionLevelValue.Margin = new System.Windows.Forms.Padding(3);
-            this.AdhesionLevelValue.Name = "AdhesionLevelValue";
-            this.AdhesionLevelValue.Size = new System.Drawing.Size(236, 13);
-            this.AdhesionLevelValue.TabIndex = 34;
-            // 
-            // AdhesionLevelLabel
-            // 
-            this.AdhesionLevelLabel.Location = new System.Drawing.Point(301, 360);
-            this.AdhesionLevelLabel.Margin = new System.Windows.Forms.Padding(3);
-            this.AdhesionLevelLabel.Name = "AdhesionLevelLabel";
-            this.AdhesionLevelLabel.Size = new System.Drawing.Size(50, 13);
-            this.AdhesionLevelLabel.TabIndex = 33;
-            this.AdhesionLevelLabel.Text = "Level:";
-            // 
-            // checkUseMSTSEnv
-            // 
-            this.checkUseMSTSEnv.AutoSize = true;
-            this.checkUseMSTSEnv.Location = new System.Drawing.Point(304, 212);
-            this.checkUseMSTSEnv.Name = "checkUseMSTSEnv";
-            this.checkUseMSTSEnv.Size = new System.Drawing.Size(122, 17);
-            this.checkUseMSTSEnv.TabIndex = 25;
-            this.checkUseMSTSEnv.Text = "MSTS environments";
-            this.checkUseMSTSEnv.UseVisualStyleBackColor = true;
-            this.checkUseMSTSEnv.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkUseMSTSEnv.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(86, 70);
-            this.label8.Margin = new System.Windows.Forms.Padding(3);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(101, 13);
-            this.label8.TabIndex = 7;
-            this.label8.Text = "Default Gauge (mm)";
-            this.label8.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.label8.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbSuperElevation
-            // 
-            this.pbSuperElevation.Image = global::Menu.Properties.Resources.info_18;
-            this.pbSuperElevation.Location = new System.Drawing.Point(6, 23);
-            this.pbSuperElevation.Name = "pbSuperElevation";
-            this.pbSuperElevation.Size = new System.Drawing.Size(18, 18);
-            this.pbSuperElevation.TabIndex = 28;
-            this.pbSuperElevation.TabStop = false;
-            this.pbSuperElevation.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbSuperElevation.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbSuperElevation.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label5.Location = new System.Drawing.Point(6, 6);
-            this.label5.Margin = new System.Windows.Forms.Padding(3);
-            this.label5.MaximumSize = new System.Drawing.Size(590, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(354, 13);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Experimental features that may slow down the game, use at your own risk.";
-            // 
-            // ElevationText
-            // 
-            this.ElevationText.AutoSize = true;
-            this.ElevationText.Location = new System.Drawing.Point(24, 23);
-            this.ElevationText.Margin = new System.Windows.Forms.Padding(3);
-            this.ElevationText.Name = "ElevationText";
-            this.ElevationText.Size = new System.Drawing.Size(78, 13);
-            this.ElevationText.TabIndex = 1;
-            this.ElevationText.Text = "Superelevation";
-            this.ElevationText.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.ElevationText.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelLODBias
-            // 
-            this.labelLODBias.Location = new System.Drawing.Point(336, 169);
-            this.labelLODBias.Margin = new System.Windows.Forms.Padding(3);
-            this.labelLODBias.Name = "labelLODBias";
-            this.labelLODBias.Size = new System.Drawing.Size(188, 18);
-            this.labelLODBias.TabIndex = 26;
-            this.labelLODBias.Text = "Level of detail bias:";
-            this.labelLODBias.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelLODBias.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelPerformanceTunerTarget
-            // 
-            this.labelPerformanceTunerTarget.AutoSize = true;
-            this.labelPerformanceTunerTarget.Location = new System.Drawing.Point(115, 354);
-            this.labelPerformanceTunerTarget.Margin = new System.Windows.Forms.Padding(3);
-            this.labelPerformanceTunerTarget.Name = "labelPerformanceTunerTarget";
-            this.labelPerformanceTunerTarget.Size = new System.Drawing.Size(88, 13);
-            this.labelPerformanceTunerTarget.TabIndex = 10;
-            this.labelPerformanceTunerTarget.Text = "Target frame rate";
-            // 
-            // checkPerformanceTuner
-            // 
-            this.checkPerformanceTuner.AutoSize = true;
-            this.checkPerformanceTuner.Location = new System.Drawing.Point(35, 330);
-            this.checkPerformanceTuner.Name = "checkPerformanceTuner";
-            this.checkPerformanceTuner.Size = new System.Drawing.Size(277, 17);
-            this.checkPerformanceTuner.TabIndex = 8;
-            this.checkPerformanceTuner.Text = "Automatically tune settings to keep performance level";
-            this.checkPerformanceTuner.UseVisualStyleBackColor = true;
-            this.checkPerformanceTuner.Click += new System.EventHandler(this.checkPerformanceTuner_Click);
-            // 
-            // tabPageSystem
-            // 
-            this.tabPageSystem.Controls.Add(this.pbControlConfirmations);
-            this.tabPageSystem.Controls.Add(this.comboControlConfirmations);
-            this.tabPageSystem.Controls.Add(this.labelControlConfirmations);
-            this.tabPageSystem.Controls.Add(this.labelPortNumber);
-            this.tabPageSystem.Controls.Add(this.numericWebServerPort);
-            this.tabPageSystem.Controls.Add(this.pbLanguage);
-            this.tabPageSystem.Controls.Add(this.labelLanguage);
-            this.tabPageSystem.Controls.Add(this.comboLanguage);
-            this.tabPageSystem.Controls.Add(this.comboWindowSize);
-            this.tabPageSystem.Controls.Add(this.label3);
-            this.tabPageSystem.Controls.Add(this.checkWindowGlass);
-            this.tabPageSystem.Controls.Add(this.pbPerformanceTuner);
-            this.tabPageSystem.Controls.Add(this.labelPerformanceTunerTarget);
-            this.tabPageSystem.Controls.Add(this.numericPerformanceTunerTarget);
-            this.tabPageSystem.Controls.Add(this.checkPerformanceTuner);
-            this.tabPageSystem.Controls.Add(this.pbWebServerPort);
-            this.tabPageSystem.Controls.Add(this.labelWebServerPort);
-            this.tabPageSystem.Controls.Add(this.pbWindowGlass);
-            this.tabPageSystem.Controls.Add(this.labelWindowSize);
-            this.tabPageSystem.Location = new System.Drawing.Point(4, 22);
-            this.tabPageSystem.Name = "tabPageSystem";
-            this.tabPageSystem.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSystem.Size = new System.Drawing.Size(602, 402);
-            this.tabPageSystem.TabIndex = 8;
-            this.tabPageSystem.Text = "System";
-            this.tabPageSystem.UseVisualStyleBackColor = true;
-            // 
-            // pbControlConfirmations
-            // 
-            this.pbControlConfirmations.Image = global::Menu.Properties.Resources.info_18;
-            this.pbControlConfirmations.Location = new System.Drawing.Point(11, 266);
-            this.pbControlConfirmations.Name = "pbControlConfirmations";
-            this.pbControlConfirmations.Size = new System.Drawing.Size(18, 18);
-            this.pbControlConfirmations.TabIndex = 61;
-            this.pbControlConfirmations.TabStop = false;
-            this.pbControlConfirmations.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbControlConfirmations.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbControlConfirmations.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // comboControlConfirmations
-            // 
-            this.comboControlConfirmations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboControlConfirmations.FormattingEnabled = true;
-            this.comboControlConfirmations.Location = new System.Drawing.Point(35, 265);
-            this.comboControlConfirmations.Name = "comboControlConfirmations";
-            this.comboControlConfirmations.Size = new System.Drawing.Size(121, 21);
-            this.comboControlConfirmations.TabIndex = 59;
-            // 
-            // labelControlConfirmations
-            // 
-            this.labelControlConfirmations.Location = new System.Drawing.Point(161, 267);
-            this.labelControlConfirmations.Margin = new System.Windows.Forms.Padding(3);
-            this.labelControlConfirmations.Name = "labelControlConfirmations";
-            this.labelControlConfirmations.Size = new System.Drawing.Size(200, 21);
-            this.labelControlConfirmations.TabIndex = 60;
-            this.labelControlConfirmations.Text = "Messages suppressed       ";
-            // 
-            // labelPortNumber
-            // 
-            this.labelPortNumber.AutoSize = true;
-            this.labelPortNumber.Location = new System.Drawing.Point(118, 300);
-            this.labelPortNumber.Name = "labelPortNumber";
-            this.labelPortNumber.Size = new System.Drawing.Size(197, 13);
-            this.labelPortNumber.TabIndex = 58;
-            this.labelPortNumber.Text = "Web server port                                      ";
-            // 
-            // numericWebServerPort
-            // 
-            this.numericWebServerPort.Location = new System.Drawing.Point(35, 298);
-            this.numericWebServerPort.Maximum = new decimal(new int[] {
-            65534,
-            0,
-            0,
-            0});
-            this.numericWebServerPort.Minimum = new decimal(new int[] {
-            1025,
-            0,
-            0,
-            0});
-            this.numericWebServerPort.Name = "numericWebServerPort";
-            this.numericWebServerPort.Size = new System.Drawing.Size(70, 20);
-            this.numericWebServerPort.TabIndex = 57;
-            this.numericWebServerPort.Value = new decimal(new int[] {
-            1025,
-            0,
-            0,
-            0});
-            // 
-            // pbLanguage
-            // 
-            this.pbLanguage.Image = global::Menu.Properties.Resources.info_18;
-            this.pbLanguage.Location = new System.Drawing.Point(11, 9);
-            this.pbLanguage.Name = "pbLanguage";
-            this.pbLanguage.Size = new System.Drawing.Size(18, 18);
-            this.pbLanguage.TabIndex = 28;
-            this.pbLanguage.TabStop = false;
-            this.pbLanguage.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbLanguage.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbLanguage.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelLanguage
-            // 
-            this.labelLanguage.AutoSize = true;
-            this.labelLanguage.Location = new System.Drawing.Point(159, 12);
-            this.labelLanguage.Margin = new System.Windows.Forms.Padding(3);
-            this.labelLanguage.Name = "labelLanguage";
-            this.labelLanguage.Size = new System.Drawing.Size(130, 13);
-            this.labelLanguage.TabIndex = 53;
-            this.labelLanguage.Text = "Language                         ";
-            this.labelLanguage.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelLanguage.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // comboLanguage
-            // 
-            this.comboLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboLanguage.FormattingEnabled = true;
-            this.comboLanguage.Location = new System.Drawing.Point(35, 9);
-            this.comboLanguage.Name = "comboLanguage";
-            this.comboLanguage.Size = new System.Drawing.Size(121, 21);
-            this.comboLanguage.TabIndex = 52;
-            this.comboLanguage.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.comboLanguage.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // comboWindowSize
-            // 
-            this.comboWindowSize.FormattingEnabled = true;
-            this.comboWindowSize.Items.AddRange(new object[] {
-            "800x600",
-            "1024x768",
-            "1280x720",
-            "1280x800",
-            "1280x1024",
-            "1360x768",
-            "1366x768",
-            "1440x900",
-            "1536x864",
-            "1600x900",
-            "1680x1050",
-            "1920x1080",
-            "1920x1200",
-            "2560x1440"});
-            this.comboWindowSize.Location = new System.Drawing.Point(32, 190);
-            this.comboWindowSize.Name = "comboWindowSize";
-            this.comboWindowSize.Size = new System.Drawing.Size(121, 21);
-            this.comboWindowSize.TabIndex = 50;
-            this.comboWindowSize.SelectedIndexChanged += new System.EventHandler(this.comboWindowSize_SelectedIndexChanged);
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(159, 193);
-            this.label3.Margin = new System.Windows.Forms.Padding(3);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(225, 13);
-            this.label3.TabIndex = 51;
-            this.label3.Text = "Window size (select or type WIDTHxHEIGHT)";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
-            // 
-            // checkWindowGlass
-            // 
-            this.checkWindowGlass.AutoSize = true;
-            this.checkWindowGlass.Location = new System.Drawing.Point(35, 235);
-            this.checkWindowGlass.Name = "checkWindowGlass";
-            this.checkWindowGlass.Size = new System.Drawing.Size(171, 17);
-            this.checkWindowGlass.TabIndex = 49;
-            this.checkWindowGlass.Text = "Use glass on in-game windows";
-            this.checkWindowGlass.UseVisualStyleBackColor = true;
-            // 
-            // tabPageEvaluate
-            // 
-            this.tabPageEvaluate.Controls.Add(this.checkListDataLogTSContents);
-            this.tabPageEvaluate.Controls.Add(this.labelDataLogTSInterval);
-            this.tabPageEvaluate.Controls.Add(this.checkDataLogStationStops);
-            this.tabPageEvaluate.Controls.Add(this.numericDataLogTSInterval);
-            this.tabPageEvaluate.Controls.Add(this.checkDataLogTrainSpeed);
-            this.tabPageEvaluate.Location = new System.Drawing.Point(4, 22);
-            this.tabPageEvaluate.Name = "tabPageEvaluate";
-            this.tabPageEvaluate.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageEvaluate.Size = new System.Drawing.Size(602, 402);
-            this.tabPageEvaluate.TabIndex = 7;
-            this.tabPageEvaluate.Text = "Evaluation";
-            this.tabPageEvaluate.UseVisualStyleBackColor = true;
-            // 
-            // checkListDataLogTSContents
-            // 
-            this.checkListDataLogTSContents.FormattingEnabled = true;
-            this.checkListDataLogTSContents.Location = new System.Drawing.Point(26, 55);
-            this.checkListDataLogTSContents.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.checkListDataLogTSContents.Name = "checkListDataLogTSContents";
-            this.checkListDataLogTSContents.Size = new System.Drawing.Size(148, 214);
-            this.checkListDataLogTSContents.TabIndex = 3;
-            // 
-            // labelDataLogTSInterval
-            // 
-            this.labelDataLogTSInterval.AutoSize = true;
-            this.labelDataLogTSInterval.Location = new System.Drawing.Point(86, 31);
-            this.labelDataLogTSInterval.Margin = new System.Windows.Forms.Padding(3);
-            this.labelDataLogTSInterval.Name = "labelDataLogTSInterval";
-            this.labelDataLogTSInterval.Size = new System.Drawing.Size(68, 13);
-            this.labelDataLogTSInterval.TabIndex = 2;
-            this.labelDataLogTSInterval.Text = "Interval (sec)";
-            // 
-            // checkDataLogStationStops
-            // 
-            this.checkDataLogStationStops.AutoSize = true;
-            this.checkDataLogStationStops.Location = new System.Drawing.Point(6, 280);
-            this.checkDataLogStationStops.Name = "checkDataLogStationStops";
-            this.checkDataLogStationStops.Size = new System.Drawing.Size(106, 17);
-            this.checkDataLogStationStops.TabIndex = 4;
-            this.checkDataLogStationStops.Text = "Log station stops";
-            this.checkDataLogStationStops.UseVisualStyleBackColor = true;
-            // 
-            // numericDataLogTSInterval
-            // 
-            this.numericDataLogTSInterval.Location = new System.Drawing.Point(26, 29);
-            this.numericDataLogTSInterval.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.numericDataLogTSInterval.Maximum = new decimal(new int[] {
-            60,
-            0,
-            0,
-            0});
-            this.numericDataLogTSInterval.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericDataLogTSInterval.Name = "numericDataLogTSInterval";
-            this.numericDataLogTSInterval.Size = new System.Drawing.Size(54, 20);
-            this.numericDataLogTSInterval.TabIndex = 1;
-            this.numericDataLogTSInterval.Value = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            // 
-            // checkDataLogTrainSpeed
-            // 
-            this.checkDataLogTrainSpeed.AutoSize = true;
-            this.checkDataLogTrainSpeed.Location = new System.Drawing.Point(6, 6);
-            this.checkDataLogTrainSpeed.Name = "checkDataLogTrainSpeed";
-            this.checkDataLogTrainSpeed.Size = new System.Drawing.Size(99, 17);
-            this.checkDataLogTrainSpeed.TabIndex = 0;
-            this.checkDataLogTrainSpeed.Text = "Log train speed";
-            this.checkDataLogTrainSpeed.UseVisualStyleBackColor = true;
-            this.checkDataLogTrainSpeed.Click += new System.EventHandler(this.checkDataLogTrainSpeed_Click);
-            // 
-            // tabPageDataLogger
-            // 
-            this.tabPageDataLogger.Controls.Add(this.checkDataLogSteamPowerCurve);
-            this.tabPageDataLogger.Controls.Add(this.pbDataLoggerOptions);
-            this.tabPageDataLogger.Controls.Add(this.comboDataLoggerSeparator);
-            this.tabPageDataLogger.Controls.Add(this.checkDataLogUseInternalUnits);
-            this.tabPageDataLogger.Controls.Add(this.label18);
-            this.tabPageDataLogger.Controls.Add(this.checkDataLogPerformance);
-            this.tabPageDataLogger.Controls.Add(this.checkDataLogger);
-            this.tabPageDataLogger.Controls.Add(this.label17);
-            this.tabPageDataLogger.Controls.Add(this.checkDataLogPhysics);
-            this.tabPageDataLogger.Controls.Add(this.checkDataLogSteamPerformance);
-            this.tabPageDataLogger.Controls.Add(this.dataLoggerInterval);
-            this.tabPageDataLogger.Controls.Add(this.dataLoggerIntervalLabel);
-            this.tabPageDataLogger.Controls.Add(this.checkVerboseConfigurationMessages);
-            this.tabPageDataLogger.Location = new System.Drawing.Point(4, 22);
-            this.tabPageDataLogger.Name = "tabPageDataLogger";
-            this.tabPageDataLogger.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageDataLogger.Size = new System.Drawing.Size(602, 402);
-            this.tabPageDataLogger.TabIndex = 6;
-            this.tabPageDataLogger.Text = "Data logger";
-            this.tabPageDataLogger.UseVisualStyleBackColor = true;
-            // 
-            // checkDataLogSteamPowerCurve
-            // 
-            this.checkDataLogSteamPowerCurve.AutoSize = true;
-            this.checkDataLogSteamPowerCurve.Location = new System.Drawing.Point(6, 180);
-            this.checkDataLogSteamPowerCurve.Name = "checkDataLogSteamPowerCurve";
-            this.checkDataLogSteamPowerCurve.Size = new System.Drawing.Size(214, 17);
-            this.checkDataLogSteamPowerCurve.TabIndex = 24;
-            this.checkDataLogSteamPowerCurve.Text = "Log steam power curve data (exclusive)";
-            this.checkDataLogSteamPowerCurve.UseVisualStyleBackColor = true;
-            // 
-            // pbDataLoggerOptions
-            // 
-            this.pbDataLoggerOptions.Image = global::Menu.Properties.Resources.info_18_hover;
-            this.pbDataLoggerOptions.Location = new System.Drawing.Point(578, 6);
-            this.pbDataLoggerOptions.Name = "pbDataLoggerOptions";
-            this.pbDataLoggerOptions.Size = new System.Drawing.Size(18, 18);
-            this.pbDataLoggerOptions.TabIndex = 23;
-            this.pbDataLoggerOptions.TabStop = false;
-            this.pbDataLoggerOptions.Click += new System.EventHandler(this.HelpIcon_Click);
-            // 
-            // comboDataLoggerSeparator
-            // 
-            this.comboDataLoggerSeparator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboDataLoggerSeparator.FormattingEnabled = true;
-            this.comboDataLoggerSeparator.Location = new System.Drawing.Point(5, 37);
-            this.comboDataLoggerSeparator.Margin = new System.Windows.Forms.Padding(2);
-            this.comboDataLoggerSeparator.Name = "comboDataLoggerSeparator";
-            this.comboDataLoggerSeparator.Size = new System.Drawing.Size(121, 21);
-            this.comboDataLoggerSeparator.TabIndex = 1;
+            dataLoggerInterval.Increment = new decimal(new int[] { 50, 0, 0, 0 });
+            dataLoggerInterval.Location = new System.Drawing.Point(362, 46);
+            dataLoggerInterval.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            dataLoggerInterval.Maximum = new decimal(new int[] { 60000, 0, 0, 0 });
+            dataLoggerInterval.Name = "dataLoggerInterval";
+            dataLoggerInterval.Size = new System.Drawing.Size(63, 23);
+            dataLoggerInterval.TabIndex = 25;
+            dataLoggerInterval.ThousandsSeparator = true;
+            toolTip1.SetToolTip(dataLoggerInterval, "Interval at which to log data. In milliseconds, 0 means log at frame rate.");
             // 
             // checkDataLogUseInternalUnits
             // 
-            this.checkDataLogUseInternalUnits.AutoSize = true;
-            this.checkDataLogUseInternalUnits.Location = new System.Drawing.Point(6, 65);
-            this.checkDataLogUseInternalUnits.Name = "checkDataLogUseInternalUnits";
-            this.checkDataLogUseInternalUnits.Size = new System.Drawing.Size(107, 17);
-            this.checkDataLogUseInternalUnits.TabIndex = 3;
-            this.checkDataLogUseInternalUnits.Text = "Use internal units";
-            this.toolTip1.SetToolTip(this.checkDataLogUseInternalUnits, "When checked, use units used by the software (i.e. no conversion).");
-            this.checkDataLogUseInternalUnits.UseVisualStyleBackColor = true;
-            // 
-            // label18
-            // 
-            this.label18.AutoSize = true;
-            this.label18.ForeColor = System.Drawing.SystemColors.Highlight;
-            this.label18.Location = new System.Drawing.Point(6, 6);
-            this.label18.Margin = new System.Windows.Forms.Padding(3);
-            this.label18.MaximumSize = new System.Drawing.Size(590, 0);
-            this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(368, 26);
-            this.label18.TabIndex = 0;
-            this.label18.Text = "Use data logger to record your simulation data (in-game command: F12).\r\nPlease re" +
-    "member that the size of the dump file grows with the simulation time!";
-            // 
-            // checkDataLogPerformance
-            // 
-            this.checkDataLogPerformance.AutoSize = true;
-            this.checkDataLogPerformance.Location = new System.Drawing.Point(6, 111);
-            this.checkDataLogPerformance.Name = "checkDataLogPerformance";
-            this.checkDataLogPerformance.Size = new System.Drawing.Size(130, 17);
-            this.checkDataLogPerformance.TabIndex = 6;
-            this.checkDataLogPerformance.Text = "Log performance data";
-            this.checkDataLogPerformance.UseVisualStyleBackColor = true;
-            // 
-            // checkDataLogger
-            // 
-            this.checkDataLogger.AutoSize = true;
-            this.checkDataLogger.Location = new System.Drawing.Point(6, 88);
-            this.checkDataLogger.Name = "checkDataLogger";
-            this.checkDataLogger.Size = new System.Drawing.Size(197, 17);
-            this.checkDataLogger.TabIndex = 5;
-            this.checkDataLogger.Text = "Start logging with the simulation start";
-            this.checkDataLogger.UseVisualStyleBackColor = true;
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(131, 40);
-            this.label17.Margin = new System.Windows.Forms.Padding(3);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(53, 13);
-            this.label17.TabIndex = 2;
-            this.label17.Text = "Separator";
-            // 
-            // checkDataLogPhysics
-            // 
-            this.checkDataLogPhysics.AutoSize = true;
-            this.checkDataLogPhysics.Location = new System.Drawing.Point(6, 134);
-            this.checkDataLogPhysics.Name = "checkDataLogPhysics";
-            this.checkDataLogPhysics.Size = new System.Drawing.Size(106, 17);
-            this.checkDataLogPhysics.TabIndex = 7;
-            this.checkDataLogPhysics.Text = "Log physics data";
-            this.checkDataLogPhysics.UseVisualStyleBackColor = true;
-            // 
-            // checkDataLogSteamPerformance
-            // 
-            this.checkDataLogSteamPerformance.AutoSize = true;
-            this.checkDataLogSteamPerformance.Location = new System.Drawing.Point(6, 157);
-            this.checkDataLogSteamPerformance.Name = "checkDataLogSteamPerformance";
-            this.checkDataLogSteamPerformance.Size = new System.Drawing.Size(216, 17);
-            this.checkDataLogSteamPerformance.TabIndex = 6;
-            this.checkDataLogSteamPerformance.Text = "Log Steam performance data (exclusive)";
-            this.checkDataLogSteamPerformance.UseVisualStyleBackColor = true;
-            // 
-            // dataLoggerIntervalLabel
-            // 
-            this.dataLoggerIntervalLabel.AutoSize = true;
-            this.dataLoggerIntervalLabel.Location = new System.Drawing.Point(370, 42);
-            this.dataLoggerIntervalLabel.Margin = new System.Windows.Forms.Padding(3);
-            this.dataLoggerIntervalLabel.Name = "dataLoggerIntervalLabel";
-            this.dataLoggerIntervalLabel.Size = new System.Drawing.Size(117, 13);
-            this.dataLoggerIntervalLabel.TabIndex = 26;
-            this.dataLoggerIntervalLabel.Text = "Logging Interval (msec)";
-            // 
-            // checkVerboseConfigurationMessages
-            // 
-            this.checkVerboseConfigurationMessages.AutoSize = true;
-            this.checkVerboseConfigurationMessages.Location = new System.Drawing.Point(6, 236);
-            this.checkVerboseConfigurationMessages.Name = "checkVerboseConfigurationMessages";
-            this.checkVerboseConfigurationMessages.Size = new System.Drawing.Size(236, 17);
-            this.checkVerboseConfigurationMessages.TabIndex = 6;
-            this.checkVerboseConfigurationMessages.Text = "Verbose ENG/WAG configuration messages";
-            this.checkVerboseConfigurationMessages.UseVisualStyleBackColor = true;
-            // 
-            // tabPageRailDriver
-            // 
-            this.tabPageRailDriver.Controls.Add(this.pbRailDriverOptions);
-            this.tabPageRailDriver.Controls.Add(this.btnRDSettingsExport);
-            this.tabPageRailDriver.Controls.Add(this.btnCheck);
-            this.tabPageRailDriver.Controls.Add(this.btnRDReset);
-            this.tabPageRailDriver.Controls.Add(this.btnStartRDCalibration);
-            this.tabPageRailDriver.Controls.Add(this.btnShowRDLegend);
-            this.tabPageRailDriver.Controls.Add(this.panelRDSettings);
-            this.tabPageRailDriver.Location = new System.Drawing.Point(4, 22);
-            this.tabPageRailDriver.Name = "tabPageRailDriver";
-            this.tabPageRailDriver.Size = new System.Drawing.Size(602, 402);
-            this.tabPageRailDriver.TabIndex = 10;
-            this.tabPageRailDriver.Text = "RailDriver";
-            this.tabPageRailDriver.UseVisualStyleBackColor = true;
-            // 
-            // pbRailDriverOptions
-            // 
-            this.pbRailDriverOptions.Image = global::Menu.Properties.Resources.info_18_hover;
-            this.pbRailDriverOptions.Location = new System.Drawing.Point(338, 377);
-            this.pbRailDriverOptions.Name = "pbRailDriverOptions";
-            this.pbRailDriverOptions.Size = new System.Drawing.Size(18, 18);
-            this.pbRailDriverOptions.TabIndex = 22;
-            this.pbRailDriverOptions.TabStop = false;
-            this.pbRailDriverOptions.Click += new System.EventHandler(this.HelpIcon_Click);
-            // 
-            // panelRDSettings
-            // 
-            this.panelRDSettings.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelRDSettings.AutoScroll = true;
-            this.panelRDSettings.BackColor = System.Drawing.Color.Transparent;
-            this.panelRDSettings.Controls.Add(this.panelRDOptions);
-            this.panelRDSettings.Controls.Add(this.panelRDButtons);
-            this.panelRDSettings.Location = new System.Drawing.Point(6, 6);
-            this.panelRDSettings.Name = "panelRDSettings";
-            this.panelRDSettings.Size = new System.Drawing.Size(590, 361);
-            this.panelRDSettings.TabIndex = 0;
-            // 
-            // panelRDOptions
-            // 
-            this.panelRDOptions.Controls.Add(this.groupBoxReverseRDLevers);
-            this.panelRDOptions.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelRDOptions.Location = new System.Drawing.Point(283, 0);
-            this.panelRDOptions.Name = "panelRDOptions";
-            this.panelRDOptions.Size = new System.Drawing.Size(307, 361);
-            this.panelRDOptions.TabIndex = 2;
-            // 
-            // groupBoxReverseRDLevers
-            // 
-            this.groupBoxReverseRDLevers.Controls.Add(this.checkFullRangeThrottle);
-            this.groupBoxReverseRDLevers.Controls.Add(this.checkReverseIndependentBrake);
-            this.groupBoxReverseRDLevers.Controls.Add(this.checkReverseAutoBrake);
-            this.groupBoxReverseRDLevers.Controls.Add(this.checkReverseThrottle);
-            this.groupBoxReverseRDLevers.Controls.Add(this.checkReverseReverser);
-            this.groupBoxReverseRDLevers.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBoxReverseRDLevers.Location = new System.Drawing.Point(18, 18);
-            this.groupBoxReverseRDLevers.Name = "groupBoxReverseRDLevers";
-            this.groupBoxReverseRDLevers.Size = new System.Drawing.Size(275, 153);
-            this.groupBoxReverseRDLevers.TabIndex = 2;
-            this.groupBoxReverseRDLevers.TabStop = false;
-            this.groupBoxReverseRDLevers.Text = "Reverse Levers";
-            // 
-            // checkReverseIndependentBrake
-            // 
-            this.checkReverseIndependentBrake.AutoSize = true;
-            this.checkReverseIndependentBrake.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkReverseIndependentBrake.Location = new System.Drawing.Point(7, 89);
-            this.checkReverseIndependentBrake.Name = "checkReverseIndependentBrake";
-            this.checkReverseIndependentBrake.Size = new System.Drawing.Size(205, 17);
-            this.checkReverseIndependentBrake.TabIndex = 3;
-            this.checkReverseIndependentBrake.Text = "Reverse Independent Brake Direction";
-            this.checkReverseIndependentBrake.UseVisualStyleBackColor = true;
-            // 
-            // checkReverseAutoBrake
-            // 
-            this.checkReverseAutoBrake.AutoSize = true;
-            this.checkReverseAutoBrake.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkReverseAutoBrake.Location = new System.Drawing.Point(7, 66);
-            this.checkReverseAutoBrake.Name = "checkReverseAutoBrake";
-            this.checkReverseAutoBrake.Size = new System.Drawing.Size(167, 17);
-            this.checkReverseAutoBrake.TabIndex = 2;
-            this.checkReverseAutoBrake.Text = "Reverse Auto Brake Direction";
-            this.checkReverseAutoBrake.UseVisualStyleBackColor = true;
-            // 
-            // checkReverseThrottle
-            // 
-            this.checkReverseThrottle.AutoSize = true;
-            this.checkReverseThrottle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkReverseThrottle.Location = new System.Drawing.Point(7, 43);
-            this.checkReverseThrottle.Name = "checkReverseThrottle";
-            this.checkReverseThrottle.Size = new System.Drawing.Size(150, 17);
-            this.checkReverseThrottle.TabIndex = 1;
-            this.checkReverseThrottle.Text = "Reverse Throttle Direction";
-            this.checkReverseThrottle.UseVisualStyleBackColor = true;
-            // 
-            // checkReverseReverser
-            // 
-            this.checkReverseReverser.AutoSize = true;
-            this.checkReverseReverser.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkReverseReverser.Location = new System.Drawing.Point(7, 20);
-            this.checkReverseReverser.Name = "checkReverseReverser";
-            this.checkReverseReverser.Size = new System.Drawing.Size(157, 17);
-            this.checkReverseReverser.TabIndex = 0;
-            this.checkReverseReverser.Text = "Reverse Reverser Direction";
-            this.checkReverseReverser.UseVisualStyleBackColor = true;
-            // 
-            // panelRDButtons
-            // 
-            this.panelRDButtons.BackColor = System.Drawing.Color.Transparent;
-            this.panelRDButtons.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelRDButtons.Location = new System.Drawing.Point(0, 0);
-            this.panelRDButtons.Name = "panelRDButtons";
-            this.panelRDButtons.Size = new System.Drawing.Size(283, 361);
-            this.panelRDButtons.TabIndex = 3;
-            // 
-            // tabPageKeyboard
-            // 
-            this.tabPageKeyboard.AutoScroll = true;
-            this.tabPageKeyboard.Controls.Add(this.pbKeyboardOptions);
-            this.tabPageKeyboard.Controls.Add(this.buttonExport);
-            this.tabPageKeyboard.Controls.Add(this.buttonDefaultKeys);
-            this.tabPageKeyboard.Controls.Add(this.buttonCheckKeys);
-            this.tabPageKeyboard.Controls.Add(this.panelKeys);
-            this.tabPageKeyboard.Location = new System.Drawing.Point(4, 22);
-            this.tabPageKeyboard.Name = "tabPageKeyboard";
-            this.tabPageKeyboard.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageKeyboard.Size = new System.Drawing.Size(602, 402);
-            this.tabPageKeyboard.TabIndex = 1;
-            this.tabPageKeyboard.Text = "Keyboard";
-            this.tabPageKeyboard.UseVisualStyleBackColor = true;
-            // 
-            // pbKeyboardOptions
-            // 
-            this.pbKeyboardOptions.Image = global::Menu.Properties.Resources.info_18_hover;
-            this.pbKeyboardOptions.Location = new System.Drawing.Point(180, 378);
-            this.pbKeyboardOptions.Name = "pbKeyboardOptions";
-            this.pbKeyboardOptions.Size = new System.Drawing.Size(18, 18);
-            this.pbKeyboardOptions.TabIndex = 21;
-            this.pbKeyboardOptions.TabStop = false;
-            this.pbKeyboardOptions.Click += new System.EventHandler(this.HelpIcon_Click);
-            // 
-            // panelKeys
-            // 
-            this.panelKeys.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.panelKeys.AutoScroll = true;
-            this.panelKeys.Location = new System.Drawing.Point(6, 6);
-            this.panelKeys.Name = "panelKeys";
-            this.panelKeys.Size = new System.Drawing.Size(590, 361);
-            this.panelKeys.TabIndex = 0;
-            // 
-            // tabPageSimulation
-            // 
-            this.tabPageSimulation.Controls.Add(this.pbAdvancedAdhesionModel);
-            this.tabPageSimulation.Controls.Add(this.pbBreakCouplers);
-            this.tabPageSimulation.Controls.Add(this.pbCurveDependentSpeedLimit);
-            this.tabPageSimulation.Controls.Add(this.pbAtGameStartSteamPreHeatBoiler);
-            this.tabPageSimulation.Controls.Add(this.pbAtGameStartDieselRunEngines);
-            this.tabPageSimulation.Controls.Add(this.pbAtGameStartElectricPowerConnected);
-            this.tabPageSimulation.Controls.Add(this.pbSimpleControlAndPhysics);
-            this.tabPageSimulation.Controls.Add(this.label4);
-            this.tabPageSimulation.Controls.Add(this.checkBoilerPreheated);
-            this.tabPageSimulation.Controls.Add(this.groupBox1);
-            this.tabPageSimulation.Controls.Add(this.checkElectricPowerConnected);
-            this.tabPageSimulation.Controls.Add(this.checkSimpleControlsPhysics);
-            this.tabPageSimulation.Controls.Add(this.checkCurveSpeedDependent);
-            this.tabPageSimulation.Controls.Add(this.checkBreakCouplers);
-            this.tabPageSimulation.Controls.Add(this.checkDieselEnginesStarted);
-            this.tabPageSimulation.Controls.Add(this.checkUseAdvancedAdhesion);
-            this.tabPageSimulation.Location = new System.Drawing.Point(4, 22);
-            this.tabPageSimulation.Name = "tabPageSimulation";
-            this.tabPageSimulation.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageSimulation.Size = new System.Drawing.Size(602, 402);
-            this.tabPageSimulation.TabIndex = 2;
-            this.tabPageSimulation.Text = "Simulation";
-            this.tabPageSimulation.UseVisualStyleBackColor = true;
-            // 
-            // pbAdvancedAdhesionModel
-            // 
-            this.pbAdvancedAdhesionModel.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAdvancedAdhesionModel.Location = new System.Drawing.Point(6, 7);
-            this.pbAdvancedAdhesionModel.Name = "pbAdvancedAdhesionModel";
-            this.pbAdvancedAdhesionModel.Size = new System.Drawing.Size(18, 18);
-            this.pbAdvancedAdhesionModel.TabIndex = 41;
-            this.pbAdvancedAdhesionModel.TabStop = false;
-            this.pbAdvancedAdhesionModel.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAdvancedAdhesionModel.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAdvancedAdhesionModel.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbBreakCouplers
-            // 
-            this.pbBreakCouplers.Image = global::Menu.Properties.Resources.info_18;
-            this.pbBreakCouplers.Location = new System.Drawing.Point(6, 55);
-            this.pbBreakCouplers.Name = "pbBreakCouplers";
-            this.pbBreakCouplers.Size = new System.Drawing.Size(18, 18);
-            this.pbBreakCouplers.TabIndex = 42;
-            this.pbBreakCouplers.TabStop = false;
-            this.pbBreakCouplers.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbBreakCouplers.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbBreakCouplers.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbCurveDependentSpeedLimit
-            // 
-            this.pbCurveDependentSpeedLimit.Image = global::Menu.Properties.Resources.info_18;
-            this.pbCurveDependentSpeedLimit.Location = new System.Drawing.Point(6, 100);
-            this.pbCurveDependentSpeedLimit.Name = "pbCurveDependentSpeedLimit";
-            this.pbCurveDependentSpeedLimit.Size = new System.Drawing.Size(18, 18);
-            this.pbCurveDependentSpeedLimit.TabIndex = 43;
-            this.pbCurveDependentSpeedLimit.TabStop = false;
-            this.pbCurveDependentSpeedLimit.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbCurveDependentSpeedLimit.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbCurveDependentSpeedLimit.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbAtGameStartSteamPreHeatBoiler
-            // 
-            this.pbAtGameStartSteamPreHeatBoiler.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAtGameStartSteamPreHeatBoiler.Location = new System.Drawing.Point(26, 192);
-            this.pbAtGameStartSteamPreHeatBoiler.Name = "pbAtGameStartSteamPreHeatBoiler";
-            this.pbAtGameStartSteamPreHeatBoiler.Size = new System.Drawing.Size(18, 18);
-            this.pbAtGameStartSteamPreHeatBoiler.TabIndex = 44;
-            this.pbAtGameStartSteamPreHeatBoiler.TabStop = false;
-            this.pbAtGameStartSteamPreHeatBoiler.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAtGameStartSteamPreHeatBoiler.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAtGameStartSteamPreHeatBoiler.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbAtGameStartDieselRunEngines
-            // 
-            this.pbAtGameStartDieselRunEngines.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAtGameStartDieselRunEngines.Location = new System.Drawing.Point(26, 217);
-            this.pbAtGameStartDieselRunEngines.Name = "pbAtGameStartDieselRunEngines";
-            this.pbAtGameStartDieselRunEngines.Size = new System.Drawing.Size(18, 18);
-            this.pbAtGameStartDieselRunEngines.TabIndex = 45;
-            this.pbAtGameStartDieselRunEngines.TabStop = false;
-            this.pbAtGameStartDieselRunEngines.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAtGameStartDieselRunEngines.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAtGameStartDieselRunEngines.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbAtGameStartElectricPowerConnected
-            // 
-            this.pbAtGameStartElectricPowerConnected.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAtGameStartElectricPowerConnected.Location = new System.Drawing.Point(26, 241);
-            this.pbAtGameStartElectricPowerConnected.Name = "pbAtGameStartElectricPowerConnected";
-            this.pbAtGameStartElectricPowerConnected.Size = new System.Drawing.Size(18, 18);
-            this.pbAtGameStartElectricPowerConnected.TabIndex = 46;
-            this.pbAtGameStartElectricPowerConnected.TabStop = false;
-            this.pbAtGameStartElectricPowerConnected.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAtGameStartElectricPowerConnected.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAtGameStartElectricPowerConnected.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbSimpleControlAndPhysics
-            // 
-            this.pbSimpleControlAndPhysics.Image = global::Menu.Properties.Resources.info_18;
-            this.pbSimpleControlAndPhysics.Location = new System.Drawing.Point(6, 280);
-            this.pbSimpleControlAndPhysics.Name = "pbSimpleControlAndPhysics";
-            this.pbSimpleControlAndPhysics.Size = new System.Drawing.Size(18, 18);
-            this.pbSimpleControlAndPhysics.TabIndex = 47;
-            this.pbSimpleControlAndPhysics.TabStop = false;
-            this.pbSimpleControlAndPhysics.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbSimpleControlAndPhysics.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbSimpleControlAndPhysics.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 161);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(161, 13);
-            this.label4.TabIndex = 14;
-            this.label4.Text = "At game start, locomotives have:";
-            // 
-            // checkBoilerPreheated
-            // 
-            this.checkBoilerPreheated.AutoSize = true;
-            this.checkBoilerPreheated.Location = new System.Drawing.Point(50, 192);
-            this.checkBoilerPreheated.Name = "checkBoilerPreheated";
-            this.checkBoilerPreheated.Size = new System.Drawing.Size(144, 17);
-            this.checkBoilerPreheated.TabIndex = 12;
-            this.checkBoilerPreheated.Text = "Steam - boiler pre-heated";
-            this.checkBoilerPreheated.UseVisualStyleBackColor = true;
-            this.checkBoilerPreheated.CheckedChanged += new System.EventHandler(this.checkBoilerPreheated_CheckedChanged);
-            this.checkBoilerPreheated.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkBoilerPreheated.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.pbForcedRedAtStationStops);
-            this.groupBox1.Controls.Add(this.pbLocationLinkedPassingPathProcessing);
-            this.groupBox1.Controls.Add(this.pbOpenCloseDoorsOnAiTrains);
-            this.groupBox1.Controls.Add(this.checkUseLocationPassingPaths);
-            this.groupBox1.Controls.Add(this.checkDoorsAITrains);
-            this.groupBox1.Controls.Add(this.checkForcedRedAtStationStops);
-            this.groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(324, 6);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(272, 168);
-            this.groupBox1.TabIndex = 0;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Activity Options";
-            // 
-            // pbForcedRedAtStationStops
-            // 
-            this.pbForcedRedAtStationStops.Image = global::Menu.Properties.Resources.info_18;
-            this.pbForcedRedAtStationStops.Location = new System.Drawing.Point(8, 22);
-            this.pbForcedRedAtStationStops.Name = "pbForcedRedAtStationStops";
-            this.pbForcedRedAtStationStops.Size = new System.Drawing.Size(18, 18);
-            this.pbForcedRedAtStationStops.TabIndex = 47;
-            this.pbForcedRedAtStationStops.TabStop = false;
-            this.pbForcedRedAtStationStops.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbForcedRedAtStationStops.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbForcedRedAtStationStops.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbLocationLinkedPassingPathProcessing
-            // 
-            this.pbLocationLinkedPassingPathProcessing.Image = global::Menu.Properties.Resources.info_18;
-            this.pbLocationLinkedPassingPathProcessing.Location = new System.Drawing.Point(8, 68);
-            this.pbLocationLinkedPassingPathProcessing.Name = "pbLocationLinkedPassingPathProcessing";
-            this.pbLocationLinkedPassingPathProcessing.Size = new System.Drawing.Size(18, 18);
-            this.pbLocationLinkedPassingPathProcessing.TabIndex = 49;
-            this.pbLocationLinkedPassingPathProcessing.TabStop = false;
-            this.pbLocationLinkedPassingPathProcessing.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbLocationLinkedPassingPathProcessing.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbLocationLinkedPassingPathProcessing.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbOpenCloseDoorsOnAiTrains
-            // 
-            this.pbOpenCloseDoorsOnAiTrains.Image = global::Menu.Properties.Resources.info_18;
-            this.pbOpenCloseDoorsOnAiTrains.Location = new System.Drawing.Point(8, 44);
-            this.pbOpenCloseDoorsOnAiTrains.Name = "pbOpenCloseDoorsOnAiTrains";
-            this.pbOpenCloseDoorsOnAiTrains.Size = new System.Drawing.Size(18, 18);
-            this.pbOpenCloseDoorsOnAiTrains.TabIndex = 48;
-            this.pbOpenCloseDoorsOnAiTrains.TabStop = false;
-            this.pbOpenCloseDoorsOnAiTrains.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbOpenCloseDoorsOnAiTrains.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbOpenCloseDoorsOnAiTrains.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkUseLocationPassingPaths
-            // 
-            this.checkUseLocationPassingPaths.AutoSize = true;
-            this.checkUseLocationPassingPaths.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkUseLocationPassingPaths.Location = new System.Drawing.Point(32, 67);
-            this.checkUseLocationPassingPaths.Name = "checkUseLocationPassingPaths";
-            this.checkUseLocationPassingPaths.Size = new System.Drawing.Size(215, 17);
-            this.checkUseLocationPassingPaths.TabIndex = 46;
-            this.checkUseLocationPassingPaths.Text = "Location-linked passing path processing";
-            this.checkUseLocationPassingPaths.UseVisualStyleBackColor = true;
-            this.checkUseLocationPassingPaths.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkUseLocationPassingPaths.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkDoorsAITrains
-            // 
-            this.checkDoorsAITrains.AutoSize = true;
-            this.checkDoorsAITrains.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkDoorsAITrains.Location = new System.Drawing.Point(32, 44);
-            this.checkDoorsAITrains.Name = "checkDoorsAITrains";
-            this.checkDoorsAITrains.Size = new System.Drawing.Size(163, 17);
-            this.checkDoorsAITrains.TabIndex = 45;
-            this.checkDoorsAITrains.Text = "Open/close doors in AI trains";
-            this.checkDoorsAITrains.UseVisualStyleBackColor = true;
-            this.checkDoorsAITrains.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkDoorsAITrains.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkForcedRedAtStationStops
-            // 
-            this.checkForcedRedAtStationStops.AutoSize = true;
-            this.checkForcedRedAtStationStops.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkForcedRedAtStationStops.Location = new System.Drawing.Point(32, 22);
-            this.checkForcedRedAtStationStops.Name = "checkForcedRedAtStationStops";
-            this.checkForcedRedAtStationStops.Size = new System.Drawing.Size(151, 17);
-            this.checkForcedRedAtStationStops.TabIndex = 23;
-            this.checkForcedRedAtStationStops.Text = "Forced red at station stops";
-            this.checkForcedRedAtStationStops.UseVisualStyleBackColor = true;
-            this.checkForcedRedAtStationStops.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkForcedRedAtStationStops.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkElectricPowerConnected
-            // 
-            this.checkElectricPowerConnected.AutoSize = true;
-            this.checkElectricPowerConnected.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkElectricPowerConnected.Location = new System.Drawing.Point(50, 242);
-            this.checkElectricPowerConnected.Name = "checkElectricPowerConnected";
-            this.checkElectricPowerConnected.Size = new System.Drawing.Size(153, 17);
-            this.checkElectricPowerConnected.TabIndex = 11;
-            this.checkElectricPowerConnected.Text = "Electric - power connected";
-            this.checkElectricPowerConnected.UseVisualStyleBackColor = true;
-            this.checkElectricPowerConnected.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.checkElectricPowerConnected.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkElectricPowerConnected.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkSimpleControlsPhysics
-            // 
-            this.checkSimpleControlsPhysics.AutoSize = true;
-            this.checkSimpleControlsPhysics.Location = new System.Drawing.Point(30, 280);
-            this.checkSimpleControlsPhysics.Name = "checkSimpleControlsPhysics";
-            this.checkSimpleControlsPhysics.Size = new System.Drawing.Size(156, 17);
-            this.checkSimpleControlsPhysics.TabIndex = 8;
-            this.checkSimpleControlsPhysics.Text = "Simple controls and physics";
-            this.checkSimpleControlsPhysics.UseVisualStyleBackColor = true;
-            this.checkSimpleControlsPhysics.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkSimpleControlsPhysics.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkCurveSpeedDependent
-            // 
-            this.checkCurveSpeedDependent.AutoSize = true;
-            this.checkCurveSpeedDependent.Location = new System.Drawing.Point(32, 100);
-            this.checkCurveSpeedDependent.Name = "checkCurveSpeedDependent";
-            this.checkCurveSpeedDependent.Size = new System.Drawing.Size(160, 17);
-            this.checkCurveSpeedDependent.TabIndex = 5;
-            this.checkCurveSpeedDependent.Text = "Curve dependent speed limit";
-            this.checkCurveSpeedDependent.UseVisualStyleBackColor = true;
-            this.checkCurveSpeedDependent.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkCurveSpeedDependent.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkBreakCouplers
-            // 
-            this.checkBreakCouplers.AutoSize = true;
-            this.checkBreakCouplers.Location = new System.Drawing.Point(32, 55);
-            this.checkBreakCouplers.Name = "checkBreakCouplers";
-            this.checkBreakCouplers.Size = new System.Drawing.Size(97, 17);
-            this.checkBreakCouplers.TabIndex = 3;
-            this.checkBreakCouplers.Text = "Break couplers";
-            this.checkBreakCouplers.UseVisualStyleBackColor = true;
-            this.checkBreakCouplers.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkBreakCouplers.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkDieselEnginesStarted
-            // 
-            this.checkDieselEnginesStarted.AutoSize = true;
-            this.checkDieselEnginesStarted.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.checkDieselEnginesStarted.Location = new System.Drawing.Point(50, 218);
-            this.checkDieselEnginesStarted.Name = "checkDieselEnginesStarted";
-            this.checkDieselEnginesStarted.Size = new System.Drawing.Size(142, 17);
-            this.checkDieselEnginesStarted.TabIndex = 9;
-            this.checkDieselEnginesStarted.Text = "Diesel - engine(s) started";
-            this.checkDieselEnginesStarted.UseVisualStyleBackColor = true;
-            this.checkDieselEnginesStarted.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.checkDieselEnginesStarted.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkDieselEnginesStarted.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkUseAdvancedAdhesion
-            // 
-            this.checkUseAdvancedAdhesion.AutoSize = true;
-            this.checkUseAdvancedAdhesion.Location = new System.Drawing.Point(32, 6);
-            this.checkUseAdvancedAdhesion.Name = "checkUseAdvancedAdhesion";
-            this.checkUseAdvancedAdhesion.Size = new System.Drawing.Size(152, 17);
-            this.checkUseAdvancedAdhesion.TabIndex = 0;
-            this.checkUseAdvancedAdhesion.Text = "Advanced adhesion model";
-            this.checkUseAdvancedAdhesion.UseVisualStyleBackColor = true;
-            this.checkUseAdvancedAdhesion.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkUseAdvancedAdhesion.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // tabPageVideo
-            // 
-            this.tabPageVideo.Controls.Add(this.checkSignalLightGlow);
-            this.tabPageVideo.Controls.Add(this.pbViewingFOV);
-            this.tabPageVideo.Controls.Add(this.labelDefaultDetail);
-            this.tabPageVideo.Controls.Add(this.pbLODBias);
-            this.tabPageVideo.Controls.Add(this.pbWorldObjectDensity);
-            this.tabPageVideo.Controls.Add(this.pbAntiAliasing);
-            this.tabPageVideo.Controls.Add(this.pbVerticalSync);
-            this.tabPageVideo.Controls.Add(this.pbModelInstancing);
-            this.tabPageVideo.Controls.Add(this.pbDayAmbientLight);
-            this.tabPageVideo.Controls.Add(this.pbSignalLightGlow);
-            this.tabPageVideo.Controls.Add(this.pbDoubleWire);
-            this.tabPageVideo.Controls.Add(this.pbWire);
-            this.tabPageVideo.Controls.Add(this.pbShadowAllShapes);
-            this.tabPageVideo.Controls.Add(this.pbDynamicShadows);
-            this.tabPageVideo.Controls.Add(this.pbLODViewingExtension);
-            this.tabPageVideo.Controls.Add(this.pbDistantMountains);
-            this.tabPageVideo.Controls.Add(this.pbViewingDistance);
-            this.tabPageVideo.Controls.Add(this.checkLODViewingExtension);
-            this.tabPageVideo.Controls.Add(this.labelAntiAliasingValue);
-            this.tabPageVideo.Controls.Add(this.labelAntiAliasing);
-            this.tabPageVideo.Controls.Add(this.trackAntiAliasing);
-            this.tabPageVideo.Controls.Add(this.checkShadowAllShapes);
-            this.tabPageVideo.Controls.Add(this.checkDoubleWire);
-            this.tabPageVideo.Controls.Add(this.labelDayAmbientLight);
-            this.tabPageVideo.Controls.Add(this.checkModelInstancing);
-            this.tabPageVideo.Controls.Add(this.trackDayAmbientLight);
-            this.tabPageVideo.Controls.Add(this.checkVerticalSync);
-            this.tabPageVideo.Controls.Add(this.labelDistantMountainsViewingDistance);
-            this.tabPageVideo.Controls.Add(this.numericDistantMountainsViewingDistance);
-            this.tabPageVideo.Controls.Add(this.checkDistantMountains);
-            this.tabPageVideo.Controls.Add(this.labelViewingDistance);
-            this.tabPageVideo.Controls.Add(this.numericViewingDistance);
-            this.tabPageVideo.Controls.Add(this.labelLODBias);
-            this.tabPageVideo.Controls.Add(this.trackLODBias);
-            this.tabPageVideo.Controls.Add(this.labelFOVHelp);
-            this.tabPageVideo.Controls.Add(this.numericViewingFOV);
-            this.tabPageVideo.Controls.Add(this.label10);
-            this.tabPageVideo.Controls.Add(this.label1);
-            this.tabPageVideo.Controls.Add(this.numericWorldObjectDensity);
-            this.tabPageVideo.Controls.Add(this.checkDynamicShadows);
-            this.tabPageVideo.Controls.Add(this.checkWire);
-            this.tabPageVideo.Controls.Add(this.labelAmbientDaylightBrightness);
-            this.tabPageVideo.Controls.Add(this.labelViewingVerticalFOV);
-            this.tabPageVideo.Location = new System.Drawing.Point(4, 22);
-            this.tabPageVideo.Name = "tabPageVideo";
-            this.tabPageVideo.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageVideo.Size = new System.Drawing.Size(602, 402);
-            this.tabPageVideo.TabIndex = 4;
-            this.tabPageVideo.Text = "Video";
-            this.tabPageVideo.UseVisualStyleBackColor = true;
-            // 
-            // checkSignalLightGlow
-            // 
-            this.checkSignalLightGlow.AutoSize = true;
-            this.checkSignalLightGlow.Location = new System.Drawing.Point(41, 266);
-            this.checkSignalLightGlow.Name = "checkSignalLightGlow";
-            this.checkSignalLightGlow.Size = new System.Drawing.Size(102, 17);
-            this.checkSignalLightGlow.TabIndex = 47;
-            this.checkSignalLightGlow.Text = "Signal light glow";
-            this.checkSignalLightGlow.UseVisualStyleBackColor = true;
-            // 
-            // labelAntiAliasingValue
-            // 
-            this.labelAntiAliasingValue.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelAntiAliasingValue.Location = new System.Drawing.Point(436, 78);
-            this.labelAntiAliasingValue.Margin = new System.Windows.Forms.Padding(3);
-            this.labelAntiAliasingValue.Name = "labelAntiAliasingValue";
-            this.labelAntiAliasingValue.Size = new System.Drawing.Size(160, 13);
-            this.labelAntiAliasingValue.TabIndex = 23;
-            this.labelAntiAliasingValue.Text = "XXX";
-            this.labelAntiAliasingValue.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // labelAntiAliasing
-            // 
-            this.labelAntiAliasing.AutoSize = true;
-            this.labelAntiAliasing.Location = new System.Drawing.Point(343, 78);
-            this.labelAntiAliasing.Margin = new System.Windows.Forms.Padding(3);
-            this.labelAntiAliasing.Name = "labelAntiAliasing";
-            this.labelAntiAliasing.Size = new System.Drawing.Size(66, 13);
-            this.labelAntiAliasing.TabIndex = 22;
-            this.labelAntiAliasing.Text = "Anti-aliasing:";
-            // 
-            // checkShadowAllShapes
-            // 
-            this.checkShadowAllShapes.AutoSize = true;
-            this.checkShadowAllShapes.Location = new System.Drawing.Point(41, 170);
-            this.checkShadowAllShapes.Name = "checkShadowAllShapes";
-            this.checkShadowAllShapes.Size = new System.Drawing.Size(130, 17);
-            this.checkShadowAllShapes.TabIndex = 24;
-            this.checkShadowAllShapes.Text = "Shadow for all shapes";
-            this.checkShadowAllShapes.UseVisualStyleBackColor = true;
-            // 
-            // checkDoubleWire
-            // 
-            this.checkDoubleWire.AutoSize = true;
-            this.checkDoubleWire.Location = new System.Drawing.Point(41, 234);
-            this.checkDoubleWire.Name = "checkDoubleWire";
-            this.checkDoubleWire.Size = new System.Drawing.Size(135, 17);
-            this.checkDoubleWire.TabIndex = 23;
-            this.checkDoubleWire.Text = "Double overhead wires";
-            this.checkDoubleWire.UseVisualStyleBackColor = true;
-            // 
-            // labelDayAmbientLight
-            // 
-            this.labelDayAmbientLight.Location = new System.Drawing.Point(173, 297);
-            this.labelDayAmbientLight.Margin = new System.Windows.Forms.Padding(3);
-            this.labelDayAmbientLight.Name = "labelDayAmbientLight";
-            this.labelDayAmbientLight.Size = new System.Drawing.Size(119, 18);
-            this.labelDayAmbientLight.TabIndex = 22;
-            this.labelDayAmbientLight.Text = "YYY";
-            this.labelDayAmbientLight.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // checkModelInstancing
-            // 
-            this.checkModelInstancing.AutoSize = true;
-            this.checkModelInstancing.Location = new System.Drawing.Point(346, 10);
-            this.checkModelInstancing.Name = "checkModelInstancing";
-            this.checkModelInstancing.Size = new System.Drawing.Size(106, 17);
-            this.checkModelInstancing.TabIndex = 3;
-            this.checkModelInstancing.Text = "Model instancing";
-            this.checkModelInstancing.UseVisualStyleBackColor = true;
-            // 
-            // checkVerticalSync
-            // 
-            this.checkVerticalSync.AutoSize = true;
-            this.checkVerticalSync.Location = new System.Drawing.Point(346, 42);
-            this.checkVerticalSync.Name = "checkVerticalSync";
-            this.checkVerticalSync.Size = new System.Drawing.Size(86, 17);
-            this.checkVerticalSync.TabIndex = 5;
-            this.checkVerticalSync.Text = "Vertical sync";
-            this.checkVerticalSync.UseVisualStyleBackColor = true;
-            // 
-            // labelDistantMountainsViewingDistance
-            // 
-            this.labelDistantMountainsViewingDistance.AutoSize = true;
-            this.labelDistantMountainsViewingDistance.Location = new System.Drawing.Point(129, 67);
-            this.labelDistantMountainsViewingDistance.Margin = new System.Windows.Forms.Padding(3);
-            this.labelDistantMountainsViewingDistance.Name = "labelDistantMountainsViewingDistance";
-            this.labelDistantMountainsViewingDistance.Size = new System.Drawing.Size(110, 13);
-            this.labelDistantMountainsViewingDistance.TabIndex = 12;
-            this.labelDistantMountainsViewingDistance.Text = "Viewing distance (km)";
-            // 
-            // checkDistantMountains
-            // 
-            this.checkDistantMountains.AutoSize = true;
-            this.checkDistantMountains.Location = new System.Drawing.Point(41, 41);
-            this.checkDistantMountains.Name = "checkDistantMountains";
-            this.checkDistantMountains.Size = new System.Drawing.Size(110, 17);
-            this.checkDistantMountains.TabIndex = 10;
-            this.checkDistantMountains.Text = "Distant mountains";
-            this.checkDistantMountains.UseVisualStyleBackColor = true;
-            this.checkDistantMountains.Click += new System.EventHandler(this.checkDistantMountains_Click);
-            // 
-            // labelViewingDistance
-            // 
-            this.labelViewingDistance.AutoSize = true;
-            this.labelViewingDistance.Location = new System.Drawing.Point(101, 11);
-            this.labelViewingDistance.Margin = new System.Windows.Forms.Padding(3);
-            this.labelViewingDistance.Name = "labelViewingDistance";
-            this.labelViewingDistance.Size = new System.Drawing.Size(104, 13);
-            this.labelViewingDistance.TabIndex = 9;
-            this.labelViewingDistance.Text = "Viewing distance (m)";
-            // 
-            // numericViewingDistance
-            // 
-            this.numericViewingDistance.Increment = new decimal(new int[] {
-            100,
-            0,
-            0,
-            0});
-            this.numericViewingDistance.Location = new System.Drawing.Point(41, 9);
-            this.numericViewingDistance.Maximum = new decimal(new int[] {
-            10000,
-            0,
-            0,
-            0});
-            this.numericViewingDistance.Minimum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.numericViewingDistance.Name = "numericViewingDistance";
-            this.numericViewingDistance.Size = new System.Drawing.Size(54, 20);
-            this.numericViewingDistance.TabIndex = 8;
-            this.numericViewingDistance.Value = new decimal(new int[] {
-            2000,
-            0,
-            0,
-            0});
-            // 
-            // labelFOVHelp
-            // 
-            this.labelFOVHelp.AutoSize = true;
-            this.labelFOVHelp.Location = new System.Drawing.Point(396, 254);
-            this.labelFOVHelp.Margin = new System.Windows.Forms.Padding(3);
-            this.labelFOVHelp.Name = "labelFOVHelp";
-            this.labelFOVHelp.Size = new System.Drawing.Size(28, 13);
-            this.labelFOVHelp.TabIndex = 15;
-            this.labelFOVHelp.Text = "XXX";
-            // 
-            // numericViewingFOV
-            // 
-            this.numericViewingFOV.Location = new System.Drawing.Point(346, 232);
-            this.numericViewingFOV.Maximum = new decimal(new int[] {
-            120,
-            0,
-            0,
-            0});
-            this.numericViewingFOV.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericViewingFOV.Name = "numericViewingFOV";
-            this.numericViewingFOV.Size = new System.Drawing.Size(44, 20);
-            this.numericViewingFOV.TabIndex = 13;
-            this.numericViewingFOV.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericViewingFOV.ValueChanged += new System.EventHandler(this.numericUpDownFOV_ValueChanged);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(396, 235);
-            this.label10.Margin = new System.Windows.Forms.Padding(3);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(105, 13);
-            this.label10.TabIndex = 14;
-            this.label10.Text = "Viewing vertical FOV";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(408, 138);
-            this.label1.Margin = new System.Windows.Forms.Padding(3);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(103, 13);
-            this.label1.TabIndex = 17;
-            this.label1.Text = "World object density";
-            // 
-            // numericWorldObjectDensity
-            // 
-            this.numericWorldObjectDensity.Location = new System.Drawing.Point(348, 136);
-            this.numericWorldObjectDensity.Maximum = new decimal(new int[] {
-            99,
-            0,
-            0,
-            0});
-            this.numericWorldObjectDensity.Name = "numericWorldObjectDensity";
-            this.numericWorldObjectDensity.Size = new System.Drawing.Size(54, 20);
-            this.numericWorldObjectDensity.TabIndex = 16;
-            // 
-            // checkDynamicShadows
-            // 
-            this.checkDynamicShadows.AutoSize = true;
-            this.checkDynamicShadows.Location = new System.Drawing.Point(41, 138);
-            this.checkDynamicShadows.Name = "checkDynamicShadows";
-            this.checkDynamicShadows.Size = new System.Drawing.Size(112, 17);
-            this.checkDynamicShadows.TabIndex = 0;
-            this.checkDynamicShadows.Text = "Dynamic shadows";
-            this.checkDynamicShadows.UseVisualStyleBackColor = true;
-            // 
-            // checkWire
-            // 
-            this.checkWire.AutoSize = true;
-            this.checkWire.Location = new System.Drawing.Point(41, 202);
-            this.checkWire.Name = "checkWire";
-            this.checkWire.Size = new System.Drawing.Size(95, 17);
-            this.checkWire.TabIndex = 4;
-            this.checkWire.Text = "Overhead wire";
-            this.checkWire.UseVisualStyleBackColor = true;
-            // 
-            // labelAmbientDaylightBrightness
-            // 
-            this.labelAmbientDaylightBrightness.Location = new System.Drawing.Point(35, 297);
-            this.labelAmbientDaylightBrightness.Margin = new System.Windows.Forms.Padding(3);
-            this.labelAmbientDaylightBrightness.Name = "labelAmbientDaylightBrightness";
-            this.labelAmbientDaylightBrightness.Size = new System.Drawing.Size(232, 16);
-            this.labelAmbientDaylightBrightness.TabIndex = 20;
-            this.labelAmbientDaylightBrightness.Text = "Ambient daylight brightness:";
-            this.labelAmbientDaylightBrightness.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelAmbientDaylightBrightness.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // tabPageAudio
-            // 
-            this.tabPageAudio.Controls.Add(this.pbExternalSoundPassThruPercent);
-            this.tabPageAudio.Controls.Add(this.pbSoundDetailLevel);
-            this.tabPageAudio.Controls.Add(this.pbSoundVolumePercent);
-            this.tabPageAudio.Controls.Add(this.numericExternalSoundPassThruPercent);
-            this.tabPageAudio.Controls.Add(this.labelExternalSound);
-            this.tabPageAudio.Controls.Add(this.numericSoundVolumePercent);
-            this.tabPageAudio.Controls.Add(this.labelSoundVolume);
-            this.tabPageAudio.Controls.Add(this.labelSoundDetailLevel);
-            this.tabPageAudio.Controls.Add(this.numericSoundDetailLevel);
-            this.tabPageAudio.Location = new System.Drawing.Point(4, 22);
-            this.tabPageAudio.Name = "tabPageAudio";
-            this.tabPageAudio.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageAudio.Size = new System.Drawing.Size(602, 402);
-            this.tabPageAudio.TabIndex = 5;
-            this.tabPageAudio.Text = "Audio";
-            this.tabPageAudio.UseVisualStyleBackColor = true;
-            // 
-            // pbExternalSoundPassThruPercent
-            // 
-            this.pbExternalSoundPassThruPercent.Image = global::Menu.Properties.Resources.info_18;
-            this.pbExternalSoundPassThruPercent.Location = new System.Drawing.Point(11, 73);
-            this.pbExternalSoundPassThruPercent.Name = "pbExternalSoundPassThruPercent";
-            this.pbExternalSoundPassThruPercent.Size = new System.Drawing.Size(18, 18);
-            this.pbExternalSoundPassThruPercent.TabIndex = 31;
-            this.pbExternalSoundPassThruPercent.TabStop = false;
-            this.pbExternalSoundPassThruPercent.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbExternalSoundPassThruPercent.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbExternalSoundPassThruPercent.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbSoundDetailLevel
-            // 
-            this.pbSoundDetailLevel.Image = global::Menu.Properties.Resources.info_18;
-            this.pbSoundDetailLevel.Location = new System.Drawing.Point(11, 41);
-            this.pbSoundDetailLevel.Name = "pbSoundDetailLevel";
-            this.pbSoundDetailLevel.Size = new System.Drawing.Size(18, 18);
-            this.pbSoundDetailLevel.TabIndex = 30;
-            this.pbSoundDetailLevel.TabStop = false;
-            this.pbSoundDetailLevel.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbSoundDetailLevel.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbSoundDetailLevel.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbSoundVolumePercent
-            // 
-            this.pbSoundVolumePercent.Image = global::Menu.Properties.Resources.info_18;
-            this.pbSoundVolumePercent.Location = new System.Drawing.Point(11, 9);
-            this.pbSoundVolumePercent.Name = "pbSoundVolumePercent";
-            this.pbSoundVolumePercent.Size = new System.Drawing.Size(18, 18);
-            this.pbSoundVolumePercent.TabIndex = 29;
-            this.pbSoundVolumePercent.TabStop = false;
-            this.pbSoundVolumePercent.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbSoundVolumePercent.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbSoundVolumePercent.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelExternalSound
-            // 
-            this.labelExternalSound.Location = new System.Drawing.Point(95, 75);
-            this.labelExternalSound.Margin = new System.Windows.Forms.Padding(3);
-            this.labelExternalSound.Name = "labelExternalSound";
-            this.labelExternalSound.Size = new System.Drawing.Size(504, 13);
-            this.labelExternalSound.TabIndex = 6;
-            this.labelExternalSound.Text = "% external sound heard internally";
-            this.labelExternalSound.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelExternalSound.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelSoundVolume
-            // 
-            this.labelSoundVolume.Location = new System.Drawing.Point(95, 13);
-            this.labelSoundVolume.Margin = new System.Windows.Forms.Padding(3);
-            this.labelSoundVolume.Name = "labelSoundVolume";
-            this.labelSoundVolume.Size = new System.Drawing.Size(504, 16);
-            this.labelSoundVolume.TabIndex = 2;
-            this.labelSoundVolume.Text = "% sound volume";
-            this.labelSoundVolume.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelSoundVolume.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelSoundDetailLevel
-            // 
-            this.labelSoundDetailLevel.Location = new System.Drawing.Point(95, 43);
-            this.labelSoundDetailLevel.Margin = new System.Windows.Forms.Padding(3);
-            this.labelSoundDetailLevel.Name = "labelSoundDetailLevel";
-            this.labelSoundDetailLevel.Size = new System.Drawing.Size(504, 13);
-            this.labelSoundDetailLevel.TabIndex = 4;
-            this.labelSoundDetailLevel.Text = "Sound detail level";
-            this.labelSoundDetailLevel.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelSoundDetailLevel.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // numericSoundDetailLevel
-            // 
-            this.numericSoundDetailLevel.Location = new System.Drawing.Point(35, 41);
-            this.numericSoundDetailLevel.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.numericSoundDetailLevel.Name = "numericSoundDetailLevel";
-            this.numericSoundDetailLevel.Size = new System.Drawing.Size(54, 20);
-            this.numericSoundDetailLevel.TabIndex = 3;
-            this.numericSoundDetailLevel.Enter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.numericSoundDetailLevel.Leave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // tabPageGeneral
-            // 
-            this.tabPageGeneral.Controls.Add(this.pbAutoSave);
-            this.tabPageGeneral.Controls.Add(this.labelAutoSaveInterval);
-            this.tabPageGeneral.Controls.Add(this.ButtonAutoSave60);
-            this.tabPageGeneral.Controls.Add(this.ButtonAutoSave30);
-            this.tabPageGeneral.Controls.Add(this.ButtonAutoSave15);
-            this.tabPageGeneral.Controls.Add(this.checkAutoSaveActive);
-            this.tabPageGeneral.Controls.Add(this.pbOverspeedMonitor);
-            this.tabPageGeneral.Controls.Add(this.pbEnableTcsScripts);
-            this.tabPageGeneral.Controls.Add(this.pbOtherUnits);
-            this.tabPageGeneral.Controls.Add(this.pbPressureUnit);
-            this.tabPageGeneral.Controls.Add(this.pbBrakePipeChargingRate);
-            this.tabPageGeneral.Controls.Add(this.pbGraduatedRelease);
-            this.tabPageGeneral.Controls.Add(this.pbRetainers);
-            this.tabPageGeneral.Controls.Add(this.pbAlerter);
-            this.tabPageGeneral.Controls.Add(this.checkOverspeedMonitor);
-            this.tabPageGeneral.Controls.Add(this.checkEnableTCSScripts);
-            this.tabPageGeneral.Controls.Add(this.labelOtherUnits);
-            this.tabPageGeneral.Controls.Add(this.labelPressureUnit);
-            this.tabPageGeneral.Controls.Add(this.comboOtherUnits);
-            this.tabPageGeneral.Controls.Add(this.comboPressureUnit);
-            this.tabPageGeneral.Controls.Add(this.checkAlerterExternal);
-            this.tabPageGeneral.Controls.Add(this.numericBrakePipeChargingRate);
-            this.tabPageGeneral.Controls.Add(this.checkRetainers);
-            this.tabPageGeneral.Controls.Add(this.checkGraduatedRelease);
-            this.tabPageGeneral.Controls.Add(this.lBrakePipeChargingRate);
-            this.tabPageGeneral.Controls.Add(this.checkAlerter);
-            this.tabPageGeneral.Location = new System.Drawing.Point(4, 22);
-            this.tabPageGeneral.Name = "tabPageGeneral";
-            this.tabPageGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageGeneral.Size = new System.Drawing.Size(602, 402);
-            this.tabPageGeneral.TabIndex = 0;
-            this.tabPageGeneral.Text = "General";
-            this.tabPageGeneral.UseVisualStyleBackColor = true;
-            // 
-            // pbAutoSave
-            // 
-            this.pbAutoSave.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAutoSave.Location = new System.Drawing.Point(6, 302);
-            this.pbAutoSave.Name = "pbAutoSave";
-            this.pbAutoSave.Size = new System.Drawing.Size(18, 18);
-            this.pbAutoSave.TabIndex = 36;
-            this.pbAutoSave.TabStop = false;
-            this.pbAutoSave.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAutoSave.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAutoSave.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbOverspeedMonitor
-            // 
-            this.pbOverspeedMonitor.Image = global::Menu.Properties.Resources.info_18;
-            this.pbOverspeedMonitor.Location = new System.Drawing.Point(296, 7);
-            this.pbOverspeedMonitor.Name = "pbOverspeedMonitor";
-            this.pbOverspeedMonitor.Size = new System.Drawing.Size(18, 18);
-            this.pbOverspeedMonitor.TabIndex = 30;
-            this.pbOverspeedMonitor.TabStop = false;
-            this.pbOverspeedMonitor.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbOverspeedMonitor.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbOverspeedMonitor.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbEnableTcsScripts
-            // 
-            this.pbEnableTcsScripts.Image = global::Menu.Properties.Resources.info_18;
-            this.pbEnableTcsScripts.Location = new System.Drawing.Point(6, 239);
-            this.pbEnableTcsScripts.Name = "pbEnableTcsScripts";
-            this.pbEnableTcsScripts.Size = new System.Drawing.Size(18, 18);
-            this.pbEnableTcsScripts.TabIndex = 28;
-            this.pbEnableTcsScripts.TabStop = false;
-            this.pbEnableTcsScripts.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbEnableTcsScripts.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbEnableTcsScripts.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbOtherUnits
-            // 
-            this.pbOtherUnits.Image = global::Menu.Properties.Resources.info_18;
-            this.pbOtherUnits.Location = new System.Drawing.Point(6, 210);
-            this.pbOtherUnits.Name = "pbOtherUnits";
-            this.pbOtherUnits.Size = new System.Drawing.Size(18, 18);
-            this.pbOtherUnits.TabIndex = 27;
-            this.pbOtherUnits.TabStop = false;
-            this.pbOtherUnits.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbOtherUnits.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbOtherUnits.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbPressureUnit
-            // 
-            this.pbPressureUnit.Image = global::Menu.Properties.Resources.info_18;
-            this.pbPressureUnit.Location = new System.Drawing.Point(6, 183);
-            this.pbPressureUnit.Name = "pbPressureUnit";
-            this.pbPressureUnit.Size = new System.Drawing.Size(18, 18);
-            this.pbPressureUnit.TabIndex = 26;
-            this.pbPressureUnit.TabStop = false;
-            this.pbPressureUnit.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbPressureUnit.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbPressureUnit.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbBrakePipeChargingRate
-            // 
-            this.pbBrakePipeChargingRate.Image = global::Menu.Properties.Resources.info_18;
-            this.pbBrakePipeChargingRate.Location = new System.Drawing.Point(6, 121);
-            this.pbBrakePipeChargingRate.Name = "pbBrakePipeChargingRate";
-            this.pbBrakePipeChargingRate.Size = new System.Drawing.Size(18, 18);
-            this.pbBrakePipeChargingRate.TabIndex = 24;
-            this.pbBrakePipeChargingRate.TabStop = false;
-            this.pbBrakePipeChargingRate.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbBrakePipeChargingRate.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbBrakePipeChargingRate.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbGraduatedRelease
-            // 
-            this.pbGraduatedRelease.Image = global::Menu.Properties.Resources.info_18;
-            this.pbGraduatedRelease.Location = new System.Drawing.Point(6, 98);
-            this.pbGraduatedRelease.Name = "pbGraduatedRelease";
-            this.pbGraduatedRelease.Size = new System.Drawing.Size(18, 18);
-            this.pbGraduatedRelease.TabIndex = 23;
-            this.pbGraduatedRelease.TabStop = false;
-            this.pbGraduatedRelease.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbGraduatedRelease.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbGraduatedRelease.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbRetainers
-            // 
-            this.pbRetainers.Image = global::Menu.Properties.Resources.info_18;
-            this.pbRetainers.Location = new System.Drawing.Point(6, 75);
-            this.pbRetainers.Name = "pbRetainers";
-            this.pbRetainers.Size = new System.Drawing.Size(18, 18);
-            this.pbRetainers.TabIndex = 22;
-            this.pbRetainers.TabStop = false;
-            this.pbRetainers.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbRetainers.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbRetainers.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // pbAlerter
-            // 
-            this.pbAlerter.Image = global::Menu.Properties.Resources.info_18;
-            this.pbAlerter.Location = new System.Drawing.Point(6, 7);
-            this.pbAlerter.Name = "pbAlerter";
-            this.pbAlerter.Size = new System.Drawing.Size(18, 18);
-            this.pbAlerter.TabIndex = 20;
-            this.pbAlerter.TabStop = false;
-            this.pbAlerter.Click += new System.EventHandler(this.HelpIcon_Click);
-            this.pbAlerter.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.pbAlerter.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkOverspeedMonitor
-            // 
-            this.checkOverspeedMonitor.AutoSize = true;
-            this.checkOverspeedMonitor.Location = new System.Drawing.Point(322, 6);
-            this.checkOverspeedMonitor.Name = "checkOverspeedMonitor";
-            this.checkOverspeedMonitor.Size = new System.Drawing.Size(274, 17);
-            this.checkOverspeedMonitor.TabIndex = 14;
-            this.checkOverspeedMonitor.Text = "Overspeed monitor                                                     ";
-            this.checkOverspeedMonitor.UseVisualStyleBackColor = true;
-            this.checkOverspeedMonitor.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkOverspeedMonitor.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkEnableTCSScripts
-            // 
-            this.checkEnableTCSScripts.AutoSize = true;
-            this.checkEnableTCSScripts.Checked = true;
-            this.checkEnableTCSScripts.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkEnableTCSScripts.Location = new System.Drawing.Point(32, 238);
-            this.checkEnableTCSScripts.Name = "checkEnableTCSScripts";
-            this.checkEnableTCSScripts.Size = new System.Drawing.Size(240, 17);
-            this.checkEnableTCSScripts.TabIndex = 13;
-            this.checkEnableTCSScripts.Text = "Use TCS scripts                                              ";
-            this.checkEnableTCSScripts.UseVisualStyleBackColor = true;
-            this.checkEnableTCSScripts.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkEnableTCSScripts.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelOtherUnits
-            // 
-            this.labelOtherUnits.AutoSize = true;
-            this.labelOtherUnits.Location = new System.Drawing.Point(156, 210);
-            this.labelOtherUnits.Margin = new System.Windows.Forms.Padding(3);
-            this.labelOtherUnits.Name = "labelOtherUnits";
-            this.labelOtherUnits.Size = new System.Drawing.Size(130, 13);
-            this.labelOtherUnits.TabIndex = 9;
-            this.labelOtherUnits.Text = "Other units                        ";
-            this.labelOtherUnits.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelOtherUnits.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // labelPressureUnit
-            // 
-            this.labelPressureUnit.AutoSize = true;
-            this.labelPressureUnit.Location = new System.Drawing.Point(156, 183);
-            this.labelPressureUnit.Margin = new System.Windows.Forms.Padding(3);
-            this.labelPressureUnit.Name = "labelPressureUnit";
-            this.labelPressureUnit.Size = new System.Drawing.Size(131, 13);
-            this.labelPressureUnit.TabIndex = 12;
-            this.labelPressureUnit.Text = "Pressure unit                     ";
-            this.labelPressureUnit.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.labelPressureUnit.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // comboOtherUnits
-            // 
-            this.comboOtherUnits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboOtherUnits.FormattingEnabled = true;
-            this.comboOtherUnits.Location = new System.Drawing.Point(32, 207);
-            this.comboOtherUnits.Name = "comboOtherUnits";
-            this.comboOtherUnits.Size = new System.Drawing.Size(121, 21);
-            this.comboOtherUnits.TabIndex = 8;
-            // 
-            // comboPressureUnit
-            // 
-            this.comboPressureUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboPressureUnit.FormattingEnabled = true;
-            this.comboPressureUnit.Location = new System.Drawing.Point(32, 180);
-            this.comboPressureUnit.Name = "comboPressureUnit";
-            this.comboPressureUnit.Size = new System.Drawing.Size(121, 21);
-            this.comboPressureUnit.TabIndex = 11;
-            // 
-            // checkAlerterExternal
-            // 
-            this.checkAlerterExternal.AutoSize = true;
-            this.checkAlerterExternal.Location = new System.Drawing.Point(52, 29);
-            this.checkAlerterExternal.Margin = new System.Windows.Forms.Padding(23, 3, 3, 3);
-            this.checkAlerterExternal.Name = "checkAlerterExternal";
-            this.checkAlerterExternal.Size = new System.Drawing.Size(235, 17);
-            this.checkAlerterExternal.TabIndex = 1;
-            this.checkAlerterExternal.Text = "Also in external views                                    ";
-            this.checkAlerterExternal.UseVisualStyleBackColor = true;
-            // 
-            // numericBrakePipeChargingRate
-            // 
-            this.numericBrakePipeChargingRate.Location = new System.Drawing.Point(32, 120);
-            this.numericBrakePipeChargingRate.Maximum = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            this.numericBrakePipeChargingRate.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.numericBrakePipeChargingRate.Name = "numericBrakePipeChargingRate";
-            this.numericBrakePipeChargingRate.Size = new System.Drawing.Size(54, 20);
-            this.numericBrakePipeChargingRate.TabIndex = 7;
-            this.numericBrakePipeChargingRate.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            // 
-            // checkRetainers
-            // 
-            this.checkRetainers.AutoSize = true;
-            this.checkRetainers.Location = new System.Drawing.Point(32, 74);
-            this.checkRetainers.Name = "checkRetainers";
-            this.checkRetainers.Size = new System.Drawing.Size(257, 17);
-            this.checkRetainers.TabIndex = 5;
-            this.checkRetainers.Text = "Retainer valve on all cars                                     ";
-            this.checkRetainers.UseVisualStyleBackColor = true;
-            this.checkRetainers.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkRetainers.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkGraduatedRelease
-            // 
-            this.checkGraduatedRelease.AutoSize = true;
-            this.checkGraduatedRelease.Location = new System.Drawing.Point(32, 97);
-            this.checkGraduatedRelease.Name = "checkGraduatedRelease";
-            this.checkGraduatedRelease.Size = new System.Drawing.Size(258, 17);
-            this.checkGraduatedRelease.TabIndex = 6;
-            this.checkGraduatedRelease.Text = "Graduated release air brakes                                ";
-            this.checkGraduatedRelease.UseVisualStyleBackColor = true;
-            this.checkGraduatedRelease.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkGraduatedRelease.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // lBrakePipeChargingRate
-            // 
-            this.lBrakePipeChargingRate.AutoSize = true;
-            this.lBrakePipeChargingRate.Location = new System.Drawing.Point(89, 122);
-            this.lBrakePipeChargingRate.Margin = new System.Windows.Forms.Padding(3);
-            this.lBrakePipeChargingRate.Name = "lBrakePipeChargingRate";
-            this.lBrakePipeChargingRate.Size = new System.Drawing.Size(198, 13);
-            this.lBrakePipeChargingRate.TabIndex = 8;
-            this.lBrakePipeChargingRate.Text = "Brake pipe charging rate (PSI/s)             ";
-            this.lBrakePipeChargingRate.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.lBrakePipeChargingRate.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // checkAlerter
-            // 
-            this.checkAlerter.AutoSize = true;
-            this.checkAlerter.Location = new System.Drawing.Point(32, 6);
-            this.checkAlerter.Name = "checkAlerter";
-            this.checkAlerter.Size = new System.Drawing.Size(256, 17);
-            this.checkAlerter.TabIndex = 0;
-            this.checkAlerter.Text = "Alerter in cab                                                        ";
-            this.checkAlerter.UseVisualStyleBackColor = true;
-            this.checkAlerter.CheckedChanged += new System.EventHandler(this.checkAlerter_CheckedChanged);
-            this.checkAlerter.MouseEnter += new System.EventHandler(this.HelpIcon_MouseEnter);
-            this.checkAlerter.MouseLeave += new System.EventHandler(this.HelpIcon_MouseLeave);
-            // 
-            // tabOptions
-            // 
-            this.tabOptions.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tabOptions.Controls.Add(this.tabPageGeneral);
-            this.tabOptions.Controls.Add(this.tabPageAudio);
-            this.tabOptions.Controls.Add(this.tabPageVideo);
-            this.tabOptions.Controls.Add(this.tabPageSimulation);
-            this.tabOptions.Controls.Add(this.tabPageKeyboard);
-            this.tabOptions.Controls.Add(this.tabPageRailDriver);
-            this.tabOptions.Controls.Add(this.tabPageDataLogger);
-            this.tabOptions.Controls.Add(this.tabPageEvaluate);
-            this.tabOptions.Controls.Add(this.tabPageSystem);
-            this.tabOptions.Controls.Add(this.tabPageExperimental);
-            this.tabOptions.Controls.Add(this.tabPageORNYMG);
-            this.tabOptions.Location = new System.Drawing.Point(13, 12);
-            this.tabOptions.Name = "tabOptions";
-            this.tabOptions.SelectedIndex = 0;
-            this.tabOptions.Size = new System.Drawing.Size(610, 428);
-            this.tabOptions.TabIndex = 0;
-            // 
-            // tabPageORNYMG
-            // 
-            this.tabPageORNYMG.Controls.Add(this.checkExtendedPerformanceDump);
-            this.tabPageORNYMG.Controls.Add(this.label25);
-            this.tabPageORNYMG.Controls.Add(this.precipitationBoxLength);
-            this.tabPageORNYMG.Controls.Add(this.label24);
-            this.tabPageORNYMG.Controls.Add(this.precipitationBoxWidth);
-            this.tabPageORNYMG.Controls.Add(this.label23);
-            this.tabPageORNYMG.Controls.Add(this.precipitationBoxHeight);
-            this.tabPageORNYMG.Controls.Add(this.pbEnableWebServer);
-            this.tabPageORNYMG.Controls.Add(this.checkEnableWebServer);
-            this.tabPageORNYMG.Controls.Add(this.numericCab2DStretch);
-            this.tabPageORNYMG.Controls.Add(this.labelCab2DStretch);
-            this.tabPageORNYMG.Controls.Add(this.checkTunnelResistanceDependent);
-            this.tabPageORNYMG.Controls.Add(this.checkWindResistanceDependent);
-            this.tabPageORNYMG.Controls.Add(this.checkCurveResistanceDependent);
-            this.tabPageORNYMG.Controls.Add(this.checkReduceMemory);
-            this.tabPageORNYMG.Controls.Add(this.checkSaveCommands);
-            this.tabPageORNYMG.Controls.Add(this.checkRunAt32bit);
-            this.tabPageORNYMG.Controls.Add(this.checkEnableWatchdog);
-            this.tabPageORNYMG.Controls.Add(this.checkFastFullScreenAltTab);
-            this.tabPageORNYMG.Controls.Add(this.trackWindVariability);
-            this.tabPageORNYMG.Controls.Add(this.labelWindVariability);
-            this.tabPageORNYMG.Controls.Add(this.windVariabilityValueLabel);
-            this.tabPageORNYMG.Controls.Add(this.trackMaxWindSpeed);
-            this.tabPageORNYMG.Controls.Add(this.labelMaxWindSpeed);
-            this.tabPageORNYMG.Controls.Add(this.maxWindSpeedValueLabel);
-            this.tabPageORNYMG.Location = new System.Drawing.Point(4, 22);
-            this.tabPageORNYMG.Name = "tabPageORNYMG";
-            this.tabPageORNYMG.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageORNYMG.Size = new System.Drawing.Size(602, 402);
-            this.tabPageORNYMG.TabIndex = 11;
-            this.tabPageORNYMG.Text = "ORNYMG Only";
-            this.tabPageORNYMG.UseVisualStyleBackColor = true;
-            // 
-            // checkExtendedPerformanceDump
-            // 
-            this.checkExtendedPerformanceDump.AutoSize = true;
-            this.checkExtendedPerformanceDump.Location = new System.Drawing.Point(15, 106);
-            this.checkExtendedPerformanceDump.Name = "checkExtendedPerformanceDump";
-            this.checkExtendedPerformanceDump.Size = new System.Drawing.Size(165, 17);
-            this.checkExtendedPerformanceDump.TabIndex = 49;
-            this.checkExtendedPerformanceDump.Text = "Extended Performance Dump";
-            this.checkExtendedPerformanceDump.UseVisualStyleBackColor = true;
-            this.checkExtendedPerformanceDump.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // label25
-            // 
-            this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(75, 373);
-            this.label25.Margin = new System.Windows.Forms.Padding(3);
-            this.label25.Name = "label25";
-            this.label25.Size = new System.Drawing.Size(134, 13);
-            this.label25.TabIndex = 48;
-            this.label25.Text = "Precipitation box length (m)";
-            // 
-            // precipitationBoxLength
-            // 
-            this.precipitationBoxLength.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.precipitationBoxLength.Location = new System.Drawing.Point(15, 371);
-            this.precipitationBoxLength.Maximum = new decimal(new int[] {
-            3000,
-            0,
-            0,
-            0});
-            this.precipitationBoxLength.Minimum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.precipitationBoxLength.Name = "precipitationBoxLength";
-            this.precipitationBoxLength.Size = new System.Drawing.Size(54, 20);
-            this.precipitationBoxLength.TabIndex = 47;
-            this.precipitationBoxLength.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            // 
-            // label24
-            // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(75, 347);
-            this.label24.Margin = new System.Windows.Forms.Padding(3);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(130, 13);
-            this.label24.TabIndex = 46;
-            this.label24.Text = "Precipitation box width (m)";
-            // 
-            // precipitationBoxWidth
-            // 
-            this.precipitationBoxWidth.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.precipitationBoxWidth.Location = new System.Drawing.Point(15, 345);
-            this.precipitationBoxWidth.Maximum = new decimal(new int[] {
-            3000,
-            0,
-            0,
-            0});
-            this.precipitationBoxWidth.Minimum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.precipitationBoxWidth.Name = "precipitationBoxWidth";
-            this.precipitationBoxWidth.Size = new System.Drawing.Size(54, 20);
-            this.precipitationBoxWidth.TabIndex = 45;
-            this.precipitationBoxWidth.Value = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            // 
-            // label23
-            // 
-            this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(75, 321);
-            this.label23.Margin = new System.Windows.Forms.Padding(3);
-            this.label23.Name = "label23";
-            this.label23.Size = new System.Drawing.Size(134, 13);
-            this.label23.TabIndex = 44;
-            this.label23.Text = "Precipitation box height (m)";
-            // 
-            // precipitationBoxHeight
-            // 
-            this.precipitationBoxHeight.Increment = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.precipitationBoxHeight.Location = new System.Drawing.Point(15, 319);
-            this.precipitationBoxHeight.Maximum = new decimal(new int[] {
-            300,
-            0,
-            0,
-            0});
-            this.precipitationBoxHeight.Minimum = new decimal(new int[] {
-            25,
-            0,
-            0,
-            0});
-            this.precipitationBoxHeight.Name = "precipitationBoxHeight";
-            this.precipitationBoxHeight.Size = new System.Drawing.Size(54, 20);
-            this.precipitationBoxHeight.TabIndex = 43;
-            this.precipitationBoxHeight.Value = new decimal(new int[] {
-            50,
-            0,
-            0,
-            0});
-            // 
-            // pbEnableWebServer
-            // 
-            this.pbEnableWebServer.Image = global::Menu.Properties.Resources.info_18;
-            this.pbEnableWebServer.Location = new System.Drawing.Point(15, 284);
-            this.pbEnableWebServer.Name = "pbEnableWebServer";
-            this.pbEnableWebServer.Size = new System.Drawing.Size(18, 18);
-            this.pbEnableWebServer.TabIndex = 31;
-            this.pbEnableWebServer.TabStop = false;
-            // 
-            // checkEnableWebServer
-            // 
-            this.checkEnableWebServer.AutoSize = true;
-            this.checkEnableWebServer.Location = new System.Drawing.Point(41, 283);
-            this.checkEnableWebServer.Name = "checkEnableWebServer";
-            this.checkEnableWebServer.Size = new System.Drawing.Size(255, 17);
-            this.checkEnableWebServer.TabIndex = 30;
-            this.checkEnableWebServer.Text = "Enable webserver                                                ";
-            this.checkEnableWebServer.UseVisualStyleBackColor = true;
-            // 
-            // labelCab2DStretch
-            // 
-            this.labelCab2DStretch.AutoSize = true;
-            this.labelCab2DStretch.Location = new System.Drawing.Point(75, 237);
-            this.labelCab2DStretch.Margin = new System.Windows.Forms.Padding(3);
-            this.labelCab2DStretch.Name = "labelCab2DStretch";
-            this.labelCab2DStretch.Size = new System.Drawing.Size(88, 13);
-            this.labelCab2DStretch.TabIndex = 29;
-            this.labelCab2DStretch.Text = "% cab 2D stretch";
-            // 
-            // checkTunnelResistanceDependent
-            // 
-            this.checkTunnelResistanceDependent.AutoSize = true;
-            this.checkTunnelResistanceDependent.Location = new System.Drawing.Point(15, 189);
-            this.checkTunnelResistanceDependent.Name = "checkTunnelResistanceDependent";
-            this.checkTunnelResistanceDependent.Size = new System.Drawing.Size(164, 17);
-            this.checkTunnelResistanceDependent.TabIndex = 26;
-            this.checkTunnelResistanceDependent.Text = "Tunnel dependent resistance";
-            this.checkTunnelResistanceDependent.UseVisualStyleBackColor = true;
-            // 
-            // checkWindResistanceDependent
-            // 
-            this.checkWindResistanceDependent.AutoSize = true;
-            this.checkWindResistanceDependent.Location = new System.Drawing.Point(15, 212);
-            this.checkWindResistanceDependent.Name = "checkWindResistanceDependent";
-            this.checkWindResistanceDependent.Size = new System.Drawing.Size(156, 17);
-            this.checkWindResistanceDependent.TabIndex = 25;
-            this.checkWindResistanceDependent.Text = "Wind dependent resistance";
-            this.checkWindResistanceDependent.UseVisualStyleBackColor = true;
-            // 
-            // checkCurveResistanceDependent
-            // 
-            this.checkCurveResistanceDependent.AutoSize = true;
-            this.checkCurveResistanceDependent.Location = new System.Drawing.Point(15, 166);
-            this.checkCurveResistanceDependent.Name = "checkCurveResistanceDependent";
-            this.checkCurveResistanceDependent.Size = new System.Drawing.Size(159, 17);
-            this.checkCurveResistanceDependent.TabIndex = 24;
-            this.checkCurveResistanceDependent.Text = "Curve dependent resistance";
-            this.checkCurveResistanceDependent.UseVisualStyleBackColor = true;
-            // 
-            // checkReduceMemory
-            // 
-            this.checkReduceMemory.AutoSize = true;
-            this.checkReduceMemory.Location = new System.Drawing.Point(15, 83);
-            this.checkReduceMemory.Name = "checkReduceMemory";
-            this.checkReduceMemory.Size = new System.Drawing.Size(135, 17);
-            this.checkReduceMemory.TabIndex = 23;
-            this.checkReduceMemory.Text = "Reduce memory usage";
-            this.checkReduceMemory.UseVisualStyleBackColor = true;
-            // 
-            // checkSaveCommands
-            // 
-            this.checkSaveCommands.AutoSize = true;
-            this.checkSaveCommands.Checked = true;
-            this.checkSaveCommands.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkSaveCommands.Location = new System.Drawing.Point(15, 60);
-            this.checkSaveCommands.Name = "checkSaveCommands";
-            this.checkSaveCommands.Size = new System.Drawing.Size(151, 17);
-            this.checkSaveCommands.TabIndex = 22;
-            this.checkSaveCommands.Text = "Save commands for replay";
-            this.checkSaveCommands.UseVisualStyleBackColor = true;
-            // 
-            // checkRunAt32bit
-            // 
-            this.checkRunAt32bit.AutoSize = true;
-            this.checkRunAt32bit.Location = new System.Drawing.Point(15, 37);
-            this.checkRunAt32bit.Name = "checkRunAt32bit";
-            this.checkRunAt32bit.Size = new System.Drawing.Size(136, 17);
-            this.checkRunAt32bit.TabIndex = 21;
-            this.checkRunAt32bit.Text = "Run at 32 bit on Win64";
-            this.checkRunAt32bit.UseVisualStyleBackColor = true;
-            // 
-            // checkEnableWatchdog
-            // 
-            this.checkEnableWatchdog.AutoSize = true;
-            this.checkEnableWatchdog.Checked = true;
-            this.checkEnableWatchdog.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkEnableWatchdog.Location = new System.Drawing.Point(15, 14);
-            this.checkEnableWatchdog.Name = "checkEnableWatchdog";
-            this.checkEnableWatchdog.Size = new System.Drawing.Size(76, 17);
-            this.checkEnableWatchdog.TabIndex = 20;
-            this.checkEnableWatchdog.Text = "Watchdog";
-            this.checkEnableWatchdog.UseVisualStyleBackColor = true;
-            // 
-            // checkFastFullScreenAltTab
-            // 
-            this.checkFastFullScreenAltTab.AutoSize = true;
-            this.checkFastFullScreenAltTab.Location = new System.Drawing.Point(15, 143);
-            this.checkFastFullScreenAltTab.Name = "checkFastFullScreenAltTab";
-            this.checkFastFullScreenAltTab.Size = new System.Drawing.Size(129, 17);
-            this.checkFastFullScreenAltTab.TabIndex = 2;
-            this.checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
-            this.checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
-            // 
-            // labelWindVariability
-            // 
-            this.labelWindVariability.AutoSize = true;
-            this.labelWindVariability.Location = new System.Drawing.Point(301, 287);
-            this.labelWindVariability.Margin = new System.Windows.Forms.Padding(3);
-            this.labelWindVariability.Name = "labelWindVariability";
-            this.labelWindVariability.Size = new System.Drawing.Size(81, 13);
-            this.labelWindVariability.TabIndex = 30;
-            this.labelWindVariability.Text = "Wind variability:";
-            // 
-            // windVariabilityValueLabel
-            // 
-            this.windVariabilityValueLabel.Location = new System.Drawing.Point(301, 287);
-            this.windVariabilityValueLabel.Margin = new System.Windows.Forms.Padding(3);
-            this.windVariabilityValueLabel.Name = "windVariabilityValueLabel";
-            this.windVariabilityValueLabel.Size = new System.Drawing.Size(292, 13);
-            this.windVariabilityValueLabel.TabIndex = 31;
-            this.windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            checkDataLogUseInternalUnits.AutoSize = true;
+            checkDataLogUseInternalUnits.Location = new System.Drawing.Point(7, 75);
+            checkDataLogUseInternalUnits.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogUseInternalUnits.Name = "checkDataLogUseInternalUnits";
+            checkDataLogUseInternalUnits.Size = new System.Drawing.Size(117, 19);
+            checkDataLogUseInternalUnits.TabIndex = 3;
+            checkDataLogUseInternalUnits.Text = "Use internal units";
+            toolTip1.SetToolTip(checkDataLogUseInternalUnits, "When checked, use units used by the software (i.e. no conversion).");
+            checkDataLogUseInternalUnits.UseVisualStyleBackColor = true;
             // 
             // trackWindVariability
             // 
-            this.trackWindVariability.AutoSize = false;
-            this.trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
-            this.trackWindVariability.LargeChange = 10;
-            this.trackWindVariability.Location = new System.Drawing.Point(301, 306);
-            this.trackWindVariability.Maximum = 100;
-            this.trackWindVariability.Name = "trackWindVariability";
-            this.trackWindVariability.Size = new System.Drawing.Size(292, 26);
-            this.trackWindVariability.TabIndex = 32;
-            this.trackWindVariability.TickFrequency = 10;
-            this.toolTip1.SetToolTip(this.trackWindVariability, "Default is 100%");
-            this.trackWindVariability.Value = 10;
-            this.trackWindVariability.ValueChanged += new System.EventHandler(this.trackWindVariability_ValueChanged);
-            // 
-            // labelMaxWindSpeed
-            // 
-            this.labelMaxWindSpeed.AutoSize = true;
-            this.labelMaxWindSpeed.Location = new System.Drawing.Point(301, 352);
-            this.labelMaxWindSpeed.Margin = new System.Windows.Forms.Padding(3);
-            this.labelMaxWindSpeed.Name = "labelMaxWindSpeed";
-            this.labelMaxWindSpeed.Size = new System.Drawing.Size(90, 13);
-            this.labelMaxWindSpeed.TabIndex = 50;
-            this.labelMaxWindSpeed.Text = "Max Wind speed:";
-            // 
-            // maxWindSpeedValueLabel
-            // 
-            this.maxWindSpeedValueLabel.Location = new System.Drawing.Point(301, 352);
-            this.maxWindSpeedValueLabel.Margin = new System.Windows.Forms.Padding(3);
-            this.maxWindSpeedValueLabel.Name = "maxWindSpeedValueLabel";
-            this.maxWindSpeedValueLabel.Size = new System.Drawing.Size(292, 13);
-            this.maxWindSpeedValueLabel.TabIndex = 51;
-            this.maxWindSpeedValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            trackWindVariability.AutoSize = false;
+            trackWindVariability.BackColor = System.Drawing.SystemColors.Window;
+            trackWindVariability.LargeChange = 10;
+            trackWindVariability.Location = new System.Drawing.Point(351, 353);
+            trackWindVariability.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            trackWindVariability.Maximum = 100;
+            trackWindVariability.Name = "trackWindVariability";
+            trackWindVariability.Size = new System.Drawing.Size(341, 30);
+            trackWindVariability.TabIndex = 32;
+            trackWindVariability.TickFrequency = 10;
+            toolTip1.SetToolTip(trackWindVariability, "Default is 100%");
+            trackWindVariability.Value = 10;
+            trackWindVariability.ValueChanged += trackWindVariability_ValueChanged;
             // 
             // trackMaxWindSpeed
             // 
-            this.trackMaxWindSpeed.AutoSize = false;
-            this.trackMaxWindSpeed.BackColor = System.Drawing.SystemColors.Window;
-            this.trackMaxWindSpeed.LargeChange = 10;
-            this.trackMaxWindSpeed.Location = new System.Drawing.Point(301, 371);
-            this.trackMaxWindSpeed.Maximum = 33;
-            this.trackMaxWindSpeed.Name = "trackMaxWindSpeed";
-            this.trackMaxWindSpeed.Size = new System.Drawing.Size(292, 26);
-            this.trackMaxWindSpeed.TabIndex = 52;
-            this.trackMaxWindSpeed.TickFrequency = 10;
-            this.trackMaxWindSpeed.Value = 5;
-            this.trackMaxWindSpeed.ValueChanged += new System.EventHandler(this.trackWindSpeed_ValueChanged);
+            trackMaxWindSpeed.AutoSize = false;
+            trackMaxWindSpeed.BackColor = System.Drawing.SystemColors.Window;
+            trackMaxWindSpeed.LargeChange = 10;
+            trackMaxWindSpeed.Location = new System.Drawing.Point(351, 428);
+            trackMaxWindSpeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            trackMaxWindSpeed.Maximum = 33;
+            trackMaxWindSpeed.Name = "trackMaxWindSpeed";
+            trackMaxWindSpeed.Size = new System.Drawing.Size(341, 30);
+            trackMaxWindSpeed.TabIndex = 52;
+            trackMaxWindSpeed.TickFrequency = 10;
+            trackMaxWindSpeed.Value = 5;
+            trackMaxWindSpeed.ValueChanged += trackWindSpeed_ValueChanged;
+            // 
+            // checkLODViewingExtension
+            // 
+            checkLODViewingExtension.AutoSize = true;
+            checkLODViewingExtension.Location = new System.Drawing.Point(48, 122);
+            checkLODViewingExtension.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkLODViewingExtension.Name = "checkLODViewingExtension";
+            checkLODViewingExtension.Size = new System.Drawing.Size(302, 19);
+            checkLODViewingExtension.TabIndex = 28;
+            checkLODViewingExtension.Text = "Extend object maximum viewing distance to horizon";
+            checkLODViewingExtension.UseVisualStyleBackColor = true;
+            // 
+            // labelWindowSize
+            // 
+            labelWindowSize.Location = new System.Drawing.Point(0, 0);
+            labelWindowSize.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelWindowSize.Name = "labelWindowSize";
+            labelWindowSize.Size = new System.Drawing.Size(117, 27);
+            labelWindowSize.TabIndex = 47;
+            // 
+            // labelWebServerPort
+            // 
+            labelWebServerPort.Location = new System.Drawing.Point(0, 0);
+            labelWebServerPort.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelWebServerPort.Name = "labelWebServerPort";
+            labelWebServerPort.Size = new System.Drawing.Size(117, 27);
+            labelWebServerPort.TabIndex = 46;
+            // 
+            // labelWorldObjectDensity
+            // 
+            labelWorldObjectDensity.Location = new System.Drawing.Point(0, 0);
+            labelWorldObjectDensity.Name = "labelWorldObjectDensity";
+            labelWorldObjectDensity.Size = new System.Drawing.Size(100, 23);
+            labelWorldObjectDensity.TabIndex = 0;
+            // 
+            // labelViewingVerticalFOV
+            // 
+            labelViewingVerticalFOV.Location = new System.Drawing.Point(0, 0);
+            labelViewingVerticalFOV.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelViewingVerticalFOV.Name = "labelViewingVerticalFOV";
+            labelViewingVerticalFOV.Size = new System.Drawing.Size(117, 27);
+            labelViewingVerticalFOV.TabIndex = 46;
+            // 
+            // tabPageExperimental
+            // 
+            tabPageExperimental.Controls.Add(pbAdhesionFactorRandomChange);
+            tabPageExperimental.Controls.Add(pbAdhesionFactorCorrection);
+            tabPageExperimental.Controls.Add(pbMstsEnvironments);
+            tabPageExperimental.Controls.Add(pbActivityWeatherRandomization);
+            tabPageExperimental.Controls.Add(pbActivityRandomization);
+            tabPageExperimental.Controls.Add(pbCorrectQuestionableBrakingParameters);
+            tabPageExperimental.Controls.Add(pbShowShapeWarnings);
+            tabPageExperimental.Controls.Add(label27);
+            tabPageExperimental.Controls.Add(numericActWeatherRandomizationLevel);
+            tabPageExperimental.Controls.Add(label26);
+            tabPageExperimental.Controls.Add(label13);
+            tabPageExperimental.Controls.Add(label12);
+            tabPageExperimental.Controls.Add(numericActRandomizationLevel);
+            tabPageExperimental.Controls.Add(checkCorrectQuestionableBrakingParams);
+            tabPageExperimental.Controls.Add(label16);
+            tabPageExperimental.Controls.Add(label9);
+            tabPageExperimental.Controls.Add(AdhesionFactorChangeValueLabel);
+            tabPageExperimental.Controls.Add(AdhesionFactorValueLabel);
+            tabPageExperimental.Controls.Add(checkShapeWarnings);
+            tabPageExperimental.Controls.Add(AdhesionLevelValue);
+            tabPageExperimental.Controls.Add(AdhesionLevelLabel);
+            tabPageExperimental.Controls.Add(trackAdhesionFactorChange);
+            tabPageExperimental.Controls.Add(trackAdhesionFactor);
+            tabPageExperimental.Controls.Add(checkUseMSTSEnv);
+            tabPageExperimental.Controls.Add(label8);
+            tabPageExperimental.Controls.Add(pbSuperElevation);
+            tabPageExperimental.Controls.Add(numericSuperElevationGauge);
+            tabPageExperimental.Controls.Add(label5);
+            tabPageExperimental.Controls.Add(checkUseSuperElevation);
+            tabPageExperimental.Controls.Add(ElevationText);
+            tabPageExperimental.Location = new System.Drawing.Point(4, 24);
+            tabPageExperimental.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageExperimental.Name = "tabPageExperimental";
+            tabPageExperimental.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageExperimental.Size = new System.Drawing.Size(704, 466);
+            tabPageExperimental.TabIndex = 3;
+            tabPageExperimental.Text = "Experimental";
+            tabPageExperimental.UseVisualStyleBackColor = true;
+            // 
+            // pbAdhesionFactorRandomChange
+            // 
+            pbAdhesionFactorRandomChange.Image = Properties.Resources.info_18;
+            pbAdhesionFactorRandomChange.Location = new System.Drawing.Point(327, 357);
+            pbAdhesionFactorRandomChange.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAdhesionFactorRandomChange.Name = "pbAdhesionFactorRandomChange";
+            pbAdhesionFactorRandomChange.Size = new System.Drawing.Size(21, 21);
+            pbAdhesionFactorRandomChange.TabIndex = 38;
+            pbAdhesionFactorRandomChange.TabStop = false;
+            pbAdhesionFactorRandomChange.Click += HelpIcon_Click;
+            pbAdhesionFactorRandomChange.MouseEnter += HelpIcon_MouseEnter;
+            pbAdhesionFactorRandomChange.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbAdhesionFactorCorrection
+            // 
+            pbAdhesionFactorCorrection.Image = Properties.Resources.info_18;
+            pbAdhesionFactorCorrection.Location = new System.Drawing.Point(327, 298);
+            pbAdhesionFactorCorrection.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAdhesionFactorCorrection.Name = "pbAdhesionFactorCorrection";
+            pbAdhesionFactorCorrection.Size = new System.Drawing.Size(21, 21);
+            pbAdhesionFactorCorrection.TabIndex = 37;
+            pbAdhesionFactorCorrection.TabStop = false;
+            pbAdhesionFactorCorrection.Click += HelpIcon_Click;
+            pbAdhesionFactorCorrection.MouseEnter += HelpIcon_MouseEnter;
+            pbAdhesionFactorCorrection.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbMstsEnvironments
+            // 
+            pbMstsEnvironments.Image = Properties.Resources.info_18;
+            pbMstsEnvironments.Location = new System.Drawing.Point(327, 245);
+            pbMstsEnvironments.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbMstsEnvironments.Name = "pbMstsEnvironments";
+            pbMstsEnvironments.Size = new System.Drawing.Size(21, 21);
+            pbMstsEnvironments.TabIndex = 36;
+            pbMstsEnvironments.TabStop = false;
+            pbMstsEnvironments.Click += HelpIcon_Click;
+            pbMstsEnvironments.MouseEnter += HelpIcon_MouseEnter;
+            pbMstsEnvironments.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbActivityWeatherRandomization
+            // 
+            pbActivityWeatherRandomization.Image = Properties.Resources.info_18;
+            pbActivityWeatherRandomization.Location = new System.Drawing.Point(514, 135);
+            pbActivityWeatherRandomization.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbActivityWeatherRandomization.Name = "pbActivityWeatherRandomization";
+            pbActivityWeatherRandomization.Size = new System.Drawing.Size(21, 21);
+            pbActivityWeatherRandomization.TabIndex = 35;
+            pbActivityWeatherRandomization.TabStop = false;
+            pbActivityWeatherRandomization.Click += HelpIcon_Click;
+            pbActivityWeatherRandomization.MouseEnter += HelpIcon_MouseEnter;
+            pbActivityWeatherRandomization.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbActivityRandomization
+            // 
+            pbActivityRandomization.Image = Properties.Resources.info_18;
+            pbActivityRandomization.Location = new System.Drawing.Point(351, 135);
+            pbActivityRandomization.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbActivityRandomization.Name = "pbActivityRandomization";
+            pbActivityRandomization.Size = new System.Drawing.Size(21, 21);
+            pbActivityRandomization.TabIndex = 34;
+            pbActivityRandomization.TabStop = false;
+            pbActivityRandomization.Click += HelpIcon_Click;
+            pbActivityRandomization.MouseEnter += HelpIcon_MouseEnter;
+            pbActivityRandomization.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbCorrectQuestionableBrakingParameters
+            // 
+            pbCorrectQuestionableBrakingParameters.Image = Properties.Resources.info_18;
+            pbCorrectQuestionableBrakingParameters.Location = new System.Drawing.Point(327, 85);
+            pbCorrectQuestionableBrakingParameters.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbCorrectQuestionableBrakingParameters.Name = "pbCorrectQuestionableBrakingParameters";
+            pbCorrectQuestionableBrakingParameters.Size = new System.Drawing.Size(21, 21);
+            pbCorrectQuestionableBrakingParameters.TabIndex = 33;
+            pbCorrectQuestionableBrakingParameters.TabStop = false;
+            pbCorrectQuestionableBrakingParameters.Click += HelpIcon_Click;
+            pbCorrectQuestionableBrakingParameters.MouseEnter += HelpIcon_MouseEnter;
+            pbCorrectQuestionableBrakingParameters.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbShowShapeWarnings
+            // 
+            pbShowShapeWarnings.Image = Properties.Resources.info_18;
+            pbShowShapeWarnings.Location = new System.Drawing.Point(7, 218);
+            pbShowShapeWarnings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbShowShapeWarnings.Name = "pbShowShapeWarnings";
+            pbShowShapeWarnings.Size = new System.Drawing.Size(21, 21);
+            pbShowShapeWarnings.TabIndex = 32;
+            pbShowShapeWarnings.TabStop = false;
+            pbShowShapeWarnings.Click += HelpIcon_Click;
+            pbShowShapeWarnings.MouseEnter += HelpIcon_MouseEnter;
+            pbShowShapeWarnings.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label27
+            // 
+            label27.AutoSize = true;
+            label27.Location = new System.Drawing.Point(614, 137);
+            label27.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label27.Name = "label27";
+            label27.Size = new System.Drawing.Size(34, 15);
+            label27.TabIndex = 51;
+            label27.Text = "Level";
+            label27.MouseEnter += HelpIcon_MouseEnter;
+            label27.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label26
+            // 
+            label26.AutoSize = true;
+            label26.Location = new System.Drawing.Point(511, 111);
+            label26.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label26.Name = "label26";
+            label26.Size = new System.Drawing.Size(172, 15);
+            label26.TabIndex = 49;
+            label26.Text = "Activity weather randomization";
+            label26.MouseEnter += HelpIcon_MouseEnter;
+            label26.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label13
+            // 
+            label13.AutoSize = true;
+            label13.Location = new System.Drawing.Point(351, 111);
+            label13.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label13.Name = "label13";
+            label13.Size = new System.Drawing.Size(127, 15);
+            label13.TabIndex = 48;
+            label13.Text = "Activity randomization";
+            label13.MouseEnter += HelpIcon_MouseEnter;
+            label13.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label12
+            // 
+            label12.AutoSize = true;
+            label12.Location = new System.Drawing.Point(449, 137);
+            label12.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label12.Name = "label12";
+            label12.Size = new System.Drawing.Size(34, 15);
+            label12.TabIndex = 47;
+            label12.Text = "Level";
+            label12.MouseEnter += HelpIcon_MouseEnter;
+            label12.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkCorrectQuestionableBrakingParams
+            // 
+            checkCorrectQuestionableBrakingParams.AutoSize = true;
+            checkCorrectQuestionableBrakingParams.Location = new System.Drawing.Point(355, 85);
+            checkCorrectQuestionableBrakingParams.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkCorrectQuestionableBrakingParams.Name = "checkCorrectQuestionableBrakingParams";
+            checkCorrectQuestionableBrakingParams.Size = new System.Drawing.Size(241, 19);
+            checkCorrectQuestionableBrakingParams.TabIndex = 43;
+            checkCorrectQuestionableBrakingParams.Text = "Correct questionable braking parameters";
+            checkCorrectQuestionableBrakingParams.UseVisualStyleBackColor = true;
+            checkCorrectQuestionableBrakingParams.MouseEnter += HelpIcon_MouseEnter;
+            checkCorrectQuestionableBrakingParams.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label16
+            // 
+            label16.AutoSize = true;
+            label16.Location = new System.Drawing.Point(351, 357);
+            label16.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label16.Name = "label16";
+            label16.Size = new System.Drawing.Size(181, 15);
+            label16.TabIndex = 30;
+            label16.Text = "Adhesion factor random change:";
+            label16.MouseEnter += HelpIcon_MouseEnter;
+            label16.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label9
+            // 
+            label9.AutoSize = true;
+            label9.Location = new System.Drawing.Point(351, 298);
+            label9.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label9.Name = "label9";
+            label9.Size = new System.Drawing.Size(151, 15);
+            label9.TabIndex = 26;
+            label9.Text = "Adhesion factor correction:";
+            label9.MouseEnter += HelpIcon_MouseEnter;
+            label9.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // AdhesionFactorChangeValueLabel
+            // 
+            AdhesionFactorChangeValueLabel.Location = new System.Drawing.Point(351, 357);
+            AdhesionFactorChangeValueLabel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AdhesionFactorChangeValueLabel.Name = "AdhesionFactorChangeValueLabel";
+            AdhesionFactorChangeValueLabel.Size = new System.Drawing.Size(341, 15);
+            AdhesionFactorChangeValueLabel.TabIndex = 31;
+            AdhesionFactorChangeValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // AdhesionFactorValueLabel
+            // 
+            AdhesionFactorValueLabel.Location = new System.Drawing.Point(351, 298);
+            AdhesionFactorValueLabel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AdhesionFactorValueLabel.Name = "AdhesionFactorValueLabel";
+            AdhesionFactorValueLabel.Size = new System.Drawing.Size(341, 15);
+            AdhesionFactorValueLabel.TabIndex = 27;
+            AdhesionFactorValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // checkShapeWarnings
+            // 
+            checkShapeWarnings.AutoSize = true;
+            checkShapeWarnings.Location = new System.Drawing.Point(31, 218);
+            checkShapeWarnings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkShapeWarnings.Name = "checkShapeWarnings";
+            checkShapeWarnings.Size = new System.Drawing.Size(140, 19);
+            checkShapeWarnings.TabIndex = 36;
+            checkShapeWarnings.Text = "Show shape warnings";
+            checkShapeWarnings.UseVisualStyleBackColor = true;
+            checkShapeWarnings.MouseEnter += HelpIcon_MouseEnter;
+            checkShapeWarnings.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // AdhesionLevelValue
+            // 
+            AdhesionLevelValue.Location = new System.Drawing.Point(416, 415);
+            AdhesionLevelValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AdhesionLevelValue.Name = "AdhesionLevelValue";
+            AdhesionLevelValue.Size = new System.Drawing.Size(275, 15);
+            AdhesionLevelValue.TabIndex = 34;
+            // 
+            // AdhesionLevelLabel
+            // 
+            AdhesionLevelLabel.Location = new System.Drawing.Point(351, 415);
+            AdhesionLevelLabel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            AdhesionLevelLabel.Name = "AdhesionLevelLabel";
+            AdhesionLevelLabel.Size = new System.Drawing.Size(58, 15);
+            AdhesionLevelLabel.TabIndex = 33;
+            AdhesionLevelLabel.Text = "Level:";
+            // 
+            // checkUseMSTSEnv
+            // 
+            checkUseMSTSEnv.AutoSize = true;
+            checkUseMSTSEnv.Location = new System.Drawing.Point(355, 245);
+            checkUseMSTSEnv.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkUseMSTSEnv.Name = "checkUseMSTSEnv";
+            checkUseMSTSEnv.Size = new System.Drawing.Size(132, 19);
+            checkUseMSTSEnv.TabIndex = 25;
+            checkUseMSTSEnv.Text = "MSTS environments";
+            checkUseMSTSEnv.UseVisualStyleBackColor = true;
+            checkUseMSTSEnv.MouseEnter += HelpIcon_MouseEnter;
+            checkUseMSTSEnv.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.Location = new System.Drawing.Point(100, 81);
+            label8.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label8.Name = "label8";
+            label8.Size = new System.Drawing.Size(115, 15);
+            label8.TabIndex = 7;
+            label8.Text = "Default Gauge (mm)";
+            label8.MouseEnter += HelpIcon_MouseEnter;
+            label8.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbSuperElevation
+            // 
+            pbSuperElevation.Image = Properties.Resources.info_18;
+            pbSuperElevation.Location = new System.Drawing.Point(7, 27);
+            pbSuperElevation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbSuperElevation.Name = "pbSuperElevation";
+            pbSuperElevation.Size = new System.Drawing.Size(21, 21);
+            pbSuperElevation.TabIndex = 28;
+            pbSuperElevation.TabStop = false;
+            pbSuperElevation.Click += HelpIcon_Click;
+            pbSuperElevation.MouseEnter += HelpIcon_MouseEnter;
+            pbSuperElevation.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.ForeColor = System.Drawing.SystemColors.Highlight;
+            label5.Location = new System.Drawing.Point(7, 7);
+            label5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label5.MaximumSize = new System.Drawing.Size(688, 0);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(397, 15);
+            label5.TabIndex = 0;
+            label5.Text = "Experimental features that may slow down the game, use at your own risk.";
+            // 
+            // ElevationText
+            // 
+            ElevationText.AutoSize = true;
+            ElevationText.Location = new System.Drawing.Point(28, 27);
+            ElevationText.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            ElevationText.Name = "ElevationText";
+            ElevationText.Size = new System.Drawing.Size(85, 15);
+            ElevationText.TabIndex = 1;
+            ElevationText.Text = "Superelevation";
+            ElevationText.MouseEnter += HelpIcon_MouseEnter;
+            ElevationText.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelLODBias
+            // 
+            labelLODBias.Location = new System.Drawing.Point(392, 195);
+            labelLODBias.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelLODBias.Name = "labelLODBias";
+            labelLODBias.Size = new System.Drawing.Size(219, 21);
+            labelLODBias.TabIndex = 26;
+            labelLODBias.Text = "Level of detail bias:";
+            labelLODBias.MouseEnter += HelpIcon_MouseEnter;
+            labelLODBias.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelPerformanceTunerTarget
+            // 
+            labelPerformanceTunerTarget.AutoSize = true;
+            labelPerformanceTunerTarget.Location = new System.Drawing.Point(134, 408);
+            labelPerformanceTunerTarget.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelPerformanceTunerTarget.Name = "labelPerformanceTunerTarget";
+            labelPerformanceTunerTarget.Size = new System.Drawing.Size(97, 15);
+            labelPerformanceTunerTarget.TabIndex = 10;
+            labelPerformanceTunerTarget.Text = "Target frame rate";
+            // 
+            // checkPerformanceTuner
+            // 
+            checkPerformanceTuner.AutoSize = true;
+            checkPerformanceTuner.Location = new System.Drawing.Point(41, 381);
+            checkPerformanceTuner.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkPerformanceTuner.Name = "checkPerformanceTuner";
+            checkPerformanceTuner.Size = new System.Drawing.Size(311, 19);
+            checkPerformanceTuner.TabIndex = 8;
+            checkPerformanceTuner.Text = "Automatically tune settings to keep performance level";
+            checkPerformanceTuner.UseVisualStyleBackColor = true;
+            checkPerformanceTuner.Click += checkPerformanceTuner_Click;
+            // 
+            // tabPageSystem
+            // 
+            tabPageSystem.Controls.Add(pbControlConfirmations);
+            tabPageSystem.Controls.Add(comboControlConfirmations);
+            tabPageSystem.Controls.Add(labelControlConfirmations);
+            tabPageSystem.Controls.Add(labelPortNumber);
+            tabPageSystem.Controls.Add(numericWebServerPort);
+            tabPageSystem.Controls.Add(pbLanguage);
+            tabPageSystem.Controls.Add(labelLanguage);
+            tabPageSystem.Controls.Add(comboLanguage);
+            tabPageSystem.Controls.Add(comboWindowSize);
+            tabPageSystem.Controls.Add(label3);
+            tabPageSystem.Controls.Add(checkWindowGlass);
+            tabPageSystem.Controls.Add(pbPerformanceTuner);
+            tabPageSystem.Controls.Add(labelPerformanceTunerTarget);
+            tabPageSystem.Controls.Add(numericPerformanceTunerTarget);
+            tabPageSystem.Controls.Add(checkPerformanceTuner);
+            tabPageSystem.Controls.Add(pbWebServerPort);
+            tabPageSystem.Controls.Add(labelWebServerPort);
+            tabPageSystem.Controls.Add(pbWindowGlass);
+            tabPageSystem.Controls.Add(labelWindowSize);
+            tabPageSystem.Location = new System.Drawing.Point(4, 24);
+            tabPageSystem.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageSystem.Name = "tabPageSystem";
+            tabPageSystem.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageSystem.Size = new System.Drawing.Size(704, 466);
+            tabPageSystem.TabIndex = 8;
+            tabPageSystem.Text = "System";
+            tabPageSystem.UseVisualStyleBackColor = true;
+            // 
+            // pbControlConfirmations
+            // 
+            pbControlConfirmations.Image = Properties.Resources.info_18;
+            pbControlConfirmations.Location = new System.Drawing.Point(13, 307);
+            pbControlConfirmations.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbControlConfirmations.Name = "pbControlConfirmations";
+            pbControlConfirmations.Size = new System.Drawing.Size(21, 21);
+            pbControlConfirmations.TabIndex = 61;
+            pbControlConfirmations.TabStop = false;
+            pbControlConfirmations.Click += HelpIcon_Click;
+            pbControlConfirmations.MouseEnter += HelpIcon_MouseEnter;
+            pbControlConfirmations.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // comboControlConfirmations
+            // 
+            comboControlConfirmations.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboControlConfirmations.FormattingEnabled = true;
+            comboControlConfirmations.Location = new System.Drawing.Point(41, 306);
+            comboControlConfirmations.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            comboControlConfirmations.Name = "comboControlConfirmations";
+            comboControlConfirmations.Size = new System.Drawing.Size(140, 23);
+            comboControlConfirmations.TabIndex = 59;
+            // 
+            // labelControlConfirmations
+            // 
+            labelControlConfirmations.Location = new System.Drawing.Point(188, 308);
+            labelControlConfirmations.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelControlConfirmations.Name = "labelControlConfirmations";
+            labelControlConfirmations.Size = new System.Drawing.Size(233, 24);
+            labelControlConfirmations.TabIndex = 60;
+            labelControlConfirmations.Text = "Messages suppressed       ";
+            // 
+            // labelPortNumber
+            // 
+            labelPortNumber.AutoSize = true;
+            labelPortNumber.Location = new System.Drawing.Point(138, 346);
+            labelPortNumber.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            labelPortNumber.Name = "labelPortNumber";
+            labelPortNumber.Size = new System.Drawing.Size(204, 15);
+            labelPortNumber.TabIndex = 58;
+            labelPortNumber.Text = "Web server port                                      ";
+            // 
+            // numericWebServerPort
+            // 
+            numericWebServerPort.Location = new System.Drawing.Point(41, 344);
+            numericWebServerPort.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericWebServerPort.Maximum = new decimal(new int[] { 65534, 0, 0, 0 });
+            numericWebServerPort.Minimum = new decimal(new int[] { 1025, 0, 0, 0 });
+            numericWebServerPort.Name = "numericWebServerPort";
+            numericWebServerPort.Size = new System.Drawing.Size(82, 23);
+            numericWebServerPort.TabIndex = 57;
+            numericWebServerPort.Value = new decimal(new int[] { 1025, 0, 0, 0 });
+            // 
+            // pbLanguage
+            // 
+            pbLanguage.Image = Properties.Resources.info_18;
+            pbLanguage.Location = new System.Drawing.Point(13, 10);
+            pbLanguage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbLanguage.Name = "pbLanguage";
+            pbLanguage.Size = new System.Drawing.Size(21, 21);
+            pbLanguage.TabIndex = 28;
+            pbLanguage.TabStop = false;
+            pbLanguage.Click += HelpIcon_Click;
+            pbLanguage.MouseEnter += HelpIcon_MouseEnter;
+            pbLanguage.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelLanguage
+            // 
+            labelLanguage.AutoSize = true;
+            labelLanguage.Location = new System.Drawing.Point(186, 14);
+            labelLanguage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelLanguage.Name = "labelLanguage";
+            labelLanguage.Size = new System.Drawing.Size(134, 15);
+            labelLanguage.TabIndex = 53;
+            labelLanguage.Text = "Language                         ";
+            labelLanguage.MouseEnter += HelpIcon_MouseEnter;
+            labelLanguage.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // comboLanguage
+            // 
+            comboLanguage.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboLanguage.FormattingEnabled = true;
+            comboLanguage.Location = new System.Drawing.Point(41, 10);
+            comboLanguage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            comboLanguage.Name = "comboLanguage";
+            comboLanguage.Size = new System.Drawing.Size(140, 23);
+            comboLanguage.TabIndex = 52;
+            comboLanguage.MouseEnter += HelpIcon_MouseEnter;
+            comboLanguage.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // comboWindowSize
+            // 
+            comboWindowSize.FormattingEnabled = true;
+            comboWindowSize.Items.AddRange(new object[] { "800x600", "1024x768", "1280x720", "1280x800", "1280x1024", "1360x768", "1366x768", "1440x900", "1536x864", "1600x900", "1680x1050", "1920x1080", "1920x1200", "2560x1440" });
+            comboWindowSize.Location = new System.Drawing.Point(37, 219);
+            comboWindowSize.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            comboWindowSize.Name = "comboWindowSize";
+            comboWindowSize.Size = new System.Drawing.Size(140, 23);
+            comboWindowSize.TabIndex = 50;
+            comboWindowSize.SelectedIndexChanged += comboWindowSize_SelectedIndexChanged;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new System.Drawing.Point(186, 223);
+            label3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label3.Name = "label3";
+            label3.Size = new System.Drawing.Size(241, 15);
+            label3.TabIndex = 51;
+            label3.Text = "Window size (select or type WIDTHxHEIGHT)";
+            label3.Click += label3_Click;
+            // 
+            // checkWindowGlass
+            // 
+            checkWindowGlass.AutoSize = true;
+            checkWindowGlass.Location = new System.Drawing.Point(41, 271);
+            checkWindowGlass.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkWindowGlass.Name = "checkWindowGlass";
+            checkWindowGlass.Size = new System.Drawing.Size(189, 19);
+            checkWindowGlass.TabIndex = 49;
+            checkWindowGlass.Text = "Use glass on in-game windows";
+            checkWindowGlass.UseVisualStyleBackColor = true;
+            // 
+            // tabPageEvaluate
+            // 
+            tabPageEvaluate.Controls.Add(checkListDataLogTSContents);
+            tabPageEvaluate.Controls.Add(labelDataLogTSInterval);
+            tabPageEvaluate.Controls.Add(checkDataLogStationStops);
+            tabPageEvaluate.Controls.Add(numericDataLogTSInterval);
+            tabPageEvaluate.Controls.Add(checkDataLogTrainSpeed);
+            tabPageEvaluate.Location = new System.Drawing.Point(4, 24);
+            tabPageEvaluate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageEvaluate.Name = "tabPageEvaluate";
+            tabPageEvaluate.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageEvaluate.Size = new System.Drawing.Size(704, 466);
+            tabPageEvaluate.TabIndex = 7;
+            tabPageEvaluate.Text = "Evaluation";
+            tabPageEvaluate.UseVisualStyleBackColor = true;
+            // 
+            // checkListDataLogTSContents
+            // 
+            checkListDataLogTSContents.FormattingEnabled = true;
+            checkListDataLogTSContents.Location = new System.Drawing.Point(30, 63);
+            checkListDataLogTSContents.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            checkListDataLogTSContents.Name = "checkListDataLogTSContents";
+            checkListDataLogTSContents.Size = new System.Drawing.Size(172, 238);
+            checkListDataLogTSContents.TabIndex = 3;
+            // 
+            // labelDataLogTSInterval
+            // 
+            labelDataLogTSInterval.AutoSize = true;
+            labelDataLogTSInterval.Location = new System.Drawing.Point(100, 36);
+            labelDataLogTSInterval.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelDataLogTSInterval.Name = "labelDataLogTSInterval";
+            labelDataLogTSInterval.Size = new System.Drawing.Size(74, 15);
+            labelDataLogTSInterval.TabIndex = 2;
+            labelDataLogTSInterval.Text = "Interval (sec)";
+            // 
+            // checkDataLogStationStops
+            // 
+            checkDataLogStationStops.AutoSize = true;
+            checkDataLogStationStops.Location = new System.Drawing.Point(7, 323);
+            checkDataLogStationStops.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogStationStops.Name = "checkDataLogStationStops";
+            checkDataLogStationStops.Size = new System.Drawing.Size(116, 19);
+            checkDataLogStationStops.TabIndex = 4;
+            checkDataLogStationStops.Text = "Log station stops";
+            checkDataLogStationStops.UseVisualStyleBackColor = true;
+            // 
+            // numericDataLogTSInterval
+            // 
+            numericDataLogTSInterval.Location = new System.Drawing.Point(30, 33);
+            numericDataLogTSInterval.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            numericDataLogTSInterval.Maximum = new decimal(new int[] { 60, 0, 0, 0 });
+            numericDataLogTSInterval.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericDataLogTSInterval.Name = "numericDataLogTSInterval";
+            numericDataLogTSInterval.Size = new System.Drawing.Size(63, 23);
+            numericDataLogTSInterval.TabIndex = 1;
+            numericDataLogTSInterval.Value = new decimal(new int[] { 10, 0, 0, 0 });
+            // 
+            // checkDataLogTrainSpeed
+            // 
+            checkDataLogTrainSpeed.AutoSize = true;
+            checkDataLogTrainSpeed.Location = new System.Drawing.Point(7, 7);
+            checkDataLogTrainSpeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogTrainSpeed.Name = "checkDataLogTrainSpeed";
+            checkDataLogTrainSpeed.Size = new System.Drawing.Size(107, 19);
+            checkDataLogTrainSpeed.TabIndex = 0;
+            checkDataLogTrainSpeed.Text = "Log train speed";
+            checkDataLogTrainSpeed.UseVisualStyleBackColor = true;
+            checkDataLogTrainSpeed.Click += checkDataLogTrainSpeed_Click;
+            // 
+            // tabPageDataLogger
+            // 
+            tabPageDataLogger.Controls.Add(checkDataLogSteamPowerCurve);
+            tabPageDataLogger.Controls.Add(pbDataLoggerOptions);
+            tabPageDataLogger.Controls.Add(comboDataLoggerSeparator);
+            tabPageDataLogger.Controls.Add(checkDataLogUseInternalUnits);
+            tabPageDataLogger.Controls.Add(label18);
+            tabPageDataLogger.Controls.Add(checkDataLogPerformance);
+            tabPageDataLogger.Controls.Add(checkDataLogger);
+            tabPageDataLogger.Controls.Add(label17);
+            tabPageDataLogger.Controls.Add(checkDataLogPhysics);
+            tabPageDataLogger.Controls.Add(checkDataLogSteamPerformance);
+            tabPageDataLogger.Controls.Add(dataLoggerInterval);
+            tabPageDataLogger.Controls.Add(dataLoggerIntervalLabel);
+            tabPageDataLogger.Controls.Add(checkVerboseConfigurationMessages);
+            tabPageDataLogger.Location = new System.Drawing.Point(4, 24);
+            tabPageDataLogger.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageDataLogger.Name = "tabPageDataLogger";
+            tabPageDataLogger.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageDataLogger.Size = new System.Drawing.Size(704, 466);
+            tabPageDataLogger.TabIndex = 6;
+            tabPageDataLogger.Text = "Data logger";
+            tabPageDataLogger.UseVisualStyleBackColor = true;
+            // 
+            // checkDataLogSteamPowerCurve
+            // 
+            checkDataLogSteamPowerCurve.AutoSize = true;
+            checkDataLogSteamPowerCurve.Location = new System.Drawing.Point(7, 208);
+            checkDataLogSteamPowerCurve.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogSteamPowerCurve.Name = "checkDataLogSteamPowerCurve";
+            checkDataLogSteamPowerCurve.Size = new System.Drawing.Size(233, 19);
+            checkDataLogSteamPowerCurve.TabIndex = 24;
+            checkDataLogSteamPowerCurve.Text = "Log steam power curve data (exclusive)";
+            checkDataLogSteamPowerCurve.UseVisualStyleBackColor = true;
+            // 
+            // pbDataLoggerOptions
+            // 
+            pbDataLoggerOptions.Image = Properties.Resources.info_18_hover;
+            pbDataLoggerOptions.Location = new System.Drawing.Point(674, 7);
+            pbDataLoggerOptions.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbDataLoggerOptions.Name = "pbDataLoggerOptions";
+            pbDataLoggerOptions.Size = new System.Drawing.Size(21, 21);
+            pbDataLoggerOptions.TabIndex = 23;
+            pbDataLoggerOptions.TabStop = false;
+            pbDataLoggerOptions.Click += HelpIcon_Click;
+            // 
+            // comboDataLoggerSeparator
+            // 
+            comboDataLoggerSeparator.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboDataLoggerSeparator.FormattingEnabled = true;
+            comboDataLoggerSeparator.Location = new System.Drawing.Point(6, 43);
+            comboDataLoggerSeparator.Margin = new System.Windows.Forms.Padding(2);
+            comboDataLoggerSeparator.Name = "comboDataLoggerSeparator";
+            comboDataLoggerSeparator.Size = new System.Drawing.Size(140, 23);
+            comboDataLoggerSeparator.TabIndex = 1;
+            // 
+            // label18
+            // 
+            label18.AutoSize = true;
+            label18.ForeColor = System.Drawing.SystemColors.Highlight;
+            label18.Location = new System.Drawing.Point(7, 7);
+            label18.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label18.MaximumSize = new System.Drawing.Size(688, 0);
+            label18.Name = "label18";
+            label18.Size = new System.Drawing.Size(422, 30);
+            label18.TabIndex = 0;
+            label18.Text = "Use data logger to record your simulation data (in-game command: F12).\r\nPlease remember that the size of the dump file grows with the simulation time!";
+            // 
+            // checkDataLogPerformance
+            // 
+            checkDataLogPerformance.AutoSize = true;
+            checkDataLogPerformance.Location = new System.Drawing.Point(7, 128);
+            checkDataLogPerformance.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogPerformance.Name = "checkDataLogPerformance";
+            checkDataLogPerformance.Size = new System.Drawing.Size(143, 19);
+            checkDataLogPerformance.TabIndex = 6;
+            checkDataLogPerformance.Text = "Log performance data";
+            checkDataLogPerformance.UseVisualStyleBackColor = true;
+            // 
+            // checkDataLogger
+            // 
+            checkDataLogger.AutoSize = true;
+            checkDataLogger.Location = new System.Drawing.Point(7, 102);
+            checkDataLogger.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogger.Name = "checkDataLogger";
+            checkDataLogger.Size = new System.Drawing.Size(225, 19);
+            checkDataLogger.TabIndex = 5;
+            checkDataLogger.Text = "Start logging with the simulation start";
+            checkDataLogger.UseVisualStyleBackColor = true;
+            // 
+            // label17
+            // 
+            label17.AutoSize = true;
+            label17.Location = new System.Drawing.Point(153, 46);
+            label17.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label17.Name = "label17";
+            label17.Size = new System.Drawing.Size(57, 15);
+            label17.TabIndex = 2;
+            label17.Text = "Separator";
+            // 
+            // checkDataLogPhysics
+            // 
+            checkDataLogPhysics.AutoSize = true;
+            checkDataLogPhysics.Location = new System.Drawing.Point(7, 155);
+            checkDataLogPhysics.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogPhysics.Name = "checkDataLogPhysics";
+            checkDataLogPhysics.Size = new System.Drawing.Size(114, 19);
+            checkDataLogPhysics.TabIndex = 7;
+            checkDataLogPhysics.Text = "Log physics data";
+            checkDataLogPhysics.UseVisualStyleBackColor = true;
+            // 
+            // checkDataLogSteamPerformance
+            // 
+            checkDataLogSteamPerformance.AutoSize = true;
+            checkDataLogSteamPerformance.Location = new System.Drawing.Point(7, 181);
+            checkDataLogSteamPerformance.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDataLogSteamPerformance.Name = "checkDataLogSteamPerformance";
+            checkDataLogSteamPerformance.Size = new System.Drawing.Size(237, 19);
+            checkDataLogSteamPerformance.TabIndex = 6;
+            checkDataLogSteamPerformance.Text = "Log Steam performance data (exclusive)";
+            checkDataLogSteamPerformance.UseVisualStyleBackColor = true;
+            // 
+            // dataLoggerIntervalLabel
+            // 
+            dataLoggerIntervalLabel.AutoSize = true;
+            dataLoggerIntervalLabel.Location = new System.Drawing.Point(432, 48);
+            dataLoggerIntervalLabel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            dataLoggerIntervalLabel.Name = "dataLoggerIntervalLabel";
+            dataLoggerIntervalLabel.Size = new System.Drawing.Size(132, 15);
+            dataLoggerIntervalLabel.TabIndex = 26;
+            dataLoggerIntervalLabel.Text = "Logging Interval (msec)";
+            // 
+            // checkVerboseConfigurationMessages
+            // 
+            checkVerboseConfigurationMessages.AutoSize = true;
+            checkVerboseConfigurationMessages.Location = new System.Drawing.Point(7, 272);
+            checkVerboseConfigurationMessages.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkVerboseConfigurationMessages.Name = "checkVerboseConfigurationMessages";
+            checkVerboseConfigurationMessages.Size = new System.Drawing.Size(254, 19);
+            checkVerboseConfigurationMessages.TabIndex = 6;
+            checkVerboseConfigurationMessages.Text = "Verbose ENG/WAG configuration messages";
+            checkVerboseConfigurationMessages.UseVisualStyleBackColor = true;
+            // 
+            // tabPageRailDriver
+            // 
+            tabPageRailDriver.Controls.Add(pbRailDriverOptions);
+            tabPageRailDriver.Controls.Add(btnRDSettingsExport);
+            tabPageRailDriver.Controls.Add(btnCheck);
+            tabPageRailDriver.Controls.Add(btnRDReset);
+            tabPageRailDriver.Controls.Add(btnStartRDCalibration);
+            tabPageRailDriver.Controls.Add(btnShowRDLegend);
+            tabPageRailDriver.Controls.Add(panelRDSettings);
+            tabPageRailDriver.Location = new System.Drawing.Point(4, 24);
+            tabPageRailDriver.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageRailDriver.Name = "tabPageRailDriver";
+            tabPageRailDriver.Size = new System.Drawing.Size(704, 466);
+            tabPageRailDriver.TabIndex = 10;
+            tabPageRailDriver.Text = "RailDriver";
+            tabPageRailDriver.UseVisualStyleBackColor = true;
+            // 
+            // pbRailDriverOptions
+            // 
+            pbRailDriverOptions.Image = Properties.Resources.info_18_hover;
+            pbRailDriverOptions.Location = new System.Drawing.Point(394, 435);
+            pbRailDriverOptions.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbRailDriverOptions.Name = "pbRailDriverOptions";
+            pbRailDriverOptions.Size = new System.Drawing.Size(21, 21);
+            pbRailDriverOptions.TabIndex = 22;
+            pbRailDriverOptions.TabStop = false;
+            pbRailDriverOptions.Click += HelpIcon_Click;
+            // 
+            // panelRDSettings
+            // 
+            panelRDSettings.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            panelRDSettings.AutoScroll = true;
+            panelRDSettings.BackColor = System.Drawing.Color.Transparent;
+            panelRDSettings.Controls.Add(panelRDOptions);
+            panelRDSettings.Controls.Add(panelRDButtons);
+            panelRDSettings.Location = new System.Drawing.Point(7, 7);
+            panelRDSettings.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panelRDSettings.Name = "panelRDSettings";
+            panelRDSettings.Size = new System.Drawing.Size(688, 417);
+            panelRDSettings.TabIndex = 0;
+            // 
+            // panelRDOptions
+            // 
+            panelRDOptions.Controls.Add(groupBoxReverseRDLevers);
+            panelRDOptions.Dock = System.Windows.Forms.DockStyle.Fill;
+            panelRDOptions.Location = new System.Drawing.Point(330, 0);
+            panelRDOptions.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panelRDOptions.Name = "panelRDOptions";
+            panelRDOptions.Size = new System.Drawing.Size(358, 417);
+            panelRDOptions.TabIndex = 2;
+            // 
+            // groupBoxReverseRDLevers
+            // 
+            groupBoxReverseRDLevers.Controls.Add(checkFullRangeThrottle);
+            groupBoxReverseRDLevers.Controls.Add(checkReverseIndependentBrake);
+            groupBoxReverseRDLevers.Controls.Add(checkReverseAutoBrake);
+            groupBoxReverseRDLevers.Controls.Add(checkReverseThrottle);
+            groupBoxReverseRDLevers.Controls.Add(checkReverseReverser);
+            groupBoxReverseRDLevers.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            groupBoxReverseRDLevers.Location = new System.Drawing.Point(21, 21);
+            groupBoxReverseRDLevers.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxReverseRDLevers.Name = "groupBoxReverseRDLevers";
+            groupBoxReverseRDLevers.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBoxReverseRDLevers.Size = new System.Drawing.Size(321, 177);
+            groupBoxReverseRDLevers.TabIndex = 2;
+            groupBoxReverseRDLevers.TabStop = false;
+            groupBoxReverseRDLevers.Text = "Reverse Levers";
+            // 
+            // checkReverseIndependentBrake
+            // 
+            checkReverseIndependentBrake.AutoSize = true;
+            checkReverseIndependentBrake.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkReverseIndependentBrake.Location = new System.Drawing.Point(8, 103);
+            checkReverseIndependentBrake.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkReverseIndependentBrake.Name = "checkReverseIndependentBrake";
+            checkReverseIndependentBrake.Size = new System.Drawing.Size(205, 17);
+            checkReverseIndependentBrake.TabIndex = 3;
+            checkReverseIndependentBrake.Text = "Reverse Independent Brake Direction";
+            checkReverseIndependentBrake.UseVisualStyleBackColor = true;
+            // 
+            // checkReverseAutoBrake
+            // 
+            checkReverseAutoBrake.AutoSize = true;
+            checkReverseAutoBrake.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkReverseAutoBrake.Location = new System.Drawing.Point(8, 76);
+            checkReverseAutoBrake.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkReverseAutoBrake.Name = "checkReverseAutoBrake";
+            checkReverseAutoBrake.Size = new System.Drawing.Size(167, 17);
+            checkReverseAutoBrake.TabIndex = 2;
+            checkReverseAutoBrake.Text = "Reverse Auto Brake Direction";
+            checkReverseAutoBrake.UseVisualStyleBackColor = true;
+            // 
+            // checkReverseThrottle
+            // 
+            checkReverseThrottle.AutoSize = true;
+            checkReverseThrottle.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkReverseThrottle.Location = new System.Drawing.Point(8, 50);
+            checkReverseThrottle.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkReverseThrottle.Name = "checkReverseThrottle";
+            checkReverseThrottle.Size = new System.Drawing.Size(150, 17);
+            checkReverseThrottle.TabIndex = 1;
+            checkReverseThrottle.Text = "Reverse Throttle Direction";
+            checkReverseThrottle.UseVisualStyleBackColor = true;
+            // 
+            // checkReverseReverser
+            // 
+            checkReverseReverser.AutoSize = true;
+            checkReverseReverser.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkReverseReverser.Location = new System.Drawing.Point(8, 23);
+            checkReverseReverser.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkReverseReverser.Name = "checkReverseReverser";
+            checkReverseReverser.Size = new System.Drawing.Size(157, 17);
+            checkReverseReverser.TabIndex = 0;
+            checkReverseReverser.Text = "Reverse Reverser Direction";
+            checkReverseReverser.UseVisualStyleBackColor = true;
+            // 
+            // panelRDButtons
+            // 
+            panelRDButtons.BackColor = System.Drawing.Color.Transparent;
+            panelRDButtons.Dock = System.Windows.Forms.DockStyle.Left;
+            panelRDButtons.Location = new System.Drawing.Point(0, 0);
+            panelRDButtons.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panelRDButtons.Name = "panelRDButtons";
+            panelRDButtons.Size = new System.Drawing.Size(330, 417);
+            panelRDButtons.TabIndex = 3;
+            // 
+            // tabPageKeyboard
+            // 
+            tabPageKeyboard.AutoScroll = true;
+            tabPageKeyboard.Controls.Add(pbKeyboardOptions);
+            tabPageKeyboard.Controls.Add(buttonExport);
+            tabPageKeyboard.Controls.Add(buttonDefaultKeys);
+            tabPageKeyboard.Controls.Add(buttonCheckKeys);
+            tabPageKeyboard.Controls.Add(panelKeys);
+            tabPageKeyboard.Location = new System.Drawing.Point(4, 24);
+            tabPageKeyboard.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageKeyboard.Name = "tabPageKeyboard";
+            tabPageKeyboard.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageKeyboard.Size = new System.Drawing.Size(704, 466);
+            tabPageKeyboard.TabIndex = 1;
+            tabPageKeyboard.Text = "Keyboard";
+            tabPageKeyboard.UseVisualStyleBackColor = true;
+            // 
+            // pbKeyboardOptions
+            // 
+            pbKeyboardOptions.Image = Properties.Resources.info_18_hover;
+            pbKeyboardOptions.Location = new System.Drawing.Point(210, 436);
+            pbKeyboardOptions.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbKeyboardOptions.Name = "pbKeyboardOptions";
+            pbKeyboardOptions.Size = new System.Drawing.Size(21, 21);
+            pbKeyboardOptions.TabIndex = 21;
+            pbKeyboardOptions.TabStop = false;
+            pbKeyboardOptions.Click += HelpIcon_Click;
+            // 
+            // panelKeys
+            // 
+            panelKeys.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            panelKeys.AutoScroll = true;
+            panelKeys.Location = new System.Drawing.Point(7, 7);
+            panelKeys.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            panelKeys.Name = "panelKeys";
+            panelKeys.Size = new System.Drawing.Size(688, 417);
+            panelKeys.TabIndex = 0;
+            // 
+            // tabPageSimulation
+            // 
+            tabPageSimulation.Controls.Add(pbAdvancedAdhesionModel);
+            tabPageSimulation.Controls.Add(pbBreakCouplers);
+            tabPageSimulation.Controls.Add(pbCurveDependentSpeedLimit);
+            tabPageSimulation.Controls.Add(pbAtGameStartSteamPreHeatBoiler);
+            tabPageSimulation.Controls.Add(pbAtGameStartDieselRunEngines);
+            tabPageSimulation.Controls.Add(pbAtGameStartElectricPowerConnected);
+            tabPageSimulation.Controls.Add(pbSimpleControlAndPhysics);
+            tabPageSimulation.Controls.Add(label4);
+            tabPageSimulation.Controls.Add(checkBoilerPreheated);
+            tabPageSimulation.Controls.Add(groupBox1);
+            tabPageSimulation.Controls.Add(checkElectricPowerConnected);
+            tabPageSimulation.Controls.Add(checkSimpleControlsPhysics);
+            tabPageSimulation.Controls.Add(checkCurveSpeedDependent);
+            tabPageSimulation.Controls.Add(checkBreakCouplers);
+            tabPageSimulation.Controls.Add(checkDieselEnginesStarted);
+            tabPageSimulation.Controls.Add(checkUseAdvancedAdhesion);
+            tabPageSimulation.Location = new System.Drawing.Point(4, 24);
+            tabPageSimulation.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageSimulation.Name = "tabPageSimulation";
+            tabPageSimulation.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageSimulation.Size = new System.Drawing.Size(704, 466);
+            tabPageSimulation.TabIndex = 2;
+            tabPageSimulation.Text = "Simulation";
+            tabPageSimulation.UseVisualStyleBackColor = true;
+            // 
+            // pbAdvancedAdhesionModel
+            // 
+            pbAdvancedAdhesionModel.Image = Properties.Resources.info_18;
+            pbAdvancedAdhesionModel.Location = new System.Drawing.Point(7, 8);
+            pbAdvancedAdhesionModel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAdvancedAdhesionModel.Name = "pbAdvancedAdhesionModel";
+            pbAdvancedAdhesionModel.Size = new System.Drawing.Size(21, 21);
+            pbAdvancedAdhesionModel.TabIndex = 41;
+            pbAdvancedAdhesionModel.TabStop = false;
+            pbAdvancedAdhesionModel.Click += HelpIcon_Click;
+            pbAdvancedAdhesionModel.MouseEnter += HelpIcon_MouseEnter;
+            pbAdvancedAdhesionModel.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbBreakCouplers
+            // 
+            pbBreakCouplers.Image = Properties.Resources.info_18;
+            pbBreakCouplers.Location = new System.Drawing.Point(7, 63);
+            pbBreakCouplers.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbBreakCouplers.Name = "pbBreakCouplers";
+            pbBreakCouplers.Size = new System.Drawing.Size(21, 21);
+            pbBreakCouplers.TabIndex = 42;
+            pbBreakCouplers.TabStop = false;
+            pbBreakCouplers.Click += HelpIcon_Click;
+            pbBreakCouplers.MouseEnter += HelpIcon_MouseEnter;
+            pbBreakCouplers.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbCurveDependentSpeedLimit
+            // 
+            pbCurveDependentSpeedLimit.Image = Properties.Resources.info_18;
+            pbCurveDependentSpeedLimit.Location = new System.Drawing.Point(7, 115);
+            pbCurveDependentSpeedLimit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbCurveDependentSpeedLimit.Name = "pbCurveDependentSpeedLimit";
+            pbCurveDependentSpeedLimit.Size = new System.Drawing.Size(21, 21);
+            pbCurveDependentSpeedLimit.TabIndex = 43;
+            pbCurveDependentSpeedLimit.TabStop = false;
+            pbCurveDependentSpeedLimit.Click += HelpIcon_Click;
+            pbCurveDependentSpeedLimit.MouseEnter += HelpIcon_MouseEnter;
+            pbCurveDependentSpeedLimit.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbAtGameStartSteamPreHeatBoiler
+            // 
+            pbAtGameStartSteamPreHeatBoiler.Image = Properties.Resources.info_18;
+            pbAtGameStartSteamPreHeatBoiler.Location = new System.Drawing.Point(30, 222);
+            pbAtGameStartSteamPreHeatBoiler.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAtGameStartSteamPreHeatBoiler.Name = "pbAtGameStartSteamPreHeatBoiler";
+            pbAtGameStartSteamPreHeatBoiler.Size = new System.Drawing.Size(21, 21);
+            pbAtGameStartSteamPreHeatBoiler.TabIndex = 44;
+            pbAtGameStartSteamPreHeatBoiler.TabStop = false;
+            pbAtGameStartSteamPreHeatBoiler.Click += HelpIcon_Click;
+            pbAtGameStartSteamPreHeatBoiler.MouseEnter += HelpIcon_MouseEnter;
+            pbAtGameStartSteamPreHeatBoiler.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbAtGameStartDieselRunEngines
+            // 
+            pbAtGameStartDieselRunEngines.Image = Properties.Resources.info_18;
+            pbAtGameStartDieselRunEngines.Location = new System.Drawing.Point(30, 250);
+            pbAtGameStartDieselRunEngines.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAtGameStartDieselRunEngines.Name = "pbAtGameStartDieselRunEngines";
+            pbAtGameStartDieselRunEngines.Size = new System.Drawing.Size(21, 21);
+            pbAtGameStartDieselRunEngines.TabIndex = 45;
+            pbAtGameStartDieselRunEngines.TabStop = false;
+            pbAtGameStartDieselRunEngines.Click += HelpIcon_Click;
+            pbAtGameStartDieselRunEngines.MouseEnter += HelpIcon_MouseEnter;
+            pbAtGameStartDieselRunEngines.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbAtGameStartElectricPowerConnected
+            // 
+            pbAtGameStartElectricPowerConnected.Image = Properties.Resources.info_18;
+            pbAtGameStartElectricPowerConnected.Location = new System.Drawing.Point(30, 278);
+            pbAtGameStartElectricPowerConnected.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAtGameStartElectricPowerConnected.Name = "pbAtGameStartElectricPowerConnected";
+            pbAtGameStartElectricPowerConnected.Size = new System.Drawing.Size(21, 21);
+            pbAtGameStartElectricPowerConnected.TabIndex = 46;
+            pbAtGameStartElectricPowerConnected.TabStop = false;
+            pbAtGameStartElectricPowerConnected.Click += HelpIcon_Click;
+            pbAtGameStartElectricPowerConnected.MouseEnter += HelpIcon_MouseEnter;
+            pbAtGameStartElectricPowerConnected.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbSimpleControlAndPhysics
+            // 
+            pbSimpleControlAndPhysics.Image = Properties.Resources.info_18;
+            pbSimpleControlAndPhysics.Location = new System.Drawing.Point(7, 323);
+            pbSimpleControlAndPhysics.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbSimpleControlAndPhysics.Name = "pbSimpleControlAndPhysics";
+            pbSimpleControlAndPhysics.Size = new System.Drawing.Size(21, 21);
+            pbSimpleControlAndPhysics.TabIndex = 47;
+            pbSimpleControlAndPhysics.TabStop = false;
+            pbSimpleControlAndPhysics.Click += HelpIcon_Click;
+            pbSimpleControlAndPhysics.MouseEnter += HelpIcon_MouseEnter;
+            pbSimpleControlAndPhysics.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new System.Drawing.Point(7, 186);
+            label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            label4.Name = "label4";
+            label4.Size = new System.Drawing.Size(180, 15);
+            label4.TabIndex = 14;
+            label4.Text = "At game start, locomotives have:";
+            // 
+            // checkBoilerPreheated
+            // 
+            checkBoilerPreheated.AutoSize = true;
+            checkBoilerPreheated.Location = new System.Drawing.Point(58, 222);
+            checkBoilerPreheated.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBoilerPreheated.Name = "checkBoilerPreheated";
+            checkBoilerPreheated.Size = new System.Drawing.Size(161, 19);
+            checkBoilerPreheated.TabIndex = 12;
+            checkBoilerPreheated.Text = "Steam - boiler pre-heated";
+            checkBoilerPreheated.UseVisualStyleBackColor = true;
+            checkBoilerPreheated.CheckedChanged += checkBoilerPreheated_CheckedChanged;
+            checkBoilerPreheated.MouseEnter += HelpIcon_MouseEnter;
+            checkBoilerPreheated.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(pbForcedRedAtStationStops);
+            groupBox1.Controls.Add(pbLocationLinkedPassingPathProcessing);
+            groupBox1.Controls.Add(pbOpenCloseDoorsOnAiTrains);
+            groupBox1.Controls.Add(checkUseLocationPassingPaths);
+            groupBox1.Controls.Add(checkDoorsAITrains);
+            groupBox1.Controls.Add(checkForcedRedAtStationStops);
+            groupBox1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            groupBox1.Location = new System.Drawing.Point(378, 7);
+            groupBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            groupBox1.Size = new System.Drawing.Size(317, 194);
+            groupBox1.TabIndex = 0;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Activity Options";
+            // 
+            // pbForcedRedAtStationStops
+            // 
+            pbForcedRedAtStationStops.Image = Properties.Resources.info_18;
+            pbForcedRedAtStationStops.Location = new System.Drawing.Point(9, 25);
+            pbForcedRedAtStationStops.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbForcedRedAtStationStops.Name = "pbForcedRedAtStationStops";
+            pbForcedRedAtStationStops.Size = new System.Drawing.Size(21, 21);
+            pbForcedRedAtStationStops.TabIndex = 47;
+            pbForcedRedAtStationStops.TabStop = false;
+            pbForcedRedAtStationStops.Click += HelpIcon_Click;
+            pbForcedRedAtStationStops.MouseEnter += HelpIcon_MouseEnter;
+            pbForcedRedAtStationStops.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbLocationLinkedPassingPathProcessing
+            // 
+            pbLocationLinkedPassingPathProcessing.Image = Properties.Resources.info_18;
+            pbLocationLinkedPassingPathProcessing.Location = new System.Drawing.Point(9, 78);
+            pbLocationLinkedPassingPathProcessing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbLocationLinkedPassingPathProcessing.Name = "pbLocationLinkedPassingPathProcessing";
+            pbLocationLinkedPassingPathProcessing.Size = new System.Drawing.Size(21, 21);
+            pbLocationLinkedPassingPathProcessing.TabIndex = 49;
+            pbLocationLinkedPassingPathProcessing.TabStop = false;
+            pbLocationLinkedPassingPathProcessing.Click += HelpIcon_Click;
+            pbLocationLinkedPassingPathProcessing.MouseEnter += HelpIcon_MouseEnter;
+            pbLocationLinkedPassingPathProcessing.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbOpenCloseDoorsOnAiTrains
+            // 
+            pbOpenCloseDoorsOnAiTrains.Image = Properties.Resources.info_18;
+            pbOpenCloseDoorsOnAiTrains.Location = new System.Drawing.Point(9, 51);
+            pbOpenCloseDoorsOnAiTrains.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbOpenCloseDoorsOnAiTrains.Name = "pbOpenCloseDoorsOnAiTrains";
+            pbOpenCloseDoorsOnAiTrains.Size = new System.Drawing.Size(21, 21);
+            pbOpenCloseDoorsOnAiTrains.TabIndex = 48;
+            pbOpenCloseDoorsOnAiTrains.TabStop = false;
+            pbOpenCloseDoorsOnAiTrains.Click += HelpIcon_Click;
+            pbOpenCloseDoorsOnAiTrains.MouseEnter += HelpIcon_MouseEnter;
+            pbOpenCloseDoorsOnAiTrains.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkUseLocationPassingPaths
+            // 
+            checkUseLocationPassingPaths.AutoSize = true;
+            checkUseLocationPassingPaths.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkUseLocationPassingPaths.Location = new System.Drawing.Point(37, 77);
+            checkUseLocationPassingPaths.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkUseLocationPassingPaths.Name = "checkUseLocationPassingPaths";
+            checkUseLocationPassingPaths.Size = new System.Drawing.Size(215, 17);
+            checkUseLocationPassingPaths.TabIndex = 46;
+            checkUseLocationPassingPaths.Text = "Location-linked passing path processing";
+            checkUseLocationPassingPaths.UseVisualStyleBackColor = true;
+            checkUseLocationPassingPaths.MouseEnter += HelpIcon_MouseEnter;
+            checkUseLocationPassingPaths.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkDoorsAITrains
+            // 
+            checkDoorsAITrains.AutoSize = true;
+            checkDoorsAITrains.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkDoorsAITrains.Location = new System.Drawing.Point(37, 51);
+            checkDoorsAITrains.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDoorsAITrains.Name = "checkDoorsAITrains";
+            checkDoorsAITrains.Size = new System.Drawing.Size(163, 17);
+            checkDoorsAITrains.TabIndex = 45;
+            checkDoorsAITrains.Text = "Open/close doors in AI trains";
+            checkDoorsAITrains.UseVisualStyleBackColor = true;
+            checkDoorsAITrains.MouseEnter += HelpIcon_MouseEnter;
+            checkDoorsAITrains.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkForcedRedAtStationStops
+            // 
+            checkForcedRedAtStationStops.AutoSize = true;
+            checkForcedRedAtStationStops.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkForcedRedAtStationStops.Location = new System.Drawing.Point(37, 25);
+            checkForcedRedAtStationStops.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkForcedRedAtStationStops.Name = "checkForcedRedAtStationStops";
+            checkForcedRedAtStationStops.Size = new System.Drawing.Size(151, 17);
+            checkForcedRedAtStationStops.TabIndex = 23;
+            checkForcedRedAtStationStops.Text = "Forced red at station stops";
+            checkForcedRedAtStationStops.UseVisualStyleBackColor = true;
+            checkForcedRedAtStationStops.MouseEnter += HelpIcon_MouseEnter;
+            checkForcedRedAtStationStops.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkElectricPowerConnected
+            // 
+            checkElectricPowerConnected.AutoSize = true;
+            checkElectricPowerConnected.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkElectricPowerConnected.Location = new System.Drawing.Point(58, 279);
+            checkElectricPowerConnected.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkElectricPowerConnected.Name = "checkElectricPowerConnected";
+            checkElectricPowerConnected.Size = new System.Drawing.Size(153, 17);
+            checkElectricPowerConnected.TabIndex = 11;
+            checkElectricPowerConnected.Text = "Electric - power connected";
+            checkElectricPowerConnected.UseVisualStyleBackColor = true;
+            checkElectricPowerConnected.Click += HelpIcon_Click;
+            checkElectricPowerConnected.MouseEnter += HelpIcon_MouseEnter;
+            checkElectricPowerConnected.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkSimpleControlsPhysics
+            // 
+            checkSimpleControlsPhysics.AutoSize = true;
+            checkSimpleControlsPhysics.Location = new System.Drawing.Point(35, 323);
+            checkSimpleControlsPhysics.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkSimpleControlsPhysics.Name = "checkSimpleControlsPhysics";
+            checkSimpleControlsPhysics.Size = new System.Drawing.Size(173, 19);
+            checkSimpleControlsPhysics.TabIndex = 8;
+            checkSimpleControlsPhysics.Text = "Simple controls and physics";
+            checkSimpleControlsPhysics.UseVisualStyleBackColor = true;
+            checkSimpleControlsPhysics.MouseEnter += HelpIcon_MouseEnter;
+            checkSimpleControlsPhysics.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkCurveSpeedDependent
+            // 
+            checkCurveSpeedDependent.AutoSize = true;
+            checkCurveSpeedDependent.Location = new System.Drawing.Point(37, 115);
+            checkCurveSpeedDependent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkCurveSpeedDependent.Name = "checkCurveSpeedDependent";
+            checkCurveSpeedDependent.Size = new System.Drawing.Size(178, 19);
+            checkCurveSpeedDependent.TabIndex = 5;
+            checkCurveSpeedDependent.Text = "Curve dependent speed limit";
+            checkCurveSpeedDependent.UseVisualStyleBackColor = true;
+            checkCurveSpeedDependent.MouseEnter += HelpIcon_MouseEnter;
+            checkCurveSpeedDependent.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkBreakCouplers
+            // 
+            checkBreakCouplers.AutoSize = true;
+            checkBreakCouplers.Location = new System.Drawing.Point(37, 63);
+            checkBreakCouplers.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkBreakCouplers.Name = "checkBreakCouplers";
+            checkBreakCouplers.Size = new System.Drawing.Size(103, 19);
+            checkBreakCouplers.TabIndex = 3;
+            checkBreakCouplers.Text = "Break couplers";
+            checkBreakCouplers.UseVisualStyleBackColor = true;
+            checkBreakCouplers.MouseEnter += HelpIcon_MouseEnter;
+            checkBreakCouplers.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkDieselEnginesStarted
+            // 
+            checkDieselEnginesStarted.AutoSize = true;
+            checkDieselEnginesStarted.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            checkDieselEnginesStarted.Location = new System.Drawing.Point(58, 252);
+            checkDieselEnginesStarted.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDieselEnginesStarted.Name = "checkDieselEnginesStarted";
+            checkDieselEnginesStarted.Size = new System.Drawing.Size(142, 17);
+            checkDieselEnginesStarted.TabIndex = 9;
+            checkDieselEnginesStarted.Text = "Diesel - engine(s) started";
+            checkDieselEnginesStarted.UseVisualStyleBackColor = true;
+            checkDieselEnginesStarted.Click += HelpIcon_Click;
+            checkDieselEnginesStarted.MouseEnter += HelpIcon_MouseEnter;
+            checkDieselEnginesStarted.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkUseAdvancedAdhesion
+            // 
+            checkUseAdvancedAdhesion.AutoSize = true;
+            checkUseAdvancedAdhesion.Location = new System.Drawing.Point(37, 7);
+            checkUseAdvancedAdhesion.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkUseAdvancedAdhesion.Name = "checkUseAdvancedAdhesion";
+            checkUseAdvancedAdhesion.Size = new System.Drawing.Size(167, 19);
+            checkUseAdvancedAdhesion.TabIndex = 0;
+            checkUseAdvancedAdhesion.Text = "Advanced adhesion model";
+            checkUseAdvancedAdhesion.UseVisualStyleBackColor = true;
+            checkUseAdvancedAdhesion.MouseEnter += HelpIcon_MouseEnter;
+            checkUseAdvancedAdhesion.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // tabPageVideo
+            // 
+            tabPageVideo.Controls.Add(checkSignalLightGlow);
+            tabPageVideo.Controls.Add(pbViewingFOV);
+            tabPageVideo.Controls.Add(labelDefaultDetail);
+            tabPageVideo.Controls.Add(pbLODBias);
+            tabPageVideo.Controls.Add(pbWorldObjectDensity);
+            tabPageVideo.Controls.Add(pbAntiAliasing);
+            tabPageVideo.Controls.Add(pbVerticalSync);
+            tabPageVideo.Controls.Add(pbModelInstancing);
+            tabPageVideo.Controls.Add(pbDayAmbientLight);
+            tabPageVideo.Controls.Add(pbSignalLightGlow);
+            tabPageVideo.Controls.Add(pbDoubleWire);
+            tabPageVideo.Controls.Add(pbWire);
+            tabPageVideo.Controls.Add(pbShadowAllShapes);
+            tabPageVideo.Controls.Add(pbDynamicShadows);
+            tabPageVideo.Controls.Add(pbLODViewingExtension);
+            tabPageVideo.Controls.Add(pbDistantMountains);
+            tabPageVideo.Controls.Add(pbViewingDistance);
+            tabPageVideo.Controls.Add(checkLODViewingExtension);
+            tabPageVideo.Controls.Add(labelAntiAliasingValue);
+            tabPageVideo.Controls.Add(labelAntiAliasing);
+            tabPageVideo.Controls.Add(trackAntiAliasing);
+            tabPageVideo.Controls.Add(checkShadowAllShapes);
+            tabPageVideo.Controls.Add(checkDoubleWire);
+            tabPageVideo.Controls.Add(labelDayAmbientLight);
+            tabPageVideo.Controls.Add(checkModelInstancing);
+            tabPageVideo.Controls.Add(trackDayAmbientLight);
+            tabPageVideo.Controls.Add(checkVerticalSync);
+            tabPageVideo.Controls.Add(labelDistantMountainsViewingDistance);
+            tabPageVideo.Controls.Add(numericDistantMountainsViewingDistance);
+            tabPageVideo.Controls.Add(checkDistantMountains);
+            tabPageVideo.Controls.Add(labelViewingDistance);
+            tabPageVideo.Controls.Add(numericViewingDistance);
+            tabPageVideo.Controls.Add(labelLODBias);
+            tabPageVideo.Controls.Add(trackLODBias);
+            tabPageVideo.Controls.Add(labelFOVHelp);
+            tabPageVideo.Controls.Add(numericViewingFOV);
+            tabPageVideo.Controls.Add(label10);
+            tabPageVideo.Controls.Add(label1);
+            tabPageVideo.Controls.Add(numericWorldObjectDensity);
+            tabPageVideo.Controls.Add(checkDynamicShadows);
+            tabPageVideo.Controls.Add(checkWire);
+            tabPageVideo.Controls.Add(labelAmbientDaylightBrightness);
+            tabPageVideo.Controls.Add(labelViewingVerticalFOV);
+            tabPageVideo.Location = new System.Drawing.Point(4, 24);
+            tabPageVideo.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageVideo.Name = "tabPageVideo";
+            tabPageVideo.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageVideo.Size = new System.Drawing.Size(704, 466);
+            tabPageVideo.TabIndex = 4;
+            tabPageVideo.Text = "Video";
+            tabPageVideo.UseVisualStyleBackColor = true;
+            // 
+            // checkSignalLightGlow
+            // 
+            checkSignalLightGlow.AutoSize = true;
+            checkSignalLightGlow.Location = new System.Drawing.Point(48, 307);
+            checkSignalLightGlow.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkSignalLightGlow.Name = "checkSignalLightGlow";
+            checkSignalLightGlow.Size = new System.Drawing.Size(114, 19);
+            checkSignalLightGlow.TabIndex = 47;
+            checkSignalLightGlow.Text = "Signal light glow";
+            checkSignalLightGlow.UseVisualStyleBackColor = true;
+            // 
+            // labelAntiAliasingValue
+            // 
+            labelAntiAliasingValue.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right;
+            labelAntiAliasingValue.Location = new System.Drawing.Point(509, 90);
+            labelAntiAliasingValue.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelAntiAliasingValue.Name = "labelAntiAliasingValue";
+            labelAntiAliasingValue.Size = new System.Drawing.Size(187, 15);
+            labelAntiAliasingValue.TabIndex = 23;
+            labelAntiAliasingValue.Text = "XXX";
+            labelAntiAliasingValue.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // labelAntiAliasing
+            // 
+            labelAntiAliasing.AutoSize = true;
+            labelAntiAliasing.Location = new System.Drawing.Point(400, 90);
+            labelAntiAliasing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelAntiAliasing.Name = "labelAntiAliasing";
+            labelAntiAliasing.Size = new System.Drawing.Size(77, 15);
+            labelAntiAliasing.TabIndex = 22;
+            labelAntiAliasing.Text = "Anti-aliasing:";
+            // 
+            // checkShadowAllShapes
+            // 
+            checkShadowAllShapes.AutoSize = true;
+            checkShadowAllShapes.Location = new System.Drawing.Point(48, 196);
+            checkShadowAllShapes.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkShadowAllShapes.Name = "checkShadowAllShapes";
+            checkShadowAllShapes.Size = new System.Drawing.Size(140, 19);
+            checkShadowAllShapes.TabIndex = 24;
+            checkShadowAllShapes.Text = "Shadow for all shapes";
+            checkShadowAllShapes.UseVisualStyleBackColor = true;
+            // 
+            // checkDoubleWire
+            // 
+            checkDoubleWire.AutoSize = true;
+            checkDoubleWire.Location = new System.Drawing.Point(48, 270);
+            checkDoubleWire.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDoubleWire.Name = "checkDoubleWire";
+            checkDoubleWire.Size = new System.Drawing.Size(146, 19);
+            checkDoubleWire.TabIndex = 23;
+            checkDoubleWire.Text = "Double overhead wires";
+            checkDoubleWire.UseVisualStyleBackColor = true;
+            // 
+            // labelDayAmbientLight
+            // 
+            labelDayAmbientLight.Location = new System.Drawing.Point(202, 343);
+            labelDayAmbientLight.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelDayAmbientLight.Name = "labelDayAmbientLight";
+            labelDayAmbientLight.Size = new System.Drawing.Size(139, 21);
+            labelDayAmbientLight.TabIndex = 22;
+            labelDayAmbientLight.Text = "YYY";
+            labelDayAmbientLight.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // checkModelInstancing
+            // 
+            checkModelInstancing.AutoSize = true;
+            checkModelInstancing.Location = new System.Drawing.Point(404, 12);
+            checkModelInstancing.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkModelInstancing.Name = "checkModelInstancing";
+            checkModelInstancing.Size = new System.Drawing.Size(118, 19);
+            checkModelInstancing.TabIndex = 3;
+            checkModelInstancing.Text = "Model instancing";
+            checkModelInstancing.UseVisualStyleBackColor = true;
+            // 
+            // checkVerticalSync
+            // 
+            checkVerticalSync.AutoSize = true;
+            checkVerticalSync.Location = new System.Drawing.Point(404, 48);
+            checkVerticalSync.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkVerticalSync.Name = "checkVerticalSync";
+            checkVerticalSync.Size = new System.Drawing.Size(91, 19);
+            checkVerticalSync.TabIndex = 5;
+            checkVerticalSync.Text = "Vertical sync";
+            checkVerticalSync.UseVisualStyleBackColor = true;
+            // 
+            // labelDistantMountainsViewingDistance
+            // 
+            labelDistantMountainsViewingDistance.AutoSize = true;
+            labelDistantMountainsViewingDistance.Location = new System.Drawing.Point(150, 77);
+            labelDistantMountainsViewingDistance.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelDistantMountainsViewingDistance.Name = "labelDistantMountainsViewingDistance";
+            labelDistantMountainsViewingDistance.Size = new System.Drawing.Size(124, 15);
+            labelDistantMountainsViewingDistance.TabIndex = 12;
+            labelDistantMountainsViewingDistance.Text = "Viewing distance (km)";
+            // 
+            // checkDistantMountains
+            // 
+            checkDistantMountains.AutoSize = true;
+            checkDistantMountains.Location = new System.Drawing.Point(48, 47);
+            checkDistantMountains.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDistantMountains.Name = "checkDistantMountains";
+            checkDistantMountains.Size = new System.Drawing.Size(123, 19);
+            checkDistantMountains.TabIndex = 10;
+            checkDistantMountains.Text = "Distant mountains";
+            checkDistantMountains.UseVisualStyleBackColor = true;
+            checkDistantMountains.Click += checkDistantMountains_Click;
+            // 
+            // labelViewingDistance
+            // 
+            labelViewingDistance.AutoSize = true;
+            labelViewingDistance.Location = new System.Drawing.Point(118, 13);
+            labelViewingDistance.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelViewingDistance.Name = "labelViewingDistance";
+            labelViewingDistance.Size = new System.Drawing.Size(118, 15);
+            labelViewingDistance.TabIndex = 9;
+            labelViewingDistance.Text = "Viewing distance (m)";
+            // 
+            // numericViewingDistance
+            // 
+            numericViewingDistance.Increment = new decimal(new int[] { 100, 0, 0, 0 });
+            numericViewingDistance.Location = new System.Drawing.Point(48, 10);
+            numericViewingDistance.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericViewingDistance.Maximum = new decimal(new int[] { 10000, 0, 0, 0 });
+            numericViewingDistance.Minimum = new decimal(new int[] { 500, 0, 0, 0 });
+            numericViewingDistance.Name = "numericViewingDistance";
+            numericViewingDistance.Size = new System.Drawing.Size(63, 23);
+            numericViewingDistance.TabIndex = 8;
+            numericViewingDistance.Value = new decimal(new int[] { 2000, 0, 0, 0 });
+            // 
+            // labelFOVHelp
+            // 
+            labelFOVHelp.AutoSize = true;
+            labelFOVHelp.Location = new System.Drawing.Point(462, 293);
+            labelFOVHelp.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelFOVHelp.Name = "labelFOVHelp";
+            labelFOVHelp.Size = new System.Drawing.Size(28, 15);
+            labelFOVHelp.TabIndex = 15;
+            labelFOVHelp.Text = "XXX";
+            // 
+            // numericViewingFOV
+            // 
+            numericViewingFOV.Location = new System.Drawing.Point(404, 268);
+            numericViewingFOV.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericViewingFOV.Maximum = new decimal(new int[] { 120, 0, 0, 0 });
+            numericViewingFOV.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericViewingFOV.Name = "numericViewingFOV";
+            numericViewingFOV.Size = new System.Drawing.Size(51, 23);
+            numericViewingFOV.TabIndex = 13;
+            numericViewingFOV.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            numericViewingFOV.ValueChanged += numericUpDownFOV_ValueChanged;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Location = new System.Drawing.Point(462, 271);
+            label10.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label10.Name = "label10";
+            label10.Size = new System.Drawing.Size(115, 15);
+            label10.TabIndex = 14;
+            label10.Text = "Viewing vertical FOV";
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new System.Drawing.Point(476, 159);
+            label1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label1.Name = "label1";
+            label1.Size = new System.Drawing.Size(116, 15);
+            label1.TabIndex = 17;
+            label1.Text = "World object density";
+            // 
+            // numericWorldObjectDensity
+            // 
+            numericWorldObjectDensity.Location = new System.Drawing.Point(406, 157);
+            numericWorldObjectDensity.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericWorldObjectDensity.Maximum = new decimal(new int[] { 99, 0, 0, 0 });
+            numericWorldObjectDensity.Name = "numericWorldObjectDensity";
+            numericWorldObjectDensity.Size = new System.Drawing.Size(63, 23);
+            numericWorldObjectDensity.TabIndex = 16;
+            // 
+            // checkDynamicShadows
+            // 
+            checkDynamicShadows.AutoSize = true;
+            checkDynamicShadows.Location = new System.Drawing.Point(48, 159);
+            checkDynamicShadows.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkDynamicShadows.Name = "checkDynamicShadows";
+            checkDynamicShadows.Size = new System.Drawing.Size(122, 19);
+            checkDynamicShadows.TabIndex = 0;
+            checkDynamicShadows.Text = "Dynamic shadows";
+            checkDynamicShadows.UseVisualStyleBackColor = true;
+            // 
+            // checkWire
+            // 
+            checkWire.AutoSize = true;
+            checkWire.Location = new System.Drawing.Point(48, 233);
+            checkWire.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkWire.Name = "checkWire";
+            checkWire.Size = new System.Drawing.Size(102, 19);
+            checkWire.TabIndex = 4;
+            checkWire.Text = "Overhead wire";
+            checkWire.UseVisualStyleBackColor = true;
+            // 
+            // labelAmbientDaylightBrightness
+            // 
+            labelAmbientDaylightBrightness.Location = new System.Drawing.Point(41, 343);
+            labelAmbientDaylightBrightness.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelAmbientDaylightBrightness.Name = "labelAmbientDaylightBrightness";
+            labelAmbientDaylightBrightness.Size = new System.Drawing.Size(271, 18);
+            labelAmbientDaylightBrightness.TabIndex = 20;
+            labelAmbientDaylightBrightness.Text = "Ambient daylight brightness:";
+            labelAmbientDaylightBrightness.MouseEnter += HelpIcon_MouseEnter;
+            labelAmbientDaylightBrightness.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // tabPageAudio
+            // 
+            tabPageAudio.Controls.Add(pbExternalSoundPassThruPercent);
+            tabPageAudio.Controls.Add(pbSoundDetailLevel);
+            tabPageAudio.Controls.Add(pbSoundVolumePercent);
+            tabPageAudio.Controls.Add(numericExternalSoundPassThruPercent);
+            tabPageAudio.Controls.Add(labelExternalSound);
+            tabPageAudio.Controls.Add(numericSoundVolumePercent);
+            tabPageAudio.Controls.Add(labelSoundVolume);
+            tabPageAudio.Controls.Add(labelSoundDetailLevel);
+            tabPageAudio.Controls.Add(numericSoundDetailLevel);
+            tabPageAudio.Location = new System.Drawing.Point(4, 24);
+            tabPageAudio.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageAudio.Name = "tabPageAudio";
+            tabPageAudio.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageAudio.Size = new System.Drawing.Size(704, 466);
+            tabPageAudio.TabIndex = 5;
+            tabPageAudio.Text = "Audio";
+            tabPageAudio.UseVisualStyleBackColor = true;
+            // 
+            // pbExternalSoundPassThruPercent
+            // 
+            pbExternalSoundPassThruPercent.Image = Properties.Resources.info_18;
+            pbExternalSoundPassThruPercent.Location = new System.Drawing.Point(13, 84);
+            pbExternalSoundPassThruPercent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbExternalSoundPassThruPercent.Name = "pbExternalSoundPassThruPercent";
+            pbExternalSoundPassThruPercent.Size = new System.Drawing.Size(21, 21);
+            pbExternalSoundPassThruPercent.TabIndex = 31;
+            pbExternalSoundPassThruPercent.TabStop = false;
+            pbExternalSoundPassThruPercent.Click += HelpIcon_Click;
+            pbExternalSoundPassThruPercent.MouseEnter += HelpIcon_MouseEnter;
+            pbExternalSoundPassThruPercent.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbSoundDetailLevel
+            // 
+            pbSoundDetailLevel.Image = Properties.Resources.info_18;
+            pbSoundDetailLevel.Location = new System.Drawing.Point(13, 47);
+            pbSoundDetailLevel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbSoundDetailLevel.Name = "pbSoundDetailLevel";
+            pbSoundDetailLevel.Size = new System.Drawing.Size(21, 21);
+            pbSoundDetailLevel.TabIndex = 30;
+            pbSoundDetailLevel.TabStop = false;
+            pbSoundDetailLevel.Click += HelpIcon_Click;
+            pbSoundDetailLevel.MouseEnter += HelpIcon_MouseEnter;
+            pbSoundDetailLevel.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbSoundVolumePercent
+            // 
+            pbSoundVolumePercent.Image = Properties.Resources.info_18;
+            pbSoundVolumePercent.Location = new System.Drawing.Point(13, 10);
+            pbSoundVolumePercent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbSoundVolumePercent.Name = "pbSoundVolumePercent";
+            pbSoundVolumePercent.Size = new System.Drawing.Size(21, 21);
+            pbSoundVolumePercent.TabIndex = 29;
+            pbSoundVolumePercent.TabStop = false;
+            pbSoundVolumePercent.Click += HelpIcon_Click;
+            pbSoundVolumePercent.MouseEnter += HelpIcon_MouseEnter;
+            pbSoundVolumePercent.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelExternalSound
+            // 
+            labelExternalSound.Location = new System.Drawing.Point(111, 87);
+            labelExternalSound.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelExternalSound.Name = "labelExternalSound";
+            labelExternalSound.Size = new System.Drawing.Size(588, 15);
+            labelExternalSound.TabIndex = 6;
+            labelExternalSound.Text = "% external sound heard internally";
+            labelExternalSound.MouseEnter += HelpIcon_MouseEnter;
+            labelExternalSound.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelSoundVolume
+            // 
+            labelSoundVolume.Location = new System.Drawing.Point(111, 15);
+            labelSoundVolume.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelSoundVolume.Name = "labelSoundVolume";
+            labelSoundVolume.Size = new System.Drawing.Size(588, 18);
+            labelSoundVolume.TabIndex = 2;
+            labelSoundVolume.Text = "% sound volume";
+            labelSoundVolume.MouseEnter += HelpIcon_MouseEnter;
+            labelSoundVolume.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelSoundDetailLevel
+            // 
+            labelSoundDetailLevel.Location = new System.Drawing.Point(111, 50);
+            labelSoundDetailLevel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelSoundDetailLevel.Name = "labelSoundDetailLevel";
+            labelSoundDetailLevel.Size = new System.Drawing.Size(588, 15);
+            labelSoundDetailLevel.TabIndex = 4;
+            labelSoundDetailLevel.Text = "Sound detail level";
+            labelSoundDetailLevel.MouseEnter += HelpIcon_MouseEnter;
+            labelSoundDetailLevel.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // numericSoundDetailLevel
+            // 
+            numericSoundDetailLevel.Location = new System.Drawing.Point(41, 47);
+            numericSoundDetailLevel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericSoundDetailLevel.Maximum = new decimal(new int[] { 5, 0, 0, 0 });
+            numericSoundDetailLevel.Name = "numericSoundDetailLevel";
+            numericSoundDetailLevel.Size = new System.Drawing.Size(63, 23);
+            numericSoundDetailLevel.TabIndex = 3;
+            numericSoundDetailLevel.Enter += HelpIcon_MouseEnter;
+            numericSoundDetailLevel.Leave += HelpIcon_MouseLeave;
+            // 
+            // tabPageGeneral
+            // 
+            tabPageGeneral.Controls.Add(pbAutoSave);
+            tabPageGeneral.Controls.Add(labelAutoSaveInterval);
+            tabPageGeneral.Controls.Add(ButtonAutoSave60);
+            tabPageGeneral.Controls.Add(ButtonAutoSave30);
+            tabPageGeneral.Controls.Add(ButtonAutoSave15);
+            tabPageGeneral.Controls.Add(checkAutoSaveActive);
+            tabPageGeneral.Controls.Add(pbOverspeedMonitor);
+            tabPageGeneral.Controls.Add(pbEnableTcsScripts);
+            tabPageGeneral.Controls.Add(pbOtherUnits);
+            tabPageGeneral.Controls.Add(pbPressureUnit);
+            tabPageGeneral.Controls.Add(pbBrakePipeChargingRate);
+            tabPageGeneral.Controls.Add(pbGraduatedRelease);
+            tabPageGeneral.Controls.Add(pbRetainers);
+            tabPageGeneral.Controls.Add(pbAlerter);
+            tabPageGeneral.Controls.Add(checkOverspeedMonitor);
+            tabPageGeneral.Controls.Add(checkEnableTCSScripts);
+            tabPageGeneral.Controls.Add(labelOtherUnits);
+            tabPageGeneral.Controls.Add(labelPressureUnit);
+            tabPageGeneral.Controls.Add(comboOtherUnits);
+            tabPageGeneral.Controls.Add(comboPressureUnit);
+            tabPageGeneral.Controls.Add(checkAlerterExternal);
+            tabPageGeneral.Controls.Add(numericBrakePipeChargingRate);
+            tabPageGeneral.Controls.Add(checkRetainers);
+            tabPageGeneral.Controls.Add(checkGraduatedRelease);
+            tabPageGeneral.Controls.Add(lBrakePipeChargingRate);
+            tabPageGeneral.Controls.Add(checkAlerter);
+            tabPageGeneral.Location = new System.Drawing.Point(4, 24);
+            tabPageGeneral.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageGeneral.Name = "tabPageGeneral";
+            tabPageGeneral.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageGeneral.Size = new System.Drawing.Size(704, 466);
+            tabPageGeneral.TabIndex = 0;
+            tabPageGeneral.Text = "General";
+            tabPageGeneral.UseVisualStyleBackColor = true;
+            // 
+            // pbAutoSave
+            // 
+            pbAutoSave.Image = Properties.Resources.info_18;
+            pbAutoSave.Location = new System.Drawing.Point(7, 348);
+            pbAutoSave.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAutoSave.Name = "pbAutoSave";
+            pbAutoSave.Size = new System.Drawing.Size(21, 21);
+            pbAutoSave.TabIndex = 36;
+            pbAutoSave.TabStop = false;
+            pbAutoSave.Click += HelpIcon_Click;
+            pbAutoSave.MouseEnter += HelpIcon_MouseEnter;
+            pbAutoSave.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbOverspeedMonitor
+            // 
+            pbOverspeedMonitor.Image = Properties.Resources.info_18;
+            pbOverspeedMonitor.Location = new System.Drawing.Point(345, 8);
+            pbOverspeedMonitor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbOverspeedMonitor.Name = "pbOverspeedMonitor";
+            pbOverspeedMonitor.Size = new System.Drawing.Size(21, 21);
+            pbOverspeedMonitor.TabIndex = 30;
+            pbOverspeedMonitor.TabStop = false;
+            pbOverspeedMonitor.Click += HelpIcon_Click;
+            pbOverspeedMonitor.MouseEnter += HelpIcon_MouseEnter;
+            pbOverspeedMonitor.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbEnableTcsScripts
+            // 
+            pbEnableTcsScripts.Image = Properties.Resources.info_18;
+            pbEnableTcsScripts.Location = new System.Drawing.Point(7, 276);
+            pbEnableTcsScripts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbEnableTcsScripts.Name = "pbEnableTcsScripts";
+            pbEnableTcsScripts.Size = new System.Drawing.Size(21, 21);
+            pbEnableTcsScripts.TabIndex = 28;
+            pbEnableTcsScripts.TabStop = false;
+            pbEnableTcsScripts.Click += HelpIcon_Click;
+            pbEnableTcsScripts.MouseEnter += HelpIcon_MouseEnter;
+            pbEnableTcsScripts.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbOtherUnits
+            // 
+            pbOtherUnits.Image = Properties.Resources.info_18;
+            pbOtherUnits.Location = new System.Drawing.Point(7, 242);
+            pbOtherUnits.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbOtherUnits.Name = "pbOtherUnits";
+            pbOtherUnits.Size = new System.Drawing.Size(21, 21);
+            pbOtherUnits.TabIndex = 27;
+            pbOtherUnits.TabStop = false;
+            pbOtherUnits.Click += HelpIcon_Click;
+            pbOtherUnits.MouseEnter += HelpIcon_MouseEnter;
+            pbOtherUnits.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbPressureUnit
+            // 
+            pbPressureUnit.Image = Properties.Resources.info_18;
+            pbPressureUnit.Location = new System.Drawing.Point(7, 211);
+            pbPressureUnit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbPressureUnit.Name = "pbPressureUnit";
+            pbPressureUnit.Size = new System.Drawing.Size(21, 21);
+            pbPressureUnit.TabIndex = 26;
+            pbPressureUnit.TabStop = false;
+            pbPressureUnit.Click += HelpIcon_Click;
+            pbPressureUnit.MouseEnter += HelpIcon_MouseEnter;
+            pbPressureUnit.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbBrakePipeChargingRate
+            // 
+            pbBrakePipeChargingRate.Image = Properties.Resources.info_18;
+            pbBrakePipeChargingRate.Location = new System.Drawing.Point(7, 140);
+            pbBrakePipeChargingRate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbBrakePipeChargingRate.Name = "pbBrakePipeChargingRate";
+            pbBrakePipeChargingRate.Size = new System.Drawing.Size(21, 21);
+            pbBrakePipeChargingRate.TabIndex = 24;
+            pbBrakePipeChargingRate.TabStop = false;
+            pbBrakePipeChargingRate.Click += HelpIcon_Click;
+            pbBrakePipeChargingRate.MouseEnter += HelpIcon_MouseEnter;
+            pbBrakePipeChargingRate.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbGraduatedRelease
+            // 
+            pbGraduatedRelease.Image = Properties.Resources.info_18;
+            pbGraduatedRelease.Location = new System.Drawing.Point(7, 113);
+            pbGraduatedRelease.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbGraduatedRelease.Name = "pbGraduatedRelease";
+            pbGraduatedRelease.Size = new System.Drawing.Size(21, 21);
+            pbGraduatedRelease.TabIndex = 23;
+            pbGraduatedRelease.TabStop = false;
+            pbGraduatedRelease.Click += HelpIcon_Click;
+            pbGraduatedRelease.MouseEnter += HelpIcon_MouseEnter;
+            pbGraduatedRelease.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbRetainers
+            // 
+            pbRetainers.Image = Properties.Resources.info_18;
+            pbRetainers.Location = new System.Drawing.Point(7, 87);
+            pbRetainers.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbRetainers.Name = "pbRetainers";
+            pbRetainers.Size = new System.Drawing.Size(21, 21);
+            pbRetainers.TabIndex = 22;
+            pbRetainers.TabStop = false;
+            pbRetainers.Click += HelpIcon_Click;
+            pbRetainers.MouseEnter += HelpIcon_MouseEnter;
+            pbRetainers.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // pbAlerter
+            // 
+            pbAlerter.Image = Properties.Resources.info_18;
+            pbAlerter.Location = new System.Drawing.Point(7, 8);
+            pbAlerter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbAlerter.Name = "pbAlerter";
+            pbAlerter.Size = new System.Drawing.Size(21, 21);
+            pbAlerter.TabIndex = 20;
+            pbAlerter.TabStop = false;
+            pbAlerter.Click += HelpIcon_Click;
+            pbAlerter.MouseEnter += HelpIcon_MouseEnter;
+            pbAlerter.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkOverspeedMonitor
+            // 
+            checkOverspeedMonitor.AutoSize = true;
+            checkOverspeedMonitor.Location = new System.Drawing.Point(376, 7);
+            checkOverspeedMonitor.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkOverspeedMonitor.Name = "checkOverspeedMonitor";
+            checkOverspeedMonitor.Size = new System.Drawing.Size(287, 19);
+            checkOverspeedMonitor.TabIndex = 14;
+            checkOverspeedMonitor.Text = "Overspeed monitor                                                     ";
+            checkOverspeedMonitor.UseVisualStyleBackColor = true;
+            checkOverspeedMonitor.MouseEnter += HelpIcon_MouseEnter;
+            checkOverspeedMonitor.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkEnableTCSScripts
+            // 
+            checkEnableTCSScripts.AutoSize = true;
+            checkEnableTCSScripts.Checked = true;
+            checkEnableTCSScripts.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkEnableTCSScripts.Location = new System.Drawing.Point(37, 275);
+            checkEnableTCSScripts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkEnableTCSScripts.Name = "checkEnableTCSScripts";
+            checkEnableTCSScripts.Size = new System.Drawing.Size(243, 19);
+            checkEnableTCSScripts.TabIndex = 13;
+            checkEnableTCSScripts.Text = "Use TCS scripts                                              ";
+            checkEnableTCSScripts.UseVisualStyleBackColor = true;
+            checkEnableTCSScripts.MouseEnter += HelpIcon_MouseEnter;
+            checkEnableTCSScripts.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelOtherUnits
+            // 
+            labelOtherUnits.AutoSize = true;
+            labelOtherUnits.Location = new System.Drawing.Point(182, 242);
+            labelOtherUnits.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelOtherUnits.Name = "labelOtherUnits";
+            labelOtherUnits.Size = new System.Drawing.Size(138, 15);
+            labelOtherUnits.TabIndex = 9;
+            labelOtherUnits.Text = "Other units                        ";
+            labelOtherUnits.MouseEnter += HelpIcon_MouseEnter;
+            labelOtherUnits.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // labelPressureUnit
+            // 
+            labelPressureUnit.AutoSize = true;
+            labelPressureUnit.Location = new System.Drawing.Point(182, 211);
+            labelPressureUnit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelPressureUnit.Name = "labelPressureUnit";
+            labelPressureUnit.Size = new System.Drawing.Size(138, 15);
+            labelPressureUnit.TabIndex = 12;
+            labelPressureUnit.Text = "Pressure unit                     ";
+            labelPressureUnit.MouseEnter += HelpIcon_MouseEnter;
+            labelPressureUnit.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // comboOtherUnits
+            // 
+            comboOtherUnits.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboOtherUnits.FormattingEnabled = true;
+            comboOtherUnits.Location = new System.Drawing.Point(37, 239);
+            comboOtherUnits.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            comboOtherUnits.Name = "comboOtherUnits";
+            comboOtherUnits.Size = new System.Drawing.Size(140, 23);
+            comboOtherUnits.TabIndex = 8;
+            // 
+            // comboPressureUnit
+            // 
+            comboPressureUnit.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            comboPressureUnit.FormattingEnabled = true;
+            comboPressureUnit.Location = new System.Drawing.Point(37, 208);
+            comboPressureUnit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            comboPressureUnit.Name = "comboPressureUnit";
+            comboPressureUnit.Size = new System.Drawing.Size(140, 23);
+            comboPressureUnit.TabIndex = 11;
+            // 
+            // checkAlerterExternal
+            // 
+            checkAlerterExternal.AutoSize = true;
+            checkAlerterExternal.Location = new System.Drawing.Point(61, 33);
+            checkAlerterExternal.Margin = new System.Windows.Forms.Padding(27, 3, 4, 3);
+            checkAlerterExternal.Name = "checkAlerterExternal";
+            checkAlerterExternal.Size = new System.Drawing.Size(246, 19);
+            checkAlerterExternal.TabIndex = 1;
+            checkAlerterExternal.Text = "Also in external views                                    ";
+            checkAlerterExternal.UseVisualStyleBackColor = true;
+            // 
+            // numericBrakePipeChargingRate
+            // 
+            numericBrakePipeChargingRate.Location = new System.Drawing.Point(37, 138);
+            numericBrakePipeChargingRate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            numericBrakePipeChargingRate.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            numericBrakePipeChargingRate.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+            numericBrakePipeChargingRate.Name = "numericBrakePipeChargingRate";
+            numericBrakePipeChargingRate.Size = new System.Drawing.Size(63, 23);
+            numericBrakePipeChargingRate.TabIndex = 7;
+            numericBrakePipeChargingRate.Value = new decimal(new int[] { 1, 0, 0, 0 });
+            // 
+            // checkRetainers
+            // 
+            checkRetainers.AutoSize = true;
+            checkRetainers.Location = new System.Drawing.Point(37, 85);
+            checkRetainers.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkRetainers.Name = "checkRetainers";
+            checkRetainers.Size = new System.Drawing.Size(266, 19);
+            checkRetainers.TabIndex = 5;
+            checkRetainers.Text = "Retainer valve on all cars                                     ";
+            checkRetainers.UseVisualStyleBackColor = true;
+            checkRetainers.MouseEnter += HelpIcon_MouseEnter;
+            checkRetainers.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkGraduatedRelease
+            // 
+            checkGraduatedRelease.AutoSize = true;
+            checkGraduatedRelease.Location = new System.Drawing.Point(37, 112);
+            checkGraduatedRelease.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkGraduatedRelease.Name = "checkGraduatedRelease";
+            checkGraduatedRelease.Size = new System.Drawing.Size(269, 19);
+            checkGraduatedRelease.TabIndex = 6;
+            checkGraduatedRelease.Text = "Graduated release air brakes                                ";
+            checkGraduatedRelease.UseVisualStyleBackColor = true;
+            checkGraduatedRelease.MouseEnter += HelpIcon_MouseEnter;
+            checkGraduatedRelease.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // lBrakePipeChargingRate
+            // 
+            lBrakePipeChargingRate.AutoSize = true;
+            lBrakePipeChargingRate.Location = new System.Drawing.Point(104, 141);
+            lBrakePipeChargingRate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            lBrakePipeChargingRate.Name = "lBrakePipeChargingRate";
+            lBrakePipeChargingRate.Size = new System.Drawing.Size(211, 15);
+            lBrakePipeChargingRate.TabIndex = 8;
+            lBrakePipeChargingRate.Text = "Brake pipe charging rate (PSI/s)             ";
+            lBrakePipeChargingRate.MouseEnter += HelpIcon_MouseEnter;
+            lBrakePipeChargingRate.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // checkAlerter
+            // 
+            checkAlerter.AutoSize = true;
+            checkAlerter.Location = new System.Drawing.Point(37, 7);
+            checkAlerter.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkAlerter.Name = "checkAlerter";
+            checkAlerter.Size = new System.Drawing.Size(264, 19);
+            checkAlerter.TabIndex = 0;
+            checkAlerter.Text = "Alerter in cab                                                        ";
+            checkAlerter.UseVisualStyleBackColor = true;
+            checkAlerter.CheckedChanged += checkAlerter_CheckedChanged;
+            checkAlerter.MouseEnter += HelpIcon_MouseEnter;
+            checkAlerter.MouseLeave += HelpIcon_MouseLeave;
+            // 
+            // tabOptions
+            // 
+            tabOptions.Anchor = System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right;
+            tabOptions.Controls.Add(tabPageGeneral);
+            tabOptions.Controls.Add(tabPageAudio);
+            tabOptions.Controls.Add(tabPageVideo);
+            tabOptions.Controls.Add(tabPageSimulation);
+            tabOptions.Controls.Add(tabPageKeyboard);
+            tabOptions.Controls.Add(tabPageRailDriver);
+            tabOptions.Controls.Add(tabPageDataLogger);
+            tabOptions.Controls.Add(tabPageEvaluate);
+            tabOptions.Controls.Add(tabPageSystem);
+            tabOptions.Controls.Add(tabPageExperimental);
+            tabOptions.Controls.Add(tabPageORNYMG);
+            tabOptions.Location = new System.Drawing.Point(15, 14);
+            tabOptions.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabOptions.Name = "tabOptions";
+            tabOptions.SelectedIndex = 0;
+            tabOptions.Size = new System.Drawing.Size(712, 494);
+            tabOptions.TabIndex = 0;
+            // 
+            // tabPageORNYMG
+            // 
+            tabPageORNYMG.Controls.Add(checkApplyBloom);
+            tabPageORNYMG.Controls.Add(checkExtendedPerformanceDump);
+            tabPageORNYMG.Controls.Add(label25);
+            tabPageORNYMG.Controls.Add(precipitationBoxLength);
+            tabPageORNYMG.Controls.Add(label24);
+            tabPageORNYMG.Controls.Add(precipitationBoxWidth);
+            tabPageORNYMG.Controls.Add(label23);
+            tabPageORNYMG.Controls.Add(precipitationBoxHeight);
+            tabPageORNYMG.Controls.Add(pbEnableWebServer);
+            tabPageORNYMG.Controls.Add(checkEnableWebServer);
+            tabPageORNYMG.Controls.Add(numericCab2DStretch);
+            tabPageORNYMG.Controls.Add(labelCab2DStretch);
+            tabPageORNYMG.Controls.Add(checkTunnelResistanceDependent);
+            tabPageORNYMG.Controls.Add(checkWindResistanceDependent);
+            tabPageORNYMG.Controls.Add(checkCurveResistanceDependent);
+            tabPageORNYMG.Controls.Add(checkReduceMemory);
+            tabPageORNYMG.Controls.Add(checkSaveCommands);
+            tabPageORNYMG.Controls.Add(checkRunAt32bit);
+            tabPageORNYMG.Controls.Add(checkEnableWatchdog);
+            tabPageORNYMG.Controls.Add(checkFastFullScreenAltTab);
+            tabPageORNYMG.Controls.Add(trackWindVariability);
+            tabPageORNYMG.Controls.Add(labelWindVariability);
+            tabPageORNYMG.Controls.Add(windVariabilityValueLabel);
+            tabPageORNYMG.Controls.Add(trackMaxWindSpeed);
+            tabPageORNYMG.Controls.Add(labelMaxWindSpeed);
+            tabPageORNYMG.Controls.Add(maxWindSpeedValueLabel);
+            tabPageORNYMG.Location = new System.Drawing.Point(4, 24);
+            tabPageORNYMG.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageORNYMG.Name = "tabPageORNYMG";
+            tabPageORNYMG.Padding = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPageORNYMG.Size = new System.Drawing.Size(704, 466);
+            tabPageORNYMG.TabIndex = 11;
+            tabPageORNYMG.Text = "ORNYMG Only";
+            tabPageORNYMG.UseVisualStyleBackColor = true;
+            // 
+            // checkExtendedPerformanceDump
+            // 
+            checkExtendedPerformanceDump.AutoSize = true;
+            checkExtendedPerformanceDump.Location = new System.Drawing.Point(18, 122);
+            checkExtendedPerformanceDump.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkExtendedPerformanceDump.Name = "checkExtendedPerformanceDump";
+            checkExtendedPerformanceDump.Size = new System.Drawing.Size(181, 19);
+            checkExtendedPerformanceDump.TabIndex = 49;
+            checkExtendedPerformanceDump.Text = "Extended Performance Dump";
+            checkExtendedPerformanceDump.UseVisualStyleBackColor = true;
+            checkExtendedPerformanceDump.CheckedChanged += checkBox1_CheckedChanged;
+            // 
+            // label25
+            // 
+            label25.AutoSize = true;
+            label25.Location = new System.Drawing.Point(88, 430);
+            label25.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label25.Name = "label25";
+            label25.Size = new System.Drawing.Size(155, 15);
+            label25.TabIndex = 48;
+            label25.Text = "Precipitation box length (m)";
+            // 
+            // precipitationBoxLength
+            // 
+            precipitationBoxLength.Increment = new decimal(new int[] { 25, 0, 0, 0 });
+            precipitationBoxLength.Location = new System.Drawing.Point(18, 428);
+            precipitationBoxLength.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            precipitationBoxLength.Maximum = new decimal(new int[] { 3000, 0, 0, 0 });
+            precipitationBoxLength.Minimum = new decimal(new int[] { 500, 0, 0, 0 });
+            precipitationBoxLength.Name = "precipitationBoxLength";
+            precipitationBoxLength.Size = new System.Drawing.Size(63, 23);
+            precipitationBoxLength.TabIndex = 47;
+            precipitationBoxLength.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            // 
+            // label24
+            // 
+            label24.AutoSize = true;
+            label24.Location = new System.Drawing.Point(88, 400);
+            label24.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label24.Name = "label24";
+            label24.Size = new System.Drawing.Size(151, 15);
+            label24.TabIndex = 46;
+            label24.Text = "Precipitation box width (m)";
+            // 
+            // precipitationBoxWidth
+            // 
+            precipitationBoxWidth.Increment = new decimal(new int[] { 25, 0, 0, 0 });
+            precipitationBoxWidth.Location = new System.Drawing.Point(18, 398);
+            precipitationBoxWidth.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            precipitationBoxWidth.Maximum = new decimal(new int[] { 3000, 0, 0, 0 });
+            precipitationBoxWidth.Minimum = new decimal(new int[] { 500, 0, 0, 0 });
+            precipitationBoxWidth.Name = "precipitationBoxWidth";
+            precipitationBoxWidth.Size = new System.Drawing.Size(63, 23);
+            precipitationBoxWidth.TabIndex = 45;
+            precipitationBoxWidth.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            // 
+            // label23
+            // 
+            label23.AutoSize = true;
+            label23.Location = new System.Drawing.Point(88, 370);
+            label23.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            label23.Name = "label23";
+            label23.Size = new System.Drawing.Size(155, 15);
+            label23.TabIndex = 44;
+            label23.Text = "Precipitation box height (m)";
+            // 
+            // precipitationBoxHeight
+            // 
+            precipitationBoxHeight.Increment = new decimal(new int[] { 25, 0, 0, 0 });
+            precipitationBoxHeight.Location = new System.Drawing.Point(18, 368);
+            precipitationBoxHeight.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            precipitationBoxHeight.Maximum = new decimal(new int[] { 300, 0, 0, 0 });
+            precipitationBoxHeight.Minimum = new decimal(new int[] { 25, 0, 0, 0 });
+            precipitationBoxHeight.Name = "precipitationBoxHeight";
+            precipitationBoxHeight.Size = new System.Drawing.Size(63, 23);
+            precipitationBoxHeight.TabIndex = 43;
+            precipitationBoxHeight.Value = new decimal(new int[] { 50, 0, 0, 0 });
+            // 
+            // pbEnableWebServer
+            // 
+            pbEnableWebServer.Image = Properties.Resources.info_18;
+            pbEnableWebServer.Location = new System.Drawing.Point(18, 328);
+            pbEnableWebServer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            pbEnableWebServer.Name = "pbEnableWebServer";
+            pbEnableWebServer.Size = new System.Drawing.Size(21, 21);
+            pbEnableWebServer.TabIndex = 31;
+            pbEnableWebServer.TabStop = false;
+            // 
+            // checkEnableWebServer
+            // 
+            checkEnableWebServer.AutoSize = true;
+            checkEnableWebServer.Location = new System.Drawing.Point(48, 327);
+            checkEnableWebServer.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkEnableWebServer.Name = "checkEnableWebServer";
+            checkEnableWebServer.Size = new System.Drawing.Size(261, 19);
+            checkEnableWebServer.TabIndex = 30;
+            checkEnableWebServer.Text = "Enable webserver                                                ";
+            checkEnableWebServer.UseVisualStyleBackColor = true;
+            // 
+            // labelCab2DStretch
+            // 
+            labelCab2DStretch.AutoSize = true;
+            labelCab2DStretch.Location = new System.Drawing.Point(88, 273);
+            labelCab2DStretch.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelCab2DStretch.Name = "labelCab2DStretch";
+            labelCab2DStretch.Size = new System.Drawing.Size(95, 15);
+            labelCab2DStretch.TabIndex = 29;
+            labelCab2DStretch.Text = "% cab 2D stretch";
+            // 
+            // checkTunnelResistanceDependent
+            // 
+            checkTunnelResistanceDependent.AutoSize = true;
+            checkTunnelResistanceDependent.Location = new System.Drawing.Point(18, 218);
+            checkTunnelResistanceDependent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkTunnelResistanceDependent.Name = "checkTunnelResistanceDependent";
+            checkTunnelResistanceDependent.Size = new System.Drawing.Size(178, 19);
+            checkTunnelResistanceDependent.TabIndex = 26;
+            checkTunnelResistanceDependent.Text = "Tunnel dependent resistance";
+            checkTunnelResistanceDependent.UseVisualStyleBackColor = true;
+            // 
+            // checkWindResistanceDependent
+            // 
+            checkWindResistanceDependent.AutoSize = true;
+            checkWindResistanceDependent.Location = new System.Drawing.Point(18, 245);
+            checkWindResistanceDependent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkWindResistanceDependent.Name = "checkWindResistanceDependent";
+            checkWindResistanceDependent.Size = new System.Drawing.Size(169, 19);
+            checkWindResistanceDependent.TabIndex = 25;
+            checkWindResistanceDependent.Text = "Wind dependent resistance";
+            checkWindResistanceDependent.UseVisualStyleBackColor = true;
+            // 
+            // checkCurveResistanceDependent
+            // 
+            checkCurveResistanceDependent.AutoSize = true;
+            checkCurveResistanceDependent.Location = new System.Drawing.Point(18, 192);
+            checkCurveResistanceDependent.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkCurveResistanceDependent.Name = "checkCurveResistanceDependent";
+            checkCurveResistanceDependent.Size = new System.Drawing.Size(172, 19);
+            checkCurveResistanceDependent.TabIndex = 24;
+            checkCurveResistanceDependent.Text = "Curve dependent resistance";
+            checkCurveResistanceDependent.UseVisualStyleBackColor = true;
+            // 
+            // checkReduceMemory
+            // 
+            checkReduceMemory.AutoSize = true;
+            checkReduceMemory.Location = new System.Drawing.Point(18, 96);
+            checkReduceMemory.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkReduceMemory.Name = "checkReduceMemory";
+            checkReduceMemory.Size = new System.Drawing.Size(147, 19);
+            checkReduceMemory.TabIndex = 23;
+            checkReduceMemory.Text = "Reduce memory usage";
+            checkReduceMemory.UseVisualStyleBackColor = true;
+            // 
+            // checkSaveCommands
+            // 
+            checkSaveCommands.AutoSize = true;
+            checkSaveCommands.Checked = true;
+            checkSaveCommands.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkSaveCommands.Location = new System.Drawing.Point(18, 69);
+            checkSaveCommands.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkSaveCommands.Name = "checkSaveCommands";
+            checkSaveCommands.Size = new System.Drawing.Size(166, 19);
+            checkSaveCommands.TabIndex = 22;
+            checkSaveCommands.Text = "Save commands for replay";
+            checkSaveCommands.UseVisualStyleBackColor = true;
+            // 
+            // checkRunAt32bit
+            // 
+            checkRunAt32bit.AutoSize = true;
+            checkRunAt32bit.Location = new System.Drawing.Point(18, 43);
+            checkRunAt32bit.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkRunAt32bit.Name = "checkRunAt32bit";
+            checkRunAt32bit.Size = new System.Drawing.Size(145, 19);
+            checkRunAt32bit.TabIndex = 21;
+            checkRunAt32bit.Text = "Run at 32 bit on Win64";
+            checkRunAt32bit.UseVisualStyleBackColor = true;
+            // 
+            // checkEnableWatchdog
+            // 
+            checkEnableWatchdog.AutoSize = true;
+            checkEnableWatchdog.Checked = true;
+            checkEnableWatchdog.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkEnableWatchdog.Location = new System.Drawing.Point(18, 16);
+            checkEnableWatchdog.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkEnableWatchdog.Name = "checkEnableWatchdog";
+            checkEnableWatchdog.Size = new System.Drawing.Size(81, 19);
+            checkEnableWatchdog.TabIndex = 20;
+            checkEnableWatchdog.Text = "Watchdog";
+            checkEnableWatchdog.UseVisualStyleBackColor = true;
+            // 
+            // checkFastFullScreenAltTab
+            // 
+            checkFastFullScreenAltTab.AutoSize = true;
+            checkFastFullScreenAltTab.Location = new System.Drawing.Point(18, 165);
+            checkFastFullScreenAltTab.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkFastFullScreenAltTab.Name = "checkFastFullScreenAltTab";
+            checkFastFullScreenAltTab.Size = new System.Drawing.Size(144, 19);
+            checkFastFullScreenAltTab.TabIndex = 2;
+            checkFastFullScreenAltTab.Text = "Fast full-screen alt-tab";
+            checkFastFullScreenAltTab.UseVisualStyleBackColor = true;
+            // 
+            // labelWindVariability
+            // 
+            labelWindVariability.AutoSize = true;
+            labelWindVariability.Location = new System.Drawing.Point(351, 331);
+            labelWindVariability.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelWindVariability.Name = "labelWindVariability";
+            labelWindVariability.Size = new System.Drawing.Size(92, 15);
+            labelWindVariability.TabIndex = 30;
+            labelWindVariability.Text = "Wind variability:";
+            // 
+            // windVariabilityValueLabel
+            // 
+            windVariabilityValueLabel.Location = new System.Drawing.Point(351, 331);
+            windVariabilityValueLabel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            windVariabilityValueLabel.Name = "windVariabilityValueLabel";
+            windVariabilityValueLabel.Size = new System.Drawing.Size(341, 15);
+            windVariabilityValueLabel.TabIndex = 31;
+            windVariabilityValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // labelMaxWindSpeed
+            // 
+            labelMaxWindSpeed.AutoSize = true;
+            labelMaxWindSpeed.Location = new System.Drawing.Point(351, 406);
+            labelMaxWindSpeed.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            labelMaxWindSpeed.Name = "labelMaxWindSpeed";
+            labelMaxWindSpeed.Size = new System.Drawing.Size(97, 15);
+            labelMaxWindSpeed.TabIndex = 50;
+            labelMaxWindSpeed.Text = "Max Wind speed:";
+            // 
+            // maxWindSpeedValueLabel
+            // 
+            maxWindSpeedValueLabel.Location = new System.Drawing.Point(351, 406);
+            maxWindSpeedValueLabel.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            maxWindSpeedValueLabel.Name = "maxWindSpeedValueLabel";
+            maxWindSpeedValueLabel.Size = new System.Drawing.Size(341, 15);
+            maxWindSpeedValueLabel.TabIndex = 51;
+            maxWindSpeedValueLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // checkApplyBloom
+            // 
+            checkApplyBloom.AutoSize = true;
+            checkApplyBloom.Checked = true;
+            checkApplyBloom.CheckState = System.Windows.Forms.CheckState.Checked;
+            checkApplyBloom.Location = new System.Drawing.Point(351, 16);
+            checkApplyBloom.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            checkApplyBloom.Name = "checkApplyBloom";
+            checkApplyBloom.Size = new System.Drawing.Size(95, 19);
+            checkApplyBloom.TabIndex = 53;
+            checkApplyBloom.Text = "Apply Bloom";
+            checkApplyBloom.UseVisualStyleBackColor = true;
             // 
             // OptionsForm
             // 
-            this.AcceptButton = this.buttonOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(634, 481);
-            this.Controls.Add(this.tabOptions);
-            this.Controls.Add(this.buttonCancel);
-            this.Controls.Add(this.buttonOK);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
-            this.Name = "OptionsForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Options";
-            this.Load += new System.EventHandler(this.OptionsForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.pbLAA)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbViewingFOV)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWindowGlass)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWebServerPort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbPerformanceTuner)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLODBias)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWorldObjectDensity)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAntiAliasing)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbVerticalSync)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbModelInstancing)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDayAmbientLight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSignalLightGlow)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDoubleWire)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbWire)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbShadowAllShapes)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDynamicShadows)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLODViewingExtension)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDistantMountains)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbViewingDistance)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackLODBias)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericPerformanceTunerTarget)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAdhesionFactorChange)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericActRandomizationLevel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericActWeatherRandomizationLevel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericDistantMountainsViewingDistance)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackDayAmbientLight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackAntiAliasing)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSoundVolumePercent)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericExternalSoundPassThruPercent)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericCab2DStretch)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSuperElevationGauge)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.dataLoggerInterval)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackWindVariability)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.trackMaxWindSpeed)).EndInit();
-            this.tabPageExperimental.ResumeLayout(false);
-            this.tabPageExperimental.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorRandomChange)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAdhesionFactorCorrection)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbMstsEnvironments)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbActivityWeatherRandomization)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbActivityRandomization)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCorrectQuestionableBrakingParameters)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbShowShapeWarnings)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSuperElevation)).EndInit();
-            this.tabPageSystem.ResumeLayout(false);
-            this.tabPageSystem.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbControlConfirmations)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericWebServerPort)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLanguage)).EndInit();
-            this.tabPageEvaluate.ResumeLayout(false);
-            this.tabPageEvaluate.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericDataLogTSInterval)).EndInit();
-            this.tabPageDataLogger.ResumeLayout(false);
-            this.tabPageDataLogger.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbDataLoggerOptions)).EndInit();
-            this.tabPageRailDriver.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pbRailDriverOptions)).EndInit();
-            this.panelRDSettings.ResumeLayout(false);
-            this.panelRDOptions.ResumeLayout(false);
-            this.groupBoxReverseRDLevers.ResumeLayout(false);
-            this.groupBoxReverseRDLevers.PerformLayout();
-            this.tabPageKeyboard.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pbKeyboardOptions)).EndInit();
-            this.tabPageSimulation.ResumeLayout(false);
-            this.tabPageSimulation.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAdvancedAdhesionModel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbBreakCouplers)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbCurveDependentSpeedLimit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAtGameStartSteamPreHeatBoiler)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAtGameStartDieselRunEngines)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAtGameStartElectricPowerConnected)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSimpleControlAndPhysics)).EndInit();
-            this.groupBox1.ResumeLayout(false);
-            this.groupBox1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbForcedRedAtStationStops)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbLocationLinkedPassingPathProcessing)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbOpenCloseDoorsOnAiTrains)).EndInit();
-            this.tabPageVideo.ResumeLayout(false);
-            this.tabPageVideo.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericViewingDistance)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericViewingFOV)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericWorldObjectDensity)).EndInit();
-            this.tabPageAudio.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pbExternalSoundPassThruPercent)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSoundDetailLevel)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbSoundVolumePercent)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericSoundDetailLevel)).EndInit();
-            this.tabPageGeneral.ResumeLayout(false);
-            this.tabPageGeneral.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAutoSave)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbOverspeedMonitor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbEnableTcsScripts)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbOtherUnits)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbPressureUnit)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbBrakePipeChargingRate)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbGraduatedRelease)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbRetainers)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbAlerter)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericBrakePipeChargingRate)).EndInit();
-            this.tabOptions.ResumeLayout(false);
-            this.tabPageORNYMG.ResumeLayout(false);
-            this.tabPageORNYMG.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxLength)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxWidth)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.precipitationBoxHeight)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pbEnableWebServer)).EndInit();
-            this.ResumeLayout(false);
+            AcceptButton = buttonOK;
+            AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            CancelButton = buttonCancel;
+            ClientSize = new System.Drawing.Size(740, 555);
+            Controls.Add(tabOptions);
+            Controls.Add(buttonCancel);
+            Controls.Add(buttonOK);
+            FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            MaximizeBox = false;
+            MinimizeBox = false;
+            Name = "OptionsForm";
+            StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+            Text = "Options";
+            Load += OptionsForm_Load;
+            ((System.ComponentModel.ISupportInitialize)pbLAA).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbViewingFOV).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbWindowGlass).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbWebServerPort).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbPerformanceTuner).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbLODBias).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbWorldObjectDensity).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAntiAliasing).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbVerticalSync).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbModelInstancing).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbDayAmbientLight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbSignalLightGlow).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbDoubleWire).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbWire).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbShadowAllShapes).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbDynamicShadows).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbLODViewingExtension).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbDistantMountains).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbViewingDistance).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackLODBias).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericPerformanceTunerTarget).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackAdhesionFactor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackAdhesionFactorChange).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericActRandomizationLevel).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericActWeatherRandomizationLevel).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericDistantMountainsViewingDistance).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackDayAmbientLight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackAntiAliasing).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericSoundVolumePercent).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericExternalSoundPassThruPercent).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericCab2DStretch).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericSuperElevationGauge).EndInit();
+            ((System.ComponentModel.ISupportInitialize)dataLoggerInterval).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackWindVariability).EndInit();
+            ((System.ComponentModel.ISupportInitialize)trackMaxWindSpeed).EndInit();
+            tabPageExperimental.ResumeLayout(false);
+            tabPageExperimental.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbAdhesionFactorRandomChange).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAdhesionFactorCorrection).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbMstsEnvironments).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbActivityWeatherRandomization).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbActivityRandomization).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbCorrectQuestionableBrakingParameters).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbShowShapeWarnings).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbSuperElevation).EndInit();
+            tabPageSystem.ResumeLayout(false);
+            tabPageSystem.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbControlConfirmations).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericWebServerPort).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbLanguage).EndInit();
+            tabPageEvaluate.ResumeLayout(false);
+            tabPageEvaluate.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericDataLogTSInterval).EndInit();
+            tabPageDataLogger.ResumeLayout(false);
+            tabPageDataLogger.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbDataLoggerOptions).EndInit();
+            tabPageRailDriver.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pbRailDriverOptions).EndInit();
+            panelRDSettings.ResumeLayout(false);
+            panelRDOptions.ResumeLayout(false);
+            groupBoxReverseRDLevers.ResumeLayout(false);
+            groupBoxReverseRDLevers.PerformLayout();
+            tabPageKeyboard.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pbKeyboardOptions).EndInit();
+            tabPageSimulation.ResumeLayout(false);
+            tabPageSimulation.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbAdvancedAdhesionModel).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbBreakCouplers).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbCurveDependentSpeedLimit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAtGameStartSteamPreHeatBoiler).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAtGameStartDieselRunEngines).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAtGameStartElectricPowerConnected).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbSimpleControlAndPhysics).EndInit();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbForcedRedAtStationStops).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbLocationLinkedPassingPathProcessing).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbOpenCloseDoorsOnAiTrains).EndInit();
+            tabPageVideo.ResumeLayout(false);
+            tabPageVideo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numericViewingDistance).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericViewingFOV).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericWorldObjectDensity).EndInit();
+            tabPageAudio.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)pbExternalSoundPassThruPercent).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbSoundDetailLevel).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbSoundVolumePercent).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericSoundDetailLevel).EndInit();
+            tabPageGeneral.ResumeLayout(false);
+            tabPageGeneral.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)pbAutoSave).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbOverspeedMonitor).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbEnableTcsScripts).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbOtherUnits).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbPressureUnit).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbBrakePipeChargingRate).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbGraduatedRelease).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbRetainers).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbAlerter).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numericBrakePipeChargingRate).EndInit();
+            tabOptions.ResumeLayout(false);
+            tabPageORNYMG.ResumeLayout(false);
+            tabPageORNYMG.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)precipitationBoxLength).EndInit();
+            ((System.ComponentModel.ISupportInitialize)precipitationBoxWidth).EndInit();
+            ((System.ComponentModel.ISupportInitialize)precipitationBoxHeight).EndInit();
+            ((System.ComponentModel.ISupportInitialize)pbEnableWebServer).EndInit();
+            ResumeLayout(false);
 
         }
 
@@ -3708,5 +3657,6 @@
         private System.Windows.Forms.TrackBar trackMaxWindSpeed;
         private System.Windows.Forms.Label labelMaxWindSpeed;
         private System.Windows.Forms.Label maxWindSpeedValueLabel;
+        private System.Windows.Forms.CheckBox checkApplyBloom;
     }
 }

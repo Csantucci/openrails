@@ -290,6 +290,7 @@ namespace Menu
             trackMaxWindSpeed.Value = Settings.MaxWindSpeedMpS;
             trackWindSpeed_ValueChanged(null, null);
             checkExtendedPerformanceDump.Checked = Settings.ExtendedPerformanceDump;
+            checkApplyBloom.Checked = Settings.ApplyBloom;
         }
 
 /*
@@ -506,6 +507,7 @@ private async void OptionsForm_Shown(object sender, EventArgs e)
             Settings.WindVariability = (int)trackWindVariability.Value;
             Settings.MaxWindSpeedMpS = (int)trackMaxWindSpeed.Value;
             Settings.ExtendedPerformanceDump = checkExtendedPerformanceDump.Checked;
+            Settings.ApplyBloom = checkApplyBloom.Checked;
 
             Settings.Save();
         }
