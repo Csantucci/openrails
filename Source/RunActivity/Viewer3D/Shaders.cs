@@ -320,7 +320,7 @@ namespace Orts.Viewer3D
         }
 
         public SceneryShader(GraphicsDevice graphicsDevice)
-            : base(graphicsDevice, "SceneryShader")
+            : base(graphicsDevice, Program.Simulator.Settings.ApplyBloom ? "SceneryShader" : "SceneryShaderLight")
         {
             world = Parameters["World"];
             view = Parameters["View"];
