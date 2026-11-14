@@ -74,7 +74,7 @@ namespace Orts.Viewer3D
         /// <returns>The <see cref="Texture2D"/> created from the given <paramref name="path"/> or a missing placeholder.</returns>
         public Texture2D Get(string path, bool required = false)
         {
-            return Get(path, SharedMaterialManager.MissingTexture, required);
+            return Get(path, SharedMaterialManager.MissingTexture, required, true);
         }
 
         /// <summary>
@@ -305,8 +305,13 @@ namespace Orts.Viewer3D
         {
             foreach (var path in TextureMarks.Where(kvp => !kvp.Value).Select(kvp => kvp.Key))
             {
-                Textures[path].Dispose();
+                var texture = Textures[path];
                 Textures.Remove(path);
+                if (Viewer.Settings.ReduceMemory)
+                {
+                    texture.Dispose();
+                    texture = null;
+                }
             }
         }
 
