@@ -38,12 +38,9 @@ namespace Orts.Parsers.OR
             {
                 var readLine = filestream.ReadLine();
 
-                // ReadLine() returns null for an empty file and "" for a blank first line. Indexing
-                // either one threw NullReferenceException or IndexOutOfRangeException, naming neither
-                // the file nor the problem. Report it the same way as an unrecognised separator below.
-                if (string.IsNullOrEmpty(readLine)) // Fatal error
+                if (string.IsNullOrEmpty(readLine))
                 {
-                    throw new InvalidDataException($"Empty timetable {filePath}");
+                    throw new InvalidDataException($"Timetable {filePath} is empty or has an empty first line");
                 }
 
                 // Extract the separator character from start of the first line.

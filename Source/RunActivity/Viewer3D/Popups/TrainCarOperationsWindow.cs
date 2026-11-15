@@ -352,6 +352,13 @@ namespace Orts.Viewer3D.Popups
                 int carPosition = 0;
                 ControlLayout scrollbox;
 
+                if (SelectedCarPosition >= PlayerTrain.Cars.Count)
+                {
+                    SelectedCarPosition = PlayerTrain.Cars.Count - 1;
+                    LastCarIDSelected = null;  // will be initialized below
+                    CarPosition = trainCarViewer.CarPosition = SelectedCarPosition;
+                }
+
                 scrollbox = PlayerTrain.Cars.Count == 1 ? Vbox.AddLayoutHorizontal(Vbox.RemainingHeight)
                             : Vbox.AddLayoutScrollboxVertical(Vbox.RemainingWidth);
 
@@ -591,7 +598,7 @@ namespace Orts.Viewer3D.Popups
                     var currentCameraPosition = 0;
                     if (PlayerTrain != null && Owner.Viewer.Camera.AttachedCar != null)
                     {
-                        currentCameraPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != Owner.Viewer.Camera.AttachedCar.CarID).Count();
+                        currentCameraPosition = PlayerTrain.GetCarPositionByCarID(Owner.Viewer.Camera.AttachedCar.CarID);
                     }
 
 
@@ -618,7 +625,7 @@ namespace Orts.Viewer3D.Popups
                     if (PlayerTrain != null && (currentCameraCarID != trainCarViewer.CurrentCarID || CarPosition != trainCarViewer.CarPosition))
                     {
                         trainCarViewer.CurrentCarID = LastCarIDSelected = currentCameraCarID;
-                        trainCarViewer.CarPosition = CarPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != currentCameraCarID).Count();
+                        trainCarViewer.CarPosition = CarPosition = PlayerTrain.GetCarPositionByCarID(currentCameraCarID);
                         SelectedCarPosition = CarPosition;
                         CarPositionChanged = true;
                     }
@@ -651,7 +658,7 @@ namespace Orts.Viewer3D.Popups
                 if (CarIdClicked && Owner.Viewer.Camera.AttachedCar != null && Owner.Viewer.Camera.AttachedCar.CarID != LastCarIDSelected)
                 {
                     trainCarViewer.CurrentCarID = LastCarIDSelected;
-                    trainCarViewer.CarPosition = CarPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != LastCarIDSelected).Count();
+                    trainCarViewer.CarPosition = CarPosition = PlayerTrain.GetCarPositionByCarID(LastCarIDSelected);
                     SelectedCarPosition = CarPosition;
                     trainCarViewer.TrainCarOperationsChanged = true;
                     SetCameraView();
@@ -682,25 +689,30 @@ namespace Orts.Viewer3D.Popups
                     LastPlayerTrainCars = PlayerTrain.Cars.Count;
 
                     // Checks if the lead locomotive is at the front of the train.
-                    var LeadLocoIndex = PlayerTrain.Cars.FindIndex(x => x.CarID == Owner.Viewer.PlayerLocomotive.CarID);
-                    var firstCarIdIndex = PlayerTrain.Cars.FindIndex(x => x.CarID == PlayerTrain.Cars[0].CarID);
-                    var lastCarIdSelectedIndex = PlayerTrain.Cars.FindIndex(x => x.CarID == LastCarIDSelected);
+                    var LeadLocoIndex = PlayerTrain.GetCarPositionByCarID(Owner.Viewer.PlayerLocomotive.CarID);
+                    var lastCarIdSelectedIndex = PlayerTrain.Cars.FindIndex(x => x.CarID == LastCarIDSelected);  // need to know when not found
                     lastCarIdSelectedIndex = lastCarIdSelectedIndex < 0 && CouplerClicked ? 0 : lastCarIdSelectedIndex;
 
-                    IsLocoAtFront = (!IsLocoAtFront && LeadLocoIndex == firstCarIdIndex)
-                        || (IsLocoAtFront && LeadLocoIndex <= firstCarIdIndex)
+                    IsLocoAtFront = (!IsLocoAtFront && LeadLocoIndex == 0)
+                        || (IsLocoAtFront && LeadLocoIndex <= 0)
                         || LeadLocoIndex < lastCarIdSelectedIndex;
 
                     if (lastCarIdSelectedIndex < 0)
                     {// It assigns a valid value to the lastCarIdSelectedIndex variable.
                         var currentCarID = trainCarViewer.CurrentCarID != null ? trainCarViewer.CurrentCarID : PlayerTrain.Cars[LastPlayerTrainCars - 1].CarID;
-                        lastCarIdSelectedIndex = PlayerTrain.Cars.FindIndex(x => x.CarID == currentCarID);
+                        lastCarIdSelectedIndex = PlayerTrain.Cars.FindIndex(x => x.CarID == currentCarID);  // need to know when not found
                     }
 
                     SelectedCarPosition = IsLocoAtFront
                         ? CouplerClicked && lastCarIdSelectedIndex != 0 ? LastPlayerTrainCars - 1
                         : lastCarIdSelectedIndex < 0 ? LastPlayerTrainCars - 1 : lastCarIdSelectedIndex
                         : CouplerClicked ? 0 : lastCarIdSelectedIndex;
+
+                    if (SelectedCarPosition < 0 || SelectedCarPosition >= PlayerTrain.Cars.Count)
+                    {
+                        Debug.WriteLine($"Warning: SelectedCarPosition {SelectedCarPosition} is out of range 0..{PlayerTrain.Cars.Count - 1} for train {PlayerTrain.Name}");
+                        SelectedCarPosition = 0;
+                    }
 
                     CouplerClicked = false; CarPosition = trainCarViewer.CarPosition = SelectedCarPosition;
                     trainCarViewer.CurrentCarID = PlayerTrain.Cars.Count > CarPosition ? PlayerTrain.Cars[CarPosition].CarID : "";
@@ -816,7 +828,7 @@ namespace Orts.Viewer3D.Popups
             var currentCameraCarID = Viewer.Camera.AttachedCar != null ? Viewer.Camera.AttachedCar.CarID : TrainCar.LastCarIDSelected;
 
             TrainCarViewer.CurrentCarID = TrainCar.LastCarIDSelected;
-            TrainCarViewer.CarPosition = TrainCar.CarPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != TrainCar.LastCarIDSelected).Count();
+            TrainCarViewer.CarPosition = TrainCar.CarPosition = PlayerTrain.GetCarPositionByCarID(TrainCar.LastCarIDSelected);
 
             if (TrainCar.CabCameraEnabled)// Displays camera 1
             {  // Setting the camera view
@@ -830,7 +842,7 @@ namespace Orts.Viewer3D.Popups
 
             if (PlayerTrain.Cars.Count > TrainCar.CarPosition)
             {
-                TrainCarViewer.CarPosition = TrainCar.SelectedCarPosition = TrainCar.CarPosition = PlayerTrain.Cars.TakeWhile(x => x.CarID != TrainCar.LastCarIDSelected).Count();
+                TrainCarViewer.CarPosition = TrainCar.SelectedCarPosition = TrainCar.CarPosition = PlayerTrain.GetCarPositionByCarID(TrainCar.LastCarIDSelected);
             }
             else
             {
@@ -1001,7 +1013,7 @@ namespace Orts.Viewer3D.Popups
             Control control = arg1;
 
             TrainCar.CarLabelText = TrainCarViewer.CurrentCarID = TrainCar.LastCarIDSelected = Text;
-            TrainCarViewer.CarPosition = TrainCar.SelectedCarPosition = Viewer.PlayerTrain.Cars.TakeWhile(x => x.CarID != Text).Count();
+            TrainCarViewer.CarPosition = TrainCar.SelectedCarPosition = Viewer.PlayerTrain.GetCarPositionByCarID(Text);
             TrainCarViewer.Visible = true;
             TrainCar.CarIdClicked = true;
 
@@ -1056,12 +1068,12 @@ namespace Orts.Viewer3D.Popups
                 var rearBrakeHose = CarOperations.RearBrakeHoseChanged;
                 if (rearBrakeHose)
                 {
-                    new WagonBrakeHoseRearConnectCommand(Viewer.Log, (Viewer.PlayerTrain.Cars[CarOperations.CarPosition] as MSTSWagon), !(Viewer.PlayerTrain.Cars[CarOperations.CarPosition] as MSTSWagon).BrakeSystem.RearBrakeHoseConnected);
+                    new WagonBrakeHoseRearConnectCommand(Viewer.Log, CarOperations.CarPosition, !(Viewer.PlayerTrain.Cars[CarOperations.CarPosition] as MSTSWagon).BrakeSystem.RearBrakeHoseConnected);
                     CarOperations.RearBrakeHoseChanged = false;
                 }
                 else
                 {
-                    new WagonBrakeHoseRearConnectCommand(Viewer.Log, (Viewer.PlayerTrain.Cars[CarOperations.CarPosition - 1] as MSTSWagon), !(Viewer.PlayerTrain.Cars[CarOperations.CarPosition - 1] as MSTSWagon).BrakeSystem.RearBrakeHoseConnected);
+                    new WagonBrakeHoseRearConnectCommand(Viewer.Log, CarOperations.CarPosition - 1, !(Viewer.PlayerTrain.Cars[CarOperations.CarPosition - 1] as MSTSWagon).BrakeSystem.RearBrakeHoseConnected);
                     CarOperations.FrontBrakeHoseChanged = false;
                 }
                 Viewer.TrainCarOperationsWindow.ModifiedSetting = true;
@@ -1072,7 +1084,7 @@ namespace Orts.Viewer3D.Popups
             var viewerCarposition = TrainCarViewer.CarPosition;
             if (TrainCarViewer.Visible && TrainCarViewer.FrontBrakeHoseChanged && viewerCarposition >= 1)
             {
-                new WagonBrakeHoseRearConnectCommand(Viewer.Log, (Viewer.PlayerTrain.Cars[viewerCarposition - 1] as MSTSWagon), !(Viewer.PlayerTrain.Cars[viewerCarposition - 1] as MSTSWagon).BrakeSystem.RearBrakeHoseConnected);
+                new WagonBrakeHoseRearConnectCommand(Viewer.Log, viewerCarposition - 1, !(Viewer.PlayerTrain.Cars[viewerCarposition - 1] as MSTSWagon).BrakeSystem.RearBrakeHoseConnected);
                 TrainCarViewer.FrontBrakeHoseChanged = false;
             }
             Source = new Rectangle(0, 0, size, size);
@@ -1101,7 +1113,7 @@ namespace Orts.Viewer3D.Popups
             var viewerCarposition = TrainCarViewer.CarPosition;
             if (TrainCarViewer.Visible && TrainCarViewer.RearBrakeHoseChanged && viewerCarposition < Viewer.PlayerTrain.Cars.Count - 1)
             {
-                new WagonBrakeHoseConnectCommand(Viewer.Log, (Viewer.PlayerTrain.Cars[viewerCarposition + 1] as MSTSWagon), !(Viewer.PlayerTrain.Cars[viewerCarposition + 1] as MSTSWagon).BrakeSystem.FrontBrakeHoseConnected);
+                new WagonBrakeHoseConnectCommand(Viewer.Log, viewerCarposition + 1, !(Viewer.PlayerTrain.Cars[viewerCarposition + 1] as MSTSWagon).BrakeSystem.FrontBrakeHoseConnected);
                 TrainCarViewer.RearBrakeHoseChanged = false;
             }
             Source = new Rectangle(0, 0, size, size);

@@ -131,7 +131,6 @@ namespace Orts.Simulation.Timetables
         public int OrgAINumber = -1;                        // Original AI number of formed player train
         public bool SetStop = false;                        // Indicates train must copy station stop from formed train
         public bool FormsAtStation = false;                 // Indicates train must form into next service at last station, route must be curtailed to that stop
-        public bool leadLocoAntiSlip = false;               // Anti slip indication for original leading engine
         public PowerActionType PowerOffOnFormed = PowerActionType.On;     //indicates required power state on forms
         public int FormedPowerOffDelay = 0;                               //power off delay on formed
         public bool HasDirectionalPantographs = false;                    //train has engines or wagons with directional pantographs
@@ -6785,7 +6784,6 @@ namespace Orts.Simulation.Timetables
                 {
                     MSTSLocomotive loco = tcar as MSTSLocomotive;
                     loco.SetPower(true);
-                    loco.AntiSlip = leadLocoAntiSlip;
                 }
             }
 
@@ -9966,17 +9964,6 @@ namespace Orts.Simulation.Timetables
                         {
                             throw new InvalidDataException("Can't find player locomotive in " + formedTrain.Name);
                         }
-                        else
-                        {
-                            foreach (TrainCar car in formedTrain.Cars)
-                            {
-                                if (car.WagonType == TrainCar.WagonTypes.Engine)
-                                {
-                                    MSTSLocomotive loco = car as MSTSLocomotive;
-                                    loco.AntiSlip = formedTrain.leadLocoAntiSlip;
-                                }
-                            }
-                        }
                     }
                     else
                     {
@@ -12758,14 +12745,6 @@ namespace Orts.Simulation.Timetables
                     attachTrain.Simulator.OnPlayerTrainChanged(this, attachTrain);
                     attachTrain.Simulator.PlayerLocomotive.Train = attachTrain;
                 }
-                foreach (TrainCar car in attachTrain.Cars)
-                {
-                    if (car.WagonType == TrainCar.WagonTypes.Engine)
-                    {
-                        MSTSLocomotive loco = car as MSTSLocomotive;
-                        loco.AntiSlip = attachTrain.leadLocoAntiSlip;
-                    }
-                }
             }
             if (!attachTrain.Autopilot)
                 attachTrain.Autopilot = Autopilot;
@@ -13794,7 +13773,6 @@ namespace Orts.Simulation.Timetables
                 {
                     var loco = car as MSTSLocomotive;
                     loco.LocomotiveAxles.InitializeMoving();
-                    loco.AntiSlip = false; // <CSComment> TODO Temporary patch until AntiSlip is re-implemented
                 }
                 if (car == Simulator.PlayerLocomotive) { leadLocomotiveIndex = j; }
                 j++;

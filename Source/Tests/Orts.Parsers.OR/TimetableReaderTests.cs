@@ -59,14 +59,14 @@ namespace Tests.Orts.Parsers.OR
         [Fact]
         public static void RejectEmptyFile()
         {
-            // An empty file gives ReadLine() == null; a blank first line gives "". Indexing either
-            // used to throw NullReferenceException / IndexOutOfRangeException out of the constructor.
+            // empty file
             using (var file = new TestFile(""))
             {
                 Assert.Throws<InvalidDataException>(() => {
                     var tr = new TimetableReader(file.FileName);
                 });
             }
+            // empty first line
             using (var file = new TestFile("\n;b;c;d"))
             {
                 Assert.Throws<InvalidDataException>(() => {
