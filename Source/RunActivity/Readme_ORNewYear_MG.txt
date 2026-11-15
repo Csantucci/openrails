@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.175.1
-October 6th, 2026
+﻿Open Rails NewYear README - Rev.176
+November 15th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -9,9 +9,9 @@ INSTALLATION
 
 
 RELEASE NOTES
-This unofficial version has been derived from the latest official Testing release T1.6.1-498, 
+This unofficial version has been derived from the latest official Testing release T1.6.1-563, 
 plus some of the features already present in the Unstable release and/or present as pull requests in the OpenRails github.
-Note that I haven't yet migrated to .NET 6.0 to keep OR running on Windows 7.0 (not tested however). 
+Note that this might be the last release not requiring .NET 6.0. 
 
 
 
@@ -84,29 +84,30 @@ This version includes some features not (yet) available in the Open Rails testin
 - added possibility to set max wind speed in the ORNYMG only option window
 - bug fix for https://www.elvastower.com/forums/index.php?/topic/32640-or-newyear-mg/page__view__findpost__p__326393 crash opening F9 after restore
 - skipped merge of PR #1166 into ORNYMG; possibility of using textures in formats different than .ace and .dds in certain cases
-- NEW: add some ORNYMG fixes to get scripts working, to get .png, .jpg and .jpeg textures operating and to remove bug of tiles within a certain number range not displayed
 - features which are present in Unstable release or on Github but not yet in the publicly available testing release:
   *- Added mouse wheel support for controls which can be moved by pressing the left mouse button, by sweiland (PR #919) 
   *- Add curve squeal to route, by steamer_CTN (PR #923)
   *- Switchable brake system, see https://www.elvastower.com/forums/index.php?/topic/38658-air-brakes-europe-uic , by gpz (PR #1057)
   *- Brake cuts power unification, see https://blueprints.launchpad.net/or/+spec/brake-cuts-power-parameters , by cesarBLG (PR #1081)
-  *- Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
+  *- (Updated) Automatic speed control (Cruise Control) refactoring, by cesarBLG (PR #1091)
   *- Built-in PBL2 brake controller, by cesarBLG (PR #1124)
   *- ShapeHierarchy Attachment for More Wagon Addons, by steelfill (PR #1126)
-  *- Add missing sounds on control cars, cy cesarBLG (PR #1216)
   *- Partial bug fix for https://bugs.launchpad.net/or/+bug/2148806 Switch state isn't synced in multiplayer mode (PR #1218)
   *- Added Control Rectangles (Ctrl+F5) for 3d locomotives, by sweiland (PR #1237)
-  *- NEW: Support for higher resolution terrain, by twpol (PR #1246)
-  *- NEW: Russian localization update, by myaroslav54 (PR #1253)
-  *- NEW: Fix multiplayer server crash from concurrent access to onlinePlayers, by edwar64896 (PR #1254)
-  *- NEW: Parse degF values safely and culture-invariantly in STFReader, by edwar64896 (PR #1256)
-  *- NEW: Report an empty timetable file instead of crashing, by edwar64896 (PR #1257)
-  *- NEW: Replace Thread.Abort with cancellation in the route image fetch, by edwar64896 (PR #1258)
-  *- NEW: Fix bugs in data logger: steam interval, steam data, by rwf-rr (PR #1262)
-  *- NEW: Harmless Part of Particle Emitter Overhaul, by steelfill (PR #1263)
-  *- NEW: Steam Locomotive Steam Cylinder Exhaust Sounds, by Peter Newell (PR #1266)
-  *- NEW: Support full SIMIS token IDs, by GokuMK (PR #1268)
-  *- NEW: Expand procedural profiles for tracks, roads and line objects, by GokuMK (PR #1269)
+  *- Support for higher resolution terrain, by twpol (PR #1246)
+  *- Russian localization update, by myaroslav54 (PR #1253)
+  *- Fix multiplayer server crash from concurrent access to onlinePlayers, by edwar64896 (closed) (PR #1254)
+  *- Parse degF values safely and culture-invariantly in STFReader, by edwar64896 (PR #1256) 
+  *- Replace Thread.Abort with cancellation in the route image fetch, by edwar64896 (PR #1258)
+  *- Steam Locomotive Steam Cylinder Exhaust Sounds, by Peter Newell (PR #1266)
+  *- Support full SIMIS token IDs, by GokuMK (PR #1268)
+  *- Expand procedural profiles for tracks, roads and line objects, by GokuMK (PR #1269)
+  *- NEW: Correction for varying wind speed, by Peter Newell (PR# 1261)
+  *- NEW: Steam Locomotive Steam Cylinder Exhaust Sounds, by Peter Newell (PR# 1266)
+  *- NEW: Fix for FPS drop when F1/Help window is open, by twpol (PR# 1281)
+  *- NEW: Add physics-driven head motion to the 3D cab, by commentarykyle (PR# 1283)
+  *- NEW: Remove duplicate content to reduce file size, by twpol (PR# 1289)
+  *- NEW: Use system settings for data logger units, including steam loco specific data, by rwf-rr (PR #1290)
   
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
