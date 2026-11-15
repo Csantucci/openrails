@@ -260,6 +260,7 @@ namespace Orts.Formats.Msts
             CarFriction,
             WheelRPM,
             DriveWheelRPM,
+            SteamLocomotiveNormalisedMEP,
             ConcreteSleepers,
             CarInTunnel,
             CarDistanceTrack,
@@ -303,6 +304,7 @@ namespace Orts.Formats.Msts
                 case "carfriction": Control = ControlType.CarFriction; break;
                 case "wheelrpm": Control = ControlType.WheelRPM; break;
                 case "drivewheelrpm": Control = ControlType.DriveWheelRPM; break;
+                case "steamlocomotivenormalisedmep": Control = ControlType.SteamLocomotiveNormalisedMEP; break;
                 case "concretesleepers": Control = ControlType.ConcreteSleepers; break;
                 case "carintunnel": Control = ControlType.CarInTunnel; break;
                 case "cardistancetrack": Control = ControlType.CarDistanceTrack; break;
@@ -349,7 +351,8 @@ namespace Orts.Formats.Msts
                     return STFReader.UNITS.Speed;
                 case ControlType.BrakeCyl:
                 case ControlType.BackPressure:
-                    // Brake cylinder and back pressure are PSI
+                case ControlType.SteamLocomotiveNormalisedMEP:
+                    // Brake cylinder, back pressure, and steam locomotive MEP are PSI
                     return STFReader.UNITS.PressureDefaultPSI;
                 case ControlType.TractiveEffort:
                 case ControlType.CurveForce:
