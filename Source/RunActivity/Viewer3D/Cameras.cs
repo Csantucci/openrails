@@ -2170,7 +2170,7 @@ namespace Orts.Viewer3D
         const float HeadMotionMaxElapsedTimeS = 0.25f;
         const float HeadMotionForceFilterS = 0.15f; // Smooths the impulses from track vibration
         const float HeadMotionLeanHeightM = 1.0f; // Height of the head above the point the upper body leans from
-        static readonly Vector3 HeadMotionStrength = new Vector3(0.5f, 0.5f, 0.65f); // Lateral, vertical, longitudinal
+//        static readonly Vector3 HeadMotionStrength = new Vector3(0.5f, 0.5f, 0.65f); // Lateral, vertical, longitudinal
         const float GravityMpSS = 9.81f;
 
         Vector3 HeadOffsetM; // In cab coordinates, +Z forward
@@ -2254,7 +2254,7 @@ namespace Orts.Viewer3D
         void IntegrateHeadMotion(Vector3 forceMpSS, float elapsedTimeS)
         {
             // First-order low-pass filter (exponential smoothing): https://en.wikipedia.org/wiki/Low-pass_filter#Discrete-time_realization
-            HeadForceMpSS += (forceMpSS * HeadMotionStrength - HeadForceMpSS) * Math.Min(1, elapsedTimeS / HeadMotionForceFilterS);
+            HeadForceMpSS += (forceMpSS * (attachedCar as MSTSWagon).CurrentCab3DHeadMotionIntensity - HeadForceMpSS) * Math.Min(1, elapsedTimeS / HeadMotionForceFilterS);
 
             // Damped harmonic oscillator, x'' = -w^2 x - 2 z w x' - f: https://en.wikipedia.org/wiki/Harmonic_oscillator#Damped_harmonic_oscillator
             // where w is the natural angular frequency and z the damping ratio; integrated with semi-implicit Euler.

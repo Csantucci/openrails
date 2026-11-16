@@ -133,6 +133,9 @@ namespace Orts.Simulation.RollingStocks
         public float FreightAnimFlag = 1;   // if absent or >= 0 causes the freightanim to drop in tenders
         public string Cab3DShapeFileName; // 3DCab view shape file name
         public Vector3 Cab3DDamping = new Vector3(0.5f, 0.5f, 0.5f); // 3DCab head motion damping ratio (lateral, vertical, longitudinal)
+        public Vector3 Cab3DHeadMotionIntensity = new Vector3(0f, 0f, 0f); // 3DCab head motion intensity (lateral, vertical, longitudinal)
+        public Vector3 CurrentCab3DHeadMotionIntensity = new Vector3(0f, 0f, 0f); // current 3DCab head motion intensity (lateral, vertical, longitudinal)
+
         public string InteriorShapeFileName; // passenger view shape file name
         public List<string> MainSoundFileNames;
         public List<string> InteriorSoundFileNames;
@@ -1721,6 +1724,8 @@ namespace Orts.Simulation.RollingStocks
             InteriorSoundFileNames = copy.InteriorSoundFileNames;
             Cab3DShapeFileName = copy.Cab3DShapeFileName;
             Cab3DDamping = copy.Cab3DDamping;
+            Cab3DHeadMotionIntensity = copy.Cab3DHeadMotionIntensity;
+            CurrentCab3DHeadMotionIntensity = copy.CurrentCab3DHeadMotionIntensity;
             Cab3DSoundFileNames = copy.Cab3DSoundFileNames;
             Adhesion1 = copy.Adhesion1;
             Adhesion2 = copy.Adhesion2;
@@ -1859,6 +1864,9 @@ namespace Orts.Simulation.RollingStocks
                 new STFReader.TokenProcessor("orts3dcabfile", ()=>{ Cab3DShapeFileName = stf.ReadStringBlock(null); }),
                 new STFReader.TokenProcessor("orts3dcabheadpos", ()=>{ cabViewPoint.Location = stf.ReadVector3Block(STFReader.UNITS.Distance, new Vector3()); }),
                 new STFReader.TokenProcessor("orts3dcabdamping", ()=>{ Cab3DDamping = stf.ReadVector3Block(STFReader.UNITS.None, Cab3DDamping); }),
+                new STFReader.TokenProcessor("orts3dcabheadmotionintensity", ()=>{ 
+                    Cab3DHeadMotionIntensity = stf.ReadVector3Block(STFReader.UNITS.None, Cab3DHeadMotionIntensity);
+                    CurrentCab3DHeadMotionIntensity = Cab3DHeadMotionIntensity; }),
                 new STFReader.TokenProcessor("ortsshapeoffset", ()=>{ cabViewPoint.ShapeOffset = stf.ReadVector3Block(STFReader.UNITS.Distance, new Vector3()); }),
                 new STFReader.TokenProcessor("ortsshapeindex", ()=>{ cabViewPoint.ShapeIndex = stf.ReadIntBlock(null); }),
                 new STFReader.TokenProcessor("ortsshapehierarchy", ()=>{ cabViewPoint.ShapeHierarchy = stf.ReadStringBlock(null); }),
@@ -1971,6 +1979,9 @@ namespace Orts.Simulation.RollingStocks
 
             LocomotiveAxles.Save(outf);
             outf.Write(TempMassDiffRatio);
+            outf.Write(CurrentCab3DHeadMotionIntensity.X);
+            outf.Write(CurrentCab3DHeadMotionIntensity.Y);
+            outf.Write(CurrentCab3DHeadMotionIntensity.Z);
 
             base.Save(outf);
         }
@@ -2042,6 +2053,8 @@ namespace Orts.Simulation.RollingStocks
             MoveParamsToAxle();
             LocomotiveAxles.Restore(inf);
             TempMassDiffRatio = inf.ReadSingle();
+            
+            CurrentCab3DHeadMotionIntensity = new Vector3(inf.ReadSingle(), inf.ReadSingle(), inf.ReadSingle());
 
             base.Restore(inf);
         }

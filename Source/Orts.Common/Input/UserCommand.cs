@@ -139,6 +139,7 @@ namespace ORTS.Common.Input
         [GetString("Camera Jump Back Player")] CameraJumpBackPlayer,
         [GetString("Camera Jump See Switch")] CameraJumpSeeSwitch,
         [GetString("Camera Vibrate")] CameraVibrate,
+        [GetString("Camera Head Motion Intensity")] CameraHeadMotionIntensity,
         [GetString("Camera Scroll Right")] CameraScrollRight,
         [GetString("Camera Scroll Left")] CameraScrollLeft,
         [GetString("Camera Browse Backwards")] CameraBrowseBackwards,
