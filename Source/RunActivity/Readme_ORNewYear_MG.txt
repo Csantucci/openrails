@@ -1,5 +1,5 @@
 ﻿Open Rails NewYear README - Rev.176
-November 15th, 2026
+November 16th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -108,6 +108,7 @@ This version includes some features not (yet) available in the Open Rails testin
   *- NEW: Add physics-driven head motion to the 3D cab, by commentarykyle (PR# 1283)
   *- NEW: Remove duplicate content to reduce file size, by twpol (PR# 1289)
   *- NEW: Use system settings for data logger units, including steam loco specific data, by rwf-rr (PR #1290)
+NEW: improved head motion in 3D cab by allowing to set the motion intensity during the game with keys Alt-V
   
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
@@ -141,6 +142,8 @@ This unofficial version couldn't have been created without following contributio
 - GokuMK
 - edwar64896
 - myaroslav54
+- commentarykyle
+- GokuMK
 - Carlo Santucci
 
 - all those who contributed with ideas and provided contents for testing and pointed to malfunctions.
