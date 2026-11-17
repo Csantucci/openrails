@@ -99,6 +99,8 @@ cbuffer PerMaterial
     float4 TextureCoordinates3; // x: specular, y: specular-color, z: transmission (not implemented), w: texture-packing 0: occlusion (R) and roughnessMetallic (GB) separate, 1: roughnessMetallicOcclusion, 2: normalRoughnessMetallic (RG+B+A), 3: occlusionRoughnessMetallic, 4: roughnessMetallicOcclusion + normal (RG) 2 channel separate, 5: occlusionRoughnessMetallic + normal (RG) 2 channel separate
     float2 LightingSpecular; // x = specular, y = step(1, x)
 //};
+// The current MonoGame implementation seems not to handle so many constant buffers effectively, merging these seems to be faster currently.
+// Hopefully this will be improved in future MonoGame versions, and a more modern way of passing data to shaders can be implemented, by splitting these two buffers. 
 
 // VS only (except SignalLightIntensity, but at signals there is no PerMaterial buffer at all)
 //cbuffer PerObject
@@ -824,7 +826,6 @@ void _PSApplyFog(inout float3 Color, in VERTEX_OUTPUT In)
 
 void _PSSceneryFade(inout float4 Color, in VERTEX_OUTPUT In)
 {
-	//if (ReferenceAlpha < 0.01) Color.a = 1;
 	Color.a *= saturate((ZFar - length(In.RelPosition.xyz)) / 50);
 }
 
@@ -1292,18 +1293,12 @@ PIXEL_OUTPUT PSPbr(in VERTEX_OUTPUT_PBR In, bool isBackFace : SV_IsFrontFace)
 
     }
 
-	///////////////////////
-	// Contributions from the OpenRails environment:
-	// Overcast blanks out ambient, shadow and specular effects (so use original Color).
-	//litColor = lerp(litColor, _PSGetOvercastColor(Color, InGeneral), Overcast.x);
-
 	// And fogging is last.
     litColor = lerp(litColor, FogPbr.rgb, InGeneral.Fog);
 
 #ifdef DEBUG_SHADOW_COLORS
 	_PSApplyShadowColor(litColor, InGeneral);
 #endif
-	///////////////////////
 
 	litColor = _PSLinearToSrgb(litColor);
 

@@ -439,10 +439,10 @@ namespace Orts.Viewer3D
             MinuteHand.AddAnimation("orts_mhand_clock*");
             HourHand.AddAnimation("orts_hhand_clock*");
 
-            CentiSecondHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour);
-            SecondHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour);
-            MinuteHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour);
-            HourHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour);
+            CentiSecondHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour | AnimatedPart.MstsOptions.FrameNumbersCanBeOneBased);
+            SecondHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour | AnimatedPart.MstsOptions.FrameNumbersCanBeOneBased);
+            MinuteHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour | AnimatedPart.MstsOptions.FrameNumbersCanBeOneBased);
+            HourHand.SetMstsAnimationOptions(AnimatedPart.MstsOptions.MaxFrameIsFour | AnimatedPart.MstsOptions.FrameNumbersCanBeOneBased);
         }
 
         public override void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)
@@ -676,9 +676,6 @@ namespace Orts.Viewer3D
             // TODO: Make this use AddAutoPrimitive instead.
             frame.AddPrimitive(this.shapePrimitive.Material, this.shapePrimitive, RenderPrimitiveGroup.World, ref xnaXfmWrtCamTile, ShapeFlags.None);
 
-            // Update the pose
-            //AnimatedPart?.SetState(0); // Currently it seems to be always zero. Unfinished development in the original code?
-
             SharedShape.PrepareFrame(frame, Location, XNAMatrices, Flags);
         }
 
@@ -697,7 +694,7 @@ namespace Orts.Viewer3D
         readonly float ClosingDelay;
 
         readonly AnimatedPart AnimatedPartOpenLoop;
-        readonly AnimatedPart AnimatedPartClearing;
+        readonly AnimatedPart AnimatedPartCloseWarning;
         readonly AnimatedPart AnimatedPartClosing;
         readonly AnimatedPart AnimatedPartClosedLoop;
 
@@ -743,12 +740,12 @@ namespace Orts.Viewer3D
                 AnimatedPartOpenLoop = new AnimatedPart(this);
                 AnimatedPartClosedLoop = new AnimatedPart(this);
                 AnimatedPartClosing = new AnimatedPart(this);
-                AnimatedPartClearing = new AnimatedPart(this);
+                AnimatedPartCloseWarning = new AnimatedPart(this);
 
                 // The original MSTS crossing shapes don't have the animations named, but having names allows all types to be in a single shape/glTF file.
                 AnimatedPartClosedLoop.AddAnimation("ORTS_LEVELCROSSING_CLOSED_LOOP*");
                 AnimatedPartClosing.AddAnimation("ORTS_LEVELCROSSING_CLOSING*");
-                AnimatedPartClearing.AddAnimation("ORTS_LEVELCROSSING_CLEARING*");
+                AnimatedPartCloseWarning.AddAnimation("ORTS_LEVELCROSSING_CLOSE_WARNING*");
                 AnimatedPartOpenLoop.AddAnimation("ORTS_LEVELCROSSING_OPEN_LOOP*");
 
                 var speed = 1.0f / CrossingObj.levelCrTiming.animTiming;
@@ -763,7 +760,7 @@ namespace Orts.Viewer3D
                 //     MSTS plays through the first 1.0 seconds of the animation forwards for closing and backwards for
                 //     opening. The number of frames defined doesn't matter; the animation is limited by time so the frame
                 //     rate (based on 30FPS) is what's needed.
-                if (AnimatedPartOpenLoop.MatrixIndexes.Count + AnimatedPartClosing.MatrixIndexes.Count + AnimatedPartClosedLoop.MatrixIndexes.Count + AnimatedPartClearing.MatrixIndexes.Count == 0)
+                if (AnimatedPartOpenLoop.MatrixIndexes.Count + AnimatedPartClosing.MatrixIndexes.Count + AnimatedPartClosedLoop.MatrixIndexes.Count + AnimatedPartCloseWarning.MatrixIndexes.Count == 0)
                 {
                     if (speed < 0)
                     {
@@ -775,6 +772,7 @@ namespace Orts.Viewer3D
                         AnimatedPartClosing.AddAnimations();
                         AnimatedPartClosing.SetMstsSpeed(speed, AnimatedPart.MstsOptions.SpeedFromFrameRatePer30 | AnimatedPart.MstsOptions.MaxFrameFromFrameRatePer30);
                     }
+                    ClosingDelay = 0; // Restore the original MSTS behaviour of no delay.
                 }
                 else
                 {
@@ -782,14 +780,14 @@ namespace Orts.Viewer3D
                     AnimatedPartOpenLoop.SetMstsSpeed(1.0f, AnimatedPart.MstsOptions.SpeedFromFrameRate);
                     AnimatedPartClosedLoop.SetMstsSpeed(1.0f, AnimatedPart.MstsOptions.SpeedFromFrameRate);
                     AnimatedPartClosing.SetMstsSpeed(speed, AnimatedPart.MstsOptions.SpeedFromFrameRate);
-                    AnimatedPartClearing.SetMstsSpeed(speed, AnimatedPart.MstsOptions.SpeedFromFrameRate);
+                    AnimatedPartCloseWarning.SetMstsSpeed(speed, AnimatedPart.MstsOptions.SpeedFromFrameRate);
                 }
 
                 // glTF animations are less restricted, they can be easily configured individually so the animTiming is used as an overally scale factor, normally left at 1.0
                 AnimatedPartOpenLoop.SetGltfSpeed(speed);
                 AnimatedPartClosedLoop.SetGltfSpeed(speed);
                 AnimatedPartClosing.SetGltfSpeed(speed);
-                AnimatedPartClearing.SetGltfSpeed(speed);
+                AnimatedPartCloseWarning.SetGltfSpeed(speed);
             }
         }
 
@@ -825,16 +823,16 @@ namespace Orts.Viewer3D
             if (Crossing.HasTrain || AnimatedPartClosing?.AnimationKeyFraction() > 0.1f)
             {
                 AnimatedPartOpenLoop?.SetState(0);
-                AnimatedPartClearing?.UpdateState(1, elapsedTime);
+                AnimatedPartCloseWarning?.UpdateState(1, elapsedTime);
 
                 // CLOSED_LOOP: starts playing only when CLEARING is at its maxframe, stops playing only when CLOSING is already opened up to 10% closed state
-                if (!(AnimatedPartClearing?.MaxFrame > 0) || AnimatedPartClearing?.AnimationKeyFraction() == 1.0f)
+                if (!(AnimatedPartCloseWarning?.MaxFrame > 0) || AnimatedPartCloseWarning?.AnimationKeyFraction() == 1.0f)
                     AnimatedPartClosedLoop?.UpdateLoop(1, elapsedTime);
             }
             else
             {
                 // CLEARING animation (amber or yellow + continuous red phase): similar to CLOSING, but at opening it is dropped immediately to 0.
-                AnimatedPartClearing?.SetState(0);
+                AnimatedPartCloseWarning?.SetState(0);
                 AnimatedPartClosedLoop?.SetState(0);
                 AnimatedPartOpenLoop?.UpdateLoop(1, elapsedTime);
             }
@@ -1031,11 +1029,9 @@ namespace Orts.Viewer3D
         AnimatedPart AnimatedPartGrabber02;
 
         Vector3 AnimationXYZSpan;
-        Vector3 AnimationGrabber01Span;
-        Vector3 AnimationGrabber02Span;
         Vector3 AnimationXYZStart;
-        Vector3 AnimationGrabber01Start;
-        Vector3 AnimationGrabber02Start;
+        Vector2 AnimationGrabber12Span;
+        Vector2 AnimationGrabber12Start;
 
         readonly float SlowDownThreshold = 0.03f;
 
@@ -1094,16 +1090,16 @@ namespace Orts.Viewer3D
             AnimatedPartGrabber01.SetGltfSpeed(speed);
             AnimatedPartGrabber02.SetGltfSpeed(speed);
 
-            SharedShape.GetAnimationOutputMinMax(AnimatedPartX.MatrixIndexes.FirstOrDefault(), out var minX, out var maxX, out var startX);
-            SharedShape.GetAnimationOutputMinMax(AnimatedPartY.MatrixIndexes.FirstOrDefault(), out var minY, out var maxY, out var startY);
-            SharedShape.GetAnimationOutputMinMax(AnimatedPartZ.MatrixIndexes.FirstOrDefault(), out var minZ, out var maxZ, out var startZ);
-            SharedShape.GetAnimationOutputMinMax(AnimatedPartGrabber01.MatrixIndexes.FirstOrDefault(), out var minG01, out var maxG01, out AnimationGrabber01Start);
-            SharedShape.GetAnimationOutputMinMax(AnimatedPartGrabber02.MatrixIndexes.FirstOrDefault(), out var minG02, out var maxG02, out AnimationGrabber02Start);
+            SharedShape.GetAnimationStartEnd(AnimatedPartX.MatrixIndexes.FirstOrDefault(), AnimatedPartX.MaxFrame, out var startX, out var endX);
+            SharedShape.GetAnimationStartEnd(AnimatedPartY.MatrixIndexes.FirstOrDefault(), AnimatedPartY.MaxFrame, out var startY, out var endY);
+            SharedShape.GetAnimationStartEnd(AnimatedPartZ.MatrixIndexes.FirstOrDefault(), AnimatedPartZ.MaxFrame, out var startZ, out var endZ);
+            SharedShape.GetAnimationStartEnd(AnimatedPartGrabber01.MatrixIndexes.FirstOrDefault(), AnimatedPartGrabber01.MaxFrame, out var startG01, out var endG01);
+            SharedShape.GetAnimationStartEnd(AnimatedPartGrabber02.MatrixIndexes.FirstOrDefault(), AnimatedPartGrabber02.MaxFrame, out var startG02, out var endG02);
 
             AnimationXYZStart = new Vector3(startX.X, startY.Y, startZ.Z);
-            AnimationXYZSpan = new Vector3(maxX.X - minX.X, maxY.Y - minY.Y, maxZ.Z - minZ.Z);
-            AnimationGrabber01Span = maxG01 - minG01;
-            AnimationGrabber02Span = maxG02 - minG02;
+            AnimationXYZSpan = new Vector3(endX.X - startX.X, endY.Y - startY.Y, endZ.Z - startZ.Z);
+            AnimationGrabber12Start = new Vector2(startG01.Z, startG02.Z);
+            AnimationGrabber12Span = new Vector2(endG01.Z - startG01.Z, endG02.Z - startG02.Z);
 
             var key = GetStateFromPosition(Vector3.Zero);
 
@@ -1117,7 +1113,7 @@ namespace Orts.Viewer3D
             Matrix.Multiply(ref absAnimationMatrix, ref Location.XNAMatrix, out absAnimationMatrix);
 
             ContainerHandlingItem = Viewer.Simulator.ContainerManager.ContainerHandlingItems[FuelPickupItemObj.TrItemIDList[0].dbID];
-            ContainerHandlingItem.PassSpanParameters(maxZ.Z, minZ.Z, minG01.Z - maxG01.Z, minG02.Z - maxG02.Z);
+            ContainerHandlingItem.PassSpanParameters(startZ.Z, endZ.Z, Math.Abs(AnimationGrabber12Span.X), Math.Abs(AnimationGrabber12Span.Y));
             ContainerHandlingItem.ReInitPositionOffset(absAnimationMatrix);
 
             key = GetStateFromPosition(ContainerHandlingItem.PickingSurfaceRelativeTopStartPosition);
@@ -1126,8 +1122,8 @@ namespace Orts.Viewer3D
             AnimatedPartY.SetState(key.Y);
             AnimatedPartZ.SetState(key.Z);
             AnimatedPartCable.SetState(key.Y);
-            AnimatedPartGrabber01.SetState(0);
-            AnimatedPartGrabber02.SetState(0);
+            AnimatedPartGrabber01.SetState(1);
+            AnimatedPartGrabber02.SetState(1);
         }
 
         public override void PrepareFrame(RenderFrame frame, ElapsedTime elapsedTime)
@@ -1135,8 +1131,10 @@ namespace Orts.Viewer3D
             if (FuelPickupItemObj.UID == MSTSWagon.RefillProcess.ActivePickupObjectUID)
             {
                 var key = GetStateFromPosition(new Vector3(ContainerHandlingItem.TargetX, ContainerHandlingItem.TargetY, ContainerHandlingItem.TargetZ));
-                var keyGrabber01 = GetStateFromPosition(ContainerHandlingItem.TargetGrabber01, AnimationGrabber01Start.Z, AnimationGrabber01Span.Z);
-                var keyGrabber02 = GetStateFromPosition(ContainerHandlingItem.TargetGrabber02, AnimationGrabber02Start.Z, AnimationGrabber02Span.Z);
+
+                // The grabber animation state is 0 when fully stretched out, 1 when fully contracted (to the size of a 6 ft container).
+                var keyGrabber01 = 1 - ContainerHandlingItem.TargetGrabber01 / Math.Abs(AnimationGrabber12Span.X);
+                var keyGrabber02 = 1 - ContainerHandlingItem.TargetGrabber02 / Math.Abs(AnimationGrabber12Span.Y);
 
                 AnimatedPartX.SlowDownFactor = Math.Abs(AnimatedPartX.AnimationKeyFraction() - key.X) > SlowDownThreshold / AnimatedPartX.MaxFrame ? 1.0f : 0.25f;
                 AnimatedPartY.SlowDownFactor = Math.Abs(AnimatedPartY.AnimationKeyFraction() - key.Y) > SlowDownThreshold / AnimatedPartY.MaxFrame ? 1.0f : 0.25f;
@@ -1155,14 +1153,12 @@ namespace Orts.Viewer3D
                 if (AnimatedPartX.AnimationKeyFraction() == key.X) ContainerHandlingItem.MoveX = false;
                 if (AnimatedPartY.AnimationKeyFraction() == key.Y) ContainerHandlingItem.MoveY = false;
                 if (AnimatedPartZ.AnimationKeyFraction() == key.Z) ContainerHandlingItem.MoveZ = false;
-                if (AnimatedPartGrabber01.AnimationKeyFraction() == keyGrabber01 && AnimatedPartGrabber02 .AnimationKeyFraction() == keyGrabber02) ContainerHandlingItem.MoveGrabber = false;
+                if (AnimatedPartGrabber01.AnimationKeyFraction() == keyGrabber01 && AnimatedPartGrabber02.AnimationKeyFraction() == keyGrabber02) ContainerHandlingItem.MoveGrabber = false;
             }
 
             ContainerHandlingItem.ActualX = AnimatedPartX.AnimationKeyFraction() * AnimationXYZSpan.X + AnimationXYZStart.X;
             ContainerHandlingItem.ActualY = AnimatedPartY.AnimationKeyFraction() * AnimationXYZSpan.Y + AnimationXYZStart.Y;
             ContainerHandlingItem.ActualZ = AnimatedPartZ.AnimationKeyFraction() * AnimationXYZSpan.Z + AnimationXYZStart.Z;
-            ContainerHandlingItem.ActualGrabber01 = AnimatedPartGrabber01.AnimationKeyFraction() * AnimationGrabber01Span.Z + AnimationGrabber01Start.Z;
-            ContainerHandlingItem.ActualGrabber02 = AnimatedPartGrabber02.AnimationKeyFraction() * AnimationGrabber02Span.Z + AnimationGrabber02Start.Z;
 
             SharedShape.PrepareFrame(frame, Location, XNAMatrices, Flags);
 
@@ -1195,8 +1191,6 @@ namespace Orts.Viewer3D
             OldMoveY = ContainerHandlingItem.MoveY;
             OldMoveZ = ContainerHandlingItem.MoveZ;
         }
-
-        float GetStateFromPosition(float input, float start, float span) => MathHelper.Clamp(Math.Abs((input - start) / span), 0.0f, 1.0f);
 
         Vector3 GetStateFromPosition(Vector3 input)
         {
@@ -2448,28 +2442,18 @@ namespace Orts.Viewer3D
         public virtual float GetAnimationLength(int animationId) => Animations?.FirstOrDefault()?.anim_nodes?.ElementAtOrDefault(animationId)?.controllers?
             .Select(c => c.LastOrDefault()?.Frame ?? 0).DefaultIfEmpty(0).Max() ?? 0;
 
-        public virtual void GetAnimationOutputMinMax(int animationId, out Vector3 min, out Vector3 max, out Vector3 start)
+        public virtual void GetAnimationStartEnd(int animationId, float maxFrame, out Vector3 start, out Vector3 end)
         {
-            min = max = start = Vector3.Zero;
-
-            if (!(Animations?.FirstOrDefault()?.anim_nodes?.ElementAtOrDefault(animationId)?.controllers?.FirstOrDefault() is IList keys) || keys.Count == 0)
+            start = end = Vector3.Zero;
+            if (Animations?.FirstOrDefault()?.anim_nodes?.ElementAtOrDefault(animationId)?.controllers?.FirstOrDefault() is not IList keys || keys.Count == 0)
                 return;
 
             var v = (linear_key)keys[0];
-            min = max = start = new Vector3(v.X, v.Y, v.Z);
+            start = new Vector3(v.X, v.Y, v.Z);
 
-            for (int i = 1; i < keys.Count; i++)
-            {
-                v = (linear_key)keys[i];
-
-                if (v.X < min.X) min.X = v.X;
-                if (v.Y < min.Y) min.Y = v.Y;
-                if (v.Z < min.Z) min.Z = v.Z;
-
-                if (v.X > max.X) max.X = v.X;
-                if (v.Y > max.Y) max.Y = v.Y;
-                if (v.Z > max.Z) max.Z = v.Z;
-            }
+            var endKey = keys.Cast<linear_key>().LastOrDefault(k => k.Frame <= maxFrame);
+            if (endKey != null)
+                end = new Vector3(endKey.X, endKey.Y, endKey.Z);
         }
 
         [CallOnThread("Loader")]

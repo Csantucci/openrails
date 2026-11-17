@@ -29,7 +29,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Orts.Viewer3D.Common;
 using Orts.Viewer3D.Processes;
-using ORTS.Common;
+using Orts.Content;
 using glTFLoader.Schema;
 using System.Collections.Concurrent;
 
@@ -107,8 +107,6 @@ namespace Orts.Viewer3D
 
         protected override void LoadContent()
         {
-            Trace.Write("G");
-
             FileDir = Path.GetDirectoryName(FilePath);
             var inputFilename = Path.GetFileNameWithoutExtension(FilePath).ToUpper();
             if (inputFilename.Contains("_LOD"))
@@ -240,14 +238,14 @@ namespace Orts.Viewer3D
                         }
                         if (unsupportedExtensions.Any())
                         {
-                            var message = $"glTF required extension {string.Join(", ", unsupportedExtensions)} is unsupported by Openrails, skipping file {externalLods[id]}";
+                            var message = $"Skipped entire glTF model which requires unsupported extensions {string.Join(", ", unsupportedExtensions)} in model {externalLods[id]}";
                             Trace.TraceWarning(message);
                             if (!ConsistGenerator.GltfVisualTestRun)
                                 continue;
                         }
                         if (unusedExtensions.Any())
                         {
-                            var message = $"glTF required extension {string.Join(", ", unusedExtensions)} is not listed as \"extensionsUsed\", skipping file {externalLods[id]}";
+                            var message = $"Skipped entire glTF model with required extension {string.Join(", ", unusedExtensions)} is not listed as \"extensionsUsed\" in model {externalLods[id]}";
                             Trace.TraceWarning(message);
                             if (!ConsistGenerator.GltfVisualTestRun)
                                 continue;
@@ -475,7 +473,8 @@ namespace Orts.Viewer3D
                     // Assign the first three animations to Wipers [V], Item1Continuous [Shift+,], Item2Continuous [Shift+.] respectively,
                     // because these are the ones capable of playing a loop.
                     for (var i = 0; i < GltfAnimations.Count; i++)
-                        MatrixNames[i] = TestControls[i % TestControls.Length];
+                        if (GltfAnimations[i].Channels?.FirstOrDefault()?.TimeArray != null)
+                            MatrixNames[i] = TestControls[i % TestControls.Length];
                 }
             }
 
@@ -603,17 +602,14 @@ namespace Orts.Viewer3D
 
                                 if (Debugger.IsAttached) DebugName = (DebugName != "" ? DebugName + "," : "") + attributes.Current.Key;
                             }
-                            // Multiple accessors to same bufferview with same semantic. Will reuse the VertexBuffer:
-                            //while (loop && previousOffset == currentOffset && attributes.Current.Key == previousAttribute)
+
+                            if (!Accessors.ContainsKey(attributes.Current.Value) && !VertexBufferBindings.ContainsKey(bindingKey))
                             {
-                                if (!Accessors.ContainsKey(attributes.Current.Value) && !VertexBufferBindings.ContainsKey(bindingKey))
-                                {
-                                    Accessors.Add(attributes.Current.Value, attributes.Current.Key);
-                                }
-                                loop = attributes.MoveNext();
-                                semantic = GetVertexElementSemantic(attributes.Current.Key, out index);
-                                currentOffset = gltfFile.Accessors[attributes.Current.Value].ByteOffset;
+                                Accessors.Add(attributes.Current.Value, attributes.Current.Key);
                             }
+                            loop = attributes.MoveNext();
+                            semantic = GetVertexElementSemantic(attributes.Current.Key, out index);
+                            currentOffset = gltfFile.Accessors[attributes.Current.Value].ByteOffset;
                         }
                         while (loop && previousOffset < currentOffset && currentOffset < previousOffset + byteStride);
 
@@ -1423,8 +1419,8 @@ namespace Orts.Viewer3D
                 }
                 shapePrimitive.SetMaterial(materialIndex);
 
-                // FIXME: This structure cannot handle the situation when a material is used with different shaders, for e.g. both skinned and non-skinned primitives.
-                // This is valid in gltf, but here we cannot handle this, because the shader type is tied to the material, but shouldn't be.
+                // Note: This structure cannot handle the situation when a material is used with different shaders, for e.g. both skinned and non-skinned primitives.
+                // This is valid in gltf, but here we cannot handle this, because the shader type is tied to the material in the current Openrails code structure.
                 if (!shape.Materials.ContainsKey(materialIndex))
                     shape.Materials.Add(materialIndex, shapePrimitive.Material as PbrMaterial);
 
@@ -1678,29 +1674,14 @@ namespace Orts.Viewer3D
         public override bool HasAnimation(int number) => GltfAnimations?.ElementAtOrDefault(number)?.Channels?.FirstOrDefault() != null;
         public override float GetAnimationLength(int number) => GltfAnimations?.ElementAtOrDefault(number)?.Channels?.Select(c => c.TimeMax).Max() ?? 0;
 
-        public override void GetAnimationOutputMinMax(int animationId, out Vector3 min, out Vector3 max, out Vector3 start)
+        public override void GetAnimationStartEnd(int animationId, float maxFrame, out Vector3 start, out Vector3 end)
         {
-            min = max = start = Vector3.Zero;
-
-            var outputVector3 = GltfAnimations?.ElementAtOrDefault(animationId)?.Channels?.FirstOrDefault()?.OutputVector3;
-
-            if (outputVector3 == null || outputVector3.Length == 0)
+            start = end = Vector3.Zero;
+            if (GltfAnimations?.ElementAtOrDefault(animationId)?.Channels?.FirstOrDefault()?.OutputVector3 is not Vector3[] outputVector3 || outputVector3?.Length == 0)
                 return;
 
-            min = max = start = outputVector3[0];
-
-            for (int i = 1; i < outputVector3.Length; i++)
-            {
-                var v = outputVector3[i];
-
-                if (v.X < min.X) min.X = v.X;
-                if (v.Y < min.Y) min.Y = v.Y;
-                if (v.Z < min.Z) min.Z = v.Z;
-
-                if (v.X > max.X) max.X = v.X;
-                if (v.Y > max.Y) max.Y = v.Y;
-                if (v.Z > max.Z) max.Z = v.Z;
-            }
+            start = outputVector3[0];
+            end = outputVector3.Last();
         }
 
         /// <summary>
@@ -1715,6 +1696,9 @@ namespace Orts.Viewer3D
 
             foreach (var channel in GltfAnimations[animationNumber].Channels)
             {
+                if (channel.TimeArray == null || channel.TimeArray.Length == 0)
+                    continue;
+
                 // Interpolating between two frames
                 var frame1 = 0;
                 for (var i = 0; i < channel.TimeArray.Length; i++)

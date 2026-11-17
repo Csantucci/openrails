@@ -60,6 +60,11 @@ namespace Orts.Viewer3D
 
         internal static bool HighlightMissingTextures = false;
 
+        public static readonly string[] MstsExtensionFilter = new[] { ".dds", ".ace", ".png", ".jpg", ".jpeg" };
+        public static readonly string[] GltfCoreTextureExtensionFilter = new[] { ".png", ".jpg", ".jpeg" };
+        public static readonly string[] GltfDdsTextureExtensionFilter = new[] { ".dds" };
+
+
         [CallOnThread("Render")]
         internal SharedTextureManager(Viewer viewer, GraphicsDevice graphicsDevice)
         {
@@ -74,7 +79,9 @@ namespace Orts.Viewer3D
         /// <returns>The <see cref="Texture2D"/> created from the given <paramref name="path"/> or a missing placeholder.</returns>
         public Texture2D Get(string path, bool required = false)
         {
-            return Get(path, SharedMaterialManager.MissingTexture, required, true);
+            if (string.IsNullOrEmpty(path) || !MstsExtensionFilter.Contains(Path.GetExtension(path).ToLowerInvariant()))
+                return SharedMaterialManager.MissingTexture;
+            return Get(path, SharedMaterialManager.MissingTexture, required);
         }
 
         /// <summary>
@@ -109,13 +116,13 @@ namespace Orts.Viewer3D
                             if (File.Exists(dds))
                             {
                                 DDSLib.DDSFromFile(dds, GraphicsDevice, true, out Texture2D texture, srgb);
-                                if (Debugger.IsAttached) texture.Name = path;
+                                texture.Name = path;
                                 return Textures[textureKey] = texture;
                             }
                             if (File.Exists(ace))
                             {
                                 var texture = Formats.Msts.AceFile.Texture2DFromFile(GraphicsDevice, ace);
-                                if (Debugger.IsAttached) texture.Name = path;
+                                texture.Name = path;
                                 return Textures[textureKey] = texture;
                             }
                             if (defaultTexture != SharedMaterialManager.MissingTexture)
@@ -177,7 +184,7 @@ namespace Orts.Viewer3D
                 Textures[textureKey] = Texture2D.FromStream(GraphicsDevice, stream);
             }
 
-            if (Debugger.IsAttached) Textures[textureKey].Name = textureKey;
+            Textures[textureKey].Name = textureKey;
             return Textures[textureKey];
 
         }
@@ -351,6 +358,10 @@ namespace Orts.Viewer3D
         static TextureCube EnvironmentMapSpecularNight;
         static Texture2D BrdfLutTexture;
 
+        /// <summary>
+        /// Represents a soft, warm, and natural daylight environment where the lighting is predominantly ambient (diffuse) but with a strong top-down directionality.
+        /// The color ratios describe a bright, slightly blueish-white base light from the sky, complemented by a warm, yellowish-red directional light.
+        /// </summary>
         static readonly Vector3[] ShDay = new[]
         {
             new Vector3(0.933248f,  0.827154f,  0.734785f), // L0,0
@@ -364,6 +375,10 @@ namespace Orts.Viewer3D
             new Vector3(0.027432f,  0.010342f,  0.003231f)  // L2,2
         };
 
+        /// <summary>
+        /// Represents a dim, cold, and blueish night environment where the lighting is highly ambient (diffuse) but with a distinct top-down directionality like a moonlight.
+        /// The overall intensity is drastically reduced compared to daylight, shifting the color profile toward a deep, blue-gray tone with very subtle highlights.
+        /// </summary>
         static readonly Vector3[] ShNight = new[]
         {
             new Vector3(0.080f, 0.110f, 0.180f),    // L0,0
@@ -953,7 +968,7 @@ namespace Orts.Viewer3D
 
     public class SceneryMaterial : Material
     {
-        public SceneryMaterialOptions Options;
+        public SceneryMaterialOptions Options { get; init; }
         readonly float MipMapBias;
         protected Texture2D Texture;
         private readonly string TexturePath;
@@ -1402,9 +1417,6 @@ namespace Orts.Viewer3D
             [(TextureFilter.Linear, TextureAddressMode.Wrap, TextureAddressMode.Wrap)] = new SamplerState { Filter = TextureFilter.Linear, AddressU = TextureAddressMode.Wrap, AddressV = TextureAddressMode.Wrap, MaxAnisotropy = 16 },
         };
 
-        static readonly string[] StandardTextureExtensionFilter = new[] { ".png", ".jpg", ".jpeg" };
-        static readonly string[] DdsTextureExtensionFilter = new[] { ".dds" };
-
         public PbrMaterial(Viewer viewer, string materialUniqueId, SceneryMaterialOptions options, float mipMapBias, Gltf gltfFile)
             : base(viewer, null, options, mipMapBias, 0)
         {
@@ -1627,13 +1639,13 @@ namespace Orts.Viewer3D
             {
                 var texture = GltfFile.Textures[(int)textureIndex];
                 var source = texture?.Source;
-                var extensionFilter = StandardTextureExtensionFilter;
+                var extensionFilter = SharedTextureManager.GltfCoreTextureExtensionFilter;
                 object extension = null;
                 if (GltfFile.ExtensionsUsed?.Contains("MSFT_texture_dds") & texture?.Extensions?.TryGetValue("MSFT_texture_dds", out extension) ?? false)
                 {
                     var ext = Newtonsoft.Json.JsonConvert.DeserializeObject<MSFT_texture_dds>(extension.ToString(), GltfShape.PopulateDefaults);
                     source = ext?.Source ?? source;
-                    extensionFilter = DdsTextureExtensionFilter;
+                    extensionFilter = SharedTextureManager.GltfDdsTextureExtensionFilter;
                 }
                 if (source != null)
                 {
@@ -1806,7 +1818,6 @@ namespace Orts.Viewer3D
         TextureAddressMode GetTextureAddressMode(Sampler.WrapTEnum wrapEnum) => GetTextureAddressMode((Sampler.WrapSEnum)wrapEnum);
         TextureAddressMode GetTextureAddressMode(Sampler.WrapSEnum wrapEnum)
         {
-            //if (Shape.MsfsFlavoured) return TextureAddressMode.Clamp;
             switch (wrapEnum)
             {
                 case Sampler.WrapSEnum.REPEAT: return TextureAddressMode.Wrap;
@@ -1937,7 +1948,6 @@ namespace Orts.Viewer3D
 
         public enum Pass
         {
-            Extract,
             DownSample,
             UpSample,
             Merge
@@ -1989,7 +1999,6 @@ namespace Orts.Viewer3D
 
             switch (pass)
             {
-                case Pass.Extract: Shader.CurrentTechnique = Shader.Techniques[UseLuminance ? "ExtractLuminance" : "Extract"]; ShaderPass = UseLuminance ? ShaderPassExtractLuminance : ShaderPassExtract; break;
                 case Pass.UpSample: Shader.CurrentTechnique = Shader.Techniques[UseLuminance ? "UpsampleLuminance" : "Upsample"]; ShaderPass = UseLuminance ? ShaderPassUpsampleLuminance : ShaderPassUpsample; break;
                 case Pass.DownSample: Shader.CurrentTechnique = Shader.Techniques["Downsample"]; ShaderPass = ShaderPassDownsample; break;
                 case Pass.Merge: Shader.CurrentTechnique = Shader.Techniques["Merge"]; ShaderPass = ShaderPassMerge; break;
@@ -1997,7 +2006,7 @@ namespace Orts.Viewer3D
 
             graphicsDevice.RasterizerState = RasterizerState.CullNone;
             graphicsDevice.BlendState = pass == Pass.UpSample ? BlendState.Additive : BlendState.Opaque;
-            graphicsDevice.DepthStencilState = pass == Pass.Extract ? BloomStencilState : DepthStencilState.Default;
+            graphicsDevice.DepthStencilState = DepthStencilState.Default;
 
             Shader.ScreenTexture = sourceTexture;
             graphicsDevice.SetRenderTarget(targetTexture);
@@ -2022,9 +2031,6 @@ namespace Orts.Viewer3D
             Shader.InverseResolution = new Vector2(1f / screen.Width, 1f / screen.Height);
 
             // Extracting is not needed with deferred bloom shading.
-            // Extract the pixels to be bloomed
-            //SetState(graphicsDevice, screen, mip0, Pass.Extract);
-            //Render(graphicsDevice);
 
             SetState(graphicsDevice, mip0, mip1, Pass.DownSample);
             Render(graphicsDevice);
@@ -2067,13 +2073,6 @@ namespace Orts.Viewer3D
             SetState(graphicsDevice, screen, mip0, result, Pass.Merge);
             Render(graphicsDevice);
         }
-
-        public DepthStencilState BloomStencilState = new DepthStencilState()
-        {
-            StencilEnable = true,
-            StencilMask = 0x08,
-            StencilFunction = CompareFunction.Greater,
-        };
     }
 
     public class ShadowMapMaterial : Material
