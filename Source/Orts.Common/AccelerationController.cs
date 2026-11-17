@@ -73,6 +73,7 @@ namespace ORTS.Common
         /// <param name="maxAccelerationMpSS">Maximum force or acceleration developed with controller at 100%</param>
         public void Adjust(float maxAccelerationMpSS)
         {
+            if (maxAccelerationMpSS < 1e-5f) maxAccelerationMpSS = 1e-5f;
             ProportionalFactor = Coefficients[0] / maxAccelerationMpSS;
             IntegralFactor = Coefficients[1] / maxAccelerationMpSS;
             DerivativeFactor = Coefficients[2] / maxAccelerationMpSS;
@@ -88,13 +89,13 @@ namespace ORTS.Common
             Percent = PPercent + IPercent + DPercent;
             if (Percent <= minPercent)
             {
-                if (PPercent > minPercent && IntegralFactor > 0) TotalError = (minPercent - PPercent) / IntegralFactor;
+                if (PPercent > minPercent && IntegralFactor > 0) TotalError = Math.Max(1.1f * (minPercent - PPercent) / IntegralFactor, TotalError);
                 else if (TotalError < 0) TotalError = 0;
                 Percent = minPercent;
             }
             if (Percent >= maxPercent)
             {
-                if (PPercent < maxPercent && IntegralFactor > 0) TotalError = (maxPercent - PPercent) / IntegralFactor;
+                if (PPercent < maxPercent && IntegralFactor > 0) TotalError = Math.Min(1.1f * (maxPercent - PPercent) / IntegralFactor, TotalError);
                 else if (TotalError > 0) TotalError = 0;
                 Percent = maxPercent;
             }

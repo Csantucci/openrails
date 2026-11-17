@@ -157,9 +157,9 @@ namespace Orts.Simulation.Physics
         public bool WagonsAttached = false;    // Wagons are attached to train
         public float LeadPipePressurePSI;       // Keeps record of Lead locomootive brake pipe pressure
 
-        public bool IsWheelSlipWarninq;
+        public bool IsWheelSlipWarning;
         public bool IsWheelSlip;
-        public bool HuDIsWheelSlipWarninq;
+        public bool HuDIsWheelSlipWarning;
         public bool HuDIsWheelSlip;
         public bool IsBrakeSkid;
 
@@ -2184,7 +2184,7 @@ namespace Orts.Simulation.Physics
 
                 if (car.HuDIsWheelSlip)
                     hudwhlslp = true;
-                if (car.HuDIsWheelSlipWarninq)
+                if (car.HuDIsWheelSlipWarning)
                     hudwhlslpwrn = true;
 
                 if (car.BrakeSkid)
@@ -2218,10 +2218,10 @@ namespace Orts.Simulation.Physics
             MassKg = massKg;
 
             IsWheelSlip = whlslp;
-            IsWheelSlipWarninq = whlslpwrn;
+            IsWheelSlipWarning = whlslpwrn;
 
             HuDIsWheelSlip = hudwhlslp;
-            HuDIsWheelSlipWarninq = hudwhlslpwrn;
+            HuDIsWheelSlipWarning = hudwhlslpwrn;
 
             IsBrakeSkid = whlskd;
 
@@ -2744,6 +2744,42 @@ namespace Orts.Simulation.Physics
 
                         car.CarInsideTempC = J.ToKJ(car.CarHeatCurrentCompartmentHeatJ) / (SpecificHeatCapacityAirKJpKgK * DensityAirKgpM3 * car.CarHeatVolumeM3) + car.CarOutsideTempC;
                     }
+                }
+            }
+        }
+
+        protected enum Wheelslip
+        {
+            None,
+            Warning,
+            Occurring
+        };
+        protected Wheelslip WheelslipState = Wheelslip.None;
+
+        public void ConfirmWheelslip()
+        {
+            if (HuDIsWheelSlip)
+            {
+                if (WheelslipState != Wheelslip.Occurring)
+                {
+                    WheelslipState = Wheelslip.Occurring;
+                    Simulator.Confirmer.Warning(CabControl.Wheelslip, CabSetting.On);
+                }
+            }
+            else if (HuDIsWheelSlipWarning)
+            {
+                if (WheelslipState != Wheelslip.Warning)
+                {
+                    WheelslipState = Wheelslip.Warning;
+                    Simulator.Confirmer.Confirm(CabControl.Wheelslip, CabSetting.Warn1);
+                }
+            }
+            else
+            {
+                if (WheelslipState != Wheelslip.None)
+                {
+                    WheelslipState = Wheelslip.None;
+                    Simulator.Confirmer.Confirm(CabControl.Wheelslip, CabSetting.Off);
                 }
             }
         }
@@ -17081,6 +17117,38 @@ namespace Orts.Simulation.Physics
                 locoUnpowered = true;
             }
             return locoUnpowered;
+        }
+
+        /// <summary>
+        /// Get the position (index) of the train car, using object reference equality.
+        /// Returns a valid index. When the car reference is not found in the list,
+        /// returns the index of the first car (0), or if defaultToEnd is true, the last car (Count - 1).
+        /// </summary>
+        public int GetCarPosition(TrainCar car, bool defaultToEnd = false)
+        {
+            int carIdx = Cars.IndexOf(car);
+            if (carIdx < 0)
+            {
+                carIdx = defaultToEnd ? Cars.Count - 1 : 0;
+                Debug.WriteLine($"Warning: car {car.CarID} not found in train {Name}; using index {carIdx}");
+            }
+            return carIdx;
+        }
+
+        /// <summary>
+        /// Get the position (index) of the train car using the car-id.
+        /// Returns a valid index. When the car-id is not found, returns the first car (0),
+        /// or if defaultToEnd is true, the last car (Count - 1).
+        /// </summary>
+        public int GetCarPositionByCarID( string carID, bool defaultToEnd = false)
+        {
+            int carIdx = Cars.FindIndex(x => x.CarID == carID);
+            if (carIdx < 0)
+            {
+                Debug.WriteLine($"Warning: car {carID} not found in train {Name}");
+                carIdx = defaultToEnd ? Cars.Count - 1 : 0;
+            }
+            return carIdx;
         }
 
         //================================================================================================//

@@ -73,7 +73,8 @@ namespace Orts.Viewer3D.RollingStock
             Locomotive = car;
 
             string wagonFolderSlash = Path.GetDirectoryName(Locomotive.WagFilePath) + "\\";
-            if (Locomotive.CabSoundFileName != null) LoadCarSound(wagonFolderSlash, Locomotive.CabSoundFileName);
+            if (Locomotive.CabSoundFileNames != null)
+                LoadCarSound(wagonFolderSlash, Locomotive.CabSoundFileNames);
 
             //Viewer.SoundProcess.AddSoundSource(this, new TrackSoundSource(MSTSWagon, Viewer));
 
@@ -260,7 +261,14 @@ namespace Orts.Viewer3D.RollingStock
             // By Matej Pacha
             if (UserInput.IsPressed(UserCommand.DebugResetWheelSlip)) { Locomotive.Train.SignalEvent(Event._ResetWheelSlip); }
             if (UserInput.IsPressed(UserCommand.DebugToggleAdvancedAdhesion)) { Locomotive.Train.SignalEvent(Event._ResetWheelSlip); Locomotive.Simulator.UseAdvancedAdhesion = !Locomotive.Simulator.UseAdvancedAdhesion; }
-
+            if (UserInput.IsPressed(UserCommand.CameraHeadMotionIntensity))
+            {
+                MSTSWagon.CurrentCab3DHeadMotionIntensity = MSTSWagon.CurrentCab3DHeadMotionIntensity + new Vector3(0.1f, 0.1f, 0.1f);
+                if (MSTSWagon.CurrentCab3DHeadMotionIntensity.X > 1.1f || MSTSWagon.CurrentCab3DHeadMotionIntensity.Y > 1.1f || MSTSWagon.CurrentCab3DHeadMotionIntensity.Z > 1.1f)
+                    MSTSWagon.CurrentCab3DHeadMotionIntensity = new Vector3(0f, 0f, 0f);
+                Viewer.Simulator.Confirmer.Message(ConfirmLevel.Information, Viewer.Catalog.GetStringFmt("Cab3D Head Motion Intensity at {0}, {1}, {2}",
+                    MSTSWagon.CurrentCab3DHeadMotionIntensity.X, MSTSWagon.CurrentCab3DHeadMotionIntensity.Y, MSTSWagon.CurrentCab3DHeadMotionIntensity.Z));
+            }
             ExternalDeviceState[] externalDevices = {UserInput.RDState, UserInput.WebDeviceState};
             foreach (var external in externalDevices)
             {

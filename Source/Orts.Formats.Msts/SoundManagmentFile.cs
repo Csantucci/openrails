@@ -260,6 +260,7 @@ namespace Orts.Formats.Msts
             CarFriction,
             WheelRPM,
             DriveWheelRPM,
+            SteamLocomotiveNormalisedMEP,
             ConcreteSleepers,
             CarInTunnel,
             CarDistanceTrack,
@@ -303,6 +304,7 @@ namespace Orts.Formats.Msts
                 case "carfriction": Control = ControlType.CarFriction; break;
                 case "wheelrpm": Control = ControlType.WheelRPM; break;
                 case "drivewheelrpm": Control = ControlType.DriveWheelRPM; break;
+                case "steamlocomotivenormalisedmep": Control = ControlType.SteamLocomotiveNormalisedMEP; break;
                 case "concretesleepers": Control = ControlType.ConcreteSleepers; break;
                 case "carintunnel": Control = ControlType.CarInTunnel; break;
                 case "cardistancetrack": Control = ControlType.CarDistanceTrack; break;
@@ -349,7 +351,8 @@ namespace Orts.Formats.Msts
                     return STFReader.UNITS.Speed;
                 case ControlType.BrakeCyl:
                 case ControlType.BackPressure:
-                    // Brake cylinder and back pressure are PSI
+                case ControlType.SteamLocomotiveNormalisedMEP:
+                    // Brake cylinder, back pressure, and steam locomotive MEP are PSI
                     return STFReader.UNITS.PressureDefaultPSI;
                 case ControlType.TractiveEffort:
                 case ControlType.CurveForce:
@@ -378,7 +381,7 @@ namespace Orts.Formats.Msts
         }
 
         /// <summary>
-        /// Attemps to extract an integer index contained in the middle of a given string by
+        /// Attempts to extract an integer index contained in the middle of a given string by
         /// removing specified text from the beginning and end of the string to isolate the
         /// index in the middle. Returns 0 if the value in the middle could not be interpreted
         /// as a number.
@@ -392,7 +395,12 @@ namespace Orts.Formats.Msts
         {
             // Replace the specified beginning and end strings inside the main string with empty space
             // Resulting string should contain only the desired index, nothing else
-            string indexStr = main.ToLower().Replace(beginning.ToLower(), "").Replace(end.ToLower(), "");
+            string indexStr = main.ToLower();
+
+            if (!string.IsNullOrEmpty(beginning))
+                indexStr = indexStr.Replace(beginning.ToLower(), "");
+            if (!string.IsNullOrEmpty(end))
+                indexStr = indexStr.Replace(end.ToLower(), "");
 
             // If index can't be determined, assume the user wanted the first thing
             if (!int.TryParse(indexStr, out int index))
@@ -485,6 +493,12 @@ namespace Orts.Formats.Msts
                 new STFReader.TokenProcessor("xover_4axle_trigger", ()=>{ Add(new Xover_Trigger_4(stf)); }),
                 new STFReader.TokenProcessor("xover_6axle_trigger", ()=>{ Add(new Xover_Trigger_6(stf)); }),
                 new STFReader.TokenProcessor("xover_8axle_trigger", ()=>{ Add(new Xover_Trigger_8(stf)); }),
+                new STFReader.TokenProcessor("wind_beaufort_calm", ()=>{ Add(new Wind_Calm(stf)); }),
+                new STFReader.TokenProcessor("wind_beaufort_light", ()=>{ Add(new Wind_Light(stf)); }),
+                new STFReader.TokenProcessor("wind_beaufort_moderate", ()=>{ Add(new Wind_Moderate(stf)); }),
+                new STFReader.TokenProcessor("wind_beaufort_gale", ()=>{ Add(new Wind_Gale(stf)); }),
+                new STFReader.TokenProcessor("wind_beaufort_storm", ()=>{ Add(new Wind_Storm(stf)); }),
+                new STFReader.TokenProcessor("wind_beaufort_gust", ()=>{ Add(new Wind_Gust(stf)); }),
                 new STFReader.TokenProcessor("discrete_trigger", ()=>{ Add(new Discrete_Trigger(stf)); }),
                 new STFReader.TokenProcessor("random_trigger", ()=>{ Add(new Random_Trigger(stf)); }),
                 new STFReader.TokenProcessor("variable_trigger", ()=>{ Add(new Variable_Trigger(stf)); }),
@@ -959,6 +973,84 @@ namespace Orts.Formats.Msts
             }
         }
     }
+
+    public class Wind_Calm : Trigger
+    {
+        public Wind_Calm(STFReader f)
+        {
+
+            f.MustMatch("(");
+            while (!f.EndOfBlock())
+                ParsePlayCommand(f, f.ReadString().ToLower());
+
+            /*
+                        f.MustMatch("(");
+                        while (!f.EndOfBlock())
+                        {
+                            string lowtok = f.ReadString().ToLower();
+                            switch (lowtok)
+                            {
+                                case "car_camera_dist": f.MustMatch("("); Gale = f.ReadFloat(STFReader.UNITS.Distance, null); f.SkipRestOfBlock(); break;
+                                default: ParsePlayCommand(f, lowtok); break;
+                            }
+                        }
+            */
+        }
+    }
+
+    public class Wind_Light : Trigger
+    {
+        public Wind_Light(STFReader f)
+        {
+
+            f.MustMatch("(");
+            while (!f.EndOfBlock())
+                ParsePlayCommand(f, f.ReadString().ToLower());
+        }
+    }
+
+    public class Wind_Moderate : Trigger
+    {
+        public Wind_Moderate(STFReader f)
+        {
+
+            f.MustMatch("(");
+            while (!f.EndOfBlock())
+                ParsePlayCommand(f, f.ReadString().ToLower());
+        }
+    }
+
+    public class Wind_Gale : Trigger
+    {
+        public Wind_Gale(STFReader f)
+        {
+
+            f.MustMatch("(");
+            while (!f.EndOfBlock())
+                ParsePlayCommand(f, f.ReadString().ToLower());
+        }
+    }
+
+    public class Wind_Storm : Trigger
+    {
+        public Wind_Storm(STFReader f)
+        {
+            f.MustMatch("(");
+            while (!f.EndOfBlock())
+                ParsePlayCommand(f, f.ReadString().ToLower());
+        }
+    }
+
+    public class Wind_Gust : Trigger
+    {
+        public Wind_Gust(STFReader f)
+        {
+            f.MustMatch("(");
+            while (!f.EndOfBlock())
+                ParsePlayCommand(f, f.ReadString().ToLower());
+        }
+    }
+
 
     public class Random_Trigger : Trigger
     {

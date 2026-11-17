@@ -25,14 +25,17 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using GNU.Gettext;
 using Microsoft.Xna.Framework;
 using Orts.Common;
+using Orts.Simulation;
 using Orts.Simulation.Physics;
 using Orts.Simulation.RollingStocks;
 using Orts.Simulation.RollingStocks.SubSystems;
 using Orts.Viewer3D.RollingStock.SubSystems;
 using ORTS.Common;
 using ORTS.Common.Input;
+using static Swan.Terminal;
 
 namespace Orts.Viewer3D.RollingStock
 {
