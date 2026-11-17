@@ -1,5 +1,5 @@
-﻿Open Rails NewYear README - Rev.176
-November 16th, 2026
+﻿Open Rails NewYear README - Rev.177
+November 17th, 2026
 
 Please note that the installation and use of Open Rails software, even of its unofficial versions, is governed by the Open Rails End User License Agreement. 
 
@@ -11,7 +11,7 @@ INSTALLATION
 RELEASE NOTES
 This unofficial version has been derived from the latest official Testing release T1.6.1-563, 
 plus some of the features already present in the Unstable release and/or present as pull requests in the OpenRails github.
-Note that this might be the last release not requiring .NET 6.0. 
+Note that this release requires .NET 6.0. 
 
 
 
@@ -102,13 +102,16 @@ This version includes some features not (yet) available in the Open Rails testin
   *- Steam Locomotive Steam Cylinder Exhaust Sounds, by Peter Newell (PR #1266)
   *- Support full SIMIS token IDs, by GokuMK (PR #1268)
   *- Expand procedural profiles for tracks, roads and line objects, by GokuMK (PR #1269)
+  *- NEW: glTF 2.0 support with PBR lighting, by gpz (PR #570)
   *- NEW: Correction for varying wind speed, by Peter Newell (PR# 1261)
   *- NEW: Steam Locomotive Steam Cylinder Exhaust Sounds, by Peter Newell (PR# 1266)
+  *- NEW: Procedural terrain materials, by GokuMK (PR #1270)
   *- NEW: Fix for FPS drop when F1/Help window is open, by twpol (PR# 1281)
   *- NEW: Add physics-driven head motion to the 3D cab, by commentarykyle (PR# 1283)
   *- NEW: Remove duplicate content to reduce file size, by twpol (PR# 1289)
   *- NEW: Use system settings for data logger units, including steam loco specific data, by rwf-rr (PR #1290)
 NEW: improved head motion in 3D cab by allowing to set the motion intensity during the game with keys Alt-V
+NEW: added an option in ORNYMG-only options to disable bloom effect, in order to increase FPS in slower computers
   
 Info about content of the various PR to the Unstable release can be found here
 https://github.com/openrails/openrails/pulls
