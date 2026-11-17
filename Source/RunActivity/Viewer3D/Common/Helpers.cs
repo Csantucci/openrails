@@ -133,7 +133,6 @@ namespace Orts.Viewer3D.Common
             return File.Exists(path);
         }
 
-
         public static string GetTextureFile(Simulator simulator, TextureFlags textureFlags, string texturePath, string textureName)
         {
             var alternativePath = @"\";

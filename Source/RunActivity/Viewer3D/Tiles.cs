@@ -374,6 +374,7 @@ namespace Orts.Viewer3D
             // T and Y files are expected to exist; F files are optional.
             try
             {
+                TerrainFilePath = fileName + ".t";
                 TFile = new TerrainFile(fileName + ".t");
             }
             catch (Exception error)

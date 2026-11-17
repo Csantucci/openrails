@@ -177,6 +177,7 @@ namespace Orts.Formats.Msts
             return true;
         }
     }
+
     public class terrain_water_height_offset
     {
         public readonly float SW;
@@ -242,6 +243,15 @@ namespace Orts.Formats.Msts
                                         terrain_patchsets[i] = new terrain_patchset(terrain_patchsetBlock);
                                 if (!subBlock.EndOfBlock())
                                     subBlock.Skip();
+                            }
+                            break;
+                        case TokenID.TSRETerrainMaterials:
+                            if (terrain_materials == null)
+                                terrain_materials = new terrain_materials(subBlock);
+                            else
+                            {
+                                terrain_materials.MarkInvalid("Duplicate procedural terrain material container");
+                                subBlock.Skip();
                             }
                             break;
                     }
